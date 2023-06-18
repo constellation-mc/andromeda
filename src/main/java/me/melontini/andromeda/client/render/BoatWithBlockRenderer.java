@@ -17,7 +17,7 @@ public class BoatWithBlockRenderer extends BoatEntityRenderer {
     private final BlockState blockState;
 
     public BoatWithBlockRenderer(EntityRendererFactory.Context context, BlockState blockState) {
-        super(context, false);
+        super(context);
         this.blockState = blockState;
     }
 

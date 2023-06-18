@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TNTBoatItem extends Item {
-    private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
+    private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
     private final BoatEntity.Type type;
 
     public TNTBoatItem(BoatEntity.Type type, Settings settings) {

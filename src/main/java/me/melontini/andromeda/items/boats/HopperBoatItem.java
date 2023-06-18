@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 
 public class HopperBoatItem extends Item {
 
-    private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
+    private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
     private final BoatEntity.Type type;
 
     public HopperBoatItem(BoatEntity.Type type, Settings settings) {

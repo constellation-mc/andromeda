@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,10 +28,6 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip
     public boolean quickFire = false;
-
-    @ConfigEntry.Category("blocks")
-    @ConfigEntry.Gui.Tooltip()
-    public boolean fallingPropagule = true;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
@@ -253,10 +248,6 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
     public List<String> throwableItemsBlacklist = Lists.newArrayList();
-
-    @ConfigEntry.Category("mechanics")
-    @ConfigEntry.Gui.Tooltip(count = 3)
-    public boolean tradingGoatHorn = true;
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip

@@ -1,9 +1,9 @@
 package me.melontini.andromeda.entity.vehicle.boats;
 
+import me.melontini.andromeda.entity.vehicle.RideableInventory;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

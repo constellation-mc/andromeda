@@ -3,6 +3,7 @@ package me.melontini.andromeda.mixin.entities.flower_duplication;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.crackerutil.util.MathStuff;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -61,7 +62,7 @@ public abstract class BeeEntityMixin extends AnimalEntity {
         if (this.flowerPos != null) {
             BlockState flowerState = world.getBlockState(flowerPos);
             if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
-                andromeda$plantingCoolDown = world.random.nextBetween(3600, 6490);
+                andromeda$plantingCoolDown = MathStuff.nextInt(world.random, 3600, 6490);
                 for (int i = -2; i <= 2; i++) {
                     for (int b = -2; b <= 2; b++) {
                         for (int c = -2; c <= 2; c++) {
@@ -79,7 +80,7 @@ public abstract class BeeEntityMixin extends AnimalEntity {
                     }
                 }
             } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && Andromeda.CONFIG.beeTallFlowerDuplication) {
-                andromeda$plantingCoolDown = world.random.nextBetween(3600, 8000);
+                andromeda$plantingCoolDown = MathStuff.nextInt(world.random, 3600, 8000);
                 for (int i = -1; i <= 1; i++) {
                     for (int b = -2; b <= 2; b++) {
                         for (int c = -1; c <= 1; c++) {

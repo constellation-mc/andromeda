@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "me.melontini.andromeda.mixin.AndromedaMixinPlugin",
   "mixins": [
+    "a_impl.rideable_inventory.ServerPlayNetworkHandlerMixin",
     "blocks.beds_revenge.BedBlockMixin",
     "blocks.better_fletching_table.BowItemMixin",
     "blocks.better_fletching_table.FletchingTableBlockMixin",
@@ -12,7 +13,6 @@
     "blocks.cactus_filler.AbstractBlockMixin",
     "blocks.cactus_filler.CactusBlockMixin",
     "blocks.campfire_effects.CampfireBlockEntityMixin",
-    "blocks.falling_propagule.PropaguleBlockMixin",
     "blocks.leaf_tweak.EntityMixin",
     "entities.baiting_villagers.VillagerEntityMixin",
     "entities.boat_impl.BoatEntityMixin",
@@ -33,7 +33,6 @@
     "mechanics.dragon_fight.EnderDragonMixin",
     "mechanics.dragon_fight.SpikeCacheMixin",
     "mechanics.extended_behavior.ItemStackMixin",
-    "mechanics.wandering_trader.GoatHornMixin",
     "misc.PlayerManagerMixin",
     "misc.minor_inconvenience.PlayerEntityMixin",
     "misc.unknown.rose_of_the_valley.ItemMixin",
@@ -46,6 +45,7 @@
     "world.self_planting.ItemEntityMixin"
   ],
   "client": [
+    "a_impl.rideable_inventory.ClientPlayerInteractionManagerMixin",
     "accessors.ScreenAccessor",
     "bugfixes.AdvancementTabMixin",
     "bugfixes.RecipeAlternativesWidgetMixin",

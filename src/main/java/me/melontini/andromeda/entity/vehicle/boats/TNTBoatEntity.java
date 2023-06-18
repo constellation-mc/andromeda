@@ -22,7 +22,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -90,7 +89,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
             this.setDamageWobbleTicks(10);
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
             this.scheduleVelocityUpdate();
-            this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+            this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
             boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity) source.getAttacker()).getAbilities().creativeMode;
             if (bl) {
                 this.discard();
@@ -142,7 +141,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     public void setFuse() {
         if (this.fuseTicks == -1) {
-            this.fuseTicks = 50 + Random.create().nextInt(20);
+            this.fuseTicks = 50 + world.random.nextInt(20);
             if (!world.isClient) {
                 world.playSoundFromEntity(null, this, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE, 1F, 1F);
             }

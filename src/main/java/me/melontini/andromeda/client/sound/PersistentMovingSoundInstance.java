@@ -5,7 +5,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.random.Random;
 
 import java.util.UUID;
 
@@ -13,8 +12,8 @@ public class PersistentMovingSoundInstance extends MovingSoundInstance {
     private final ClientWorld world;
     private final UUID entityId;
 
-    public PersistentMovingSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory, UUID entityId, ClientWorld world, Random random) {
-        super(soundEvent, soundCategory, random);
+    public PersistentMovingSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory, UUID entityId, ClientWorld world) {
+        super(soundEvent, soundCategory);
         this.volume = 3;
         this.pitch = 1;
         this.world = world;
