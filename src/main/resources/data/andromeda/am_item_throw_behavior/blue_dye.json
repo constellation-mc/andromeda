@@ -1,0 +1,10 @@
+{
+  "item_id": "minecraft:blue_dye",
+  "complement": true,
+  "spawn_colored_particles": true,
+  "particle_colors": {
+    "red": 5,
+    "green": 36,
+    "blue": 99
+  }
+}

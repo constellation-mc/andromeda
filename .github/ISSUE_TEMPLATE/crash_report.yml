@@ -1,0 +1,40 @@
+name: Crash Report
+description: File a crash report
+title: "[Crash]: "
+labels: ["crash"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this crash report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Please explain in detail how this crash happened.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Logs
+      description: A crash report without logs is not that useful!
+    validations:
+      required: true
+  - type: input
+    id: mod-version
+    attributes:
+      label: Mod Version
+      description: What version of the mod are you running?
+    validations:
+      required: true
+  - type: checkboxes
+    id: mc-version
+    attributes:
+      label: Minecraft Version
+      description: What Minecraft version are you running?
+      options:
+      - label: "1.18.2"
+      - label: "1.19.x"
+      - label: "1.19.3"
+    validations:
+      required: true

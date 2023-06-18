@@ -1,0 +1,10 @@
+{
+  "item_id": "minecraft:brown_dye",
+  "complement": true,
+  "spawn_colored_particles": true,
+  "particle_colors": {
+    "red": 80,
+    "green": 43,
+    "blue": 20
+  }
+}

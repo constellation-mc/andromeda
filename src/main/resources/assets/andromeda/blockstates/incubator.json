@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "andromeda:block/incubator"
+    },
+    "facing=north": {
+      "model": "andromeda:block/incubator",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "andromeda:block/incubator",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "andromeda:block/incubator",
+      "y": 180
+    }
+  }
+}

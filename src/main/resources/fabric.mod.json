@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "andromeda",
+  "version": "${version}",
+  "name": "Andromeda",
+  "description": "A galaxy is a collection of things and systems. So is this mod.",
+  "authors": [
+    "melontini"
+  ],
+  "contributors": [
+    "Rad233"
+  ],
+  "contact": {
+    "sources": "https://github.com/melontini/andromeda",
+    "issues": "https://github.com/melontini/andromeda/issues",
+    "homepage": "https://modrinth.com/mod/andromeda"
+  },
+  "license": "MIT",
+  "icon": "assets/andromeda/icon.png",
+  "environment": "*",
+  "accessWidener" : "andromeda.accesswidener",
+  "entrypoints": {
+    "preLaunch": [
+      "me.melontini.andromeda.util.AndromedaPreLaunch"
+    ],
+    "client": [
+      "me.melontini.andromeda.client.AndromedaClient"
+    ],
+    "main": [
+      "me.melontini.andromeda.Andromeda"
+    ],
+    "modmenu": [
+      "me.melontini.andromeda.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "andromeda.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "cloth-config": "*",
+    "minecraft": ">=1.19"
+  },
+  "recommends": {
+    "modmenu": "*",
+    "tooltipfix": "*"
+  },
+  "custom": {
+    "lithium:options": {
+      "mixin.world.block_entity_ticking.sleeping.campfire": false
+    }
+  }
+}

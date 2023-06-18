@@ -1,0 +1,61 @@
+
+name: publish
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3.4.0
+      - name: validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: setup jdk 17
+        uses: actions/setup-java@v3.10.0
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: build
+        run: ./gradlew build
+      - name: Retrieve Version #https://stackoverflow.com/questions/71089787/how-to-get-version-name-from-android-gradle-file-in-github-actions
+        run: |
+          echo "VERSION_INFORMATION=$(${{github.workspace}}/gradlew -q printVersionName)" >> $GITHUB_ENV
+          echo "VERSION_PLAIN=$(${{github.workspace}}/gradlew -q printVersion)" >> $GITHUB_ENV
+      - name: Publish Minecraft Mods
+        uses: Kir-Antipov/mc-publish@v3.2
+        with:
+          version-type: beta
+          changelog-file: CHANGELOG.md
+          name: ${{ env.VERSION_INFORMATION }}
+          version: ${{ env.VERSION_PLAIN }}
+
+          game-versions: |
+            1.19.2
+
+          loaders: |
+            fabric
+
+          java: |
+            17
+
+          modrinth-id: TseYlb0f
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          modrinth-unfeature-mode: subset
+          modrinth-dependencies: |
+            fabric-api | depends | *
+            cloth-config | depends | *
+            modmenu | suggests | *
+
+
+          curseforge-id: 639198
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          curseforge-dependencies: |
+            fabric-api | depends | *
+            cloth-config | depends | *
+            modmenu | suggests | *

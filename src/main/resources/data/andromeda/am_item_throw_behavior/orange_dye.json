@@ -1,0 +1,10 @@
+{
+  "item_id": "minecraft:orange_dye",
+  "complement": true,
+  "spawn_colored_particles": true,
+  "particle_colors": {
+    "red": 255,
+    "green": 128,
+    "blue": 0
+  }
+}

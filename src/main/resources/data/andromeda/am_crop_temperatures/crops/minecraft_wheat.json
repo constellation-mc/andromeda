@@ -1,0 +1,10 @@
+{
+  "identifier": "minecraft:wheat",
+  "__comment0": "Min and Max temperatures where your crop will grow at normal speeds",
+  "min": "0.7",
+  "max": "1.0",
+  "__comment1": "If biome's temperature is above aMax or below aMin the crop won't grow",
+  "__comment2": "If the biome's temperature is between aMax and max or aMin and min, the crop will grow a lot slower.",
+  "aMin": "0.6",
+  "aMax": "1.2"
+}

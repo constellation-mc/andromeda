@@ -1,0 +1,23 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:oak_boat_with_tnt"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "tnt_boat",
+	"ingredients": [
+		{
+			"item": "minecraft:tnt"
+		},
+		{
+			"item": "minecraft:oak_boat"
+		}
+	],
+	"result": {
+		"item": "andromeda:oak_boat_with_tnt"
+	}
+}

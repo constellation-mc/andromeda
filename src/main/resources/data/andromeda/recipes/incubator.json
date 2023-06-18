@@ -1,0 +1,34 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "andromeda:config_option",
+      "values": [
+        "incubatorSettings.incubatorRecipe",
+        "incubatorSettings.enableIncubator"
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "GHG",
+    "ShS"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "H": {
+      "item": "minecraft:hay_block"
+    },
+    "S": {
+      "tag": "minecraft:planks"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    }
+  },
+  "result": {
+    "item": "andromeda:incubator"
+  }
+}

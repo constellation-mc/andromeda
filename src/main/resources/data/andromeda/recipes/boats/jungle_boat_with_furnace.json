@@ -1,0 +1,23 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:jungle_boat_with_furnace"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "furnace_boat",
+	"ingredients": [
+		{
+			"item": "minecraft:furnace"
+		},
+		{
+			"item": "minecraft:jungle_boat"
+		}
+	],
+	"result": {
+		"item": "andromeda:jungle_boat_with_furnace"
+	}
+}

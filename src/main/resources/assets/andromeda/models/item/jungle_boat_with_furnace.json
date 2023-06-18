@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "andromeda:item/boats/jungle_boat_with_furnace"
+  }
+}
