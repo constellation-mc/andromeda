@@ -1,11 +1,11 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.crackerutil.util.ColorUtil;
-import me.melontini.crackerutil.util.TextUtil;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.entity.FlyingItemEntity;
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
+import me.melontini.crackerutil.util.ColorUtil;
+import me.melontini.crackerutil.util.TextUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -75,7 +75,7 @@ public class ItemBehaviorAdder {
     private static void executeCommands(ServerWorld serverWorld, FlyingItemEntity flyingItemEntity, Entity user, HitResult hitResult, ItemBehaviorData.CommandHolder data) {
         if (data.item_commands != null) {
             ServerCommandSource source = new ServerCommandSource(
-                    serverWorld.getServer(), flyingItemEntity.getPos(), new Vec2f(flyingItemEntity.getPitch(), flyingItemEntity.getYaw()), serverWorld, 4, "MTFlyingItem", TextUtil.literal("MTFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
+                    serverWorld.getServer(), flyingItemEntity.getPos(), new Vec2f(flyingItemEntity.getPitch(), flyingItemEntity.getYaw()), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
             for (String command : data.item_commands) {
                 serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
             }
@@ -112,7 +112,7 @@ public class ItemBehaviorAdder {
             if (data.hit_block_commands != null) {
                 Vec3d vec3d = new Vec3d(blockHitResult.getBlockPos().getX(), blockHitResult.getBlockPos().getY(), blockHitResult.getBlockPos().getZ());
                 ServerCommandSource source = new ServerCommandSource(
-                        serverWorld.getServer(), vec3d, new Vec2f(0, 0), serverWorld, 4, "MTFlyingItem", TextUtil.literal("MTFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
+                        serverWorld.getServer(), vec3d, new Vec2f(0, 0), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
                 for (String command : data.hit_block_commands) {
                     serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
                 }

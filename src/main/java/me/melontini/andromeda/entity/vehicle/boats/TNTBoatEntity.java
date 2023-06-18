@@ -128,8 +128,8 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("MT-TNTFuse", 99)) {
-            this.fuseTicks = nbt.getInt("MT-TNTFuse");
+        if (nbt.contains("AM-TNTFuse", 99)) {
+            this.fuseTicks = nbt.getInt("AM-TNTFuse");
         }
 
     }
@@ -137,7 +137,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("MT-TNTFuse", this.fuseTicks);
+        nbt.putInt("AM-TNTFuse", this.fuseTicks);
     }
 
     public void setFuse() {

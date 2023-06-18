@@ -3,9 +3,9 @@ package me.melontini.andromeda.registries;
 import com.google.gson.*;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ItemBehaviorAdder;
 import me.melontini.andromeda.util.ItemBehaviorManager;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
 import me.melontini.andromeda.util.data.PlantData;
@@ -99,7 +99,7 @@ public class ResourceConditionRegistry {
 
                         Andromeda.PLANT_DATA.putIfAbsent(Registry.BLOCK.get(Identifier.tryParse(data.identifier)), data);
                     } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for mt_crop_temperatures", e);
+                        AndromedaLog.error("Error while parsing JSON for am_crop_temperatures", e);
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class ResourceConditionRegistry {
 
                         Andromeda.EGG_DATA.putIfAbsent(Registry.ITEM.get(Identifier.tryParse(data.identifier)), data);
                     } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for mt_egg_processing", e);
+                        AndromedaLog.error("Error while parsing JSON for am_egg_processing", e);
                     }
                 }
             }

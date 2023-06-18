@@ -26,13 +26,13 @@ public class CustomTraderManager extends PersistentState {
 
     public void readNbt(@NotNull NbtCompound nbt) {
         MakeSure.notNull(nbt);
-        this.cooldown = nbt.getInt("mt-trd-cooldown");
+        this.cooldown = nbt.getInt("andromeda-trader-cooldown");
     }
 
     @Override
     public NbtCompound writeNbt(@NotNull NbtCompound nbt) {
         MakeSure.notNull(nbt);
-        nbt.putInt("mt-trd-cooldown", this.cooldown);
+        nbt.putInt("andromeda-trader-cooldown", this.cooldown);
         return nbt;
     }
 

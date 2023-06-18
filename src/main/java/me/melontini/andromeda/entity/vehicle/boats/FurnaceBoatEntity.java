@@ -77,13 +77,13 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("MT-Fuel", this.getFuel());
+        nbt.putInt("AM-Fuel", this.getFuel());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setFuel(nbt.getInt("MT-Fuel"));
+        setFuel(nbt.getInt("AM-Fuel"));
     }
 
     @Override

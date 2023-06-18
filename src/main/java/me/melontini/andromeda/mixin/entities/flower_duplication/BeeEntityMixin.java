@@ -48,12 +48,12 @@ public abstract class BeeEntityMixin extends AnimalEntity {
 
     @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
     private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (this.andromeda$plantingCoolDown != 0) nbt.putInt("MT-plantingCoolDown", this.andromeda$plantingCoolDown);
+        if (this.andromeda$plantingCoolDown != 0) nbt.putInt("AM-plantingCoolDown", this.andromeda$plantingCoolDown);
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains("MT-plantingCoolDown")) this.andromeda$plantingCoolDown = nbt.getInt("MT-plantingCoolDown");
+        if (nbt.contains("AM-plantingCoolDown")) this.andromeda$plantingCoolDown = nbt.getInt("AM-plantingCoolDown");
     }
 
     @Unique
