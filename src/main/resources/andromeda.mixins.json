@@ -48,7 +48,6 @@
   "client": [
     "accessors.ScreenAccessor",
     "bugfixes.AdvancementTabMixin",
-    "bugfixes.RecipeAlternativesWidgetMixin",
     "gui.bye_adventure.GameModeSelectionMixin",
     "gui.bye_adventure.GameModeSelectionScreenMixin",
     "gui.gui_particles.AnvilScreenHandlerMixin",

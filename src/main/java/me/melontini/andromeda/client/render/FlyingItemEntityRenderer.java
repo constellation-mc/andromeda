@@ -6,7 +6,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -45,7 +45,7 @@ public class FlyingItemEntityRenderer extends EntityRenderer<FlyingItemEntity> {
             quaternion = hamiltonProduct(quaternion, RotationAxis.POSITIVE_Y.rotationDegrees(entity.getYaw(tickDelta)));
             quaternion = hamiltonProduct(quaternion, RotationAxis.POSITIVE_X.rotationDegrees(entity.getPitch(tickDelta)));
             matrices.multiply(quaternion);
-            this.itemRenderer.renderItem(entity.getStack(), ModelTransformation.Mode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getId());
+            this.itemRenderer.renderItem(entity.getStack(), ModelTransformationMode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), entity.getId());
             matrices.pop();
             super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
         }

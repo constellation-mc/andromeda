@@ -1,6 +1,5 @@
 package me.melontini.andromeda.entity.vehicle.boats;
 
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.RideableInventory;
@@ -8,19 +7,12 @@ import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.VehicleInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -32,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 //Ctrl + c, Ctrl + v
-public abstract class StorageBoatEntity extends BoatEntityWithBlock implements RideableInventory, Inventory, NamedScreenHandlerFactory {
+public abstract class StorageBoatEntity extends BoatEntityWithBlock implements RideableInventory, VehicleInventory {
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
     @Nullable
     public Identifier lootTableId;
@@ -184,27 +176,36 @@ public abstract class StorageBoatEntity extends BoatEntityWithBlock implements R
         this.inventory.clear();
     }
 
-    public void setLootTable(Identifier id, long lootSeed) {
-        this.lootTableId = id;
-        this.lootSeed = lootSeed;
+    public DefaultedList<ItemStack> getInventory() {
+        return this.inventory;
+    }
+
+    public void resetInventory() {
+        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+    }
+
+    public void setLootTableId(@Nullable Identifier lootTableId) {
+        this.lootTableId = lootTableId;
+    }
+
+    @Nullable
+    @Override
+    public Identifier getLootTableId() {
+        return lootTableId;
+    }
+
+    @Override
+    public long getLootTableSeed() {
+        return lootSeed;
+    }
+
+    @Override
+    public void setLootTableSeed(long lootTableSeed) {
+        this.lootSeed = lootTableSeed;
     }
 
     public void generateLoot(@Nullable PlayerEntity player) {
-        if (this.lootTableId != null && this.world.getServer() != null) {
-            LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
-            if (player instanceof ServerPlayerEntity) {
-                Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity) player, this.lootTableId);
-            }
-
-            this.lootTableId = null;
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld) this.world).parameter(LootContextParameters.ORIGIN, this.getPos()).random(this.lootSeed);
-            if (player != null) {
-                builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
-            }
-
-            lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
-        }
-
+        this.generateInventoryLoot(player);
     }
 
     @Override

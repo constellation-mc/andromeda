@@ -10,8 +10,8 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -33,7 +33,7 @@ public class JukeboxBoatItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.ANY);
+        BlockHitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.ANY);
         if (hitResult.getType() == HitResult.Type.MISS) {
             return TypedActionResult.pass(itemStack);
         } else {
@@ -59,7 +59,7 @@ public class JukeboxBoatItem extends Item {
                 } else {
                     if (!world.isClient) {
                         world.spawnEntity(jukeboxBoat);
-                        world.emitGameEvent(user, GameEvent.ENTITY_PLACE, new BlockPos(hitResult.getPos()));
+                        world.emitGameEvent(user, GameEvent.ENTITY_PLACE, hitResult.getBlockPos());
                         if (!user.getAbilities().creativeMode) {
                             itemStack.decrement(1);
                         }

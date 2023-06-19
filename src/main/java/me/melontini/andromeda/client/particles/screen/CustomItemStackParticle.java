@@ -1,8 +1,8 @@
 package me.melontini.andromeda.client.particles.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.crackerutil.client.particles.ItemStackParticle;
 import me.melontini.crackerutil.util.Utilities;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -16,18 +16,16 @@ public class CustomItemStackParticle extends ItemStackParticle {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         float x = (float) MathHelper.lerp(delta, prevX, this.x);
         float y = (float) MathHelper.lerp(delta, prevY, this.y);
-        MatrixStack matrices = RenderSystem.getModelViewStack();
-        matrices.push();
-        matrices.translate(x, y, 500);
+        MatrixStack matrixStack = context.getMatrices();
+        matrixStack.push();
+        matrixStack.translate(x, y, 500);
         float angle = (float) Math.toDegrees(Math.atan2(velY, velX) * 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
-        RenderSystem.applyModelViewMatrix();
-        this.client.getItemRenderer().renderInGuiWithOverrides(this.client.player, this.stack, -8, -8, this.seed);
-        this.client.getItemRenderer().renderGuiItemOverlay(this.client.textRenderer, this.stack, -8, -8);
-        matrices.pop();
-        RenderSystem.applyModelViewMatrix();
+        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
+        context.drawItem(this.stack, -8, -8);
+        context.drawItemInSlot(client.textRenderer, this.stack, -8, -8);
+        matrixStack.pop();
     }
 }

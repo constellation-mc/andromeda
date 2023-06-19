@@ -20,7 +20,7 @@ public class VillagerTemptGoal extends TemptGoal {
             if (mob.getBrain().hasActivity(Activity.PANIC) || mob.getBrain().hasActivity(Activity.REST) || mob.getBrain().hasActivity(Activity.HIDE)) {
                 return false;
             } else {
-                this.closestPlayer = this.mob.world.getClosestPlayer(this.predicate, this.mob);
+                this.closestPlayer = this.mob.getWorld().getClosestPlayer(this.predicate, this.mob);
                 return closestPlayer != null;
             }
         }

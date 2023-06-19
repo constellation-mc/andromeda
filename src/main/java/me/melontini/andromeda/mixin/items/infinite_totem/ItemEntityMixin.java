@@ -1,11 +1,11 @@
 package me.melontini.andromeda.mixin.items.infinite_totem;
 
-import me.melontini.crackerutil.util.classes.Tuple;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.BeaconUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.crackerutil.util.classes.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -149,7 +149,7 @@ public abstract class ItemEntityMixin extends Entity {
     }
 
     private boolean andromeda$beaconCheck() {
-        BlockEntity entity = world.getBlockEntity(new BlockPos(getX(), world.getTopY(Heightmap.Type.WORLD_SURFACE, getBlockPos().getX(), getBlockPos().getZ()) - 1, getZ()));
+        BlockEntity entity = world.getBlockEntity(new BlockPos((int) getX(), world.getTopY(Heightmap.Type.WORLD_SURFACE, getBlockPos().getX(), getBlockPos().getZ()) - 1, (int) getZ()));
         if (entity instanceof BeaconBlockEntity beaconBlock) {
             this.andromeda$beacon = new Tuple<>(beaconBlock, BeaconUtil.getLevelFromBlocks(world, beaconBlock.getPos(), beaconBlocks));
             return true;

@@ -186,11 +186,11 @@ public abstract class MinecartItemMixin extends Item {
                     if (!player.isCreative()) stack.decrement(1);
                     JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) world.getBlockEntity(pos);
                     assert jukeboxBlockEntity != null;
-                    ItemStack record = jukeboxBlockEntity.getRecord();
+                    ItemStack record = jukeboxBlockEntity.getStack(0);
                     ItemStack jukeboxMinecart = new ItemStack(ItemRegistry.JUKEBOX_MINECART);
 
                     if (!record.isEmpty()) {
-                        world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
+                        world.syncWorldEvent(WorldEvents.JUKEBOX_STARTS_PLAYING, pos, 0);
                         jukeboxMinecart.setNbt(NbtBuilder.create().put("Items", record.writeNbt(new NbtCompound())).build());
                     }
 

@@ -130,9 +130,18 @@ public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
     }
 
     public void playNote(World world, Vec3d pos) {
+        BlockPos blockPos = new BlockPos(MathHelper.floor(pos.getX()), MathHelper.floor(pos.getY()), MathHelper.floor(pos.getZ()));
+        //BlockState state = world.getBlockState(blockPos);
+
+        Instrument instrument = world.getBlockState(blockPos.up()).getInstrument();
+        if (!instrument.isNotBaseBlock()) {
+            Instrument instrument2 = world.getBlockState(blockPos.down()).getInstrument();
+            instrument = instrument2.isNotBaseBlock() ? Instrument.HARP : instrument2;
+        }
+
         int i = this.note;
         float f = (float) Math.pow(2.0, (i - 12) / 12.0);
-        this.world.playSound(null, new BlockPos(pos), Instrument.fromBelowState(world.getBlockState(new BlockPos(pos))).getSound().value(), SoundCategory.RECORDS, 3.0F, f);
+        this.world.playSound(null, new BlockPos(MathHelper.floor(pos.getX()), MathHelper.floor(pos.getY()), MathHelper.floor(pos.getZ())), instrument.getSound().value(), SoundCategory.RECORDS, 3.0F, f);
         this.world.addParticle(ParticleTypes.NOTE, pos.getX(), pos.getY() + 1.2, pos.getZ(), i / 24.0, 0.0, 0.0);
     }
 }
