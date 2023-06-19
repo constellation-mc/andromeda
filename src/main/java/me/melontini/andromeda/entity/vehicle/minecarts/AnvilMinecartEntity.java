@@ -1,8 +1,8 @@
 package me.melontini.andromeda.entity.vehicle.minecarts;
 
-import me.melontini.crackerutil.util.MathStuff;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ItemRegistry;
+import me.melontini.crackerutil.util.MathStuff;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -46,7 +46,7 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
             float f = (float) Math.min(MathStuff.fastFloor(i * 2), 40);
             for (Entity entity : world.getEntitiesByClass(Entity.class, this.getBoundingBox().expand(0.1), EntityPredicates.EXCEPT_SPECTATOR)) {
                 if (!(entity instanceof AbstractMinecartEntity)) {
-                    entity.damage(DamageSource.FALLING_BLOCK, f);
+                    entity.damage(DamageSource.anvil(this), f);
                 }
             }
 

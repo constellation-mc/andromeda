@@ -1,11 +1,11 @@
 package me.melontini.andromeda.mixin.items.cart_copy;
 
-import me.melontini.crackerutil.data.NBTUtil;
-import me.melontini.crackerutil.data.NbtBuilder;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.crackerutil.data.NBTUtil;
+import me.melontini.crackerutil.data.NbtBuilder;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,13 +19,13 @@ import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import org.apache.commons.lang3.StringUtils;
@@ -233,11 +233,11 @@ public abstract class MinecartItemMixin extends Item {
         String identifier = mobSpawnerBlockEntity.getLogic().spawnEntry.getNbt().getString("id");
 
         try {
-            return StringUtils.isEmpty(identifier) ? Registry.ENTITY_TYPE.getDefaultId() : new Identifier(identifier);
+            return StringUtils.isEmpty(identifier) ? Registries.ENTITY_TYPE.getDefaultId() : new Identifier(identifier);
         } catch (InvalidIdentifierException e) {
             BlockPos blockPos = mobSpawnerBlockEntity.getPos();
             AndromedaLog.error(String.format("Invalid entity id '%s' at spawner %s:[%s,%s,%s]", identifier, Objects.requireNonNull(mobSpawnerBlockEntity.getWorld()).getRegistryKey().getValue(), blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-            return Registry.ENTITY_TYPE.getDefaultId();
+            return Registries.ENTITY_TYPE.getDefaultId();
         }
     }
 }

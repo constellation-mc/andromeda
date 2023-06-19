@@ -52,6 +52,10 @@
   "item.andromeda.mangrove_boat_with_hopper": "Mangrove Boat with Hopper",
   "item.andromeda.mangrove_boat_with_jukebox": "Mangrove Boat with Jukebox",
   "item.andromeda.mangrove_boat_with_tnt": "Mangrove Boat with TNT",
+  "item.andromeda.bamboo_boat_with_furnace": "Bamboo Raft with Furnace",
+  "item.andromeda.bamboo_boat_with_hopper": "Bamboo Raft with Hopper",
+  "item.andromeda.bamboo_boat_with_jukebox": "Bamboo Raft with Jukebox",
+  "item.andromeda.bamboo_boat_with_tnt": "Bamboo Raft with TNT",
 
   "entity.andromeda.anvil_minecart": "Minecart with Anvil",
   "entity.andromeda.jukebox_minecart": "Minecart with Jukebox",

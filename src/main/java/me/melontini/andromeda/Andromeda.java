@@ -1,6 +1,5 @@
 package me.melontini.andromeda;
 
-import me.melontini.crackerutil.util.TextUtil;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
@@ -11,6 +10,7 @@ import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.crackerutil.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -28,13 +28,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,10 +90,10 @@ public class Andromeda implements ModInitializer {
 
         if (CONFIG.usefulFletching) {
             FLETCHING_SCREEN_HANDLER = new ScreenHandlerType<>(FletchingScreenHandler::new);
-            Registry.register(Registry.SCREEN_HANDLER, new Identifier(MODID, "fletching"), FLETCHING_SCREEN_HANDLER);
+            Registry.register(Registries.SCREEN_HANDLER, new Identifier(MODID, "fletching"), FLETCHING_SCREEN_HANDLER);
         }
 
-        Registry.register(Registry.PARTICLE_TYPE, new Identifier(MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
+        Registry.register(Registries.PARTICLE_TYPE, new Identifier(MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             SERVER = server;

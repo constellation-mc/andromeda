@@ -15,10 +15,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -132,7 +132,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
     public void playNote(World world, Vec3d pos) {
         int i = this.note;
         float f = (float) Math.pow(2.0, (i - 12) / 12.0);
-        this.world.playSound(null, new BlockPos(pos), Instrument.fromBlockState(world.getBlockState(new BlockPos(pos))).getSound(), SoundCategory.RECORDS, 3.0F, f);
+        this.world.playSound(null, new BlockPos(pos), Instrument.fromBelowState(world.getBlockState(new BlockPos(pos))).getSound().value(), SoundCategory.RECORDS, 3.0F, f);
         this.world.addParticle(ParticleTypes.NOTE, pos.getX(), pos.getY() + 1.2, pos.getZ(), i / 24.0, 0.0, 0.0);
     }
 }

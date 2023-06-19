@@ -52,6 +52,10 @@
   "item.andromeda.mangrove_boat_with_hopper": "载有漏斗的红木船",
   "item.andromeda.mangrove_boat_with_jukebox": "载有唱片机的红木船",
   "item.andromeda.mangrove_boat_with_tnt": "载有TNT的红木船",
+  "item.andromeda.bamboo_boat_with_furnace": "Bamboo Raft with Furnace",
+  "item.andromeda.bamboo_boat_with_hopper": "Bamboo Raft with Hopper",
+  "item.andromeda.bamboo_boat_with_jukebox": "Bamboo Raft with Jukebox",
+  "item.andromeda.bamboo_boat_with_tnt": "Bamboo Raft with TNT",
 
   "entity.andromeda.anvil_minecart": "载有铁砧的矿车",
   "entity.andromeda.jukebox_minecart": "载有唱片机的矿车",

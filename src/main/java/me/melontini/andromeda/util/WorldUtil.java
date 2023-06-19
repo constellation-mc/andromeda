@@ -1,9 +1,9 @@
 package me.melontini.andromeda.util;
 
+import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.crackerutil.data.NbtBuilder;
 import me.melontini.crackerutil.util.MakeSure;
 import me.melontini.crackerutil.world.PlayerUtil;
-import me.melontini.andromeda.networks.AndromedaPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -20,6 +20,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -28,7 +29,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +61,7 @@ public class WorldUtil {
     public static void addParticle(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         if (!world.isClient) {
             PacketByteBuf packetByteBuf = PacketByteBufs.create();
-            packetByteBuf.writeRegistryValue(Registry.PARTICLE_TYPE, parameters.getType());
+            packetByteBuf.writeRegistryValue(Registries.PARTICLE_TYPE, parameters.getType());
             packetByteBuf.writeDouble(x);
             packetByteBuf.writeDouble(y);
             packetByteBuf.writeDouble(z);

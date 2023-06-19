@@ -1,12 +1,12 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.crackerutil.content.ContentBuilder;
-import me.melontini.crackerutil.content.RegistryUtil;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.blocks.IncubatorBlock;
 import me.melontini.andromeda.blocks.entities.IncubatorBlockEntity;
 import me.melontini.andromeda.items.RoseOfTheValley;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.crackerutil.content.ContentBuilder;
+import me.melontini.crackerutil.content.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
@@ -16,7 +16,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -34,7 +34,7 @@ public class BlockRegistry {
             .loadCondition(Andromeda.CONFIG.incubatorSettings.enableIncubator)
             .itemBuilder((block, id) -> ContentBuilder.ItemBuilder
                     .create(BlockItem.class, id, block, new FabricItemSettings().rarity(Rarity.RARE))
-                    .itemGroup(ItemGroup.REDSTONE))
+                    .itemGroup(ItemGroups.REDSTONE))
             .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder
                     .create(new Identifier(MODID, "incubator"), IncubatorBlockEntity::new, block)).build();
 

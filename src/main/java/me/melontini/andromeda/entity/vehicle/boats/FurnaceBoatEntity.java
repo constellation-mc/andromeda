@@ -14,11 +14,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class FurnaceBoatEntity extends BoatEntityWithBlock {
@@ -88,7 +88,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName() + "_boat_with_furnace"));
+        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName() + "_boat_with_furnace"));
     }
 
     public int getFuel() {
