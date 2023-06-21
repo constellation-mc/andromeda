@@ -11,6 +11,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,11 +36,13 @@ public abstract class ItemEntityMixin {
         ItemStack stack = this.getStack();
         BlockPos pos = entity.getBlockPos();
         World world = entity.getWorld();
-        if (Andromeda.CONFIG.selfPlanting && !world.isClient()) {
+        if (Andromeda.CONFIG.selfPlanting.enabled && !world.isClient()) {
             if (entity.age % andromeda$random.nextInt(20, 101) == 0) {
                 if (stack.getItem() instanceof BlockItem) {
                     if (((BlockItem) stack.getItem()).getBlock() instanceof PlantBlock) {
                         if (world.getFluidState(pos).isEmpty()) {
+                            if (Andromeda.CONFIG.selfPlanting.blacklistMode == Andromeda.CONFIG.selfPlanting.idList.contains(Registry.ITEM.getId(stack.getItem()).toString())) return;
+
                             ((BlockItem) stack.getItem()).place(new ItemPlacementContext(world, null, null, stack, world.raycast(
                                     new RaycastContext(
                                             new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
@@ -54,6 +57,5 @@ public abstract class ItemEntityMixin {
                 }
             }
         }
-
     }
 }
