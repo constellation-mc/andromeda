@@ -15,7 +15,7 @@ public class ServerSideNetworking {
                 UUID id = buf.readUuid();
                 server.execute(() -> {
                     Entity entity = player.world.getEntityLookup().get(id);
-                    Objects.requireNonNull(entity, String.format("Server Received Invalid TNT Boat UUID: %s", id)).discard();
+                    Objects.requireNonNull(entity, String.format("(Andromeda) Server Received Invalid TNT Boat UUID: %s", id)).discard();
                     player.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), 4.0F, World.ExplosionSourceType.MOB);
                 });
             });

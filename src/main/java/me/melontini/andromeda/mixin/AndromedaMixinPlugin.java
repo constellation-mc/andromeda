@@ -2,6 +2,7 @@ package me.melontini.andromeda.mixin;
 
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.crackerutil.util.PrependingLogger;
 import me.melontini.crackerutil.util.mixin.ExtendedPlugin;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 public class AndromedaMixinPlugin extends ExtendedPlugin {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaMixinPlugin"), PrependingLogger.LOGGER_NAME);
-    private static final String MIXIN_TO_OPTION_ANNOTATION = "Lme/melontini/andromeda/util/annotations/MixinRelatedConfigOption;";
+    private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
     private AndromedaConfig CONFIG;
     private static boolean log;
 
