@@ -1,9 +1,9 @@
 package me.melontini.andromeda.util;
 
+import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.crackerutil.data.NbtBuilder;
 import me.melontini.crackerutil.util.MakeSure;
 import me.melontini.crackerutil.world.PlayerUtil;
-import me.melontini.andromeda.networks.AndromedaPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -47,7 +47,7 @@ public class WorldUtil {
             CustomTraderManager manager = new CustomTraderManager();
             manager.readNbt(nbtCompound);
             return manager;
-        }, CustomTraderManager::new, "am_trader_statemanager");
+        }, CustomTraderManager::new, "andromeda_trader_statemanager");
     }
 
     public static EnderDragonManager getEnderDragonManager(ServerWorld world) {
@@ -55,7 +55,7 @@ public class WorldUtil {
             EnderDragonManager manager = new EnderDragonManager(world);
             manager.readNbt(nbtCompound);
             return manager;
-        }, () -> new EnderDragonManager(world), "am_ender_dragon_fight");
+        }, () -> new EnderDragonManager(world), "andromeda_ender_dragon_fight");
     }
 
     public static void addParticle(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
