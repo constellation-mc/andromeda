@@ -15,7 +15,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class DamageCommand {
-    private static final SimpleCommandExceptionType INVULNERABLE_EXCEPTION = new SimpleCommandExceptionType(TextUtil.translatable("andromeda.commands.damage.invulnerable"));
+    private static final SimpleCommandExceptionType INVULNERABLE_EXCEPTION = new SimpleCommandExceptionType(TextUtil.translatable("commands.andromeda.damage.invulnerable"));
 
     public DamageCommand() {
     }
@@ -68,7 +68,7 @@ public class DamageCommand {
 
     private static int execute(ServerCommandSource source, Entity target, float amount, DamageSource damageSource) throws CommandSyntaxException {
         if (target.damage(damageSource, amount)) {
-            source.sendFeedback(TextUtil.translatable("andromeda.commands.damage.success", amount, target.getDisplayName()), true);
+            source.sendFeedback(TextUtil.translatable("commands.andromeda.damage.success", amount, target.getDisplayName()), true);
             return 1;
         } else {
             throw INVULNERABLE_EXCEPTION.create();
