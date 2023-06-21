@@ -67,7 +67,7 @@
 
   "gui.andromeda.fletching": "Tighten Bow String",
 
-  "andromeda.safebeds.action": "You can't sleep here!",
+  "action.andromeda.safebeds": "You can't sleep here!",
 
   "text.autoconfig.andromeda.title": "Andromeda config",
 
