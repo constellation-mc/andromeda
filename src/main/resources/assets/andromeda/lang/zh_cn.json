@@ -11,8 +11,8 @@
   "death.attack.andromeda_bricked": "%1$s受到了砖块猛击",
   "death.attack.andromeda_bricked.entity": "%1$s被%2$s用砖块砸晕了",
 
-  "andromeda.commands.damage.invulnerable": "目标免疫所给予的伤害类型",
-  "andromeda.commands.damage.success": "已将%s伤害施加于%s",
+  "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
+  "commands.andromeda.damage.success": "已将%s伤害施加于%s",
 
   "block.andromeda.rose_of_the_valley": "山谷玫瑰",
   "block.andromeda.incubator": "孵蛋器",
