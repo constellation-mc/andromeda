@@ -1,5 +1,5 @@
 {
-  "itemGroup.andromeda.items": "Andromeda",
+  "itemGroup.andromeda.items": "群星",
   "tooltip.andromeda.bow.tight": "强化弓弦剩余次数：%s",
   "tooltip.andromeda.spawner_minecart.filled": "内装实体：%s",
   "tooltip.andromeda.rose_of_the_valley": "它的芬芳令你如临深谷",
@@ -68,7 +68,7 @@
 
   "andromeda.safebeds.action": "你不能在这儿休息！",
 
-  "text.autoconfig.andromeda.title": "Andromeda模组配置",
+  "text.autoconfig.andromeda.title": "群星模组配置",
 
   "text.autoconfig.andromeda.category.world": "世界",
   "text.autoconfig.andromeda.option.selfPlanting": "自种植作物",
