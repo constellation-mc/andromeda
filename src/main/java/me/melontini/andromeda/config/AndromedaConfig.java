@@ -4,14 +4,13 @@ import com.google.common.collect.Lists;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 
 import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument"})
 @Config(name = "andromeda")
-@Config.Gui.Background("minecraft:textures/block/dirt.png")
+@Config.Gui.Background("minecraft:textures/block/amethyst_block.png")
 public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("world")
