@@ -1,6 +1,5 @@
 package me.melontini.andromeda;
 
-import me.melontini.crackerutil.util.TextUtil;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
@@ -11,6 +10,7 @@ import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.crackerutil.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -140,8 +140,10 @@ public class Andromeda implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            MiscUtil.generateRecipeAdvancements(server);
-            server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
+            if (CONFIG.autogenRecipeAdvancements.autogenRecipeAdvancements) {
+                MiscUtil.generateRecipeAdvancements(server);
+                server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
+            }
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
