@@ -67,7 +67,7 @@
 
   "gui.andromeda.fletching": "弓弦强化",
 
-  "andromeda.safebeds.action": "你不能在这儿休息！",
+  "action.andromeda.safebeds": "你不能在这儿休息！",
 
   "text.autoconfig.andromeda.title": "群星模组配置",
 
