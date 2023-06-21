@@ -10,8 +10,8 @@
   "death.attack.andromeda_agony": "%s died from agony",
   "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
 
-  "andromeda.commands.damage.invulnerable": "Target is invulnerable to the given damage type",
-  "andromeda.commands.damage.success": "Applied %s damage to %s",
+  "commands.andromeda.damage.invulnerable": "Target is invulnerable to the given damage type",
+  "commands.andromeda.damage.success": "Applied %s damage to %s",
 
   "block.andromeda.rose_of_the_valley": "Rose of the Valley",
   "block.andromeda.incubator": "Incubator",
