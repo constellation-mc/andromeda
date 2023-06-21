@@ -10,7 +10,7 @@ import java.util.List;
 
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument"})
 @Config(name = "andromeda")
-@Config.Gui.Background("minecraft:textures/block/dirt.png")
+@Config.Gui.Background("minecraft:textures/block/amethyst_block.png")
 public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("world")
