@@ -15,7 +15,21 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip(count = 2)
-    public boolean selfPlanting = true;
+    @ConfigEntry.Gui.CollapsibleObject
+    public SelfPlanting selfPlanting = new SelfPlanting();
+
+    public static class SelfPlanting {
+        @ConfigEntry.Category("world")
+        public boolean enabled = true;
+
+        @ConfigEntry.Category("world")
+        @ConfigEntry.Gui.Tooltip
+        public boolean blacklistMode = true;
+
+        @ConfigEntry.Category("world")
+        @ConfigEntry.Gui.Tooltip
+        public List<String> idList = Lists.newArrayList();
+    }
 
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip(count = 2)
