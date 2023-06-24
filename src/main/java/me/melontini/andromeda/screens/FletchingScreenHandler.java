@@ -49,19 +49,21 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
 
     @Override
     public void updateResult() {
-        ItemStack itemStack = this.input.getStack(0);
+        ItemStack itemStack = getSlot(0).getStack();
         NbtCompound oldNbt = itemStack.getNbt();
         int i = 0;
-        if (!(itemStack.getItem() instanceof BowItem) || !(this.input.getStack(1).getItem() == Items.STRING)) {
-            this.output.setStack(0, ItemStack.EMPTY);
+        if (!(itemStack.getItem() instanceof BowItem) || !(getSlot(1).getStack().getItem() == Items.STRING)) {
+            getSlot(2).setStack(ItemStack.EMPTY);
         } else {
-            if (oldNbt != null)
+            if (oldNbt != null) {
                 i = oldNbt.getInt("AM-Tightened");
+                oldNbt = oldNbt.copy();
+            }
             if (i >= 32) return;
             ItemStack newStack = itemStack.copy();
 
             newStack.setNbt(NbtBuilder.create(oldNbt).putInt("AM-Tightened", Math.min(i + Utilities.RANDOM.nextInt(1, 3), 32)).build());
-            this.output.setStack(0, newStack);
+            getSlot(2).setStack(newStack);
         }
     }
 
