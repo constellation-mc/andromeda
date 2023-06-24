@@ -1,5 +1,6 @@
 accessWidener  v2	named
 
+accessible class net/minecraft/entity/mob/SlimeEntity$FaceTowardTargetGoal
 accessible class net/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection
 accessible class net/minecraft/client/particle/ParticleManager$SpriteAwareFactory
 accessible class net/minecraft/block/entity/BlockEntityType$BlockEntityFactory
@@ -25,6 +26,7 @@ accessible field net/minecraft/item/MinecartItem type Lnet/minecraft/entity/vehi
 accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
 # Methods
+accessible method net/minecraft/entity/mob/MobEntity changeAngle (FFF)F
 accessible method net/minecraft/client/particle/ParticleManager registerFactory (Lnet/minecraft/particle/ParticleType;Lnet/minecraft/client/particle/ParticleManager$SpriteAwareFactory;)V
 accessible method net/minecraft/client/particle/ParticleTextureData <init> (Ljava/util/List;)V
 accessible method net/minecraft/recipe/ShapedRecipe readSymbols (Lcom/google/gson/JsonObject;)Ljava/util/Map;
