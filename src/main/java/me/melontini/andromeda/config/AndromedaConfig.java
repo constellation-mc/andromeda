@@ -117,6 +117,29 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("entities")
+    @ConfigEntry.Gui.CollapsibleObject
+    public Slimes slimes = new Slimes();
+
+    public static class Slimes {
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean flee = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean merge = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public int maxMerge = 4;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean slowness = false;
+    }
+
+    @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip(count = 2)
     public boolean beeFlowerDuplication = true;
 
