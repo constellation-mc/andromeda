@@ -122,7 +122,12 @@ public class AndromedaClient implements ClientModInitializer {
                     var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), FRAME_STACK);
                     list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
-                    FRAME_STACK.getTooltipData().ifPresent(datax -> list1.add(1, TooltipComponentCallback.EVENT.invoker().getComponent(datax)));
+
+                    FRAME_STACK.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
+                        TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
+                        if (component == null) component = TooltipComponent.of(datax);
+                        return component;
+                    })));
 
                     int j = 0;
                     for (TooltipComponent tooltipComponent : list1) {
