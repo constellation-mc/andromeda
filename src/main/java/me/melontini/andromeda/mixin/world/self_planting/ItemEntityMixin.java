@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(ItemEntity.class)
-@MixinRelatedConfigOption("selfPlanting")
+@MixinRelatedConfigOption("autoPlanting.enabled")
 public abstract class ItemEntityMixin {
     private final Random andromeda$random = new Random();
 
