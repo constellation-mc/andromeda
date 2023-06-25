@@ -1,10 +1,6 @@
 package me.melontini.andromeda.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.melontini.crackerutil.client.util.DrawUtil;
-import me.melontini.crackerutil.client.util.ScreenParticleHelper;
-import me.melontini.crackerutil.util.MathStuff;
-import me.melontini.crackerutil.util.Utilities;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
 import me.melontini.andromeda.client.render.BoatWithBlockRenderer;
@@ -17,6 +13,10 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.util.AndromedaAnalytics;
 import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.crackerutil.client.util.DrawUtil;
+import me.melontini.crackerutil.client.util.ScreenParticleHelper;
+import me.melontini.crackerutil.util.MathStuff;
+import me.melontini.crackerutil.util.Utilities;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -119,7 +119,12 @@ public class AndromedaClient implements ClientModInitializer {
                     var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(FRAME_STACK);
                     list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
-                    FRAME_STACK.getTooltipData().ifPresent(datax -> list1.add(1, TooltipComponentCallback.EVENT.invoker().getComponent(datax)));
+
+                    FRAME_STACK.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
+                        TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
+                        if (component == null) component = TooltipComponent.of(datax);
+                        return component;
+                    })));
 
                     int j = 0;
                     for (TooltipComponent tooltipComponent : list1) {
