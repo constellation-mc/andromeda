@@ -36,12 +36,12 @@ public abstract class ItemEntityMixin {
         ItemStack stack = this.getStack();
         BlockPos pos = entity.getBlockPos();
         World world = entity.getWorld();
-        if (Andromeda.CONFIG.selfPlanting.enabled && !world.isClient()) {
+        if (Andromeda.CONFIG.autoPlanting.enabled && !world.isClient()) {
             if (entity.age % andromeda$random.nextInt(20, 101) == 0) {
                 if (stack.getItem() instanceof BlockItem) {
                     if (((BlockItem) stack.getItem()).getBlock() instanceof PlantBlock) {
                         if (world.getFluidState(pos).isEmpty()) {
-                            if (Andromeda.CONFIG.selfPlanting.blacklistMode == Andromeda.CONFIG.selfPlanting.idList.contains(Registry.ITEM.getId(stack.getItem()).toString())) return;
+                            if (Andromeda.CONFIG.autoPlanting.blacklistMode == Andromeda.CONFIG.autoPlanting.idList.contains(Registry.ITEM.getId(stack.getItem()).toString())) return;
 
                             ((BlockItem) stack.getItem()).place(new ItemPlacementContext(world, null, null, stack, world.raycast(
                                     new RaycastContext(
