@@ -16,7 +16,7 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip(count = 2)
     @ConfigEntry.Gui.CollapsibleObject
-    public SelfPlanting selfPlanting = new SelfPlanting();
+    public SelfPlanting autoPlanting = new SelfPlanting();
 
     public static class SelfPlanting {
         @ConfigEntry.Category("world")
