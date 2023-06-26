@@ -9,6 +9,7 @@ import me.melontini.andromeda.util.ItemBehaviorManager;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
 import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
@@ -46,18 +47,22 @@ public class ResourceConditionRegistry {
                         String configOption = element.getAsString();
                         List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
 
-                        if (fields.size() > 1) {//🤯🤯🤯
-                            Object obj = AndromedaConfig.class.getField(fields.get(0)).get(Andromeda.CONFIG);
-                            for (int i = 1; i < (fields.size() - 1); i++) {
-                                obj = obj.getClass().getField(fields.get(i)).get(obj);
+                        try {
+                            if (fields.size() > 1) {//🤯🤯🤯
+                                Object obj = AndromedaConfig.class.getField(fields.get(0)).get(Andromeda.CONFIG);
+                                for (int i = 1; i < (fields.size() - 1); i++) {
+                                    obj = obj.getClass().getField(fields.get(i)).get(obj);
+                                }
+                                load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
+                            } else {
+                                load = Andromeda.CONFIG.getClass().getField(configOption).getBoolean(Andromeda.CONFIG);
                             }
-                            load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
-                        } else {
-                            load = Andromeda.CONFIG.getClass().getField(configOption).getBoolean(Andromeda.CONFIG);
+                        } catch (NoSuchFieldException e) {
+                            throw new AndromedaException("Invalid config option: " + configOption);
                         }
                         if (!load) break;
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                    } catch (IllegalAccessException e) {
+                        throw new AndromedaException("Exception while evaluating andromeda:config_option", e);
                     }
                 }
             }
