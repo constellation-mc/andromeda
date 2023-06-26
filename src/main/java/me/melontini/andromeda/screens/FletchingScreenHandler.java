@@ -1,6 +1,5 @@
 package me.melontini.andromeda.screens;
 
-import me.melontini.andromeda.Andromeda;
 import me.melontini.crackerutil.data.NbtBuilder;
 import me.melontini.crackerutil.util.Utilities;
 import net.minecraft.block.BlockState;
@@ -25,7 +24,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
     }
 
     public FletchingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(Andromeda.FLETCHING_SCREEN_HANDLER, syncId, playerInventory, context);
+        super(ScreenHandlerRegistry.FLETCHING_SCREEN_HANDLER, syncId, playerInventory, context);
     }
 
     @Override

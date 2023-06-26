@@ -6,7 +6,6 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.registries.ResourceConditionRegistry;
-import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ItemBehaviorManager;
 import me.melontini.andromeda.util.MiscUtil;
@@ -31,8 +30,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
@@ -50,7 +47,6 @@ public class Andromeda implements ModInitializer {
     public static final String MODID = "andromeda";
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
-    public static ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER;
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
     public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
     public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
@@ -84,11 +80,6 @@ public class Andromeda implements ModInitializer {
 
         LEAF_SLOWNESS = new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE);
         KNOCKOFF_TOTEM_PARTICLE = FabricParticleTypes.simple();
-
-        if (CONFIG.usefulFletching) {
-            FLETCHING_SCREEN_HANDLER = new ScreenHandlerType<>(FletchingScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-            Registry.register(Registries.SCREEN_HANDLER, new Identifier(MODID, "fletching"), FLETCHING_SCREEN_HANDLER);
-        }
 
         Registry.register(Registries.PARTICLE_TYPE, new Identifier(MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
 
