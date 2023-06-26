@@ -9,9 +9,9 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,7 +41,7 @@ public abstract class ItemEntityMixin {
                 if (stack.getItem() instanceof BlockItem) {
                     if (((BlockItem) stack.getItem()).getBlock() instanceof PlantBlock) {
                         if (world.getFluidState(pos).isEmpty()) {
-                            if (Andromeda.CONFIG.autoPlanting.blacklistMode == Andromeda.CONFIG.autoPlanting.idList.contains(Registry.ITEM.getId(stack.getItem()).toString())) return;
+                            if (Andromeda.CONFIG.autoPlanting.blacklistMode == Andromeda.CONFIG.autoPlanting.idList.contains(Registries.ITEM.getId(stack.getItem()).toString())) return;
 
                             ((BlockItem) stack.getItem()).place(new ItemPlacementContext(world, null, null, stack, world.raycast(
                                     new RaycastContext(
