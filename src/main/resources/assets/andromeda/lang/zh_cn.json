@@ -68,9 +68,9 @@
   "text.autoconfig.andromeda.title": "群星模组配置",
 
   "text.autoconfig.andromeda.category.world": "世界",
-  "text.autoconfig.andromeda.option.selfPlanting": "自种植作物",
-  "text.autoconfig.andromeda.option.selfPlanting.@Tooltip[0]": "作物将尝试在一段时间后种植自身。",
-  "text.autoconfig.andromeda.option.selfPlanting.@Tooltip[1]": "灵感取自于HephaestusDev的TinyTweaks",
+  "text.autoconfig.andromeda.option.autoPlanting": "自种植作物",
+  "text.autoconfig.andromeda.option.autoPlanting.@Tooltip[0]": "作物将尝试在一段时间后种植自身。",
+  "text.autoconfig.andromeda.option.autoPlanting.@Tooltip[1]": "灵感取自于HephaestusDev的TinyTweaks",
   "text.autoconfig.andromeda.option.canBeeNestsFall": "蜂巢是否能够自然掉落？",
   "text.autoconfig.andromeda.option.canBeeNestsFall.@Tooltip[0]": "正如此项目字面所言，它能够让蜂巢在一段时间后自然掉落，",
   "text.autoconfig.andromeda.option.canBeeNestsFall.@Tooltip[1]": "此外，你还能通过向蜂巢射箭来使它们掉落",
