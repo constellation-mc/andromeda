@@ -1,9 +1,9 @@
 package me.melontini.andromeda.mixin.blocks.campfire_effects;
 
 import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.util.InvalidConfigEntryException;
 import me.melontini.andromeda.util.PotionUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
@@ -48,7 +48,7 @@ public class CampfireBlockEntityMixin {
                                 player.addStatusEffect(effectInstance);
                             }
                         } else {
-                            throw new InvalidConfigEntryException(String.format("campfireEffectsList (size: %s) & campfireEffectsAmplifierList (size: %s) don't match in size!", identifiers.size(), amplifiers.size()));
+                            throw new AndromedaException(String.format("campfireEffectsList (size: %s) & campfireEffectsAmplifierList (size: %s) don't match in size!", identifiers.size(), amplifiers.size()));
                         }
                     }
                 }

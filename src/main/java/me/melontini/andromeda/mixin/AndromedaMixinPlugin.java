@@ -3,6 +3,7 @@ package me.melontini.andromeda.mixin;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.crackerutil.util.PrependingLogger;
 import me.melontini.crackerutil.util.mixin.ExtendedPlugin;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -66,22 +67,26 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
                             for (String configOption : configOptions) {
                                 List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
 
-                                if (fields.size() > 1) {//🤯🤯🤯
-                                    Object obj = AndromedaConfig.class.getField(fields.get(0)).get(CONFIG);
-                                    for (int i = 1; i < (fields.size() - 1); i++) {
-                                        obj = obj.getClass().getField(fields.get(i)).get(obj);
+                                try {
+                                    if (fields.size() > 1) {//🤯🤯🤯
+                                        Object obj = AndromedaConfig.class.getField(fields.get(0)).get(CONFIG);
+                                        for (int i = 1; i < (fields.size() - 1); i++) {
+                                            obj = obj.getClass().getField(fields.get(i)).get(obj);
+                                        }
+                                        load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
+                                    } else {
+                                        load = CONFIG.getClass().getField(configOption).getBoolean(CONFIG);
                                     }
-                                    load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
-                                } else {
-                                    load = CONFIG.getClass().getField(configOption).getBoolean(CONFIG);
+                                } catch (NoSuchFieldException e) {
+                                    throw new AndromedaException("Invalid config option in MixinRelatedConfigOption: " + configOption + " This is no fault of yours.");
                                 }
                                 if (!load) break;
                             }
                         }
                     }
                 }
-            } catch (NoSuchFieldException | IllegalAccessException | IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
+            } catch (IllegalAccessException | IOException | ClassNotFoundException e) {
+                throw new AndromedaException("Exception while evaluating shouldApplyMixin", e);
             }
         }
         if (log)
