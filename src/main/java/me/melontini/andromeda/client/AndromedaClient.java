@@ -11,6 +11,7 @@ import me.melontini.andromeda.mixin.gui.gui_particles.accessors.HandledScreenAcc
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
+import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaAnalytics;
 import me.melontini.andromeda.util.AndromedaTexts;
 import me.melontini.crackerutil.client.util.DrawUtil;
@@ -92,7 +93,7 @@ public class AndromedaClient implements ClientModInitializer {
         });
 
         if (Andromeda.CONFIG.usefulFletching)
-            HandledScreens.register(Andromeda.FLETCHING_SCREEN_HANDLER, FletchingScreen::new);
+            HandledScreens.register(ScreenHandlerRegistry.FLETCHING_SCREEN_HANDLER, FletchingScreen::new);
 
         ParticleFactoryRegistry.getInstance().register(Andromeda.KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
