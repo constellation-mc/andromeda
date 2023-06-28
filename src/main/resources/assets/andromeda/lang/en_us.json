@@ -185,6 +185,8 @@
   "text.autoconfig.andromeda.option.lockpick.@Tooltip": "Creative-only item, which allows opening things that you shouldn't.",
   "text.autoconfig.andromeda.option.lockpick.chance": "Success Chance",
   "text.autoconfig.andromeda.option.lockpick.chance.@Tooltip": "e.g. 1 in 3",
+  "text.autoconfig.andromeda.option.lockpick.breakAfterUse": "Break After Use",
+  "text.autoconfig.andromeda.option.lockpick.breakAfterUse.@Tooltip": "Breaks the lockpick after a successful break-in",
   "text.autoconfig.andromeda.option.lockpick.villagerInventory": "Villager Inventories",
   "text.autoconfig.andromeda.option.lockpick.villagerInventory.@Tooltip": "Open villager inventories.",
   "text.autoconfig.andromeda.option.slightlyBetterItemNames": "Slightly Better Item Names",

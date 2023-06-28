@@ -233,6 +233,10 @@ public class AndromedaConfig implements ConfigData {
 
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
+        public boolean breakAfterUse = true;
+
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
         public boolean villagerInventory = true;
     }
 
