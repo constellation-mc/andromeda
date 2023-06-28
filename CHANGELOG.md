@@ -10,4 +10,4 @@
 * Fixed: Bundles crashing Item Frame Tooltips.
 * Fixed: "Cannot set property" incubator crash. Send Crash Reports is a great option, and you should have it on. Totally not related. (1.20+)
 * Fixed: Cherry Boats missing translations. (1.20+)
-* Updated CrackerUtil.
+* CrackerUtil -> Dark Matter.
