@@ -214,6 +214,25 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("items")
+    @ConfigEntry.Gui.RequiresRestart
+    public boolean lockpickEnabled = false;
+
+    @ConfigEntry.Category("items")
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.CollapsibleObject
+    public Lockpick lockpick = new Lockpick();
+
+    public static class Lockpick {
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public int chance = 3;
+
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public boolean villagerInventory = true;
+    }
+
+    @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
     public boolean slightlyBetterItemNames = true;
 

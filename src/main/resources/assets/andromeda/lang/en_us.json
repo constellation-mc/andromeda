@@ -18,6 +18,7 @@
   "block.andromeda.incubator": "Incubator",
 
   "item.andromeda.infinite_totem": "Infinite Totem of Undying",
+  "item.andromeda.lockpick": "Lockpick",
 
   "item.andromeda.spawner_minecart": "Minecart with Spawner",
   "item.andromeda.anvil_minecart": "Minecart with Anvil",
@@ -62,6 +63,7 @@
   "entity.andromeda.tnt_boat": "Boat with TNT",
 
   "gui.andromeda.fletching": "Tighten Bow String",
+  "gui.andromeda.merchant": "Merchant Inventory",
 
   "action.andromeda.safebeds": "You can't sleep here!",
 
@@ -174,6 +176,13 @@
   "text.autoconfig.andromeda.option.newBoats.isHopperBoatOn.@Tooltip": "Quickly pulls items inside itself.",
 
   "text.autoconfig.andromeda.category.items": "Items",
+  "text.autoconfig.andromeda.option.lockpickEnabled": "Lockpick Enabled",
+  "text.autoconfig.andromeda.option.lockpick": "Lockpick",
+  "text.autoconfig.andromeda.option.lockpick.@Tooltip": "Creative-only item, which allows opening things that you shouldn't.",
+  "text.autoconfig.andromeda.option.lockpick.chance": "Success Chance",
+  "text.autoconfig.andromeda.option.lockpick.chance.@Tooltip": "e.g. 1 in 3",
+  "text.autoconfig.andromeda.option.lockpick.villagerInventory": "Villager Inventories",
+  "text.autoconfig.andromeda.option.lockpick.villagerInventory.@Tooltip": "Open villager inventories.",
   "text.autoconfig.andromeda.option.slightlyBetterItemNames": "Slightly Better Item Names",
   "text.autoconfig.andromeda.option.slightlyBetterItemNames.@Tooltip": "Shows durability (in %), or item count.",
   "text.autoconfig.andromeda.option.totemSettings": "Infinite Totem of Undying",
