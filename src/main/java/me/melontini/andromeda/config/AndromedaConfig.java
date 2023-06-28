@@ -211,6 +211,11 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean isHopperBoatOn = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean isChestBoatOn = true;
     }
 
     @ConfigEntry.Category("items")

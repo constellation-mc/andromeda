@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.entities.flower_duplication;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.crackerutil.util.MathStuff;
+import me.melontini.dark_matter.util.MathStuff;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;

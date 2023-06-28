@@ -3,10 +3,7 @@ package me.melontini.andromeda.registries;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.items.LockpickItem;
 import me.melontini.andromeda.items.RoseOfTheValley;
-import me.melontini.andromeda.items.boats.FurnaceBoatItem;
-import me.melontini.andromeda.items.boats.HopperBoatItem;
-import me.melontini.andromeda.items.boats.JukeboxBoatItem;
-import me.melontini.andromeda.items.boats.TNTBoatItem;
+import me.melontini.andromeda.items.boats.*;
 import me.melontini.andromeda.items.minecarts.AnvilMinecartItem;
 import me.melontini.andromeda.items.minecarts.JukeBoxMinecartItem;
 import me.melontini.andromeda.items.minecarts.NoteBlockMinecartItem;
@@ -115,6 +112,7 @@ public class ItemRegistry {
 
     public static void register() {
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
+            ContentBuilder.ItemBuilder.create(boatId(value, "chest"), () -> new ChestBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isChestBoatOn).build();
             ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isFurnaceBoatOn).build();
             ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isJukeboxBoatOn).build();
             ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isTNTBoatOn).build();

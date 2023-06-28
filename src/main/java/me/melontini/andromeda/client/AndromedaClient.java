@@ -33,6 +33,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.AbstractFurnaceScreen;
@@ -167,6 +168,8 @@ public class AndromedaClient implements ClientModInitializer {
     }
 
     public void registerEntityRenderers() {
+        if (Andromeda.CONFIG.newBoats.isChestBoatOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_CHEST, (ctx -> new BoatWithBlockRenderer(ctx, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.NORTH))));
         if (Andromeda.CONFIG.newBoats.isFurnaceBoatOn)
             EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_FURNACE, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));
         if (Andromeda.CONFIG.newBoats.isJukeboxBoatOn)

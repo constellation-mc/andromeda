@@ -1,0 +1,26 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "andromeda:items_registered",
+      "values": [
+        "andromeda:jungle_boat_with_chest"
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A",
+    "B"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:chest"
+    },
+    "B": {
+      "item": "minecraft:jungle_boat"
+    }
+  },
+  "result": {
+    "item": "andromeda:jungle_boat_with_chest"
+  }
+}
