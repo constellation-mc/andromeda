@@ -1,6 +1,6 @@
 package me.melontini.andromeda.items.minecarts;
 
-import me.melontini.crackerutil.util.TextUtil;
+import me.melontini.dark_matter.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;

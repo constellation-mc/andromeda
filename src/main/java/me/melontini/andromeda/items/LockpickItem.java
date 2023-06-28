@@ -2,7 +2,7 @@ package me.melontini.andromeda.items;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.screens.MerchantInventoryScreenHandler;
-import me.melontini.crackerutil.util.TextUtil;
+import me.melontini.dark_matter.minecraft.util.TextUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
