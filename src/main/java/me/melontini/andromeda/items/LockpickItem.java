@@ -19,12 +19,12 @@ public class LockpickItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (user.world.random.nextInt(Andromeda.CONFIG.lockpick.chance - 1) == 0 && Andromeda.CONFIG.lockpickEnabled) {
+        if ((Andromeda.CONFIG.lockpick.chance - 1 == 0 || user.world.random.nextInt(Andromeda.CONFIG.lockpick.chance - 1) == 0) && Andromeda.CONFIG.lockpickEnabled) {
             if (entity instanceof MerchantEntity merchant && Andromeda.CONFIG.lockpick.villagerInventory) {
                 if (user.world.isClient()) return ActionResult.SUCCESS;
 
                 user.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player) -> new MerchantInventoryScreenHandler(syncId, inv, merchant.getInventory()), TextUtil.translatable("gui.andromeda.merchant")));
-                stack.decrement(1);
+                if (!user.getAbilities().creativeMode && Andromeda.CONFIG.lockpick.breakAfterUse) stack.decrement(1);
                 return ActionResult.SUCCESS;
             }
         }
