@@ -1,9 +1,9 @@
 package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 
-import me.melontini.crackerutil.data.NBTUtil;
-import me.melontini.crackerutil.util.TextUtil;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.dark_matter.content.data.NBTUtil;
+import me.melontini.dark_matter.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;

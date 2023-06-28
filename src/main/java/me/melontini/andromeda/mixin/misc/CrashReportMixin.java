@@ -1,9 +1,9 @@
 package me.melontini.andromeda.mixin.misc;
 
-import me.melontini.crackerutil.analytics.mixpanel.MixpanelAnalytics;
-import me.melontini.crackerutil.util.Utilities;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.AndromedaAnalytics;
+import me.melontini.dark_matter.analytics.mixpanel.MixpanelAnalytics;
+import me.melontini.dark_matter.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;

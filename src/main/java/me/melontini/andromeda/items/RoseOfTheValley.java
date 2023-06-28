@@ -1,8 +1,8 @@
 package me.melontini.andromeda.items;
 
-import me.melontini.crackerutil.client.util.ScreenParticleHelper;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.dark_matter.glitter.client.util.ScreenParticleHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
