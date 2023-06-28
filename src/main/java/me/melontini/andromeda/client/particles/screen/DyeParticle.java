@@ -1,7 +1,7 @@
 package me.melontini.andromeda.client.particles.screen;
 
-import me.melontini.crackerutil.client.particles.AbstractScreenParticle;
-import me.melontini.crackerutil.client.util.DrawUtil;
+import me.melontini.dark_matter.glitter.client.particles.AbstractScreenParticle;
+import me.melontini.dark_matter.minecraft.client.util.DrawUtil;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;

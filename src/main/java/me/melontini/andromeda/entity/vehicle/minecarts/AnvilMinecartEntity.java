@@ -2,7 +2,7 @@ package me.melontini.andromeda.entity.vehicle.minecarts;
 
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ItemRegistry;
-import me.melontini.crackerutil.util.MathStuff;
+import me.melontini.dark_matter.util.MathStuff;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

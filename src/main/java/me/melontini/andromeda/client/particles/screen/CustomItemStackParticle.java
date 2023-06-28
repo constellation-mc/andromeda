@@ -1,7 +1,7 @@
 package me.melontini.andromeda.client.particles.screen;
 
-import me.melontini.crackerutil.client.particles.ItemStackParticle;
-import me.melontini.crackerutil.util.Utilities;
+import me.melontini.dark_matter.glitter.client.particles.ItemStackParticle;
+import me.melontini.dark_matter.util.Utilities;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;

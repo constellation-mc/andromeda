@@ -1,10 +1,10 @@
 package me.melontini.andromeda.mixin.mechanics.dragon_fight;
 
-import me.melontini.crackerutil.util.MathStuff;
-import me.melontini.crackerutil.util.Utilities;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.dark_matter.util.MathStuff;
+import me.melontini.dark_matter.util.Utilities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
