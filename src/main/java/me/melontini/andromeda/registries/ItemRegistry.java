@@ -1,6 +1,7 @@
 package me.melontini.andromeda.registries;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.items.LockpickItem;
 import me.melontini.andromeda.items.RoseOfTheValley;
 import me.melontini.andromeda.items.boats.FurnaceBoatItem;
 import me.melontini.andromeda.items.boats.HopperBoatItem;
@@ -47,6 +48,8 @@ public class ItemRegistry {
             .maxCount(1).itemGroup(Registries.ITEM_GROUP.get(ItemGroups.REDSTONE)).loadCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
     public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder.create(Item.class, new Identifier(MODID, "infinite_totem"), new FabricItemSettings())
             .maxCount(1).rarity(Rarity.EPIC).itemGroup(Registries.ITEM_GROUP.get(ItemGroups.REDSTONE)).loadCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
+    public static Item LOCKPICK = ContentBuilder.ItemBuilder.create(LockpickItem.class, new Identifier(MODID, "lockpick"), new FabricItemSettings())
+            .maxCount(16).itemGroup(ItemGroups.TOOLS).loadCondition(Andromeda.CONFIG.lockpickEnabled).build();
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
     private static final ItemStack ITEM_GROUP_ICON = Utilities.supply(() -> {
         if (Andromeda.CONFIG.unknown) {

@@ -29,6 +29,7 @@
     "items.clock_tooltip.ItemMixin",
     "items.infinite_totem.ItemEntityMixin",
     "items.infinite_totem.LivingEntityMixin",
+    "items.lockpick.PlayerEntityMixin",
     "items.mending_fix.AnvilScreenHandlerMixin",
     "items.mending_fix.ExperienceOrbMixin",
     "items.mending_fix.ItemStackMixin",

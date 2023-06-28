@@ -2,6 +2,8 @@
 
 * New Tweak! Slime Tweaks!
 * * Small Slimes Flee, Slimes Merge and Slime Slowdown.
+* New Item! Lockpick!
+* Currently, allows opening villager inventories.
 * Added a white/blacklist to Self Planting Crops.
 * Fixed: Auto-generate Recipe Advancements main switch not working.
 * Fixed: Bows getting tightened for free in the fletching table.
