@@ -49,7 +49,7 @@ public class ItemRegistry {
     public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder.create(Item.class, new Identifier(MODID, "infinite_totem"), new FabricItemSettings())
             .maxCount(1).rarity(Rarity.EPIC).itemGroup(Registries.ITEM_GROUP.get(ItemGroups.REDSTONE)).loadCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
     public static Item LOCKPICK = ContentBuilder.ItemBuilder.create(LockpickItem.class, new Identifier(MODID, "lockpick"), new FabricItemSettings())
-            .maxCount(16).itemGroup(ItemGroups.TOOLS).loadCondition(Andromeda.CONFIG.lockpickEnabled).build();
+            .maxCount(16).itemGroup(Registries.ITEM_GROUP.get(ItemGroups.TOOLS)).loadCondition(Andromeda.CONFIG.lockpickEnabled).build();
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
     private static final ItemStack ITEM_GROUP_ICON = Utilities.supply(() -> {
         if (Andromeda.CONFIG.unknown) {

@@ -5,6 +5,7 @@ import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.screens.MerchantInventoryScreenHandler;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
@@ -15,11 +16,11 @@ public class ScreenHandlerRegistry {
     public static ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER;
     public static void register() {
         if (Andromeda.CONFIG.usefulFletching) {
-            FLETCHING_SCREEN_HANDLER = new ScreenHandlerType<>(FletchingScreenHandler::new);
+            FLETCHING_SCREEN_HANDLER = new ScreenHandlerType<>(FletchingScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
             Registry.register(Registries.SCREEN_HANDLER, new Identifier(MODID, "fletching"), FLETCHING_SCREEN_HANDLER);
         }
 
-        MERCHANT_INVENTORY_SCREEN_HANDLER = new ScreenHandlerType<>(MerchantInventoryScreenHandler::new);
+        MERCHANT_INVENTORY_SCREEN_HANDLER = new ScreenHandlerType<>(MerchantInventoryScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
         Registry.register(Registries.SCREEN_HANDLER, new Identifier(MODID, "merchant_inventory"), MERCHANT_INVENTORY_SCREEN_HANDLER);
     }
 }
