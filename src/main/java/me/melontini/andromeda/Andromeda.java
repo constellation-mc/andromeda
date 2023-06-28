@@ -2,10 +2,7 @@ package me.melontini.andromeda;
 
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.networks.ServerSideNetworking;
-import me.melontini.andromeda.registries.BlockRegistry;
-import me.melontini.andromeda.registries.EntityTypeRegistry;
-import me.melontini.andromeda.registries.ItemRegistry;
-import me.melontini.andromeda.registries.ResourceConditionRegistry;
+import me.melontini.andromeda.registries.*;
 import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
@@ -80,6 +77,7 @@ public class Andromeda implements ModInitializer {
         EntityTypeRegistry.register();
         ServerSideNetworking.register();
         ResourceConditionRegistry.register();
+        ScreenHandlerRegistry.register();
 
         LEAF_SLOWNESS = new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE);
         KNOCKOFF_TOTEM_PARTICLE = FabricParticleTypes.simple();

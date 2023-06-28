@@ -7,6 +7,7 @@ import me.melontini.andromeda.client.render.BoatWithBlockRenderer;
 import me.melontini.andromeda.client.render.FlyingItemEntityRenderer;
 import me.melontini.andromeda.client.render.block.IncubatorBlockRenderer;
 import me.melontini.andromeda.client.screens.FletchingScreen;
+import me.melontini.andromeda.client.screens.MerchantInventoryScreen;
 import me.melontini.andromeda.mixin.gui.gui_particles.accessors.HandledScreenAccessor;
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
@@ -94,6 +95,8 @@ public class AndromedaClient implements ClientModInitializer {
 
         if (Andromeda.CONFIG.usefulFletching)
             HandledScreens.register(ScreenHandlerRegistry.FLETCHING_SCREEN_HANDLER, FletchingScreen::new);
+
+        HandledScreens.register(ScreenHandlerRegistry.MERCHANT_INVENTORY_SCREEN_HANDLER, MerchantInventoryScreen::new);
 
         ParticleFactoryRegistry.getInstance().register(Andromeda.KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
