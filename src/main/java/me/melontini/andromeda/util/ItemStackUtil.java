@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.crackerutil.util.MakeSure;
-import me.melontini.crackerutil.util.Utilities;
+import me.melontini.dark_matter.util.MakeSure;
+import me.melontini.dark_matter.util.Utilities;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;

@@ -1,6 +1,5 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.crackerutil.content.RegistryUtil;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.entity.FlyingItemEntity;
 import me.melontini.andromeda.entity.vehicle.boats.FurnaceBoatEntity;
@@ -11,6 +10,7 @@ import me.melontini.andromeda.entity.vehicle.minecarts.AnvilMinecartEntity;
 import me.melontini.andromeda.entity.vehicle.minecarts.JukeboxMinecartEntity;
 import me.melontini.andromeda.entity.vehicle.minecarts.NoteBlockMinecartEntity;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.dark_matter.content.RegistryUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Identifier;

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.mixin.items.cart_copy;
 
-import me.melontini.crackerutil.data.NBTUtil;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.dark_matter.content.data.NBTUtil;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;

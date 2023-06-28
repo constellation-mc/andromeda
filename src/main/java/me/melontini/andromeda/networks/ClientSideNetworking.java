@@ -1,13 +1,13 @@
 package me.melontini.andromeda.networks;
 
-import me.melontini.crackerutil.client.util.ScreenParticleHelper;
-import me.melontini.crackerutil.util.ColorUtil;
-import me.melontini.crackerutil.util.MathStuff;
-import me.melontini.crackerutil.util.Utilities;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.particles.screen.DyeParticle;
 import me.melontini.andromeda.client.sound.PersistentMovingSoundInstance;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.dark_matter.glitter.client.util.ScreenParticleHelper;
+import me.melontini.dark_matter.util.ColorUtil;
+import me.melontini.dark_matter.util.MathStuff;
+import me.melontini.dark_matter.util.Utilities;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.ParticlesMode;

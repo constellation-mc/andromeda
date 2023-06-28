@@ -1,12 +1,12 @@
 package me.melontini.andromeda.mixin.gui.gui_particles;
 
 import com.google.common.collect.Lists;
-import me.melontini.crackerutil.client.particles.ItemStackParticle;
-import me.melontini.crackerutil.client.util.ScreenParticleHelper;
-import me.melontini.crackerutil.util.MathStuff;
-import me.melontini.crackerutil.util.Utilities;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.dark_matter.glitter.client.particles.ItemStackParticle;
+import me.melontini.dark_matter.glitter.client.util.ScreenParticleHelper;
+import me.melontini.dark_matter.util.MathStuff;
+import me.melontini.dark_matter.util.Utilities;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;

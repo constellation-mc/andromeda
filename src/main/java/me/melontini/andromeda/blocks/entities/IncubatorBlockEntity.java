@@ -1,11 +1,11 @@
 package me.melontini.andromeda.blocks.entities;
 
-import me.melontini.crackerutil.data.NBTUtil;
-import me.melontini.crackerutil.util.Utilities;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.blocks.IncubatorBlock;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.data.EggProcessingData;
+import me.melontini.dark_matter.content.data.NBTUtil;
+import me.melontini.dark_matter.util.Utilities;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;

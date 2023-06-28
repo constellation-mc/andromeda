@@ -1,10 +1,10 @@
 package me.melontini.andromeda.util;
 
 import com.google.gson.Gson;
-import me.melontini.crackerutil.analytics.Analytics;
-import me.melontini.crackerutil.analytics.mixpanel.MixpanelAnalytics;
-import me.melontini.crackerutil.util.mixin.ExtendedPlugin;
 import me.melontini.andromeda.Andromeda;
+import me.melontini.dark_matter.analytics.Analytics;
+import me.melontini.dark_matter.analytics.mixpanel.MixpanelAnalytics;
+import me.melontini.dark_matter.util.mixin.ExtendedPlugin;
 import net.fabricmc.loader.api.FabricLoader;
 import org.json.JSONObject;
 

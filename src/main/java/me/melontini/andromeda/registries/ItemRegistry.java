@@ -13,9 +13,10 @@ import me.melontini.andromeda.items.minecarts.NoteBlockMinecartItem;
 import me.melontini.andromeda.items.minecarts.SpawnerMinecartItem;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
-import me.melontini.crackerutil.client.util.DrawUtil;
-import me.melontini.crackerutil.content.ContentBuilder;
-import me.melontini.crackerutil.util.Utilities;
+import me.melontini.dark_matter.content.ContentBuilder;
+import me.melontini.dark_matter.minecraft.client.util.DrawUtil;
+import me.melontini.dark_matter.minecraft.util.MinecraftUtil;
+import me.melontini.dark_matter.util.Utilities;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
@@ -35,23 +36,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static me.melontini.andromeda.Andromeda.MODID;
-import static me.melontini.crackerutil.content.RegistryUtil.asItem;
-import static me.melontini.crackerutil.content.RegistryUtil.createItem;
+import static me.melontini.dark_matter.content.RegistryUtil.asItem;
 
 public class ItemRegistry {
     public static RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.ROSE_OF_THE_VALLEY);
-    public static SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder.create(SpawnerMinecartItem.class, new Identifier(MODID, "spawner_minecart"), AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings())
-            .maxCount(1).itemGroup(ItemGroup.TRANSPORTATION).build();
-    public static AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder.create(AnvilMinecartItem.class, new Identifier(MODID, "anvil_minecart"), new FabricItemSettings())
-            .maxCount(1).itemGroup(ItemGroup.TRANSPORTATION).loadCondition(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn).build();
-    public static NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder.create(NoteBlockMinecartItem.class, new Identifier(MODID, "note_block_minecart"), new FabricItemSettings())
-            .maxCount(1).itemGroup(ItemGroup.TRANSPORTATION).loadCondition(Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn).build();
-    public static JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder.create(JukeBoxMinecartItem.class, new Identifier(MODID, "jukebox_minecart"), new FabricItemSettings())
-            .maxCount(1).itemGroup(ItemGroup.TRANSPORTATION).loadCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
-    public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder.create(Item.class, new Identifier(MODID, "infinite_totem"), new FabricItemSettings())
-            .maxCount(1).rarity(Rarity.EPIC).itemGroup(ItemGroup.COMBAT).loadCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
-    public static Item LOCKPICK = ContentBuilder.ItemBuilder.create(LockpickItem.class, new Identifier(MODID, "lockpick"), new FabricItemSettings())
-            .maxCount(16).itemGroup(ItemGroup.TOOLS).loadCondition(Andromeda.CONFIG.lockpickEnabled).build();
+    public static SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder
+            .create(new Identifier(MODID, "spawner_minecart"), () -> new SpawnerMinecartItem(AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings().maxCount(1)))
+            .itemGroup(ItemGroup.TRANSPORTATION).build();
+    public static AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
+            .create(new Identifier(MODID, "anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
+            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn).build();
+
+    public static NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder
+            .create(new Identifier(MODID, "note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
+            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn).build();
+
+    public static JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
+            .create(new Identifier(MODID, "jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
+            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
+    public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
+            .create(new Identifier(MODID, "infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
+            .itemGroup(ItemGroup.COMBAT).registerCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
+    public static Item LOCKPICK = ContentBuilder.ItemBuilder
+            .create(new Identifier(MODID, "lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
+            .itemGroup(ItemGroup.TOOLS).registerCondition(Andromeda.CONFIG.lockpickEnabled).build();
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
     private static final ItemStack ITEM_GROUP_ICON = Utilities.supply(() -> {
         if (Andromeda.CONFIG.unknown) {
@@ -67,7 +75,7 @@ public class ItemRegistry {
                 List<ItemStack> misc = new ArrayList<>();
                 if (Andromeda.CONFIG.incubatorSettings.enableIncubator) misc.add(ItemRegistry.INCUBATOR.getDefaultStack());
                 if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem) misc.add(ItemRegistry.INFINITE_TOTEM.getDefaultStack());
-                Utilities.appendStacks(itemStacks, misc);
+                MinecraftUtil.appendStacks(itemStacks, misc);
 
                 List<ItemStack> carts = new ArrayList<>();
                 if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn) carts.add(ItemRegistry.ANVIL_MINECART.getDefaultStack());
@@ -76,7 +84,7 @@ public class ItemRegistry {
                 if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn)
                     carts.add(ItemRegistry.NOTE_BLOCK_MINECART.getDefaultStack());
                 carts.add(ItemRegistry.SPAWNER_MINECART.getDefaultStack());
-                Utilities.appendStacks(itemStacks, carts);
+                MinecraftUtil.appendStacks(itemStacks, carts);
 
                 List<ItemStack> boats = new ArrayList<>();
                 for (BoatEntity.Type value : BoatEntity.Type.values()) {
@@ -89,7 +97,7 @@ public class ItemRegistry {
                     if (Andromeda.CONFIG.newBoats.isHopperBoatOn)
                         boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper")).getDefaultStack());
                 }
-                Utilities.appendStacks(itemStacks, boats, false);
+                MinecraftUtil.appendStacks(itemStacks, boats, false);
             }).icon(() -> ITEM_GROUP_ICON).animatedIcon(() -> (matrixStack, itemX, itemY, selected, isTopRow) -> {
                 MinecraftClient client = MinecraftClient.getInstance();
 
@@ -107,11 +115,15 @@ public class ItemRegistry {
 
     public static void register() {
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
-            createItem(Andromeda.CONFIG.newBoats.isFurnaceBoatOn, FurnaceBoatItem.class, new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_furnace"), value, new FabricItemSettings().maxCount(1).group(ItemGroup.TRANSPORTATION));
-            createItem(Andromeda.CONFIG.newBoats.isJukeboxBoatOn, JukeboxBoatItem.class, new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_jukebox"), value, new FabricItemSettings().maxCount(1).group(ItemGroup.TRANSPORTATION));
-            createItem(Andromeda.CONFIG.newBoats.isTNTBoatOn, TNTBoatItem.class, new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_tnt"), value, new FabricItemSettings().maxCount(1).group(ItemGroup.TRANSPORTATION));
-            createItem(Andromeda.CONFIG.newBoats.isHopperBoatOn, HopperBoatItem.class, new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper"), value, new FabricItemSettings().maxCount(1).group(ItemGroup.TRANSPORTATION));
+            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isFurnaceBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isJukeboxBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isTNTBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isHopperBoatOn).build();
         }
         AndromedaLog.info("ItemRegistry init complete!");
+    }
+
+    public static Identifier boatId(BoatEntity.Type type, String boat) {
+        return new Identifier(MODID, type.getName().replace(":", "_") + "_boat_with_" + boat);
     }
 }

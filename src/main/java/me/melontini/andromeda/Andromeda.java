@@ -6,7 +6,7 @@ import me.melontini.andromeda.registries.*;
 import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
-import me.melontini.crackerutil.util.TextUtil;
+import me.melontini.dark_matter.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;

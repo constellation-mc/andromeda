@@ -1,9 +1,9 @@
 package me.melontini.andromeda.mixin.items.clock_tooltip;
 
-import me.melontini.crackerutil.util.MathStuff;
-import me.melontini.crackerutil.util.TextUtil;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.dark_matter.minecraft.util.TextUtil;
+import me.melontini.dark_matter.util.MathStuff;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.crackerutil.util.PrependingLogger;
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.dark_matter.util.PrependingLogger;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
