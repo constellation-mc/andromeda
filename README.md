@@ -3,6 +3,7 @@
 
 <br/>
 <a href="https://www.curseforge.com/minecraft/mc-mods/andromeda"><img src="https://cf.way2muchnoise.eu/title/639198.svg" alt="" height="24"></a><a href="https://modrinth.com/mod/andromeda"><img src="https://img.shields.io/modrinth/dt/TseYlb0f?label=modrinth" alt="" height="24"></a>
+
 <br/>
 
 <img alt="Fabric API icon" src="https://cdn.modrinth.com/data/P7dR8mSH/icon.png" width="40" height="40"></img> [Fabric API](https://modrinth.com/mod/fabric-api) and <img alt="Cloth Config icon" src="https://cdn.modrinth.com/data/9s6osm5g/icon.png" width="40" height="40"> [Cloth Config API](https://modrinth.com/mod/cloth-config) are required!
@@ -18,7 +19,7 @@ https://andromeda-wiki.pages.dev/
 ### Cool things/products this project uses:
 
 #### The mod itself:<br/>
-<img alt="Mixpanel icon" src="https://github.com/melontini/dark-matter/assets/104443436/0b656b33-46d1-4d74-b164-686259f405f8" width="50" height="50"></img> [Mixpanel Analytics](https://mixpanel.com/home) and 
+<img alt="Mixpanel icon" src="https://github.com/melontini/dark-matter/assets/104443436/0b656b33-46d1-4d74-b164-686259f405f8" width="50" height="50"></img> [Mixpanel Analytics](https://mixpanel.com/home)
 
 <img alt="Dark Matter icon" src="https://github.com/melontini/dark-matter/assets/104443436/26b2062c-d439-4e5d-be37-404797bf0552" width="50" height="50"></img> [Dark Matter Library](https://github.com/melontini/dark-matter). Hey, that's me!
 
