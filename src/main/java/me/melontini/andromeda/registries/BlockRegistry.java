@@ -12,11 +12,11 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
-import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -28,8 +28,8 @@ public class BlockRegistry {
             .item((block, identifier) -> ContentBuilder.ItemBuilder.create(identifier, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON))))
             .registerCondition(Andromeda.CONFIG.unknown).build();
 
-    public static IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(new Identifier(MODID, "incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
-            .item((block, identifier) -> ContentBuilder.ItemBuilder.create(identifier, () -> new BlockItem(block, new FabricItemSettings().rarity(Rarity.RARE))).itemGroup(ItemGroups.REDSTONE))
+    public static IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(new Identifier(MODID, "incubator"), () -> new IncubatorBlock(FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
+            .item((block, identifier) -> ContentBuilder.ItemBuilder.create(identifier, () -> new BlockItem(block, new FabricItemSettings().rarity(Rarity.RARE))).itemGroup(Registries.ITEM_GROUP.get(ItemGroups.REDSTONE)))
             .blockEntity((block, identifier) -> ContentBuilder.BlockEntityBuilder.create(identifier, IncubatorBlockEntity::new, block))
             .registerCondition(Andromeda.CONFIG.incubatorSettings.enableIncubator).build();
 

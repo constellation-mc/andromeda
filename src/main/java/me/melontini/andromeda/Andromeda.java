@@ -3,36 +3,35 @@ package me.melontini.andromeda;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.*;
-import me.melontini.andromeda.util.*;
+import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ItemBehaviorManager;
+import me.melontini.andromeda.util.MiscUtil;
+import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
-import me.melontini.dark_matter.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,15 +47,12 @@ public class Andromeda implements ModInitializer {
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
     public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
     public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
-    public static final DamageSource AGONY = new DamageSource("andromeda_agony");
+    public static final RegistryKey<DamageType> AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(MODID, "agony"));
+    public static final RegistryKey<DamageType> BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(MODID, "bricked"));
     public static final Map<PlayerEntity, AbstractMinecartEntity> LINKING_CARTS = new HashMap<>();
     public static final Map<PlayerEntity, AbstractMinecartEntity> UNLINKING_CARTS = new HashMap<>();
     public static MinecraftServer SERVER;
     public static final IntProperty WATER_LEVEL_3 = IntProperty.of("water_level", 1, 3);
-
-    public static DamageSource bricked(@Nullable Entity attacker) {
-        return new BrickedDamageSource(attacker);
-    }
 
     private static void updateHiddenPath() {
         Path old = FabricLoader.getInstance().getGameDir().resolve(".m_tweaks");
@@ -136,26 +132,5 @@ public class Andromeda implements ModInitializer {
                 server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
             }
         });
-
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            if (CONFIG.damageBackport) DamageCommand.register(dispatcher);
-        });
     }
-
-    private static class BrickedDamageSource extends DamageSource {
-        private final Entity attacker;
-
-        public BrickedDamageSource(Entity attacker) {
-            super("andromeda_bricked");
-            this.attacker = attacker;
-        }
-
-        @Override
-        public Text getDeathMessage(LivingEntity entity) {
-            if (attacker != null)
-                return TextUtil.translatable("death.attack.andromeda_bricked.entity", entity.getDisplayName(), attacker.getDisplayName());
-            else return TextUtil.translatable("death.attack.andromeda_bricked", entity.getDisplayName());
-        }
-    }
-
 }

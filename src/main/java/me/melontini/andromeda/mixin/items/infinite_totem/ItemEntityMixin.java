@@ -149,7 +149,7 @@ public abstract class ItemEntityMixin extends Entity {
     }
 
     private boolean andromeda$beaconCheck() {
-        BlockEntity entity = world.getBlockEntity(new BlockPos(getX(), world.getTopY(Heightmap.Type.WORLD_SURFACE, getBlockPos().getX(), getBlockPos().getZ()) - 1, getZ()));
+        BlockEntity entity = world.getBlockEntity(new BlockPos((int) getX(), world.getTopY(Heightmap.Type.WORLD_SURFACE, getBlockPos().getX(), getBlockPos().getZ()) - 1, (int) getZ()));
         if (entity instanceof BeaconBlockEntity beaconBlock) {
             this.andromeda$beacon = new Tuple<>(beaconBlock, BeaconUtil.getLevelFromBlocks(world, beaconBlock.getPos(), beaconBlocks));
             return true;

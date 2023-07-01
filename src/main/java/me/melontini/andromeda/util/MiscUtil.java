@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
@@ -158,9 +158,9 @@ public class MiscUtil {
                     AndromedaLog.error("unknown ingredient found in {}", id);
                 }
             }
-            builder.criterion(String.valueOf(i), new InventoryChangedCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, predicates.toArray(ItemPredicate[]::new)));
+            builder.criterion(String.valueOf(i), new InventoryChangedCriterion.Conditions(LootContextPredicate.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, predicates.toArray(ItemPredicate[]::new)));
         }
-        builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(EntityPredicate.Extended.EMPTY, id));
+        builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.EMPTY, id));
 
         String[][] reqs;
         if (Andromeda.CONFIG.autogenRecipeAdvancements.requireAllItems) {

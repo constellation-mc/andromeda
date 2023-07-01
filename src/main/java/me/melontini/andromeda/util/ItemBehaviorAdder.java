@@ -16,6 +16,7 @@ import net.minecraft.block.TntBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
@@ -25,6 +26,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -33,10 +35,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
@@ -161,7 +160,7 @@ public class ItemBehaviorAdder {
                             ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.COLORED_FLYING_STACK_LANDED, buf);
                         } else {
                             Vec3d pos = hitResult.getPos();
-                            List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(new BlockPos(pos)).expand(0.5), LivingEntity::isAlive);
+                            List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(new BlockPos(MathHelper.floor(pos.getX()), MathHelper.floor(pos.getY()), MathHelper.floor(pos.getZ()))).expand(0.5), LivingEntity::isAlive);
                             playerEntities.stream().min(Comparator.comparingDouble(player -> player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())))
                                     .ifPresent(player -> {
                                         PacketByteBuf buf = PacketByteBufs.create();
@@ -190,7 +189,7 @@ public class ItemBehaviorAdder {
                 if (hitResult.getType() == HitResult.Type.ENTITY) {
                     EntityHitResult entityHitResult = (EntityHitResult) hitResult;
                     Entity entity = entityHitResult.getEntity();
-                    entity.damage(Andromeda.bricked(user), 2);
+                    entity.damage(new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).getEntry(Andromeda.BRICKED).orElseThrow(), user), 2);
                     if (entity instanceof LivingEntity livingEntity) {
                         livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 0));
                     }
@@ -253,7 +252,7 @@ public class ItemBehaviorAdder {
                 }
             } else {
                 Vec3d pos = hitResult.getPos();
-                List<LivingEntity> livingEntities = world.getEntitiesByClass(LivingEntity.class, new Box(new BlockPos(pos)).expand(0.5), LivingEntity::isAlive);
+                List<LivingEntity> livingEntities = world.getEntitiesByClass(LivingEntity.class, new Box(new BlockPos(MathHelper.floor(pos.getX()), MathHelper.floor(pos.getY()), MathHelper.floor(pos.getZ()))).expand(0.5), LivingEntity::isAlive);
                 livingEntities.stream().min(Comparator.comparingDouble(livingEntity -> livingEntity.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())))
                         .ifPresent(livingEntity -> {
                             for (StatusEffectInstance instance : instances) {

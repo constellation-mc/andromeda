@@ -29,13 +29,14 @@ jobs:
       - name: Publish Minecraft Mods
         uses: Kir-Antipov/mc-publish@v3.2
         with:
-          version-type: beta
+          version-type: alpha
           changelog-file: CHANGELOG.md
           name: ${{ env.VERSION_INFORMATION }}
           version: ${{ env.VERSION_PLAIN }}
 
           game-versions: |
-            1.19.3
+            1.20
+            1.20.1
 
           loaders: |
             fabric

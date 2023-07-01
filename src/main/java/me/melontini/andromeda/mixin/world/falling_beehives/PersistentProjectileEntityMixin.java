@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,22 +44,22 @@ public abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
                                 switch (i) {
                                     case 0 -> {
                                         if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getMaterial() == Material.WOOD)
+                                            if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getSoundGroup() == BlockSoundGroup.WOOD)
                                                 trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                     }
                                     case 1 -> {
                                         if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getMaterial() == Material.WOOD)
+                                            if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getSoundGroup() == BlockSoundGroup.WOOD)
                                                 trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                     }
                                     case 2 -> {
                                         if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getMaterial() == Material.WOOD)
+                                            if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getSoundGroup() == BlockSoundGroup.WOOD)
                                                 trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                     }
                                     case 3 -> {
                                         if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getMaterial() == Material.WOOD)
+                                            if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getSoundGroup() == BlockSoundGroup.WOOD)
                                                 trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                     }
                                 }

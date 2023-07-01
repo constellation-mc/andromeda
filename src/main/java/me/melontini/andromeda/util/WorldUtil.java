@@ -14,7 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
@@ -27,6 +27,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -69,7 +70,7 @@ public class WorldUtil {
             packetByteBuf.writeDouble(velocityY);
             packetByteBuf.writeDouble(velocityZ);
 
-            for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, new BlockPos(x, y, z), 85)) {
+            for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, new BlockPos(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)), 85)) {
                 ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.ADD_ONE_PARTICLE, packetByteBuf);
             }
         } else {
@@ -96,10 +97,8 @@ public class WorldUtil {
         MakeSure.notNulls(world, lootId);
         return ((ServerWorld) world).getServer()
                 .getLootManager()
-                .getTable(lootId)
-                .generateLoot((new LootContext.Builder((ServerWorld) world))
-                        .random(world.random)
-                        .build(LootContextTypes.EMPTY));
+                .getLootTable(lootId)
+                .generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world)).build(LootContextTypes.EMPTY));
     }
 
     public static void trySpawnFallingBeeNest(@NotNull World world, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull BeehiveBlockEntity beehiveBlockEntity) {

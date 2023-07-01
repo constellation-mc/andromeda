@@ -46,7 +46,7 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
             float f = (float) Math.min(MathStuff.fastFloor(i * 2), 40);
             for (Entity entity : world.getEntitiesByClass(Entity.class, this.getBoundingBox().expand(0.1), EntityPredicates.EXCEPT_SPECTATOR)) {
                 if (!(entity instanceof AbstractMinecartEntity)) {
-                    entity.damage(DamageSource.anvil(this), f);
+                    entity.damage(world.getDamageSources().fallingAnvil(this), f);
                 }
             }
 

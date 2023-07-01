@@ -35,12 +35,14 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.MinecartEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -108,7 +110,7 @@ public class AndromedaClient implements ClientModInitializer {
     }
 
     private void inGameTooltips() {
-        HudRenderCallback.EVENT.register((matrices, delta) -> {
+        HudRenderCallback.EVENT.register((context, delta) -> {
             if (Andromeda.CONFIG.itemFrameTooltips) {
                 var client = MinecraftClient.getInstance();
                 var cast = client.crosshairTarget;
@@ -117,10 +119,11 @@ public class AndromedaClient implements ClientModInitializer {
 
                 if (!FRAME_STACK.isEmpty()) {
                     tooltipFlow = MathHelper.lerp(0.25f * client.getLastFrameDuration(), tooltipFlow, 1);
+                    MatrixStack matrices = context.getMatrices();
                     matrices.push();
                     matrices.scale(1, 1, 1);
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(tooltipFlow, 0.8f));
-                    var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(FRAME_STACK);
+                    var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), FRAME_STACK);
                     list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
@@ -135,7 +138,7 @@ public class AndromedaClient implements ClientModInitializer {
                         j += tooltipComponent.getHeight();
                     }
 
-                    DrawUtil.renderTooltipFromComponents(matrices, list1, ((client.getWindow().getScaledWidth() / 2f) - (tooltipFlow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
+                    DrawUtil.renderTooltipFromComponents(context, list1, ((client.getWindow().getScaledWidth() / 2f) - (tooltipFlow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
                     matrices.pop();
                 } else {

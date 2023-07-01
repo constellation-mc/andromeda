@@ -5,7 +5,6 @@ import me.melontini.andromeda.util.AndromedaTexts;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -46,7 +45,7 @@ public abstract class BedBlockMixin extends Block {
 
             world.createExplosion(
                     null,
-                    DamageSource.badRespawnPoint(pos.toCenterPos()),
+                    world.getDamageSources().badRespawnPoint(pos.toCenterPos()),
                     null,
                     (double) pos.getX() + 0.5,
                     (double) pos.getY() + 0.5,

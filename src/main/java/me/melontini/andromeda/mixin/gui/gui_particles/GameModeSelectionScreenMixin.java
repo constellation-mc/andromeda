@@ -41,13 +41,13 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
         super(title);
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendCommand(Ljava/lang/String;)Z", shift = At.Shift.BEFORE), method = "apply(Lnet/minecraft/client/MinecraftClient;Ljava/util/Optional;)V")
-    private static void andromeda$gmSwitchParticles(MinecraftClient client, Optional<GameModeSelectionScreen.GameModeSelection> gameMode, CallbackInfo ci) {
-        if (gameMode.isEmpty() || !Andromeda.CONFIG.guiParticles.gameModeSwitcherParticles) return;
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendCommand(Ljava/lang/String;)Z", shift = At.Shift.BEFORE), method = "apply(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;)V")
+    private static void andromeda$gmSwitchParticles(MinecraftClient client, GameModeSelectionScreen.GameModeSelection gameMode, CallbackInfo ci) {
+        if (!Andromeda.CONFIG.guiParticles.gameModeSwitcherParticles) return;
 
         if (client.currentScreen instanceof GameModeSelectionScreen gameModeSelectionScreen) {
             List<GameModeSelectionScreen.ButtonWidget> buttonWidgets = new ArrayList<>(gameModeSelectionScreen.gameModeButtons);
-            buttonWidgets.removeIf(buttonWidget -> buttonWidget.gameMode != gameMode.get());
+            buttonWidgets.removeIf(buttonWidget -> buttonWidget.gameMode != gameMode);
             Optional<GameModeSelectionScreen.ButtonWidget> optional = buttonWidgets.stream().findFirst();
 
             if (optional.isPresent()) {
@@ -55,8 +55,8 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
                 double x = widget.getX() + widget.getWidth() / 2d;
                 double y = widget.getY() + widget.getHeight() / 2d;
 
-                if (GAME_MODE_STACKS.containsKey(gameMode.get())) {
-                    var list = GAME_MODE_STACKS.get(gameMode.get());
+                if (GAME_MODE_STACKS.containsKey(gameMode)) {
+                    var list = GAME_MODE_STACKS.get(gameMode);
                     if (list.isEmpty()) return;
 
                     ScreenParticleHelper.addParticles(() -> new ItemStackParticle(

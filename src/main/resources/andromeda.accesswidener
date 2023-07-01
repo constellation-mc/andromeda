@@ -6,11 +6,11 @@ accessible class net/minecraft/client/particle/ParticleManager$SpriteAwareFactor
 accessible class net/minecraft/block/entity/BlockEntityType$BlockEntityFactory
 accessible class net/minecraft/block/entity/BeehiveBlockEntity$Bee
 # Fields
+accessible field net/minecraft/entity/Entity world Lnet/minecraft/world/World;
 accessible field net/minecraft/client/render/entity/BoatEntityRenderer texturesAndModels Ljava/util/Map;
 accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen$ButtonWidget gameMode Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;
 accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen gameModeButtons Ljava/util/List;
 accessible field net/minecraft/client/gui/tooltip/OrderedTextTooltipComponent text Lnet/minecraft/text/OrderedText;
-accessible field net/minecraft/server/ServerAdvancementLoader conditionManager Lnet/minecraft/loot/condition/LootConditionManager;
 accessible field net/minecraft/server/ServerAdvancementLoader manager Lnet/minecraft/advancement/AdvancementManager;
 accessible field net/minecraft/block/entity/BeaconBlockEntity level I
 accessible field net/minecraft/block/entity/BeehiveBlockEntity$Bee entityData Lnet/minecraft/nbt/NbtCompound;

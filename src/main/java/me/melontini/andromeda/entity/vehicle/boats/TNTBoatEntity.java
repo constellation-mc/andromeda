@@ -17,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -72,12 +73,12 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
             this.setFuse();
             return false;
         }
-        if (source.isFire()) {
+        if (source.isIn(DamageTypeTags.IS_FIRE)) {
             this.setFuse();
             return false;
         }
 
-        if (source.isExplosive()) {
+        if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             this.setFuse();
             return false;
         }

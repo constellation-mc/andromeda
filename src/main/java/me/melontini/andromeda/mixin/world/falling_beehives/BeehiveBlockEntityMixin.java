@@ -2,11 +2,15 @@ package me.melontini.andromeda.mixin.world.falling_beehives;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import net.minecraft.block.*;
+import net.minecraft.block.AirBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.PillarBlock;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -37,22 +41,22 @@ public abstract class BeehiveBlockEntityMixin extends BlockEntity {
                                 case 0 -> {
                                     //I've run out of ways to check if the bee nest is on a tree.
                                     if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getBlock() instanceof PillarBlock)
-                                        if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getMaterial() == Material.WOOD)
+                                        if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getSoundGroup() == BlockSoundGroup.WOOD)
                                             trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                 }
                                 case 1 -> {
                                     if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getBlock() instanceof PillarBlock)
-                                        if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getMaterial() == Material.WOOD)
+                                        if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getSoundGroup() == BlockSoundGroup.WOOD)
                                             trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                 }
                                 case 2 -> {
                                     if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getBlock() instanceof PillarBlock)
-                                        if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getMaterial() == Material.WOOD)
+                                        if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getSoundGroup() == BlockSoundGroup.WOOD)
                                             trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                 }
                                 case 3 -> {
                                     if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getBlock() instanceof PillarBlock)
-                                        if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getMaterial() == Material.WOOD)
+                                        if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getSoundGroup() == BlockSoundGroup.WOOD)
                                             trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
                                 }
                             }

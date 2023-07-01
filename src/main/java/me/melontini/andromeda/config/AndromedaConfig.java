@@ -280,10 +280,6 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip(count = 2)
     public boolean frameIndependentAdvancementShadow = true;
 
-    @ConfigEntry.Category("bugfixes")
-    @ConfigEntry.Gui.Tooltip
-    public boolean properlyAlignedRecipeAlternatives = true;
-
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.CollapsibleObject
     public DragonFight dragonFight = new DragonFight();
@@ -349,10 +345,6 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
     public boolean itemFrameTooltips = true;
-
-    @ConfigEntry.Category("misc")
-    @ConfigEntry.Gui.Tooltip
-    public boolean damageBackport = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.CollapsibleObject
