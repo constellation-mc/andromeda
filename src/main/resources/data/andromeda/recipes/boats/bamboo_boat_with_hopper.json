@@ -1,0 +1,23 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:bamboo_boat_with_hopper"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "hopper_boat",
+	"ingredients": [
+		{
+			"item": "minecraft:hopper"
+		},
+		{
+			"item": "minecraft:bamboo_raft"
+		}
+	],
+	"result": {
+		"item": "andromeda:bamboo_boat_with_hopper"
+	}
+}
