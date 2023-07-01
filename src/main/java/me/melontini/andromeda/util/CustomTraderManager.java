@@ -9,8 +9,8 @@ import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.*;
 import net.minecraft.world.level.ServerWorldProperties;
@@ -55,7 +55,7 @@ public class CustomTraderManager extends PersistentState {
                     return;
                 }
 
-                WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(world, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
+                WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(world, blockPos3, SpawnReason.EVENT);
                 if (wanderingTraderEntity != null) {
                     cooldown = 48000;
                     for (int j = 0; j < 2; ++j) {
@@ -75,7 +75,7 @@ public class CustomTraderManager extends PersistentState {
         MakeSure.notNulls(world, wanderingTrader);
         BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.getBlockPos(), 4);
         if (blockPos != null) {
-            TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(world, null, null, null, blockPos, SpawnReason.EVENT, false, false);
+            TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(world, blockPos, SpawnReason.EVENT);
             if (traderLlamaEntity != null) {
                 traderLlamaEntity.attachLeash(wanderingTrader, true);
             }

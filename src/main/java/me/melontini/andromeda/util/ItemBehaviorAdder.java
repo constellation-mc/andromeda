@@ -40,7 +40,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
 
 import java.util.Comparator;
 import java.util.List;
@@ -230,7 +229,7 @@ public class ItemBehaviorAdder {
 
         ItemBehaviorManager.addBehavior(Items.GUNPOWDER, (stack, flyingItemEntity, world, user, hitResult) -> {
             if (!world.isClient) {
-                world.createExplosion(user, flyingItemEntity.getX(), flyingItemEntity.getY(), flyingItemEntity.getZ(), 1, Explosion.DestructionType.BREAK);
+                world.createExplosion(user, flyingItemEntity.getX(), flyingItemEntity.getY(), flyingItemEntity.getZ(), 1, World.ExplosionSourceType.MOB);
             }
         });
     }

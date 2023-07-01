@@ -53,7 +53,7 @@ public class HopperBoatItem extends Item {
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 HopperBoatEntity hopperBoat = new HopperBoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-                hopperBoat.setBoatType(this.type);
+                hopperBoat.setVariant(this.type);
                 hopperBoat.setYaw(user.getYaw());
                 if (!world.isSpaceEmpty(hopperBoat, hopperBoat.getBoundingBox())) {
                     return TypedActionResult.fail(itemStack);

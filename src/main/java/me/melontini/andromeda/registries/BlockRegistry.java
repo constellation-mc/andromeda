@@ -16,7 +16,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -29,7 +29,7 @@ public class BlockRegistry {
             .registerCondition(Andromeda.CONFIG.unknown).build();
 
     public static IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(new Identifier(MODID, "incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
-            .item((block, identifier) -> ContentBuilder.ItemBuilder.create(identifier, () -> new BlockItem(block, new FabricItemSettings().rarity(Rarity.RARE))).itemGroup(ItemGroup.REDSTONE))
+            .item((block, identifier) -> ContentBuilder.ItemBuilder.create(identifier, () -> new BlockItem(block, new FabricItemSettings().rarity(Rarity.RARE))).itemGroup(ItemGroups.REDSTONE))
             .blockEntity((block, identifier) -> ContentBuilder.BlockEntityBuilder.create(identifier, IncubatorBlockEntity::new, block))
             .registerCondition(Andromeda.CONFIG.incubatorSettings.enableIncubator).build();
 

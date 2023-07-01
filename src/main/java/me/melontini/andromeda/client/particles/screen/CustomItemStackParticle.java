@@ -6,7 +6,7 @@ import me.melontini.dark_matter.util.Utilities;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 public class CustomItemStackParticle extends ItemStackParticle {
     private final int seed;
@@ -23,7 +23,7 @@ public class CustomItemStackParticle extends ItemStackParticle {
         matrices.push();
         matrices.translate(x, y, 500);
         float angle = (float) Math.toDegrees(Math.atan2(velY, velX) * 0.5);
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(angle));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
         RenderSystem.applyModelViewMatrix();
         this.client.getItemRenderer().renderInGuiWithOverrides(this.client.player, this.stack, -8, -8, this.seed);
         this.client.getItemRenderer().renderGuiItemOverlay(this.client.textRenderer, this.stack, -8, -8);

@@ -52,7 +52,7 @@ public class TNTBoatItem extends Item {
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 TNTBoatEntity tntBoat = new TNTBoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-                tntBoat.setBoatType(this.type);
+                tntBoat.setVariant(this.type);
                 tntBoat.setYaw(user.getYaw());
                 if (!world.isSpaceEmpty(tntBoat, tntBoat.getBoundingBox())) {
                     return TypedActionResult.fail(itemStack);

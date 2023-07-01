@@ -52,7 +52,7 @@ public class JukeboxBoatItem extends Item {
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 JukeboxBoatEntity jukeboxBoat = new JukeboxBoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-                jukeboxBoat.setBoatType(this.type);
+                jukeboxBoat.setVariant(this.type);
                 jukeboxBoat.setYaw(user.getYaw());
                 if (!world.isSpaceEmpty(jukeboxBoat, jukeboxBoat.getBoundingBox())) {
                     return TypedActionResult.fail(itemStack);

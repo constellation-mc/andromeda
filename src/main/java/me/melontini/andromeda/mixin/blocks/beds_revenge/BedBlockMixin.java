@@ -12,7 +12,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,7 +29,7 @@ public abstract class BedBlockMixin extends Block {
         super(settings);
     }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/world/explosion/ExplosionBehavior;DDDFZLnet/minecraft/world/explosion/Explosion$DestructionType;)Lnet/minecraft/world/explosion/Explosion;"), index = 6, method = "onUse")
+    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/world/explosion/ExplosionBehavior;Lnet/minecraft/util/math/Vec3d;FZLnet/minecraft/world/World$ExplosionSourceType;)Lnet/minecraft/world/explosion/Explosion;"), index = 4, method = "onUse")
     public float andromeda$explosionRedirect(float power) {
         return Andromeda.CONFIG.bedExplosionPower;
     }
@@ -47,14 +46,14 @@ public abstract class BedBlockMixin extends Block {
 
             world.createExplosion(
                     null,
-                    DamageSource.badRespawnPoint(),
+                    DamageSource.badRespawnPoint(pos.toCenterPos()),
                     null,
                     (double) pos.getX() + 0.5,
                     (double) pos.getY() + 0.5,
                     (double) pos.getZ() + 0.5,
                     Andromeda.CONFIG.bedExplosionPower,
                     true,
-                    Explosion.DestructionType.DESTROY
+                    World.ExplosionSourceType.BLOCK
             );
             cir.setReturnValue(ActionResult.SUCCESS);
         }

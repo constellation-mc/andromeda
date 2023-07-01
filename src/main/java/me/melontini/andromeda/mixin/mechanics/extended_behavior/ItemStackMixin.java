@@ -8,13 +8,13 @@ import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,7 +49,7 @@ public abstract class ItemStackMixin {
     }
 
     private boolean runBehaviors(World world, PlayerEntity user) {
-        if (Andromeda.CONFIG.throwableItems && !Andromeda.CONFIG.throwableItemsBlacklist.contains(Registry.ITEM.getId(getItem()).toString())) {
+        if (Andromeda.CONFIG.throwableItems && !Andromeda.CONFIG.throwableItemsBlacklist.contains(Registries.ITEM.getId(getItem()).toString())) {
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
             if (!world.isClient) {
                 var entity = new FlyingItemEntity((ItemStack) (Object) this, user, world);

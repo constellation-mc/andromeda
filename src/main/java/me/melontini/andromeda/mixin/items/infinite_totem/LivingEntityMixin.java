@@ -17,9 +17,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -57,7 +57,7 @@ public abstract class LivingEntityMixin extends Entity {
                     PacketByteBuf buf = PacketByteBufs.create()
                             .writeUuid(this.getUuid())
                             .writeItemStack(new ItemStack(ItemRegistry.INFINITE_TOTEM));
-                    buf.writeRegistryValue(Registry.PARTICLE_TYPE, Andromeda.KNOCKOFF_TOTEM_PARTICLE);
+                    buf.writeRegistryValue(Registries.PARTICLE_TYPE, Andromeda.KNOCKOFF_TOTEM_PARTICLE);
 
                     for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
                         ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);

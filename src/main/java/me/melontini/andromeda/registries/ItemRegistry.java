@@ -22,15 +22,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.RotationAxis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,24 +39,24 @@ public class ItemRegistry {
     public static RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.ROSE_OF_THE_VALLEY);
     public static SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "spawner_minecart"), () -> new SpawnerMinecartItem(AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).build();
+            .itemGroup(ItemGroups.REDSTONE).build();
     public static AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn).build();
+            .itemGroup(ItemGroups.REDSTONE).registerCondition(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn).build();
 
     public static NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn).build();
+            .itemGroup(ItemGroups.REDSTONE).registerCondition(Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn).build();
 
     public static JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
+            .itemGroup(ItemGroups.REDSTONE).registerCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
     public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
-            .itemGroup(ItemGroup.COMBAT).registerCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
+            .itemGroup(ItemGroups.COMBAT).registerCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
     public static Item LOCKPICK = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
-            .itemGroup(ItemGroup.TOOLS).registerCondition(Andromeda.CONFIG.lockpickEnabled).build();
+            .itemGroup(ItemGroups.TOOLS).registerCondition(Andromeda.CONFIG.lockpickEnabled).build();
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
     private static final ItemStack ITEM_GROUP_ICON = Utilities.supply(() -> {
         if (Andromeda.CONFIG.unknown) {
@@ -89,13 +86,13 @@ public class ItemRegistry {
                 List<ItemStack> boats = new ArrayList<>();
                 for (BoatEntity.Type value : BoatEntity.Type.values()) {
                     if (Andromeda.CONFIG.newBoats.isFurnaceBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_furnace")).getDefaultStack());
+                        boats.add(Registries.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_furnace")).getDefaultStack());
                     if (Andromeda.CONFIG.newBoats.isJukeboxBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_jukebox")).getDefaultStack());
+                        boats.add(Registries.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_jukebox")).getDefaultStack());
                     if (Andromeda.CONFIG.newBoats.isTNTBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_tnt")).getDefaultStack());
+                        boats.add(Registries.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_tnt")).getDefaultStack());
                     if (Andromeda.CONFIG.newBoats.isHopperBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper")).getDefaultStack());
+                        boats.add(Registries.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper")).getDefaultStack());
                 }
                 MinecraftUtil.appendStacks(itemStacks, boats, false);
             }).icon(() -> ITEM_GROUP_ICON).animatedIcon(() -> (matrixStack, itemX, itemY, selected, isTopRow) -> {
@@ -107,7 +104,7 @@ public class ItemRegistry {
                 matrixStack.translate(8.0, 8.0, 0.0);
                 matrixStack.scale(1.0F, -1.0F, 1.0F);
                 matrixStack.scale(16.0F, 16.0F, 16.0F);
-                matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(angle));
+                matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
                 BakedModel model = client.getItemRenderer().getModel(ITEM_GROUP_ICON, null, null, 0);
                 DrawUtil.renderGuiItemModelCustomMatrixNoTransform(matrixStack, ITEM_GROUP_ICON, model);
                 matrixStack.pop();
@@ -115,10 +112,10 @@ public class ItemRegistry {
 
     public static void register() {
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
-            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isFurnaceBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isJukeboxBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isTNTBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isHopperBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroups.TOOLS).registerCondition(Andromeda.CONFIG.newBoats.isFurnaceBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroups.TOOLS).registerCondition(Andromeda.CONFIG.newBoats.isJukeboxBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroups.TOOLS).registerCondition(Andromeda.CONFIG.newBoats.isTNTBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroups.TOOLS).registerCondition(Andromeda.CONFIG.newBoats.isHopperBoatOn).build();
         }
         AndromedaLog.info("ItemRegistry init complete!");
     }

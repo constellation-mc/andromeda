@@ -53,7 +53,7 @@ public class FurnaceBoatItem extends Item {
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 FurnaceBoatEntity furnaceBoat = new FurnaceBoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-                furnaceBoat.setBoatType(this.type);
+                furnaceBoat.setVariant(this.type);
                 furnaceBoat.setYaw(user.getYaw());
                 if (!world.isSpaceEmpty(furnaceBoat, furnaceBoat.getBoundingBox())) {
                     return TypedActionResult.fail(itemStack);

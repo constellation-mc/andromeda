@@ -10,7 +10,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 import java.util.Objects;
 
@@ -29,12 +29,12 @@ public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBloc
         matrices.translate(0.5, 0.7, 0.5);
         if (Objects.requireNonNull(entity.getWorld()).getBlockState(entity.getPos()).isOf(BlockRegistry.INCUBATOR_BLOCK)) {
             switch (entity.getWorld().getBlockState(entity.getPos()).get(IncubatorBlock.FACING)) {
-                case NORTH -> matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180));
-                case WEST -> matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270));
-                case EAST -> matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90));
-                case SOUTH -> matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(0));
+                case NORTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+                case WEST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
+                case EAST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
+                case SOUTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0));
             }
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-45));
             if (entity.processingTime > -1 && !entity.inventory.get(0).isEmpty()) {
                 MinecraftClient.getInstance().getItemRenderer().renderItem(entity.inventory.get(0), ModelTransformation.Mode.GROUND, light, overlay, matrices, vertexConsumers, 0);
             }
