@@ -9,7 +9,7 @@ import me.melontini.andromeda.util.data.PlantData;
 import me.melontini.dark_matter.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -25,7 +25,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -89,9 +88,6 @@ public class Andromeda implements ModInitializer {
         });
 
         ServerWorldEvents.LOAD.register((server, world) -> {
-            if (CONFIG.tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD)
-                WorldUtil.getTraderManager(world);
-
             if (CONFIG.dragonFight.fightTweaks) if (world.getRegistryKey() == World.END)
                 WorldUtil.getEnderDragonManager(world);
         });
@@ -99,14 +95,6 @@ public class Andromeda implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             Andromeda.PLANT_DATA.clear();
             Andromeda.EGG_DATA.clear();
-            if (CONFIG.tradingGoatHorn) {
-                ServerWorld world = server.getWorld(World.OVERWORLD);
-                if (world != null) {
-                    var manager = world.getPersistentStateManager();
-                    if (manager.loadedStates.containsKey("andromeda_trader_statemanager"))
-                        WorldUtil.getTraderManager(world).markDirty();
-                }
-            }
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
@@ -116,12 +104,6 @@ public class Andromeda implements ModInitializer {
         });
 
         ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (CONFIG.tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD) {
-                var manager = world.getPersistentStateManager();
-                if (manager.loadedStates.containsKey("andromeda_trader_statemanager"))
-                    WorldUtil.getTraderManager(world).tick();
-            }
-
             if (CONFIG.dragonFight.fightTweaks) if (world.getRegistryKey() == World.END) {
                 var manager = world.getPersistentStateManager();
                 if (manager.loadedStates.containsKey("andromeda_ender_dragon_fight"))
@@ -136,7 +118,7 @@ public class Andromeda implements ModInitializer {
             }
         });
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             if (CONFIG.damageBackport) DamageCommand.register(dispatcher);
         });
     }

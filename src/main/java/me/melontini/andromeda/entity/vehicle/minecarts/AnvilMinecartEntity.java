@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.ActionResult;
@@ -52,11 +51,6 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
 
         }
         return false;
-    }
-
-    @Override
-    public Item getItem() {
-        return ItemRegistry.ANVIL_MINECART;
     }
 
     @Override

@@ -37,13 +37,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.explosion.Explosion;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class ItemBehaviorAdder {
@@ -77,7 +77,7 @@ public class ItemBehaviorAdder {
             ServerCommandSource source = new ServerCommandSource(
                     serverWorld.getServer(), flyingItemEntity.getPos(), new Vec2f(flyingItemEntity.getPitch(), flyingItemEntity.getYaw()), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
             for (String command : data.item_commands) {
-                serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
+                serverWorld.getServer().getCommandManager().execute(source, command);
             }
         }
 
@@ -85,13 +85,13 @@ public class ItemBehaviorAdder {
             ServerCommandSource source = new ServerCommandSource(
                     serverWorld.getServer(), user.getPos(), new Vec2f(user.getPitch(), user.getYaw()), serverWorld, 4, user.getEntityName(), TextUtil.literal(user.getEntityName()), serverWorld.getServer(), user).withSilent();
             for (String command : data.user_commands) {
-                serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
+                serverWorld.getServer().getCommandManager().execute(source, command);
             }
         }
 
         if (data.server_commands != null) {
             for (String command : data.server_commands) {
-                serverWorld.getServer().getCommandManager().executeWithPrefix(serverWorld.getServer().getCommandSource().withSilent(), command);
+                serverWorld.getServer().getCommandManager().execute(serverWorld.getServer().getCommandSource().withSilent(), command);
             }
         }
 
@@ -103,7 +103,7 @@ public class ItemBehaviorAdder {
                     ServerCommandSource source = new ServerCommandSource(
                             serverWorld.getServer(), entity.getPos(), new Vec2f(entity.getPitch(), entity.getYaw()), serverWorld, 4, entity.getEntityName(), TextUtil.literal(entity.getEntityName()), serverWorld.getServer(), entity).withSilent();
                     for (String command : data.hit_entity_commands) {
-                        serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
+                        serverWorld.getServer().getCommandManager().execute(source, command);
                     }
                 }
             }
@@ -114,7 +114,7 @@ public class ItemBehaviorAdder {
                 ServerCommandSource source = new ServerCommandSource(
                         serverWorld.getServer(), vec3d, new Vec2f(0, 0), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
                 for (String command : data.hit_block_commands) {
-                    serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
+                    serverWorld.getServer().getCommandManager().execute(source, command);
                 }
             }
         }

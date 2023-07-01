@@ -2,8 +2,8 @@ package me.melontini.andromeda.entity.vehicle.boats;
 
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
-import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -53,7 +53,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
             this.setDamageWobbleTicks(10);
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
             this.scheduleVelocityUpdate();
-            this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+            this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
             boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity) source.getAttacker()).getAbilities().creativeMode;
             if (bl || this.getDamageWobbleStrength() > 40.0F) {
                 this.stopPlaying();

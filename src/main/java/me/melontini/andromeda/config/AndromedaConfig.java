@@ -44,10 +44,6 @@ public class AndromedaConfig implements ConfigData {
     public boolean quickFire = false;
 
     @ConfigEntry.Category("blocks")
-    @ConfigEntry.Gui.Tooltip()
-    public boolean fallingPropagule = true;
-
-    @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
     @ConfigEntry.Gui.RequiresRestart
     public boolean cactusBottleFilling = true;
@@ -215,6 +211,11 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean isHopperBoatOn = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean isChestBoatOn = true;
     }
 
     @ConfigEntry.Category("items")
@@ -312,10 +313,6 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
     public List<String> throwableItemsBlacklist = Lists.newArrayList();
-
-    @ConfigEntry.Category("mechanics")
-    @ConfigEntry.Gui.Tooltip(count = 3)
-    public boolean tradingGoatHorn = true;
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip

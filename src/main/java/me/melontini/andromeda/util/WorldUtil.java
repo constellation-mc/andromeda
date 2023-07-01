@@ -4,6 +4,7 @@ import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.dark_matter.content.data.NbtBuilder;
 import me.melontini.dark_matter.minecraft.world.PlayerUtil;
 import me.melontini.dark_matter.util.MakeSure;
+import me.melontini.dark_matter.util.MathStuff;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -27,13 +28,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static me.melontini.andromeda.Andromeda.MODID;
 
@@ -41,14 +42,6 @@ public class WorldUtil {
     public static final Identifier BEE_LOOT_ID = new Identifier(MODID, "bee_nest/bee_nest_broken");
 
     private static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
-
-    public static CustomTraderManager getTraderManager(@NotNull ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(nbtCompound -> {
-            CustomTraderManager manager = new CustomTraderManager();
-            manager.readNbt(nbtCompound);
-            return manager;
-        }, CustomTraderManager::new, "andromeda_trader_statemanager");
-    }
 
     public static EnderDragonManager getEnderDragonManager(ServerWorld world) {
         return world.getPersistentStateManager().getOrCreate(nbtCompound -> {
@@ -61,7 +54,7 @@ public class WorldUtil {
     public static void addParticle(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         if (!world.isClient) {
             PacketByteBuf packetByteBuf = PacketByteBufs.create();
-            packetByteBuf.writeRegistryValue(Registry.PARTICLE_TYPE, parameters.getType());
+            packetByteBuf.writeIdentifier(Registry.PARTICLE_TYPE.getId(parameters.getType()));
             packetByteBuf.writeDouble(x);
             packetByteBuf.writeDouble(y);
             packetByteBuf.writeDouble(z);
@@ -141,7 +134,7 @@ public class WorldUtil {
             if (i > j) {
                 return Optional.empty();
             }
-            var pos = new BlockPos(blockPos.getX() + random.nextBetween(-range, range), blockPos.getY() + random.nextBetween(-range, range), blockPos.getZ() + random.nextBetween(-range, range));
+            var pos = new BlockPos(blockPos.getX() + MathStuff.nextInt(random, -range, range), blockPos.getY() + MathStuff.nextInt(random, -range, range), blockPos.getZ() + MathStuff.nextInt(random, -range, range));
             if (world.getBlockState(pos.up()).isAir() && world.getBlockState(pos).isAir() && isClear(world, pos) && isClear(world, pos.up())) {
                 return Optional.of(pos);
             }

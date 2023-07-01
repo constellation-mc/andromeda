@@ -23,7 +23,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
@@ -47,7 +46,7 @@ public class ClientSideNetworking {
                     if (stack.getItem() instanceof MusicDiscItem disc) {
                         var discName = disc.getDescription();
                         soundInstanceMap.computeIfAbsent(id, k -> {
-                            SoundInstance instance = new PersistentMovingSoundInstance(disc.getSound(), SoundCategory.RECORDS, id, client.world, Random.create());
+                            SoundInstance instance = new PersistentMovingSoundInstance(disc.getSound(), SoundCategory.RECORDS, id, client.world);
                             client.getSoundManager().play(instance);
                             return instance;
                         });
@@ -72,7 +71,7 @@ public class ClientSideNetworking {
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
             UUID id = buf.readUuid();
             ItemStack stack = buf.readItemStack();
-            DefaultParticleType particle = (DefaultParticleType) buf.readRegistryValue(Registry.PARTICLE_TYPE);
+            DefaultParticleType particle = (DefaultParticleType) Registry.PARTICLE_TYPE.get(buf.readIdentifier());
             client.execute(() -> {
                 Entity entity = client.world.getEntityLookup().get(id);
                 client.particleManager.addEmitter(entity, particle, 30);
@@ -83,10 +82,10 @@ public class ClientSideNetworking {
             });
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.ADD_ONE_PARTICLE, (client, handler, packetByteBuf, responseSender) -> {
-            DefaultParticleType particle = (DefaultParticleType) packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE);
-            double x = packetByteBuf.readDouble(), y = packetByteBuf.readDouble(), z = packetByteBuf.readDouble();
-            double velocityX = packetByteBuf.readDouble(), velocityY = packetByteBuf.readDouble(), velocityZ = packetByteBuf.readDouble();
+        ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.ADD_ONE_PARTICLE, (client, handler, buf, responseSender) -> {
+            DefaultParticleType particle = (DefaultParticleType) Registry.PARTICLE_TYPE.get(buf.readIdentifier());
+            double x = buf.readDouble(), y = buf.readDouble(), z = buf.readDouble();
+            double velocityX = buf.readDouble(), velocityY = buf.readDouble(), velocityZ = buf.readDouble();
             client.execute(() -> {
                 assert particle != null;
                 client.worldRenderer.addParticle(particle, particle.shouldAlwaysSpawn(), x, y, z, velocityX, velocityY, velocityZ);
@@ -117,7 +116,7 @@ public class ClientSideNetworking {
             float g = ColorUtil.getGreenF(color);
             float b = ColorUtil.getBlueF(color);
             client.execute(() -> {
-                ParticlesMode particlesMode = MinecraftClient.getInstance().options.getParticles().getValue();
+                ParticlesMode particlesMode = MinecraftClient.getInstance().options.particles;
                 if (particlesMode == ParticlesMode.MINIMAL) return;
 
                 if (spawnItem) {

@@ -19,7 +19,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -91,10 +90,10 @@ public class ResourceConditionRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 Andromeda.PLANT_DATA.clear();
-                var map = manager.findResources("am_crop_temperatures", identifier -> identifier.getPath().endsWith(".json"));
-                for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
+                var map = manager.findResources("am_crop_temperatures", identifier -> identifier.endsWith(".json"));
+                for (Identifier entry : map) {
                     try {
-                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
+                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(manager.getResource(entry).getInputStream()));
                         //LogUtil.devInfo(jsonElement);
                         PlantData data = GSON.fromJson(jsonElement, PlantData.class);
 
@@ -127,10 +126,10 @@ public class ResourceConditionRegistry {
                     }
                 }
 
-                var map = manager.findResources("am_egg_processing", identifier -> identifier.getPath().endsWith(".json"));
-                for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
+                var map = manager.findResources("am_egg_processing", identifier -> identifier.endsWith(".json"));
+                for (Identifier entry : map) {
                     try {
-                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
+                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(manager.getResource(entry).getInputStream()));
                         //LogUtil.devInfo(jsonElement);
                         EggProcessingData data = GSON.fromJson(jsonElement, EggProcessingData.class);
 
@@ -160,10 +159,10 @@ public class ResourceConditionRegistry {
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
                 ItemBehaviorAdder.addDefaults();
-                var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));
-                for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
+                var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.endsWith(".json"));
+                for (Identifier entry : map) {
                     try {
-                        JsonObject json = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
+                        JsonObject json = JsonHelper.deserialize(new InputStreamReader(manager.getResource(entry).getInputStream()));
                         ItemBehaviorData data = new ItemBehaviorData();
 
                         Set<Item> items = new HashSet<>();

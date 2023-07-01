@@ -41,7 +41,7 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
         super(title);
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommand(Ljava/lang/String;)Z", shift = At.Shift.BEFORE), method = "apply(Lnet/minecraft/client/MinecraftClient;Ljava/util/Optional;)V")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendChatMessage(Ljava/lang/String;)V", shift = At.Shift.BEFORE), method = "apply(Lnet/minecraft/client/MinecraftClient;Ljava/util/Optional;)V")
     private static void andromeda$gmSwitchParticles(MinecraftClient client, Optional<GameModeSelectionScreen.GameModeSelection> gameMode, CallbackInfo ci) {
         if (gameMode.isEmpty() || !Andromeda.CONFIG.guiParticles.gameModeSwitcherParticles) return;
 

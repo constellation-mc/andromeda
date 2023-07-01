@@ -25,6 +25,9 @@ accessible field net/minecraft/item/MinecartItem type Lnet/minecraft/entity/vehi
 accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
 # Methods
+accessible method net/minecraft/item/ItemPlacementContext <init> (Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/hit/BlockHitResult;)V
+accessible method net/minecraft/server/world/ServerWorld sendToPlayerIfNearby (Lnet/minecraft/server/network/ServerPlayerEntity;ZDDDLnet/minecraft/network/Packet;)Z
+accessible method net/minecraft/entity/damage/DamageSource <init> (Ljava/lang/String;)V
 accessible method net/minecraft/entity/mob/MobEntity changeAngle (FFF)F
 accessible method net/minecraft/client/particle/ParticleManager registerFactory (Lnet/minecraft/particle/ParticleType;Lnet/minecraft/client/particle/ParticleManager$SpriteAwareFactory;)V
 accessible method net/minecraft/client/particle/ParticleTextureData <init> (Ljava/util/List;)V
