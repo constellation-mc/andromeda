@@ -2,7 +2,7 @@
 ### A galaxy is a collection of things and systems. So is this mod.
 
 <br/>
-<a href="https://www.curseforge.com/minecraft/mc-mods/andromeda"><img src="https://cf.way2muchnoise.eu/title/639198.svg" alt="" height="24"></a><a href="https://modrinth.com/mod/andromeda"><img src="https://img.shields.io/modrinth/dt/TseYlb0f?label=modrinth" alt="" height="24"></a>
+<a href="https://www.curseforge.com/minecraft/mc-mods/andromeda"><img src="https://cf.way2muchnoise.eu/title/639198.svg" alt="" height="20"></a><a href="https://modrinth.com/mod/andromeda"><img src="https://img.shields.io/modrinth/dt/TseYlb0f?label=modrinth" alt="" height="20"></a>
 <br/>
 <br/>
 
@@ -25,5 +25,9 @@ https://andromeda-wiki.pages.dev/
 <img alt="VuePress icon" src="https://github.com/melontini/dark-matter/assets/104443436/c4ea1ccd-f82c-4b99-ba15-7ebf6cf4b7e7" width="50" height="50"></img> [VuePress](https://v2.vuepress.vuejs.org/) and <img alt="Cloudflare Pages icon" src="https://github.com/melontini/dark-matter/assets/104443436/d7bb6939-b96f-48c7-a11d-1b79a1ef074d" width="50" height="50"></img> [Cloudflare Pages](https://pages.cloudflare.com/).
 
 ***
+
+[![CodeFactor](https://www.codefactor.io/repository/github/melontini/andromeda/badge)](https://www.codefactor.io/repository/github/melontini/andromeda)
+![GitHub](https://img.shields.io/github/license/melontini/andromeda)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fmelontini%2Fandromeda&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 ### ❤️
