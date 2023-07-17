@@ -24,7 +24,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
@@ -44,6 +43,7 @@ public class Andromeda implements ModInitializer {
     public static final String MODID = "andromeda";
     public static final String MOD_VERSION = FabricLoader.getInstance().getModContainer(Andromeda.MODID).orElseThrow().getMetadata().getVersion().getFriendlyString();
     public static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
+    public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
