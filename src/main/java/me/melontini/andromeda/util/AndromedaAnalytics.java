@@ -3,8 +3,8 @@ package me.melontini.andromeda.util;
 import com.google.gson.Gson;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.dark_matter.analytics.Analytics;
+import me.melontini.dark_matter.analytics.Prop;
 import me.melontini.dark_matter.analytics.mixpanel.MixpanelAnalytics;
-import me.melontini.dark_matter.util.mixin.ExtendedPlugin;
 import net.fabricmc.loader.api.FabricLoader;
 import org.json.JSONObject;
 
@@ -21,13 +21,13 @@ public class AndromedaAnalytics {
             if (Andromeda.CONFIG.sendOptionalData) {
                 HANDLER.send(messageBuilder -> {
                     JSONObject object = new JSONObject();
-                    object.put("mod_version", FabricLoader.getInstance().getModContainer(Andromeda.MODID).orElseThrow().getMetadata().getVersion().getFriendlyString());
-                    object.put("mc_version", ExtendedPlugin.parseMCVersion().getFriendlyString());
+                    object.put("mod_version", Andromeda.MOD_VERSION);
+                    object.put("mc_version", Prop.MINECRAFT_VERSION.get());
                     return messageBuilder.set(Analytics.getUUIDString(), object);
                 });
 
                 Gson gson = new Gson();
-                Path fakeConfig = FabricLoader.getInstance().getGameDir().resolve(".andromeda/config_copy.json");
+                Path fakeConfig = Andromeda.HIDDEN_PATH.resolve("config_copy.json");
                 String currentConfig = gson.toJson(Andromeda.CONFIG);
                 if (!Files.exists(fakeConfig)) {
                     try {
