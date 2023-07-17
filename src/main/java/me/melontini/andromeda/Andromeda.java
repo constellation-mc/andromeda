@@ -24,7 +24,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -41,6 +40,9 @@ import java.util.UUID;
 
 public class Andromeda implements ModInitializer {
     public static final String MODID = "andromeda";
+    public static final String MOD_VERSION = FabricLoader.getInstance().getModContainer(Andromeda.MODID).orElseThrow().getMetadata().getVersion().getFriendlyString();
+    public static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
+    public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
@@ -49,7 +51,6 @@ public class Andromeda implements ModInitializer {
     public static final DamageSource AGONY = new DamageSource("andromeda_agony");
     public static final Map<PlayerEntity, AbstractMinecartEntity> LINKING_CARTS = new HashMap<>();
     public static final Map<PlayerEntity, AbstractMinecartEntity> UNLINKING_CARTS = new HashMap<>();
-    public static MinecraftServer SERVER;
     public static final IntProperty WATER_LEVEL_3 = IntProperty.of("water_level", 1, 3);
 
     public static DamageSource bricked(@Nullable Entity attacker) {
@@ -59,9 +60,8 @@ public class Andromeda implements ModInitializer {
     private static void updateHiddenPath() {
         Path old = FabricLoader.getInstance().getGameDir().resolve(".m_tweaks");
         if (Files.exists(old)) {
-            Path dump = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
             try {
-                Files.move(old, dump);
+                Files.move(old, HIDDEN_PATH);
             } catch (IOException e) {
                 AndromedaLog.error("Couldn't move hidden path!", e);
             }
@@ -82,10 +82,6 @@ public class Andromeda implements ModInitializer {
         KNOCKOFF_TOTEM_PARTICLE = FabricParticleTypes.simple();
 
         Registry.register(Registry.PARTICLE_TYPE, new Identifier(MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
-
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            SERVER = server;
-        });
 
         ServerWorldEvents.LOAD.register((server, world) -> {
             if (CONFIG.dragonFight.fightTweaks) if (world.getRegistryKey() == World.END)

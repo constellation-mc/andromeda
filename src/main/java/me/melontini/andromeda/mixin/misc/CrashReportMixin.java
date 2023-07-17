@@ -11,6 +11,7 @@ import net.minecraft.util.crash.CrashReport;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Mixin(MinecraftClient.class)
 public abstract class CrashReportMixin {
+    @Unique
     private static final MixpanelAnalytics.Handler ANDROMEDA_HANDLER = MixpanelAnalytics.init(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
 
     @Inject(at = @At(value = "HEAD"), method = "printCrashReport")
@@ -43,7 +45,7 @@ public abstract class CrashReportMixin {
 
                     //fill loaded mods.
                     JSONArray mods = new JSONArray();
-                    for (ModContainer mod : FabricLoader.getInstance().getAllMods())
+                    for (ModContainer mod : FabricLoader.getInstance().getAllMods().stream().sorted((a, b) -> a.getMetadata().getId().compareToIgnoreCase(b.getMetadata().getId())).toList())
                         mods.put(mod.getMetadata().getId() + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")");
                     object.put("mods", mods);
 
