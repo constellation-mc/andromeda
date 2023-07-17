@@ -5,8 +5,10 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.dark_matter.analytics.Analytics;
 import me.melontini.dark_matter.analytics.Prop;
 import me.melontini.dark_matter.analytics.mixpanel.MixpanelAnalytics;
+import me.melontini.dark_matter.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
 import org.json.JSONObject;
+import org.spongepowered.asm.service.MixinService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +25,12 @@ public class AndromedaAnalytics {
                     JSONObject object = new JSONObject();
                     object.put("mod_version", Andromeda.MOD_VERSION);
                     object.put("mc_version", Prop.MINECRAFT_VERSION.get());
+                    object.put("modloader", Utilities.supply(() -> {
+                        String sn = MixinService.getService().getName();
+                        if (sn.contains("/Fabric")) return "Fabric";
+                        else if (sn.contains("/Quilt")) return "Quilt";
+                        else return "Other";
+                    }));
                     return messageBuilder.set(Analytics.getUUIDString(), object);
                 });
 
