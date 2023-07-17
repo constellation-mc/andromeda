@@ -260,7 +260,7 @@
   "text.autoconfig.andromeda.option.damageBackport.@Tooltip": "A backport of the /damage command. Not a 1-1 copy!",
   "text.autoconfig.andromeda.option.sendOptionalData": "Send Optional Data",
   "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[0]": "Data sent at startup:",
-  "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[1]": "Mod version, Minecraft version, Environment (client/server), and config options.",
+  "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[1]": "Mod version, Minecraft version, Modloader, and config options.",
   "text.autoconfig.andromeda.option.sendCrashReports": "Send Crash Reports",
   "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[0]": "Data sent at client crash:",
   "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[1]": "Stacktrace, Loaded mods, Mod version, Minecraft version",

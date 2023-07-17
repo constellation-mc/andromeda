@@ -27,7 +27,7 @@ jobs:
           echo "VERSION_INFORMATION=$(${{github.workspace}}/gradlew -q printVersionName)" >> $GITHUB_ENV
           echo "VERSION_PLAIN=$(${{github.workspace}}/gradlew -q printVersion)" >> $GITHUB_ENV
       - name: Publish Minecraft Mods
-        uses: Kir-Antipov/mc-publish@v3.2
+        uses: Kir-Antipov/mc-publish@v3.3
         with:
           version-type: alpha
           changelog-file: CHANGELOG.md
@@ -49,14 +49,18 @@ jobs:
           modrinth-featured: true
           modrinth-unfeature-mode: subset
           modrinth-dependencies: |
-            fabric-api | depends | *
-            cloth-config | depends | *
-            modmenu | suggests | *
+            fabric-api(required)
+            cloth-config(required)
+            modmenu(recommended)
+            tooltipfix(recommended)
+            dark-matter(embedded)
 
 
           curseforge-id: 639198
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           curseforge-dependencies: |
-            fabric-api | depends | *
-            cloth-config | depends | *
-            modmenu | suggests | *
+            fabric-api(required)
+            cloth-config(required)
+            modmenu(recommended)
+            tooltipfix(recommended)
+            dark-matter(embedded)

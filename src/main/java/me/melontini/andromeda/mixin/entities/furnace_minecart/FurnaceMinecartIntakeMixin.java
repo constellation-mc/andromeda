@@ -31,7 +31,13 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
     @Inject(at = @At("HEAD"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
         if (!this.world.isClient() && Andromeda.CONFIG.betterFurnaceMinecart && Andromeda.CONFIG.furnaceMinecartTakeFuelWhenLow && this.fuel < 100) {
-            if (world.getTime() % 10 == 0) {
+            if (world.getTime() % 20 == 0) {
+                if (Andromeda.FABRICATION_LOADED) {
+                    try {
+                        if (getClass().getField("fabrication$pauseFuel").getInt(this) > 0) return;
+                    } catch (IllegalAccessException | NoSuchFieldException ignored) {}
+                }
+
                 AbstractMinecartEntity entity = this.world
                         .getEntitiesByClass(AbstractMinecartEntity.class, this.getBoundingBox().expand(1.5, 0, 1.5), minecart -> minecart instanceof Inventory)
                         .stream()
