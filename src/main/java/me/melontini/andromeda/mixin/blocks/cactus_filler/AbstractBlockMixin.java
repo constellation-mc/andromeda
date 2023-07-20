@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.cactus_filler;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.andromeda.util.AndromedaLog;
@@ -51,11 +52,11 @@ public class AbstractBlockMixin {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
                     player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 
-                    if (state.get(Andromeda.WATER_LEVEL_3) == 3) {
+                    if (state.get(BlockUtil.WATER_LEVEL_3) == 3) {
                         world.breakBlock(pos1.down(), false, player);
                         ItemStackUtil.spawnWithRVelocity(pos1, Items.DEAD_BUSH.getDefaultStack(), world, 0.2);
                     } else {
-                        world.setBlockState(pos1.down(), state.cycle(Andromeda.WATER_LEVEL_3));
+                        world.setBlockState(pos1.down(), state.cycle(BlockUtil.WATER_LEVEL_3));
                     }
 
                     ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.6, 0.5, 0.6, 0.5);

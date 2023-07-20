@@ -1,12 +1,15 @@
 package me.melontini.andromeda.util;
 
 import net.minecraft.block.Block;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
 
-public class BeaconUtil {
+public class BlockUtil {
+    public static final IntProperty WATER_LEVEL_3 = IntProperty.of("water_level", 1, 3);
+
     public static int getLevelFromBlocks(World world, BlockPos pos, List<Block> allowedBlocks) {
         int x = pos.getX();
         int y = pos.getY();
