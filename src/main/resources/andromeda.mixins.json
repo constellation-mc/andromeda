@@ -23,6 +23,9 @@
     "entities.slimes.flee.FaceTowardTargetGoalMixin",
     "entities.slimes.merge.SlimeEntityMixin",
     "entities.slimes.slowness.SlimeEntityMixin",
+    "entities.snowball_tweaks.cooldown.SnowballItemMixin",
+    "entities.snowball_tweaks.freeze.SnowballEntityMixin",
+    "entities.snowball_tweaks.put_out_fire.SnowballEntityMixin",
     "items.better_names.ItemStackMixin",
     "items.cart_copy.ItemDispenserBehaviorMixin",
     "items.cart_copy.MinecartItemMixin",
@@ -60,7 +63,6 @@
     "gui.gui_particles.GameModeSelectionScreenMixin",
     "gui.gui_particles.accessors.HandledScreenAccessor",
     "items.mending_fix.AnvilScreenMixin",
-    "misc.CrashReportMixin",
     "misc.unknown.nice_level.LevelLoadingScreenMixin",
     "misc.unknown.useless_info.DebugHudMixin",
     "misc.unknown.useless_info.TitleScreenMixin"

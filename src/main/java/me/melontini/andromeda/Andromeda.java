@@ -25,12 +25,9 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,22 +47,10 @@ public class Andromeda implements ModInitializer {
     public static final RegistryKey<DamageType> BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(MODID, "bricked"));
     public static final Map<PlayerEntity, AbstractMinecartEntity> LINKING_CARTS = new HashMap<>();
     public static final Map<PlayerEntity, AbstractMinecartEntity> UNLINKING_CARTS = new HashMap<>();
-    public static final IntProperty WATER_LEVEL_3 = IntProperty.of("water_level", 1, 3);
-
-    private static void updateHiddenPath() {
-        Path old = FabricLoader.getInstance().getGameDir().resolve(".m_tweaks");
-        if (Files.exists(old)) {
-            try {
-                Files.move(old, HIDDEN_PATH);
-            } catch (IOException e) {
-                AndromedaLog.error("Couldn't move hidden path!", e);
-            }
-        }
-    }
 
     @Override
     public void onInitialize() {
-        updateHiddenPath();
+        AndromedaAnalytics.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
         EntityTypeRegistry.register();
