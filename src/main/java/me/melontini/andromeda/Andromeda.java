@@ -58,21 +58,9 @@ public class Andromeda implements ModInitializer {
         return new BrickedDamageSource(attacker);
     }
 
-    private static void updateHiddenPath() {
-        Path old = FabricLoader.getInstance().getGameDir().resolve(".m_tweaks");
-        if (Files.exists(old)) {
-            try {
-                Files.move(old, HIDDEN_PATH);
-            } catch (IOException e) {
-                AndromedaLog.error("Couldn't move hidden path!", e);
-            }
-        }
-    }
-
     @Override
     public void onInitialize() {
         AndromedaAnalytics.registerCrashHandler();
-        updateHiddenPath();
         BlockRegistry.register();
         ItemRegistry.register();
         EntityTypeRegistry.register();
