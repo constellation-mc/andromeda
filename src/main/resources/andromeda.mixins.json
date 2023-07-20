@@ -23,6 +23,7 @@
     "entities.slimes.flee.FaceTowardTargetGoalMixin",
     "entities.slimes.merge.SlimeEntityMixin",
     "entities.slimes.slowness.SlimeEntityMixin",
+    "entities.snowball_tweaks.cooldown.SnowballItemMixin",
     "entities.snowball_tweaks.freeze.SnowballEntityMixin",
     "entities.snowball_tweaks.put_out_fire.SnowballEntityMixin",
     "items.better_names.ItemStackMixin",
