@@ -118,6 +118,27 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.CollapsibleObject
+    public Snowballs snowballs = new Snowballs();
+
+    public static class Snowballs {
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean freeze = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean extinguish = true;
+
+        @ConfigEntry.Category("entities")
+        public boolean enableCooldown = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public int cooldown = 10;
+    }
+
+    @ConfigEntry.Category("entities")
+    @ConfigEntry.Gui.CollapsibleObject
     public Slimes slimes = new Slimes();
 
     public static class Slimes {

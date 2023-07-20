@@ -85,7 +85,7 @@ public class AndromedaClient implements ClientModInitializer {
                         int y = ((HandledScreenAccessor) furnaceScreen).andromeda$getY();
 
 
-                        ScreenParticleHelper.addScreenParticle(ParticleTypes.FLAME,
+                        ScreenParticleHelper.addScreenParticle(screen, ParticleTypes.FLAME,
                                 MathStuff.nextDouble(Utilities.RANDOM, x + 56, x + 56 + 14),
                                 y + 36 + 13, MathStuff.nextDouble(Utilities.RANDOM, -0.01, 0.01),
                                 0.05);
