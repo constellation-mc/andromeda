@@ -71,6 +71,7 @@ public class Andromeda implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        AndromedaAnalytics.registerCrashHandler();
         updateHiddenPath();
         BlockRegistry.register();
         ItemRegistry.register();

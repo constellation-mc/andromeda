@@ -2,11 +2,15 @@ package me.melontini.andromeda.util;
 
 import com.google.gson.Gson;
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.analytics.Analytics;
 import me.melontini.dark_matter.analytics.Prop;
+import me.melontini.dark_matter.analytics.crashes.Crashlytics;
 import me.melontini.dark_matter.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.spongepowered.asm.service.MixinService;
 
@@ -31,6 +35,7 @@ public class AndromedaAnalytics {
                         else if (sn.contains("/Quilt")) return "Quilt";
                         else return "Other";
                     }));
+                    AndromedaLog.info("Uploading optional data (Environment): \n" + object.toString(2));
                     return messageBuilder.set(Analytics.getUUIDString(), object);
                 });
 
@@ -66,6 +71,34 @@ public class AndromedaAnalytics {
         }
     }
 
+    public static void registerCrashHandler() {
+        Crashlytics.addHandler("andromeda", (report, cause, latestLog, envType) -> {
+            if (!FabricLoader.getInstance().isDevelopmentEnvironment() && Andromeda.CONFIG.sendCrashReports) {
+                if (cause instanceof AndromedaException e && !e.shouldReport()) return false;
+                String s = report.getCauseAsString();
+                return s.contains("me.melontini.andromeda.");
+            } else return false;
+        }, (report, cause, latestLog, envType) -> HANDLER.send(messageBuilder -> {
+            AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
+            JSONObject object = new JSONObject();
+
+            //fill trace.
+            JSONArray stackTrace = new JSONArray();
+            for (String string : report.getCauseAsString().lines().toList()) stackTrace.put(string);
+            object.put("stackTrace", stackTrace);
+
+            //fill loaded mods.
+            JSONArray mods = new JSONArray();
+            for (ModContainer mod : FabricLoader.getInstance().getAllMods().stream().sorted((a, b) -> a.getMetadata().getId().compareToIgnoreCase(b.getMetadata().getId())).toList())
+                mods.put(mod.getMetadata().getId() + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")");
+            object.put("mods", mods);
+
+            object.put("environment", envType.toString().toLowerCase());
+
+            return messageBuilder.event(AndromedaAnalytics.CRASH_UUID, "Crash", object);
+        }, true));
+    }
+
     private static void stripNonBooleans(JSONObject object) {
         for (String s : new HashSet<>(object.keySet())) {
             try {
@@ -86,6 +119,7 @@ public class AndromedaAnalytics {
             JSONObject config = new JSONObject(gson.toJson(Andromeda.CONFIG));
             stripNonBooleans(config);
             object.put("Config", config);
+            AndromedaLog.info("Uploading optional data (Config)");
             return messageBuilder.set(Analytics.getUUIDString(), object);
         });
     }
