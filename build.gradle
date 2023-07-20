@@ -40,6 +40,7 @@ dependencies {
     modImplementation include("me.melontini.dark-matter:dark-matter-base:${project.dark_matter}")
     modImplementation include("me.melontini.dark-matter:dark-matter-minecraft:${project.dark_matter}")
     modImplementation include("me.melontini.dark-matter:dark-matter-analytics:${project.dark_matter}")
+    modImplementation include("me.melontini.dark-matter:dark-matter-analytics-crashes:${project.dark_matter}")
     modImplementation include("me.melontini.dark-matter:dark-matter-analytics-mixpanel:${project.dark_matter}")
     modImplementation include("me.melontini.dark-matter:dark-matter-content:${project.dark_matter}")
     modImplementation include("me.melontini.dark-matter:dark-matter-mirage:${project.dark_matter}")
