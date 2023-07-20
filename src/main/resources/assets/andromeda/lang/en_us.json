@@ -138,6 +138,11 @@
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsRange.@Tooltip": "Sets a range for campfire to emit effects",
 
   "text.autoconfig.andromeda.category.entities": "Entities",
+  "text.autoconfig.andromeda.option.snowballs": "Snowball Tweaks",
+  "text.autoconfig.andromeda.option.snowballs.freeze": "Freeze Entities",
+  "text.autoconfig.andromeda.option.snowballs.freeze.@Tooltip": "Makes snowballs freeze damaged entities.",
+  "text.autoconfig.andromeda.option.snowballs.extinguish": "Extinguish Entities",
+  "text.autoconfig.andromeda.option.snowballs.extinguish.@Tooltip": "Makes snowballs extinguish damaged entities, if on fire.",
   "text.autoconfig.andromeda.option.slimes": "Slime Tweaks",
   "text.autoconfig.andromeda.option.slimes.flee": "Small Slimes Flee",
   "text.autoconfig.andromeda.option.slimes.flee.@Tooltip": "Small slimes flee from their enemies.",
