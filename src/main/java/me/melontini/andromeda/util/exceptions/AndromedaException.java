@@ -19,22 +19,22 @@ public class AndromedaException extends RuntimeException {
     }
 
     public AndromedaException(boolean report) {
-        super(buildMessage(""));
+        super(buildMessage(report, ""));
         this.report = report;
     }
 
     public AndromedaException(boolean report, String message) {
-        super(buildMessage(message));
+        super(buildMessage(report, message));
         this.report = report;
     }
 
     public AndromedaException(boolean report, String message, Throwable cause) {
-        super(buildMessage(message), cause);
+        super(buildMessage(report, message), cause);
         this.report = report;
     }
 
     public AndromedaException(boolean report, Throwable cause) {
-        super(buildMessage(""), cause);
+        super(buildMessage(report, ""), cause);
         this.report = report;
     }
 
@@ -43,6 +43,10 @@ public class AndromedaException extends RuntimeException {
     }
 
     protected static String buildMessage(String message) {
-        return "(Andromeda) " + message + "\n" + "If you have \"Send Crash Reports\" enabled this crash report would've been sent to the developer. Sorry! \n";
+        return buildMessage(true, message);
+    }
+
+    protected static String buildMessage(boolean report, String message) {
+        return report ? "(Andromeda) " + message + "\n" + "If you have \"Send Crash Reports\" enabled this crash report would've been sent to the developer. Sorry! \n" : "(Andromeda) " + message;
     }
 }
