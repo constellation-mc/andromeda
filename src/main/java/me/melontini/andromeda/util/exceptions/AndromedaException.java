@@ -1,6 +1,7 @@
 package me.melontini.andromeda.util.exceptions;
 
 public class AndromedaException extends RuntimeException {
+    private boolean report = true;
     public AndromedaException() {
         super(buildMessage(""));
     }
@@ -17,10 +18,28 @@ public class AndromedaException extends RuntimeException {
         super(buildMessage(""), cause);
     }
 
-    protected AndromedaException(String message, Throwable cause,
-                               boolean enableSuppression,
-                               boolean writableStackTrace) {
-        super(buildMessage(message), cause, enableSuppression, writableStackTrace);
+    public AndromedaException(boolean report) {
+        super(buildMessage(""));
+        this.report = report;
+    }
+
+    public AndromedaException(boolean report, String message) {
+        super(buildMessage(message));
+        this.report = report;
+    }
+
+    public AndromedaException(boolean report, String message, Throwable cause) {
+        super(buildMessage(message), cause);
+        this.report = report;
+    }
+
+    public AndromedaException(boolean report, Throwable cause) {
+        super(buildMessage(""), cause);
+        this.report = report;
+    }
+
+    public boolean shouldReport() {
+        return report;
     }
 
     protected static String buildMessage(String message) {
