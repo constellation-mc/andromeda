@@ -80,11 +80,12 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
                     EggProcessingData data = Andromeda.EGG_DATA.get(stack.getItem());
                     Entity entity = Registry.ENTITY_TYPE.get(Identifier.tryParse(data.entity)).create(world);
                     BlockPos entityPos = pos.offset(state.get(IncubatorBlock.FACING));
-                    assert entity != null;
-                    entity.setPos(entityPos.getX() + 0.5, entityPos.getY() + 0.5, entityPos.getZ() + 0.5);
-                    if (entity instanceof PassiveEntity passive) passive.setBaby(true);
-                    stack.decrement(1);
-                    world.spawnEntity(entity);
+                    if (entity != null) {
+                        entity.setPos(entityPos.getX() + 0.5, entityPos.getY() + 0.5, entityPos.getZ() + 0.5);
+                        if (entity instanceof PassiveEntity passive) passive.setBaby(true);
+                        stack.decrement(1);
+                        world.spawnEntity(entity);
+                    }
                     this.processingTime = -1;
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     markDirty();
