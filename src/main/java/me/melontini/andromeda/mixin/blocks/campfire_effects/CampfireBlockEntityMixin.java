@@ -48,7 +48,7 @@ public class CampfireBlockEntityMixin {
                                 player.addStatusEffect(effectInstance);
                             }
                         } else {
-                            throw new AndromedaException(String.format("campfireEffectsList (size: %s) & campfireEffectsAmplifierList (size: %s) don't match in size!", identifiers.size(), amplifiers.size()));
+                            throw new AndromedaException(false, String.format("campfireEffectsList (size: %s) & campfireEffectsAmplifierList (size: %s) don't match in size!", identifiers.size(), amplifiers.size()));
                         }
                     }
                 }

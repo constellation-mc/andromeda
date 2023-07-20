@@ -7,10 +7,6 @@ import net.minecraft.util.Formatting;
 
 public class AndromedaTexts {
     public static final Text ITEM_GROUP_NAME = TextUtil.translatable("itemGroup.andromeda.items");
-    public static final MutableText MINECART_LINK_WHAT = TextUtil.translatable("andromeda.simpleMinecartLinking.what");
-    public static final MutableText MINECART_LINK_TOO_FAR = TextUtil.translatable("andromeda.simpleMinecartLinking.too_far");
-    public static final MutableText MINECART_LINK_SELF = TextUtil.translatable("andromeda.simpleMinecartLinking.link_self");
-    public static final MutableText MINECART_LINK_DE_SYNC = TextUtil.translatable("andromeda.simpleMinecartLinking.de_sync");
     public static final Text FLETCHING_SCREEN = TextUtil.translatable("gui.andromeda.fletching");
     public static final Text SAFE_BEDS = TextUtil.translatable("action.andromeda.safebeds");
     public static final Text INCUBATOR_0 = TextUtil.translatable("tooltip.andromeda.incubator[0]");

@@ -27,14 +27,11 @@ import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,26 +50,14 @@ public class Andromeda implements ModInitializer {
     public static final DamageSource AGONY = new DamageSource("andromeda_agony");
     public static final Map<PlayerEntity, AbstractMinecartEntity> LINKING_CARTS = new HashMap<>();
     public static final Map<PlayerEntity, AbstractMinecartEntity> UNLINKING_CARTS = new HashMap<>();
-    public static final IntProperty WATER_LEVEL_3 = IntProperty.of("water_level", 1, 3);
 
     public static DamageSource bricked(@Nullable Entity attacker) {
         return new BrickedDamageSource(attacker);
     }
 
-    private static void updateHiddenPath() {
-        Path old = FabricLoader.getInstance().getGameDir().resolve(".m_tweaks");
-        if (Files.exists(old)) {
-            try {
-                Files.move(old, HIDDEN_PATH);
-            } catch (IOException e) {
-                AndromedaLog.error("Couldn't move hidden path!", e);
-            }
-        }
-    }
-
     @Override
     public void onInitialize() {
-        updateHiddenPath();
+        AndromedaAnalytics.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
         EntityTypeRegistry.register();
