@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ public class ItemMixin {
         if (Andromeda.CONFIG.tooltips.compass) if (world != null) if (world.isClient) {
             if (stack.getItem() == Items.COMPASS && MinecraftClient.getInstance().player != null) {
                 boolean lodestone = stack.hasNbt() && CompassItem.hasLodestone(stack);
-                GlobalPos globalPos = lodestone ? CompassItem.createLodestonePos(stack.getNbt()) : CompassItem.createSpawnPos(world);
+                GlobalPos globalPos = lodestone ? MiscUtil.createLodestonePos(stack.getNbt()) : MiscUtil.createSpawnPos(world);
 
                 double dist;
                 if (globalPos != null && world.getRegistryKey() == globalPos.getDimension()) {

@@ -37,7 +37,6 @@
     "items.mending_fix.ItemStackMixin",
     "items.tooltips.clock.ItemMixin",
     "items.tooltips.compass.ItemMixin",
-    "items.tooltips.recovery_compass.ItemMixin",
     "mechanics.dragon_fight.EndCrystalMixin",
     "mechanics.dragon_fight.EnderDragonMixin",
     "mechanics.dragon_fight.SpikeCacheMixin",

@@ -15,6 +15,8 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -29,9 +31,14 @@ import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -72,6 +79,36 @@ public class MiscUtil {
             }
         });
     });
+
+    public static Optional<RegistryKey<World>> getLodestoneDimension(NbtCompound nbt) {
+        return World.CODEC.parse(NbtOps.INSTANCE, nbt.get("LodestoneDimension")).result();
+    }
+
+    @Nullable
+    public static GlobalPos createLodestonePos(NbtCompound nbt) {
+        boolean bl = nbt.contains("LodestonePos");
+        boolean bl2 = nbt.contains("LodestoneDimension");
+        if (bl && bl2) {
+            Optional<RegistryKey<World>> optional = getLodestoneDimension(nbt);
+            if (optional.isPresent()) {
+                BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("LodestonePos"));
+                return GlobalPos.create(optional.get(), blockPos);
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static GlobalPos createSpawnPos(World world) {
+        return world.getDimension().isNatural() ? GlobalPos.create(world.getRegistryKey(), Utilities.supply(() -> {
+            BlockPos blockPos = new BlockPos(world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnY(), world.getLevelProperties().getSpawnZ());
+            if (!world.getWorldBorder().contains(blockPos)) {
+                blockPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(world.getWorldBorder().getCenterX(), 0.0, world.getWorldBorder().getCenterZ()));
+            }
+            return blockPos;
+        })) : null;
+    }
 
     public static double horizontalDistanceTo(Vec3d owner, Vec3d target) {
         double d = target.x - owner.x;
