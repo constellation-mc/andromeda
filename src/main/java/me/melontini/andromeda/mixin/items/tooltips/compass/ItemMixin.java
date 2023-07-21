@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.items.tooltips.compass;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.minecraft.util.TextUtil;
 import me.melontini.dark_matter.util.MathStuff;
@@ -38,7 +39,7 @@ public class ItemMixin {
                     double dist;
                     if (globalPos != null && world.getRegistryKey() == globalPos.getDimension()) {
                         Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
-                        dist = MinecraftClient.getInstance().player.getPos().distanceTo(compassPos);
+                        dist = MiscUtil.horizontalDistanceTo(MinecraftClient.getInstance().player.getPos(), compassPos);
                     } else {
                         dist = Utilities.RANDOM.nextGaussian() * 0.1;
                     }
@@ -49,7 +50,7 @@ public class ItemMixin {
                     double dist;
                     if (globalPos != null && world.getRegistryKey() == globalPos.getDimension()) {
                         Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
-                        dist = MinecraftClient.getInstance().player.getPos().distanceTo(compassPos);
+                        dist = MiscUtil.horizontalDistanceTo(MinecraftClient.getInstance().player.getPos(), compassPos);
                     } else {
                         dist = Utilities.RANDOM.nextGaussian() * 0.1;
                     }
