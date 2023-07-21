@@ -250,6 +250,10 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
         public boolean compass = true;
+
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public boolean recoveryCompass = true;
     }
 
     @ConfigEntry.Category("items")
