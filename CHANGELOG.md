@@ -1,6 +1,11 @@
 ### What's New:
 
-* Patched a compatibility issue with Fabrication's "Toggleable furnace carts" and "Furnace Minecarts Take Fuel When Low"
-* Furnace Carts will also search for fuel every second instead of every half-second.
-* Added modloader to optional data. Used to see Fabric/Quilt usage.
-* Updated Dark Matter.
+* New Tweaks! Snowball Tweaks!
+  * Allows setting a custom cooldown for snowball usage.
+  * Freeze entities on hit.
+  * Extinguish  entities on hit.
+* Furnace screen particles will now disappear after closing the screen.
+* Slightly improved crash reporting.
+* Fixed a null check in Incubator's tick method.
+* Updated Dark Matter
+* A few other internal changes.
