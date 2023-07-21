@@ -239,6 +239,20 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("items")
+    @ConfigEntry.Gui.CollapsibleObject
+    public Tooltips tooltips = new Tooltips();
+
+    public static class Tooltips {
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public boolean clock = true;
+
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public boolean compass = true;
+    }
+
+    @ConfigEntry.Category("items")
     @ConfigEntry.Gui.RequiresRestart
     public boolean lockpickEnabled = false;
 
@@ -280,10 +294,6 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Gui.Tooltip
         public boolean enableTotemAscension = true;
     }
-
-    @ConfigEntry.Category("items")
-    @ConfigEntry.Gui.Tooltip
-    public boolean clockTooltip = true;
 
     @ConfigEntry.Category("items")
    @ConfigEntry.Gui.Tooltip(count = 4)
