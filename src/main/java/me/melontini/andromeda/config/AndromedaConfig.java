@@ -350,6 +350,10 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
+    public boolean tooltipNotName = true;
+
+    @ConfigEntry.Category("gui")
+    @ConfigEntry.Gui.Tooltip
     public boolean noMoreAdventure = false;
 
     @ConfigEntry.Category("gui")

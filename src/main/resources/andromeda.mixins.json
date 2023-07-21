@@ -64,6 +64,7 @@
     "gui.gui_particles.EnchantmentScreenMixin",
     "gui.gui_particles.GameModeSelectionScreenMixin",
     "gui.gui_particles.accessors.HandledScreenAccessor",
+    "gui.name_tooltips.InGameHudMixin",
     "items.mending_fix.AnvilScreenMixin",
     "misc.unknown.nice_level.LevelLoadingScreenMixin",
     "misc.unknown.useless_info.DebugHudMixin",

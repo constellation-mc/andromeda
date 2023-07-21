@@ -256,6 +256,8 @@
   "text.autoconfig.andromeda.option.tradingGoatHorn.@Tooltip[2]": "You can disable the \"doTraderSpawning\" gamerule if you don't want them to",
 
   "text.autoconfig.andromeda.category.gui": "GUI",
+  "text.autoconfig.andromeda.option.tooltipNotName": "Tooltip, not Name",
+  "text.autoconfig.andromeda.option.tooltipNotName.@Tooltip": "Shows item's tooltip instead of name above the hotbar",
   "text.autoconfig.andromeda.option.noMoreAdventure": "No More Adventure",
   "text.autoconfig.andromeda.option.noMoreAdventure.@Tooltip": "Removes \"Adventure Mode\" from the gamemode switcher",
   "text.autoconfig.andromeda.option.guiParticles": "GUI Particles",
