@@ -4,7 +4,6 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.minecraft.util.TextUtil;
-import me.melontini.dark_matter.util.MathStuff;
 import me.melontini.dark_matter.util.Utilities;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
@@ -30,32 +29,19 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        //TODO merge
         if (Andromeda.CONFIG.tooltips.compass) if (world != null) if (world.isClient) {
             if (stack.getItem() == Items.COMPASS && MinecraftClient.getInstance().player != null) {
-                if (stack.hasNbt() && CompassItem.hasLodestone(stack)) {
-                    GlobalPos globalPos = CompassItem.createLodestonePos(stack.getNbt());
+                boolean lodestone = stack.hasNbt() && CompassItem.hasLodestone(stack);
+                GlobalPos globalPos = lodestone ? CompassItem.createLodestonePos(stack.getNbt()) : CompassItem.createSpawnPos(world);
 
-                    double dist;
-                    if (globalPos != null && world.getRegistryKey() == globalPos.getDimension()) {
-                        Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
-                        dist = MiscUtil.horizontalDistanceTo(MinecraftClient.getInstance().player.getPos(), compassPos);
-                    } else {
-                        dist = Utilities.RANDOM.nextGaussian() * 0.1;
-                    }
-                    tooltip.add(TextUtil.translatable("tooltip.andromeda.compass.lodestone", String.format("%.1f", dist)).formatted(Formatting.GRAY));
+                double dist;
+                if (globalPos != null && world.getRegistryKey() == globalPos.getDimension()) {
+                    Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
+                    dist = MiscUtil.horizontalDistanceTo(MinecraftClient.getInstance().player.getPos(), compassPos);
                 } else {
-                    GlobalPos globalPos = CompassItem.createSpawnPos(world);
-
-                    double dist;
-                    if (globalPos != null && world.getRegistryKey() == globalPos.getDimension()) {
-                        Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
-                        dist = MiscUtil.horizontalDistanceTo(MinecraftClient.getInstance().player.getPos(), compassPos);
-                    } else {
-                        dist = Utilities.RANDOM.nextGaussian() * 0.1;
-                    }
-                    tooltip.add(TextUtil.translatable("tooltip.andromeda.compass", String.format("%.1f", dist)).formatted(Formatting.GRAY));
+                    dist = Utilities.RANDOM.nextGaussian() * 0.1;
                 }
+                tooltip.add(TextUtil.translatable(lodestone ? "tooltip.andromeda.compass.lodestone" : "tooltip.andromeda.compass", String.format("%.1f", dist)).formatted(Formatting.GRAY));
             }
         }
     }
