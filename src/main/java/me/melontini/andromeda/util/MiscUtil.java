@@ -73,6 +73,12 @@ public class MiscUtil {
         });
     });
 
+    public static double horizontalDistanceTo(Vec3d owner, Vec3d target) {
+        double d = target.x - owner.x;
+        double f = target.z - owner.z;
+        return Math.sqrt(d * d + f * f);
+    }
+
     public static String blockPosAsString(BlockPos pos) {
         return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
     }
