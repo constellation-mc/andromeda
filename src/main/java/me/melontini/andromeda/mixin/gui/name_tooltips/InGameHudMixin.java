@@ -7,7 +7,9 @@ import me.melontini.dark_matter.minecraft.client.util.DrawUtil;
 import me.melontini.dark_matter.util.Utilities;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -36,7 +38,7 @@ public abstract class InGameHudMixin {
     @Shadow private int scaledWidth;
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
-    private void andromeda$renderTooltip(MatrixStack matrices, CallbackInfo ci) {
+    private void andromeda$renderTooltip(DrawContext context, CallbackInfo ci) {
         if (Andromeda.CONFIG.tooltipNotName) {
             this.client.getProfiler().push("selectedItemName");
 
@@ -52,10 +54,11 @@ public abstract class InGameHudMixin {
                 }
 
                 if (l > 0) {
+                    MatrixStack matrices = context.getMatrices();
                     matrices.push();
                     matrices.scale(1, 1, 1);
                     RenderSystem.setShaderColor(1, 1, 1, l/255f);
-                    var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(this.currentStack);
+                    var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), this.currentStack);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
                     this.currentStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
@@ -72,7 +75,7 @@ public abstract class InGameHudMixin {
                         if (t > f) f = t;
                     }
 
-                    DrawUtil.renderTooltipFromComponents(matrices, list1, ((this.scaledWidth - f) / 2f) - 12, (k - j + (l/255f*2)) + 12);
+                    DrawUtil.renderTooltipFromComponents(context, list1, ((this.scaledWidth - f) / 2f) - 12, (k - j + (l/255f*2)) + 12);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
                     matrices.pop();
                 }
