@@ -240,6 +240,24 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("items")
+    @ConfigEntry.Gui.CollapsibleObject
+    public Tooltips tooltips = new Tooltips();
+
+    public static class Tooltips {
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public boolean clock = true;
+
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public boolean compass = true;
+
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.Tooltip
+        public boolean recoveryCompass = true;
+    }
+
+    @ConfigEntry.Category("items")
     @ConfigEntry.Gui.RequiresRestart
     public boolean lockpickEnabled = false;
 
@@ -281,10 +299,6 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Gui.Tooltip
         public boolean enableTotemAscension = true;
     }
-
-    @ConfigEntry.Category("items")
-    @ConfigEntry.Gui.Tooltip
-    public boolean clockTooltip = true;
 
     @ConfigEntry.Category("items")
    @ConfigEntry.Gui.Tooltip(count = 4)
@@ -334,6 +348,10 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
     public List<String> throwableItemsBlacklist = Lists.newArrayList();
+
+    @ConfigEntry.Category("gui")
+    @ConfigEntry.Gui.Tooltip
+    public boolean tooltipNotName = true;
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
