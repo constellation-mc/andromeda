@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -45,15 +46,21 @@ import static me.melontini.andromeda.Andromeda.MODID;
 @Mixin(ItemEntity.class)
 @MixinRelatedConfigOption({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
 public abstract class ItemEntityMixin extends Entity {
+    @Unique
     private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
+    @Unique
     private static final Tuple<BeaconBlockEntity, Integer> ANDROMEDA$NULL_BEACON = new Tuple<>(null, 0);
     @Shadow
     @Final
     private static TrackedData<ItemStack> STACK;
 
+    @Unique
     private final List<Block> beaconBlocks = List.of(Blocks.DIAMOND_BLOCK, Blocks.NETHERITE_BLOCK);
+    @Unique
     private int andromeda$ascensionTicks;
+    @Unique
     private ItemEntity andromeda$itemEntity;
+    @Unique
     private Tuple<BeaconBlockEntity, Integer> andromeda$beacon = ANDROMEDA$NULL_BEACON;
 
 
@@ -148,6 +155,7 @@ public abstract class ItemEntityMixin extends Entity {
         }
     }
 
+    @Unique
     private boolean andromeda$beaconCheck() {
         BlockEntity entity = world.getBlockEntity(new BlockPos(getX(), world.getTopY(Heightmap.Type.WORLD_SURFACE, getBlockPos().getX(), getBlockPos().getZ()) - 1, getZ()));
         if (entity instanceof BeaconBlockEntity beaconBlock) {

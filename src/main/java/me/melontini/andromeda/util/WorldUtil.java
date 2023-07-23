@@ -41,7 +41,7 @@ import static me.melontini.andromeda.Andromeda.MODID;
 public class WorldUtil {
     public static final Identifier BEE_LOOT_ID = new Identifier(MODID, "bee_nest/bee_nest_broken");
 
-    private static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
+    public static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 
     public static EnderDragonManager getEnderDragonManager(ServerWorld world) {
         return world.getPersistentStateManager().getOrCreate(nbtCompound -> {

@@ -1,16 +1,11 @@
 ### What's New:
 
-* [GUI] New Tweaks! Tooltip, not Name!
-  * Shows item's tooltip instead of name after selecting that item on your hotbar.
-* [Entities] New Tweaks! Snowball Tweaks!
-  * Allows setting a custom cooldown for snowball usage.
-  * Freeze entities on hit.
-  * Extinguish  entities on hit.
-* [Items] New Tweak! Compass Tooltip!
-  * Show distance to compass' target.
-* Furnace screen particles will now disappear after closing the screen.
-* Slightly improved crash reporting.
-* Fixed a null check in Incubator's tick method.
+* Fixed tooltip mixins loading on servers.
+* Fixed analytics.
+* "Safe Beds"' and "Beds Explode Everywhere"'s mixins will now get disabled with compat mode on.
+* Bee Nests will now use tags to detect if they're on trees.
+  * Now they will check if the block below is air, block above is a log/leaf block and if one of the blocks in 4 directions is a log.
+  * Also, fixed a possible bug with bee nest duplication.
+* Made the icon a bit smaller.
 * Updated Dark Matter
-* * This fixes an issue where GUI elements from other mods would jitter while drawing item frame tooltips (1.20+)
 * A few other internal changes.

@@ -40,7 +40,7 @@ public abstract class ItemStackMixin {
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip", locals = LocalCapture.CAPTURE_FAILSOFT)
     private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list, MutableText mutableText) {
         if (Andromeda.CONFIG.slightlyBetterItemNames) {
-            if (!this.getItem().isDamageable()) {//TODO literal text TextUtil
+            if (!this.getItem().isDamageable()) {
                 if (this.getCount() > 1)
                     mutableText.append(TextUtil.literal(" x" + this.getCount()).formatted(getRarity().formatting));
             } else {
