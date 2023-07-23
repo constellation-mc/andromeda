@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "me.melontini.andromeda.mixin.AndromedaMixinPlugin",
   "mixins": [
-    "blocks.beds_revenge.BedBlockMixin",
+    "blocks.bed.power.BedBlockMixin",
+    "blocks.bed.safe.BedBlockMixin",
+    "blocks.bed.unsafe.BedBlockMixin",
     "blocks.better_fletching_table.BowItemMixin",
     "blocks.better_fletching_table.FletchingTableBlockMixin",
     "blocks.better_fletching_table.ItemMixin",
@@ -63,10 +65,10 @@
     "gui.gui_particles.GameModeSelectionScreenMixin",
     "gui.gui_particles.accessors.HandledScreenAccessor",
     "gui.name_tooltips.InGameHudMixin",
+    "items.mending_fix.AnvilScreenMixin",
     "items.tooltips.clock.ItemMixin",
     "items.tooltips.compass.ItemMixin",
     "items.tooltips.recovery_compass.ItemMixin",
-    "items.mending_fix.AnvilScreenMixin",
     "misc.unknown.nice_level.LevelLoadingScreenMixin",
     "misc.unknown.useless_info.DebugHudMixin",
     "misc.unknown.useless_info.TitleScreenMixin"
