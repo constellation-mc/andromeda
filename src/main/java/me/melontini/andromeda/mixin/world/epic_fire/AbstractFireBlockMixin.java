@@ -27,12 +27,6 @@ public abstract class AbstractFireBlockMixin extends AbstractFireBlock {
     }
 
     @Shadow
-    protected abstract int getSpreadChance(BlockState state);
-
-    @Shadow
-    protected abstract BlockState getStateWithAge(WorldAccess world, BlockPos pos, int age);
-
-    @Shadow
     protected abstract void trySpreadingFire(World world, BlockPos pos, int spreadFactor, Random random, int currentAge);
 
     @ModifyVariable(method = "trySpreadingFire", at = @At(value = "LOAD"), index = 3, argsOnly = true)

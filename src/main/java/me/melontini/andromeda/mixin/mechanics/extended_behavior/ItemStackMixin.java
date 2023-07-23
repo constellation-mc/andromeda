@@ -18,6 +18,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -32,7 +33,7 @@ public abstract class ItemStackMixin {
     @Inject(at = @At("HEAD"), method = "use", cancellable = true)
     private void andromeda$throwableBehaviour(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         if (ItemBehaviorManager.hasBehaviors(getItem()) && ItemBehaviorManager.overridesVanilla(getItem())) {
-            if (runBehaviors(world, user)) {
+            if (andromeda$runBehaviors(world, user)) {
                 cir.setReturnValue(TypedActionResult.success((ItemStack) (Object) this));
             }
         }
@@ -41,14 +42,15 @@ public abstract class ItemStackMixin {
     @ModifyReturnValue(at = @At("RETURN"), method = "use")
     private TypedActionResult<ItemStack> andromeda$throwableBehaviour(TypedActionResult<ItemStack> original, World world, PlayerEntity user, Hand hand) {
         if (original.getResult() == ActionResult.PASS && ItemBehaviorManager.hasBehaviors(getItem()) && !ItemBehaviorManager.overridesVanilla(getItem())) {
-            if (runBehaviors(world, user)) {
+            if (andromeda$runBehaviors(world, user)) {
                 return TypedActionResult.success((ItemStack) (Object) this);
             }
         }
         return original;
     }
 
-    private boolean runBehaviors(World world, PlayerEntity user) {
+    @Unique
+    private boolean andromeda$runBehaviors(World world, PlayerEntity user) {
         if (Andromeda.CONFIG.throwableItems && !Andromeda.CONFIG.throwableItemsBlacklist.contains(Registries.ITEM.getId(getItem()).toString())) {
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
             if (!world.isClient) {
