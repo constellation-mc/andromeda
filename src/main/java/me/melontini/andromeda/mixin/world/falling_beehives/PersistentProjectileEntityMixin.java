@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.world.falling_beehives;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BeehiveBlockEntity;
@@ -9,8 +10,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,33 +40,19 @@ public abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
             if (Andromeda.CONFIG.canBeeNestsFall) {
                 if (block == Blocks.BEE_NEST) {
                     BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) world.getBlockEntity(pos);
-                    if (beehiveBlockEntity != null)
-                        if (world.getBlockState(new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ())).getBlock() instanceof AirBlock) {
-                            for (int i = 0; i < 4; i++) {
-                                switch (i) {
-                                    case 0 -> {
-                                        if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ())).getMaterial() == Material.WOOD)
-                                                trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
-                                    }
-                                    case 1 -> {
-                                        if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ())).getMaterial() == Material.WOOD)
-                                                trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
-                                    }
-                                    case 2 -> {
-                                        if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1)).getMaterial() == Material.WOOD)
-                                                trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
-                                    }
-                                    case 3 -> {
-                                        if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getBlock() instanceof PillarBlock)
-                                            if (world.getBlockState(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1)).getMaterial() == Material.WOOD)
-                                                trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
+                    if (beehiveBlockEntity != null) {
+                        if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {
+                            BlockState up = world.getBlockState(pos.offset(Direction.UP));
+                            if (up.isIn(BlockTags.LOGS) || up.isIn(BlockTags.LEAVES)) {
+                                for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {
+                                    if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
+                                        trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
+                                        break;
                                     }
                                 }
                             }
                         }
+                    }
                 }
             }
         }
