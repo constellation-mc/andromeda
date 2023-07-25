@@ -18,7 +18,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
 
@@ -104,7 +103,8 @@ public class AndromedaTranslations {
     private static boolean copyLocalLangFile(String language) {
         try (InputStream stream = AndromedaTranslations.class.getClassLoader().getResourceAsStream("assets/andromeda/lang/" + language + ".json")) {
             if (stream != null) {
-                Files.copy(stream, LANG_PATH.resolve(language + ".json"), StandardCopyOption.REPLACE_EXISTING);
+                if (!Files.exists(LANG_PATH)) Files.createDirectories(LANG_PATH);
+                Files.write(LANG_PATH.resolve(language + ".json"), stream.readAllBytes());
                 AndromedaLog.info("Copied local " + language + ".json");
                 return true;
             } else throw new NullPointerException();
