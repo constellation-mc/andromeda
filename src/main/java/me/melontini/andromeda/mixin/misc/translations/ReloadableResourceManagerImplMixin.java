@@ -2,6 +2,8 @@ package me.melontini.andromeda.mixin.misc.translations;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.translations.AndromedaTranslations;
 import net.minecraft.resource.*;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -17,12 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ReloadableResourceManagerImpl.class)
+@MixinRelatedConfigOption("autoUpdateTranslations")
 public class ReloadableResourceManagerImplMixin {
     @Shadow @Final private ResourceType type;
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/LifecycledResourceManager;close()V", shift = At.Shift.AFTER), method = "reload")
     private void andromeda$injectDownloadedTranslations(CallbackInfoReturnable<ResourceReload> cir, @Local(argsOnly = true) LocalRef<List<ResourcePack>> packs) {
         if (this.type != ResourceType.CLIENT_RESOURCES) return;
+        if (!Andromeda.CONFIG.autoUpdateTranslations) return;
 
         packs.set(new ArrayList<>(packs.get()));
         packs.get().add(new DirectoryResourcePack(AndromedaTranslations.TRANSLATION_PACK.toFile()) {
