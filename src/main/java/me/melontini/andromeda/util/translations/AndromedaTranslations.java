@@ -43,19 +43,26 @@ public class AndromedaTranslations {
         for (String language : languages) {
             Path langPath = LANG_PATH.resolve(language + ".json");
 
-            if (copyLocalLangFile(language)) {
-                String file = downloadLang(language);
-                if (!file.isEmpty()) {
-                    mergeAndSave(langPath, file);
+            if (!Files.exists(langPath)) {
+                if (copyLocalLangFile(language)) {
+                    String file = downloadLang(language);
+                    if (!file.isEmpty()) {
+                        mergeAndSave(langPath, file);
+                    }
+                } else {
+                    String file = downloadLang(language);
+                    if (!file.isEmpty()) {
+                        try {
+                            Files.writeString(langPath, file);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             } else {
                 String file = downloadLang(language);
                 if (!file.isEmpty()) {
-                    try {
-                        Files.writeString(langPath, file);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    mergeAndSave(langPath, file);
                 }
             }
         }
