@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.dark_matter.util.Utilities;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -47,7 +48,7 @@ public class AndromedaTranslations {
                 if (copyLocalLangFile(language)) {
                     String file = downloadLang(language);
                     if (!file.isEmpty()) {
-                        mergeAndSave(langPath, file);
+                        mergeAndSave(language, file);
                     }
                 } else {
                     String file = downloadLang(language);
@@ -62,16 +63,28 @@ public class AndromedaTranslations {
             } else {
                 String file = downloadLang(language);
                 if (!file.isEmpty()) {
-                    mergeAndSave(langPath, file);
+                    mergeAndSave(language, file);
                 }
             }
         }
     }
 
-    private static void mergeAndSave(Path langPath, String lang) {
+    private static void mergeAndSave(String language, String lang) {
         try {
+            Path langPath = LANG_PATH.resolve(language + ".json");
             JsonObject newLangFile = JsonParser.parseString(lang).getAsJsonObject();
-            JsonObject oldLangFile = JsonParser.parseReader(Files.newBufferedReader(langPath)).getAsJsonObject();
+            JsonObject oldLangFile = Utilities.supply(() -> {
+                try {
+                    return JsonParser.parseReader(Files.newBufferedReader(langPath)).getAsJsonObject();
+                } catch (Exception e) {
+                    try {
+                        copyLocalLangFile(language);
+                        return JsonParser.parseReader(Files.newBufferedReader(langPath)).getAsJsonObject();
+                    } catch (Exception e1) {
+                        return new JsonObject();
+                    }
+                }
+            });
 
             if (!newLangFile.equals(oldLangFile)) {
                 for (Map.Entry<String, JsonElement> entry : oldLangFile.entrySet()) {
