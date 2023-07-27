@@ -35,13 +35,11 @@ public class AndromedaTranslations {
     public static void downloadTranslations(Set<String> languages) {
         if (!AndromedaPreLaunch.preLaunchConfig.autoUpdateTranslations) return;
         for (String language : languages) {
-            Path langPath = LANG_PATH.resolve(language + ".json");
-
             String file = downloadLang(language);
             if (!file.isEmpty()) {
                 try {
                     if (!Files.exists(LANG_PATH)) Files.createDirectories(LANG_PATH);
-                    Files.writeString(langPath, file);
+                    Files.writeString(LANG_PATH.resolve(language + ".json"), file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -76,7 +74,7 @@ public class AndromedaTranslations {
             for (String line : Files.readAllLines(OPTIONS)) {
                 if (line.matches("^lang:\\w+_\\w+")) {
                     languageCode = line.replace("lang:", "");
-                    return line.replace("lang:", "");
+                    return languageCode;
                 }
             }
             throw new AndromedaException(false, "Invalid language option!");
