@@ -11,8 +11,7 @@
   "tooltip.andromeda.compass.recovery": "Distance to last death spot: %s",
   "tooltip.andromeda.frameitem": "Item inside the frame",
   "death.attack.andromeda_agony": "%s died from agony",
-  "death.attack.andromeda_bricked": "%1$s was bricked",
-  "death.attack.andromeda_bricked.entity": "%1$s was bricked by %2$s",
+  "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
 
   "commands.andromeda.damage.invulnerable": "Target is invulnerable to the given damage type",
   "commands.andromeda.damage.success": "Applied %s damage to %s",

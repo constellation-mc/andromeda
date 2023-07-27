@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Identifier;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class EntityTypeRegistry {
     public static EntityType<AnvilMinecartEntity> ANVIL_MINECART_ENTITY = RegistryUtil.createEntityType(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn, new Identifier(MODID, "anvil_minecart"), EntityType.Builder.<AnvilMinecartEntity>create(AnvilMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F));

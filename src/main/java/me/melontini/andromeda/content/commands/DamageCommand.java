@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.content.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
