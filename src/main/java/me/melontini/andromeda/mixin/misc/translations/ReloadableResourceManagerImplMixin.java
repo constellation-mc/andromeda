@@ -29,12 +29,7 @@ public class ReloadableResourceManagerImplMixin {
         if (!Andromeda.CONFIG.autoUpdateTranslations) return;
 
         packs.set(new ArrayList<>(packs.get()));
-        packs.get().add(new DirectoryResourcePack(AndromedaTranslations.TRANSLATION_PACK.toFile()) {
-            @Override
-            public String getName() {
-                return "Andromeda Translations";
-            }
-
+        packs.get().add(new DirectoryResourcePack("Andromeda Translations", AndromedaTranslations.TRANSLATION_PACK, true) {
             @Nullable
             @Override
             public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
