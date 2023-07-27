@@ -119,6 +119,8 @@ public class AndromedaClient implements ClientModInitializer {
                     tooltipFlow = MathHelper.lerp(0.25f * client.getLastFrameDuration(), tooltipFlow, 1);
                     matrices.push();
                     matrices.scale(1, 1, 1);
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(tooltipFlow, 0.8f));
                     var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(FRAME_STACK);
                     list.add(AndromedaTexts.ITEM_IN_FRAME);
@@ -137,6 +139,7 @@ public class AndromedaClient implements ClientModInitializer {
 
                     DrawUtil.renderTooltipFromComponents(matrices, list1, ((client.getWindow().getScaledWidth() / 2f) - (tooltipFlow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
+                    RenderSystem.disableBlend();
                     matrices.pop();
                 } else {
                     tooltipFlow = MathHelper.lerp(0.1f * client.getLastFrameDuration(), tooltipFlow, 0);

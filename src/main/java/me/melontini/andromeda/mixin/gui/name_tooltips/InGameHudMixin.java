@@ -54,6 +54,8 @@ public abstract class InGameHudMixin {
 
                     matrices.push();
                     matrices.scale(1, 1, 1);
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(l/255f, 0.8f));
                     var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(this.currentStack);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
@@ -74,6 +76,7 @@ public abstract class InGameHudMixin {
 
                     DrawUtil.renderTooltipFromComponents(matrices, list1, ((this.scaledWidth - f) / 2f) - 12, (k - j + (l/255f*2)) + 18);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
+                    RenderSystem.disableBlend();
                     matrices.pop();
                 }
             }
