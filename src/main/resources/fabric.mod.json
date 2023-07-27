@@ -37,10 +37,10 @@
     "andromeda.mixins.json"
   ],
   "depends": {
-    "fabricloader": "*",
+    "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "cloth-config": "*",
-    "minecraft": ">=1.18"
+    "minecraft": ">=${minecraft_version}"
   },
   "recommends": {
     "modmenu": "*",
