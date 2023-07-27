@@ -35,7 +35,7 @@ import net.minecraft.util.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 import static me.melontini.dark_matter.content.RegistryUtil.asItem;
 
 public class ItemRegistry {

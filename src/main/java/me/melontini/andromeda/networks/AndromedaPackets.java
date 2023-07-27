@@ -2,7 +2,7 @@ package me.melontini.andromeda.networks;
 
 import net.minecraft.util.Identifier;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class AndromedaPackets {
     public static final Identifier JUKEBOX_MINECART_START_PLAYING = new Identifier(MODID, "jukebox_minecart_start_playing");

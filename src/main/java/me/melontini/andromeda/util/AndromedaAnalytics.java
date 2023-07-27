@@ -29,7 +29,7 @@ public class AndromedaAnalytics {
             if (Andromeda.CONFIG.sendOptionalData) {
                 HANDLER.send(messageBuilder -> {
                     JsonObject object = new JsonObject();
-                    object.addProperty("mod_version", Andromeda.MOD_VERSION);
+                    object.addProperty("mod_version", SharedConstants.MOD_VERSION);
                     object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
                     object.addProperty("modloader", Utilities.supply(() -> {
                         String sn = MixinService.getService().getName();
@@ -42,7 +42,7 @@ public class AndromedaAnalytics {
                 });
 
                 Gson gson = new Gson();
-                Path fakeConfig = Andromeda.HIDDEN_PATH.resolve("config_copy.json");
+                Path fakeConfig = SharedConstants.HIDDEN_PATH.resolve("config_copy.json");
                 String currentConfig = gson.toJson(Andromeda.CONFIG);
                 if (!Files.exists(fakeConfig)) {
                     try {

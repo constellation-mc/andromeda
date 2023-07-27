@@ -5,10 +5,7 @@ import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.*;
-import me.melontini.andromeda.util.AndromedaAnalytics;
-import me.melontini.andromeda.util.AndromedaPreLaunch;
-import me.melontini.andromeda.util.MiscUtil;
-import me.melontini.andromeda.util.WorldUtil;
+import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
 import me.melontini.dark_matter.minecraft.util.TextUtil;
@@ -21,7 +18,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -38,16 +34,11 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class Andromeda implements ModInitializer {
-    public static final String MODID = "andromeda";
-    public static final String MOD_VERSION = FabricLoader.getInstance().getModContainer(Andromeda.MODID).orElseThrow().getMetadata().getVersion().getFriendlyString();
-    public static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
-    public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
@@ -79,7 +70,7 @@ public class Andromeda implements ModInitializer {
         LEAF_SLOWNESS = new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE);
         KNOCKOFF_TOTEM_PARTICLE = FabricParticleTypes.simple();
 
-        Registry.register(Registry.PARTICLE_TYPE, new Identifier(MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
+        Registry.register(Registry.PARTICLE_TYPE, new Identifier(SharedConstants.MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
 
         ServerWorldEvents.LOAD.register((server, world) -> {
             if (CONFIG.tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD)

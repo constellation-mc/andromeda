@@ -56,7 +56,7 @@ import net.minecraft.util.math.MathHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 @Environment(EnvType.CLIENT)
 public class AndromedaClient implements ClientModInitializer {
