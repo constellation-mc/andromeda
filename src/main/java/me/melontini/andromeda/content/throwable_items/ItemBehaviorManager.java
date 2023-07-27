@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.content.throwable_items;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.item.Item;

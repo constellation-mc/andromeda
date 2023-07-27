@@ -1,8 +1,8 @@
 package me.melontini.andromeda.entity;
 
+import me.melontini.andromeda.content.throwable_items.ItemBehavior;
+import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
-import me.melontini.andromeda.util.ItemBehavior;
-import me.melontini.andromeda.util.ItemBehaviorManager;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
