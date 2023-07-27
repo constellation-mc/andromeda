@@ -1,10 +1,9 @@
 package me.melontini.andromeda.util.translations;
 
 import com.google.common.collect.Sets;
-import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.AndromedaPreLaunch;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class AndromedaTranslations {
     }
 
     public static void downloadTranslations(Set<String> languages) {
-        if (!AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig().autoUpdateTranslations) return;
+        if (!AndromedaPreLaunch.preLaunchConfig.autoUpdateTranslations) return;
         for (String language : languages) {
             Path langPath = LANG_PATH.resolve(language + ".json");
 

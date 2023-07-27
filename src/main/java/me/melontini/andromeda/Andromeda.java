@@ -7,7 +7,9 @@ import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
 import me.melontini.dark_matter.minecraft.util.TextUtil;
+import me.melontini.dark_matter.util.Utilities;
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -42,7 +44,12 @@ public class Andromeda implements ModInitializer {
     public static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
     public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
     public static EntityAttributeModifier LEAF_SLOWNESS;
-    public static AndromedaConfig CONFIG = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
+    public static AndromedaConfig CONFIG = Utilities.supply(() -> {
+        AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
+        AndromedaConfig config = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
+        AndromedaPreLaunch.preLaunchConfig = config;
+        return config;
+    });
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
     public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
     public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
