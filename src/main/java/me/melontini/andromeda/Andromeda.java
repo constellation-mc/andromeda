@@ -1,7 +1,6 @@
 package me.melontini.andromeda;
 
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.*;
