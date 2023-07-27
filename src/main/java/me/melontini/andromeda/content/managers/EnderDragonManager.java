@@ -1,6 +1,8 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.content.managers;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.MiscUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;

@@ -1,15 +1,12 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.dark_matter.util.PrependingLogger;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 
 public class AndromedaLog {
-    private static final AndromedaConfig CONFIG = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("Andromeda"), PrependingLogger.NAME_METHOD_MIX_WRAPPED);
-    private static final boolean debug = FabricLoader.getInstance().isDevelopmentEnvironment() || CONFIG.debugMessages;
+    private static final boolean debug = FabricLoader.getInstance().isDevelopmentEnvironment() || AndromedaPreLaunch.preLaunchConfig.debugMessages;
 
     public static void devInfo(String msg) {
         if (debug) {

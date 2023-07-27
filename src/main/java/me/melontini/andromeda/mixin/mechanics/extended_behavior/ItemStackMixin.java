@@ -2,8 +2,8 @@ package me.melontini.andromeda.mixin.mechanics.extended_behavior;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.entity.FlyingItemEntity;
-import me.melontini.andromeda.util.ItemBehaviorManager;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

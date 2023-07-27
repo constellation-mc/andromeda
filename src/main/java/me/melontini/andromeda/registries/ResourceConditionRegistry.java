@@ -3,9 +3,9 @@ package me.melontini.andromeda.registries;
 import com.google.gson.*;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
+import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.ItemBehaviorAdder;
-import me.melontini.andromeda.util.ItemBehaviorManager;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
 import me.melontini.andromeda.util.data.PlantData;
@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class ResourceConditionRegistry {
 

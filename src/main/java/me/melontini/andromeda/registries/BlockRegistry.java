@@ -21,7 +21,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class BlockRegistry {
     public static FlowerBlock ROSE_OF_THE_VALLEY = ContentBuilder.BlockBuilder.create(new Identifier(MODID, "rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))

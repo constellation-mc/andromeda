@@ -58,7 +58,7 @@ import net.minecraft.util.math.MathHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 @Environment(EnvType.CLIENT)
 public class AndromedaClient implements ClientModInitializer {
@@ -122,6 +122,8 @@ public class AndromedaClient implements ClientModInitializer {
                     MatrixStack matrices = context.getMatrices();
                     matrices.push();
                     matrices.scale(1, 1, 1);
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(tooltipFlow, 0.8f));
                     var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), FRAME_STACK);
                     list.add(AndromedaTexts.ITEM_IN_FRAME);
@@ -140,6 +142,7 @@ public class AndromedaClient implements ClientModInitializer {
 
                     DrawUtil.renderTooltipFromComponents(context, list1, ((client.getWindow().getScaledWidth() / 2f) - (tooltipFlow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
+                    RenderSystem.disableBlend();
                     matrices.pop();
                 } else {
                     tooltipFlow = MathHelper.lerp(0.1f * client.getLastFrameDuration(), tooltipFlow, 0);

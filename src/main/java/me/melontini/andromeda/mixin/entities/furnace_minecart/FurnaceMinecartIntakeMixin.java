@@ -2,6 +2,7 @@ package me.melontini.andromeda.mixin.entities.furnace_minecart;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.ItemStackUtil;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.fabricmc.fabric.impl.content.registry.FuelRegistryImpl;
 import net.minecraft.entity.EntityType;
@@ -32,7 +33,7 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
     private void andromeda$tick(CallbackInfo ci) {
         if (!this.world.isClient() && Andromeda.CONFIG.betterFurnaceMinecart && Andromeda.CONFIG.furnaceMinecartTakeFuelWhenLow && this.fuel < 100) {
             if (world.getTime() % 20 == 0) {
-                if (Andromeda.FABRICATION_LOADED) {
+                if (SharedConstants.FABRICATION_LOADED) {
                     try {
                         if (getClass().getField("fabrication$pauseFuel").getInt(this) > 0) return;
                     } catch (IllegalAccessException | NoSuchFieldException ignored) {}

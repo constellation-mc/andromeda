@@ -9,7 +9,7 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class ScreenHandlerRegistry {
     public static ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER;

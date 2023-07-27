@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.List;
 
 public class AndromedaAnalytics {
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
@@ -28,7 +29,7 @@ public class AndromedaAnalytics {
             if (Andromeda.CONFIG.sendOptionalData) {
                 HANDLER.send(messageBuilder -> {
                     JsonObject object = new JsonObject();
-                    object.addProperty("mod_version", Andromeda.MOD_VERSION);
+                    object.addProperty("mod_version", SharedConstants.MOD_VERSION);
                     object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
                     object.addProperty("modloader", Utilities.supply(() -> {
                         String sn = MixinService.getService().getName();
@@ -41,7 +42,7 @@ public class AndromedaAnalytics {
                 });
 
                 Gson gson = new Gson();
-                Path fakeConfig = Andromeda.HIDDEN_PATH.resolve("config_copy.json");
+                Path fakeConfig = SharedConstants.HIDDEN_PATH.resolve("config_copy.json");
                 String currentConfig = gson.toJson(Andromeda.CONFIG);
                 if (!Files.exists(fakeConfig)) {
                     try {
@@ -90,7 +91,18 @@ public class AndromedaAnalytics {
 
             //fill loaded mods.
             JsonArray mods = new JsonArray();
-            for (ModContainer mod : FabricLoader.getInstance().getAllMods().stream().sorted((a, b) -> a.getMetadata().getId().compareToIgnoreCase(b.getMetadata().getId())).toList())
+            List<ModContainer> loadedMods = FabricLoader.getInstance().getAllMods().stream().sorted((a, b) -> a.getMetadata().getId().compareToIgnoreCase(b.getMetadata().getId())).filter(modContainer -> {
+                String id = modContainer.getMetadata().getId();
+                if (id.matches("fabric-[a-zA-Z_\\-]+-v\\d+")) return false;
+                else if (id.matches("quilt_[a-zA-Z_\\-]+") || id.matches("quilted_fabric_[a-zA-Z_\\-]+_v\\d+")) return false;
+                else if (id.startsWith("dark-matter-") && !id.equals("dark-matter-base")) return false;
+                else if (id.matches("^org_jetbrains_kotlinx?_kotlinx?")) return false;
+                else if (id.startsWith("cardinal-components-")) return false;
+                else if (id.matches("terraform-[a-zA-Z_\\-]+-v\\d+")) return false;
+                else if (id.matches("libjf-[a-zA-Z_\\-]+-v\\d+")) return false;
+                return true;
+            }).toList();
+            for (ModContainer mod : loadedMods)
                 mods.add(mod.getMetadata().getId() + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")");
             object.add("mods", mods);
 

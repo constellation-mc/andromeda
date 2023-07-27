@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class ClientSideNetworking {
 

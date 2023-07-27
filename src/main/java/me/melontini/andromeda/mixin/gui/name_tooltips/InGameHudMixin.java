@@ -43,21 +43,23 @@ public abstract class InGameHudMixin {
             this.client.getProfiler().push("selectedItemName");
 
             if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
-                int k = this.scaledHeight - 59;
-                if (!this.client.interactionManager.hasStatusBars()) {
-                    k += 14;
-                }
-
                 int l = (int)((float)this.heldItemTooltipFade * 256.0F / 10.0F);
                 if (l > 255) {
                     l = 255;
                 }
 
                 if (l > 0) {
+                    int k = this.scaledHeight - 59;
+                    if (!this.client.interactionManager.hasStatusBars()) {
+                        k += 14;
+                    }
+
                     MatrixStack matrices = context.getMatrices();
                     matrices.push();
                     matrices.scale(1, 1, 1);
-                    RenderSystem.setShaderColor(1, 1, 1, l/255f);
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
+                    RenderSystem.setShaderColor(1, 1, 1, Math.min(l/255f, 0.8f));
                     var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), this.currentStack);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
@@ -75,8 +77,9 @@ public abstract class InGameHudMixin {
                         if (t > f) f = t;
                     }
 
-                    DrawUtil.renderTooltipFromComponents(context, list1, ((this.scaledWidth - f) / 2f) - 12, (k - j + (l/255f*2)) + 12);
+                    DrawUtil.renderTooltipFromComponents(context, list1, ((this.scaledWidth - f) / 2f) - 12, (k - j + (l/255f*2)) + 18);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
+                    RenderSystem.disableBlend();
                     matrices.pop();
                 }
             }
