@@ -132,7 +132,7 @@ public class Andromeda implements ModInitializer {
 
         @Override
         public Text getDeathMessage(LivingEntity entity) {
-            return TextUtil.translatable("death.attack.andromeda_bricked.entity", entity.getDisplayName(), attacker != null ? attacker.getDisplayName() : "");
+            return TextUtil.translatable("death.attack.andromeda_bricked", entity.getDisplayName(), attacker != null ? attacker.getDisplayName() : "");
         }
     }
 
