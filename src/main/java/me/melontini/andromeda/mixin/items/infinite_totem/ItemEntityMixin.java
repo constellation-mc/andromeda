@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static me.melontini.andromeda.Andromeda.MODID;
+import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 @Mixin(ItemEntity.class)
 @MixinRelatedConfigOption({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})

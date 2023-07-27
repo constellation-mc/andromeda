@@ -429,6 +429,11 @@ public class AndromedaConfig implements ConfigData {
     public boolean compatMode = false;
 
     @ConfigEntry.Category("misc")
+    @ConfigEntry.Gui.Tooltip()
+    @ConfigEntry.Gui.RequiresRestart
+    public boolean autoUpdateTranslations = true;
+
+    @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip(count = 2)
     @ConfigEntry.Gui.RequiresRestart
     public boolean sendOptionalData = true;

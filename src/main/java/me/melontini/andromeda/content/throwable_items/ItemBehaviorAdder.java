@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.content.throwable_items;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.entity.FlyingItemEntity;

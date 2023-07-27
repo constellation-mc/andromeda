@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.melontini.andromeda.util.MiscUtil.generateRecipeAdvancements;
+import static me.melontini.andromeda.util.AdvancementGeneration.generateRecipeAdvancements;
 
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {

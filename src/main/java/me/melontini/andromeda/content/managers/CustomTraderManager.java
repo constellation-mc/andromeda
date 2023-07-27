@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.content.managers;
 
 import me.melontini.dark_matter.util.MakeSure;
 import me.melontini.dark_matter.util.Utilities;
