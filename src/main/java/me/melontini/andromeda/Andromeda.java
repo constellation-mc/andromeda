@@ -115,7 +115,7 @@ public class Andromeda implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             if (CONFIG.autogenRecipeAdvancements.autogenRecipeAdvancements) {
-                MiscUtil.generateRecipeAdvancements(server);
+                AdvancementGeneration.generateRecipeAdvancements(server);
                 server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
             }
         });
