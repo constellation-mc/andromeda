@@ -1,9 +1,8 @@
-package me.melontini.andromeda.mixin;
+package me.melontini.andromeda.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.util.PrependingLogger;

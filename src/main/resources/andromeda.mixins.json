@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "me.melontini.andromeda.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "me.melontini.andromeda.mixin.AndromedaMixinPlugin",
+  "plugin": "me.melontini.andromeda.util.AndromedaMixinPlugin",
   "mixins": [
     "blocks.bed.power.BedBlockMixin",
     "blocks.bed.safe.BedBlockMixin",
