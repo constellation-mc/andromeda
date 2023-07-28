@@ -26,7 +26,7 @@ public class AndromedaAnalytics {
             if (Andromeda.CONFIG.sendOptionalData) {
                 HANDLER.send(messageBuilder -> {
                     JsonObject object = new JsonObject();
-                    object.addProperty("mod_version", SharedConstants.MOD_VERSION);
+                    object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
                     object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
                     object.addProperty("modloader", Utilities.supply(() -> {
                         String sn = MixinService.getService().getName();
