@@ -290,7 +290,7 @@
   "text.autoconfig.andromeda.option.autoUpdateTranslations.@Tooltip": "Try to download latest translations from GitHub.",
   "text.autoconfig.andromeda.option.sendOptionalData": "Send Optional Data",
   "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[0]": "Data sent at startup:",
-  "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[1]": "Mod version, Minecraft version, Modloader, and config options.",
+  "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[1]": "Mod version, Minecraft version, Modloader.",
   "text.autoconfig.andromeda.option.sendCrashReports": "Send Crash Reports",
   "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[0]": "Data sent at client crash:",
   "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[1]": "Stacktrace, Loaded mods, Environment (server/client)",
