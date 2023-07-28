@@ -1,5 +1,6 @@
 package me.melontini.andromeda.client;
 
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
@@ -15,6 +16,8 @@ import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaAnalytics;
 import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.andromeda.util.translations.AndromedaTranslations;
+import me.melontini.dark_matter.analytics.MessageHandler;
 import me.melontini.dark_matter.glitter.client.util.ScreenParticleHelper;
 import me.melontini.dark_matter.minecraft.client.util.DrawUtil;
 import me.melontini.dark_matter.util.MathStuff;
@@ -54,6 +57,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
@@ -69,6 +73,12 @@ public class AndromedaClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        if (Andromeda.CONFIG.autoUpdateTranslations) {
+            Set<String> languages = Sets.newHashSet("en_us");
+            String s = AndromedaTranslations.getSelectedLanguage();
+            if (!s.isEmpty()) languages.add(s);
+            MessageHandler.EXECUTOR.submit(() -> AndromedaTranslations.downloadTranslations(languages));
+        }
         ClientSideNetworking.register();
         registerEntityRenderers();
         registerBlockRenderers();

@@ -1,12 +1,15 @@
 package me.melontini.andromeda.util;
 
 import me.melontini.dark_matter.util.PrependingLogger;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 
 public class AndromedaLog {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("Andromeda"), PrependingLogger.NAME_METHOD_MIX_WRAPPED);
-    private static final boolean debug = FabricLoader.getInstance().isDevelopmentEnvironment() || AndromedaPreLaunch.preLaunchConfig.debugMessages;
+    private static boolean debug;
+
+    public static void setDebug(boolean debug) {
+        AndromedaLog.debug = debug;
+    }
 
     public static void devInfo(String msg) {
         if (debug) {
