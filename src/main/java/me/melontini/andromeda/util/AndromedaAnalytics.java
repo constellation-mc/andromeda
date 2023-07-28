@@ -1,9 +1,7 @@
 package me.melontini.andromeda.util;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.analytics.Analytics;
@@ -18,7 +16,6 @@ import org.spongepowered.asm.service.MixinService;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
 
 public class AndromedaAnalytics {
@@ -41,28 +38,10 @@ public class AndromedaAnalytics {
                     messageBuilder.set(Analytics.getUUIDString(), object);
                 });
 
-                Gson gson = new Gson();
                 Path fakeConfig = SharedConstants.HIDDEN_PATH.resolve("config_copy.json");
-                String currentConfig = gson.toJson(Andromeda.CONFIG);
                 if (!Files.exists(fakeConfig)) {
                     try {
-                        Files.createDirectories(fakeConfig.getParent());
-                        Files.write(fakeConfig, currentConfig.getBytes());
-                        sendConfig(gson);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        String config = new String(Files.readAllBytes(fakeConfig));
-                        if (!config.equals(currentConfig)) {
-                            try {
-                                Files.write(fakeConfig, currentConfig.getBytes());
-                                sendConfig(gson);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        Files.delete(fakeConfig);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -110,28 +89,5 @@ public class AndromedaAnalytics {
 
             messageBuilder.trackEvent(CRASH_UUID, "Crash", object);
         }, true));
-    }
-
-    private static void stripNonBooleans(JsonObject object) {
-        for (String s : new HashSet<>(object.keySet())) {
-            if (object.get(s).isJsonObject()) {
-                stripNonBooleans(object.getAsJsonObject(s));
-            } else {
-                if (object.get(s).isJsonPrimitive())
-                    if (object.get(s).getAsJsonPrimitive().isBoolean()) continue;
-                object.remove(s);
-            }
-        }
-    }
-
-    private static void sendConfig(Gson gson) {
-        HANDLER.send(messageBuilder -> {
-            JsonObject object = new JsonObject();
-            JsonObject config = JsonParser.parseString(gson.toJson(Andromeda.CONFIG)).getAsJsonObject();
-            stripNonBooleans(config);
-            object.add("Config", config);
-            AndromedaLog.info("Uploading optional data (Config)");
-            messageBuilder.set(Analytics.getUUIDString(), object);
-        });
     }
 }
