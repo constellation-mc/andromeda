@@ -29,10 +29,9 @@ public class AndromedaAnalytics {
                     object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
                     object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
                     object.addProperty("modloader", Utilities.supply(() -> {
-                        String sn = MixinService.getService().getName();
-                        if (sn.contains("/Fabric")) return "Fabric";
-                        else if (sn.contains("/Quilt")) return "Quilt";
-                        else return "Other";
+                        String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
+                        if (sn.isEmpty()) return "Other";
+                        return sn;
                     }));
                     AndromedaLog.info("Uploading optional data (Environment): \n" + object);
                     messageBuilder.set(Analytics.getUUIDString(), object);
