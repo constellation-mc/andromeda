@@ -71,13 +71,11 @@ public class AndromedaAnalytics {
             JsonArray mods = new JsonArray();
             List<ModContainer> loadedMods = FabricLoader.getInstance().getAllMods().stream().sorted((a, b) -> a.getMetadata().getId().compareToIgnoreCase(b.getMetadata().getId())).filter(modContainer -> {
                 String id = modContainer.getMetadata().getId();
-                if (id.matches("fabric-[a-zA-Z_\\-]+-v\\d+")) return false;
-                else if (id.matches("quilt_[a-zA-Z_\\-]+") || id.matches("quilted_fabric_[a-zA-Z_\\-]+_v\\d+")) return false;
+                if (id.matches("(^fabric|^quilted_fabric|^terraform|^libjf)[-_][a-zA-Z_\\-]+[-|_]v\\d+")) return false;
+                else if (id.matches("quilt_[a-zA-Z_\\-]+")) return false;
                 else if (id.startsWith("dark-matter-") && !id.equals("dark-matter-base")) return false;
                 else if (id.matches("^org_jetbrains_kotlinx?_kotlinx?")) return false;
                 else if (id.startsWith("cardinal-components-")) return false;
-                else if (id.matches("terraform-[a-zA-Z_\\-]+-v\\d+")) return false;
-                else if (id.matches("libjf-[a-zA-Z_\\-]+-v\\d+")) return false;
                 return true;
             }).toList();
             for (ModContainer mod : loadedMods)
