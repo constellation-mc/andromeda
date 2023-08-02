@@ -9,7 +9,6 @@ import net.minecraft.block.FireBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,9 +39,8 @@ public abstract class AbstractFireBlockMixin extends AbstractFireBlock {
         return!Andromeda.CONFIG.quickFire ? value : (int) Math.ceil(value / 3d);
     }
 
-    @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/block/FireBlock.trySpreadingFire (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILjava/util/Random;I)V", ordinal = 0, shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "scheduledTick")
-    public void andromeda$trySpreadBlocks(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci, int i, boolean bl2, int k) {
+    public void andromeda$trySpreadBlocks(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci, BlockState blockState, boolean bl, int i, int j, boolean bl2, int k) {
         if (Andromeda.CONFIG.quickFire) {
             for (int x = -3; x < 3; x++) {
                 for (int y = -3; y < 3; y++) {

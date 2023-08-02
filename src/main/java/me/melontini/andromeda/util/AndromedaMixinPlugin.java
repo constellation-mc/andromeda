@@ -1,8 +1,8 @@
-package me.melontini.andromeda.mixin;
+package me.melontini.andromeda.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.AndromedaPreLaunch;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.util.PrependingLogger;
@@ -24,6 +24,7 @@ import java.util.Map;
 public class AndromedaMixinPlugin extends ExtendedPlugin {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaMixinPlugin"), PrependingLogger.LOGGER_NAME);
     private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
+    private static AndromedaConfig CONFIG;
     private static boolean log;
 
     static {
@@ -41,9 +42,11 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
         }
-        log = AndromedaPreLaunch.preLaunchConfig.debugMessages || FabricLoader.getInstance().isDevelopmentEnvironment();
+        loadConfigFromFile();
+        log = CONFIG.debugMessages || FabricLoader.getInstance().isDevelopmentEnvironment();
+        AndromedaLog.setDebug(log);
 
-        if (AndromedaPreLaunch.preLaunchConfig.compatMode) {
+        if (CONFIG.compatMode) {
             LOGGER.warn("Compat mode is on!");
         }
     }
@@ -51,7 +54,7 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         boolean load = super.shouldApplyMixin(targetClassName, mixinClassName);
-        if (AndromedaPreLaunch.preLaunchConfig.compatMode && load) {
+        if (CONFIG.compatMode && load) {
             try {
                 //"inspired" by https://github.com/unascribed/Fabrication/blob/3.0/1.18/src/main/java/com/unascribed/fabrication/support/MixinConfigPlugin.java
                 ClassNode node = MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName);
@@ -65,13 +68,13 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
 
                                 try {
                                     if (fields.size() > 1) {//🤯🤯🤯
-                                        Object obj = AndromedaConfig.class.getField(fields.get(0)).get(AndromedaPreLaunch.preLaunchConfig);
+                                        Object obj = AndromedaConfig.class.getField(fields.get(0)).get(CONFIG);
                                         for (int i = 1; i < (fields.size() - 1); i++) {
                                             obj = obj.getClass().getField(fields.get(i)).get(obj);
                                         }
                                         load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
                                     } else {
-                                        load = AndromedaPreLaunch.preLaunchConfig.getClass().getField(configOption).getBoolean(AndromedaPreLaunch.preLaunchConfig);
+                                        load = CONFIG.getClass().getField(configOption).getBoolean(CONFIG);
                                     }
                                 } catch (NoSuchFieldException e) {
                                     throw new AndromedaException("Invalid config option in MixinRelatedConfigOption: " + configOption + " This is no fault of yours.");
@@ -95,6 +98,27 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
         super.postApply(targetClassName, targetClass, mixinClassName, mixinInfo);
         if (targetClass.visibleAnnotations != null && !targetClass.visibleAnnotations.isEmpty()) {//strip our annotation from the class
             targetClass.visibleAnnotations.removeIf(node -> MIXIN_TO_OPTION_ANNOTATION.equals(node.desc));
+        }
+    }
+
+    private static void loadConfigFromFile() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Path config = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
+        if (Files.exists(config)) {
+            try {
+                CONFIG = gson.fromJson(Files.readString(config), AndromedaConfig.class);
+                Files.write(config, gson.toJson(CONFIG).getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            CONFIG = new AndromedaConfig();
+            try {
+                Files.createFile(config);
+                Files.write(config, gson.toJson(CONFIG).getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

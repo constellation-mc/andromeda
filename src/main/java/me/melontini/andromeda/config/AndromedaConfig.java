@@ -278,7 +278,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
-    public boolean slightlyBetterItemNames = true;
+    public boolean slightlyBetterItemNames = false;
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
@@ -297,7 +297,7 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("items")
-   @ConfigEntry.Gui.Tooltip(count = 4)
+    @ConfigEntry.Gui.Tooltip(count = 4)
     public boolean balancedMending = false;
 
     @ConfigEntry.Category("items")
@@ -315,6 +315,10 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("bugfixes")
     @ConfigEntry.Gui.Tooltip
     public boolean properlyAlignedRecipeAlternatives = true;
+
+    @ConfigEntry.Category("mechanics")
+    @ConfigEntry.Gui.Tooltip
+    public boolean villagerGifting = false;
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.CollapsibleObject
@@ -347,7 +351,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
-    public boolean tooltipNotName = true;
+    public boolean tooltipNotName = false;
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
@@ -423,7 +427,6 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip()
-    @ConfigEntry.Gui.RequiresRestart
     public boolean autoUpdateTranslations = true;
 
     @ConfigEntry.Category("misc")
