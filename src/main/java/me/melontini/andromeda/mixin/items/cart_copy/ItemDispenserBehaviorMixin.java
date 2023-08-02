@@ -3,7 +3,8 @@ package me.melontini.andromeda.mixin.items.cart_copy;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.content.data.NBTUtil;
-import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
@@ -24,11 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @MixinRelatedConfigOption("minecartBlockPicking")
 public class ItemDispenserBehaviorMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractMinecartEntity;create(Lnet/minecraft/world/World;DDDLnet/minecraft/entity/vehicle/AbstractMinecartEntity$Type;)Lnet/minecraft/entity/vehicle/AbstractMinecartEntity;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "dispenseSilently", cancellable = true)
-    public void andromeda$dispenseSilently(BlockPointer pointer, ItemStack stack, CallbackInfoReturnable<ItemStack> cir, World world, double d, double e, double f, double k) {
-        Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-        BlockPos blockPos = pointer.getPos().offset(direction);
+    public void andromeda$dispenseSilently(BlockPointer pointer, ItemStack stack, CallbackInfoReturnable<ItemStack> cir, Direction direction, World world, double d, double e, double f, BlockPos blockPos, BlockState blockState, RailShape railShape, double g) {
         if (stack.getItem() == Items.CHEST_MINECART) {
-            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + k, f, AbstractMinecartEntity.Type.CHEST);
+            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.CHEST);
             ChestMinecartEntity chestMinecart = (ChestMinecartEntity) abstractMinecartEntity;
 
             NBTUtil.readInventoryFromNbt(stack.getNbt(), chestMinecart);
@@ -38,7 +37,7 @@ public class ItemDispenserBehaviorMixin {
             stack.decrement(1);
             cir.setReturnValue(stack);
         } else if (stack.getItem() == Items.HOPPER_MINECART) {
-            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + k, f, AbstractMinecartEntity.Type.HOPPER);
+            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.HOPPER);
             HopperMinecartEntity hopperMinecart = (HopperMinecartEntity) abstractMinecartEntity;
 
             NBTUtil.readInventoryFromNbt(stack.getNbt(), hopperMinecart);
@@ -48,7 +47,7 @@ public class ItemDispenserBehaviorMixin {
             stack.decrement(1);
             cir.setReturnValue(stack);
         } else if (stack.getItem() == Items.FURNACE_MINECART) {
-            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + k, f, AbstractMinecartEntity.Type.FURNACE);
+            AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE);
             FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) abstractMinecartEntity;
 
             furnaceMinecart.fuel = NBTUtil.getInt(stack.getNbt(), "Fuel", 0, Andromeda.CONFIG.maxFurnaceMinecartFuel);
