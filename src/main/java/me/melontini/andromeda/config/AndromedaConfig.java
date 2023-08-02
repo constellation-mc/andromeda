@@ -300,7 +300,7 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("items")
-   @ConfigEntry.Gui.Tooltip(count = 4)
+    @ConfigEntry.Gui.Tooltip(count = 4)
     public boolean balancedMending = false;
 
     @ConfigEntry.Category("items")
@@ -318,6 +318,10 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("bugfixes")
     @ConfigEntry.Gui.Tooltip
     public boolean properlyAlignedRecipeAlternatives = true;
+
+    @ConfigEntry.Category("mechanics")
+    @ConfigEntry.Gui.Tooltip
+    public boolean villagerGifting = true;
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.CollapsibleObject
