@@ -281,7 +281,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
-    public boolean slightlyBetterItemNames = true;
+    public boolean slightlyBetterItemNames = false;
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
@@ -321,7 +321,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
-    public boolean villagerGifting = true;
+    public boolean villagerGifting = false;
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.CollapsibleObject
@@ -358,7 +358,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
-    public boolean tooltipNotName = true;
+    public boolean tooltipNotName = false;
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
