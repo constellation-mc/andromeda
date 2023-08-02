@@ -29,14 +29,10 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation include("me.melontini.dark-matter:dark-matter-base:${project.dark_matter}")
-    modImplementation include("me.melontini.dark-matter:dark-matter-minecraft:${project.dark_matter}")
-    modImplementation include("me.melontini.dark-matter:dark-matter-analytics:${project.dark_matter}")
-    modImplementation include("me.melontini.dark-matter:dark-matter-analytics-crashes:${project.dark_matter}")
-    modImplementation include("me.melontini.dark-matter:dark-matter-analytics-mixpanel:${project.dark_matter}")
-    modImplementation include("me.melontini.dark-matter:dark-matter-content:${project.dark_matter}")
-    modImplementation include("me.melontini.dark-matter:dark-matter-mirage:${project.dark_matter}")
-    modImplementation include("me.melontini.dark-matter:dark-matter-glitter:${project.dark_matter}")
+    def dmModules = ["base", "minecraft", "analytics", "analytics-crashes", "analytics-mixpanel", "content", "mirage", "glitter"]
+    for (final def module in dmModules) {
+        modApi include("me.melontini.dark-matter:dark-matter-${module}:${project.dark_matter}")
+    }
 
     modApi "com.terraformersmc:modmenu:${project.modmenu_version}"
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
