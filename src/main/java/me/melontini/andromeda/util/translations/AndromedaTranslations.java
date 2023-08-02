@@ -70,6 +70,7 @@ public class AndromedaTranslations {
 
     public static String getSelectedLanguage() {
         try {
+            if (!Files.exists(OPTIONS)) return "";
             for (String line : Files.readAllLines(OPTIONS)) {
                 if (line.matches("^lang:\\w+_\\w+")) {
                     languageCode = line.replace("lang:", "");
