@@ -4,7 +4,10 @@ import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.*;
-import me.melontini.andromeda.util.*;
+import me.melontini.andromeda.util.AdvancementGeneration;
+import me.melontini.andromeda.util.AndromedaAnalytics;
+import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
 import me.melontini.dark_matter.util.Utilities;
@@ -38,9 +41,7 @@ public class Andromeda implements ModInitializer {
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
-        AndromedaConfig config = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
-        AndromedaPreLaunch.preLaunchConfig = config;
-        return config;
+        return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     });
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
     public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
@@ -59,6 +60,7 @@ public class Andromeda implements ModInitializer {
         ServerSideNetworking.register();
         ResourceConditionRegistry.register();
         ScreenHandlerRegistry.register();
+        TagRegistry.register();
 
         LEAF_SLOWNESS = new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE);
         KNOCKOFF_TOTEM_PARTICLE = FabricParticleTypes.simple();

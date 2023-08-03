@@ -43,8 +43,7 @@
     "minecraft": ">=${minecraft_version}"
   },
   "recommends": {
-    "modmenu": "*",
-    "tooltipfix": "*"
+    "modmenu": "*"
   },
   "custom": {
     "lithium:options": {

@@ -2,7 +2,6 @@ package me.melontini.andromeda.util.translations;
 
 import com.google.common.collect.Sets;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.AndromedaPreLaunch;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.loader.api.FabricLoader;
@@ -34,7 +33,6 @@ public class AndromedaTranslations {
     }
 
     public static void downloadTranslations(Set<String> languages) {
-        if (!AndromedaPreLaunch.preLaunchConfig.autoUpdateTranslations) return;
         for (String language : languages) {
             String file = downloadLang(language);
             if (!file.isEmpty()) {
@@ -72,6 +70,7 @@ public class AndromedaTranslations {
 
     public static String getSelectedLanguage() {
         try {
+            if (!Files.exists(OPTIONS)) return "";
             for (String line : Files.readAllLines(OPTIONS)) {
                 if (line.matches("^lang:\\w+_\\w+")) {
                     languageCode = line.replace("lang:", "");

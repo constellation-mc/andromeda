@@ -1,11 +1,18 @@
 ### What's New:
 
-* Fixed tooltip mixins loading on servers.
-* Fixed analytics.
-* "Safe Beds"' and "Beds Explode Everywhere"'s mixins will now get disabled with compat mode on.
-* Bee Nests will now use tags to detect if they're on trees.
-  * Now they will check if the block below is air, block above is a log/leaf block and if one of the blocks in 4 directions is a log.
-  * Also, fixed a possible bug with bee nest duplication.
-* Made the icon a bit smaller.
-* Updated Dark Matter
-* A few other internal changes.
+* New tweak! [Experimental] Villager Gifting!
+* * Allows to restore some reputation by giving gifts to villagers!
+* New option! Auto-update translations!
+
+
+* Made tooltips from "Tooltip, not name" more transparent and lower.
+* Removed config upload.
+* Common library modules are now removed from the uploaded crash report.
+* ToolTipFix is no longer recommended in-game.
+* Loader and MC versions are now enforced.
+
+
+* Fixed the "Recovery compass" tooltip option being called "Compass".
+* The config is no longer registered in the MixinPlugin (fixes compatibility with mods that modify AutoConfig, e.g. LibZ)
+* Fixed a few mixins (they were somehow working, but broke after updating deps).
+* Updated: Loom, Gradle, Fabric API, ModMenu, Cloth Config.
