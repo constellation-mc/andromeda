@@ -120,7 +120,7 @@ public class AndromedaClient implements ClientModInitializer {
 
     private void inGameTooltips() {
         HudRenderCallback.EVENT.register((matrices, delta) -> {
-            if (Andromeda.CONFIG.itemFrameTooltips) {
+            if (Andromeda.CONFIG.itemFrameTooltips && MinecraftClient.getInstance().currentScreen == null) {
                 var client = MinecraftClient.getInstance();
                 var cast = client.crosshairTarget;
 
@@ -129,6 +129,7 @@ public class AndromedaClient implements ClientModInitializer {
                 if (!FRAME_STACK.isEmpty()) {
                     tooltipFlow = MathHelper.lerp(0.25f * client.getLastFrameDuration(), tooltipFlow, 1);
                     matrices.push();
+                    matrices.translate(0, 0, -450);
                     matrices.scale(1, 1, 1);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
