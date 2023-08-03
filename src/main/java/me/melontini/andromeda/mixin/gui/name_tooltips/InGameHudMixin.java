@@ -42,7 +42,7 @@ public abstract class InGameHudMixin {
         if (Andromeda.CONFIG.tooltipNotName) {
             this.client.getProfiler().push("selectedItemName");
 
-            if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
+            if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty() && MinecraftClient.getInstance().currentScreen == null) {
                 int l = (int)((float)this.heldItemTooltipFade * 256.0F / 10.0F);
                 if (l > 255) {
                     l = 255;
@@ -56,6 +56,7 @@ public abstract class InGameHudMixin {
 
                     MatrixStack matrices = context.getMatrices();
                     matrices.push();
+                    matrices.translate(0, 0, -450);
                     matrices.scale(1, 1, 1);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
