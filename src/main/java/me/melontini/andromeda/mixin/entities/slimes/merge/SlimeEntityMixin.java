@@ -3,9 +3,9 @@ package me.melontini.andromeda.mixin.entities.slimes.merge;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.content.data.NBTUtil;
-import me.melontini.dark_matter.util.MathStuff;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -65,6 +65,6 @@ public abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (Andromeda.CONFIG.slimes.merge) this.andromeda$mergeCD = NBTUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(Utilities.RANDOM, 700, 2000));
+        if (Andromeda.CONFIG.slimes.merge) this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(Utilities.RANDOM, 700, 2000));
     }
 }

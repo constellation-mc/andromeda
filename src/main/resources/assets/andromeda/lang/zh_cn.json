@@ -288,6 +288,8 @@
   "text.autoconfig.andromeda.category.misc": "杂项",
   "text.autoconfig.andromeda.option.damageBackport": "/damage指令复刻",
   "text.autoconfig.andromeda.option.damageBackport.@Tooltip": "对高版本/damage指令的非完全复刻！",
+  "text.autoconfig.andromeda.option.autoUpdateTranslations": "翻译更新",
+  "text.autoconfig.andromeda.option.autoUpdateTranslations.@Tooltip": "尝试从github下载最新版的翻译文件",
   "text.autoconfig.andromeda.option.sendOptionalData": "提交可选数据",
   "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[0]": "启动时被提交的数据：",
   "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[1]": "模组版本，游戏版本，环境（客户端/服务端）",

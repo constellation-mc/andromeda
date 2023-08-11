@@ -1,6 +1,6 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.dark_matter.util.PrependingLogger;
+import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import org.apache.logging.log4j.LogManager;
 
 public class AndromedaLog {

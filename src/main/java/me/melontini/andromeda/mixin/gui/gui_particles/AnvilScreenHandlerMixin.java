@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.gui.gui_particles;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.mixin.gui.gui_particles.accessors.HandledScreenAccessor;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.glitter.client.util.ScreenParticleHelper;
+import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
