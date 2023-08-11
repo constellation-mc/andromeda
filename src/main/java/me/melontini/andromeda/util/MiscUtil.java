@@ -1,6 +1,6 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
