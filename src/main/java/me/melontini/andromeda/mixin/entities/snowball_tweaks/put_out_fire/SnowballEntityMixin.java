@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.entities.snowball_tweaks.put_out_fire;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.sound.SoundEvents;

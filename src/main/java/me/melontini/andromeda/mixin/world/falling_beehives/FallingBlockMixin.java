@@ -4,7 +4,7 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.minecraft.world.PlayerUtil;
+import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeehiveBlockEntity;

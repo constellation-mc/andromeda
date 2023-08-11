@@ -4,8 +4,8 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.content.data.NBTUtil;
-import me.melontini.dark_matter.content.data.NbtBuilder;
+import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
+import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -71,7 +71,7 @@ public abstract class MinecartItemMixin extends Item {
                     AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, (double) pos.getX() + 0.5, (double) pos.getY() + 0.0625 + d, (double) pos.getZ() + 0.5, this.type);
                     ChestMinecartEntity chestMinecart = (ChestMinecartEntity) abstractMinecartEntity;
 
-                    NBTUtil.readInventoryFromNbt(stack.getNbt(), chestMinecart);
+                    NbtUtil.readInventoryFromNbt(stack.getNbt(), chestMinecart);
                     if (stack.hasCustomName()) chestMinecart.setCustomName(stack.getName());
 
                     world.spawnEntity(chestMinecart);
@@ -85,7 +85,7 @@ public abstract class MinecartItemMixin extends Item {
                     AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, (double) pos.getX() + 0.5, (double) pos.getY() + 0.0625 + d, (double) pos.getZ() + 0.5, this.type);
                     HopperMinecartEntity hopperMinecart = (HopperMinecartEntity) abstractMinecartEntity;
 
-                    NBTUtil.readInventoryFromNbt(stack.getNbt(), hopperMinecart);
+                    NbtUtil.readInventoryFromNbt(stack.getNbt(), hopperMinecart);
                     if (stack.hasCustomName()) hopperMinecart.setCustomName(stack.getName());
 
                     world.spawnEntity(hopperMinecart);
@@ -99,7 +99,7 @@ public abstract class MinecartItemMixin extends Item {
                     AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, (double) pos.getX() + 0.5, (double) pos.getY() + 0.0625 + d, (double) pos.getZ() + 0.5, this.type);
                     FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) abstractMinecartEntity;
 
-                    furnaceMinecart.fuel = NBTUtil.getInt(stack.getNbt(), "Fuel", 0, Andromeda.CONFIG.maxFurnaceMinecartFuel);
+                    furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, Andromeda.CONFIG.maxFurnaceMinecartFuel);
                     furnaceMinecart.interact(player, player.getActiveHand());
                     if (stack.hasCustomName()) furnaceMinecart.setCustomName(stack.getName());
 
@@ -118,7 +118,7 @@ public abstract class MinecartItemMixin extends Item {
                     ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
                     assert chestBlockEntity != null;
-                    chestMinecart.setNbt(NBTUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity));
+                    chestMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity));
 
                     player.getInventory().offerOrDrop(chestMinecart);
                     chestBlockEntity.inventory.clear();
@@ -216,7 +216,7 @@ public abstract class MinecartItemMixin extends Item {
                     ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
                     assert hopperBlockEntity != null;
-                    hopperMinecart.setNbt(NBTUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity));
+                    hopperMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity));
 
                     player.getInventory().offerOrDrop(hopperMinecart);
                     hopperBlockEntity.inventory.clear();
