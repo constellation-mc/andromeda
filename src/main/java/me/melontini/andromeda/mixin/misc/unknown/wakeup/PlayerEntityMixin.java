@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.misc.unknown.wakeup;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.content.data.NbtBuilder;
+import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;

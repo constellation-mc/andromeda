@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import me.melontini.andromeda.Andromeda;
-import me.melontini.dark_matter.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementPositioner;

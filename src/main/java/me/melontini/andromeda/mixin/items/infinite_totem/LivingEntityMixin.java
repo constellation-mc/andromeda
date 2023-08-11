@@ -7,7 +7,7 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.minecraft.world.PlayerUtil;
+import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;

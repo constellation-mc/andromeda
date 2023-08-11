@@ -2,8 +2,8 @@ package me.melontini.andromeda.mixin.items.tooltips.clock;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.minecraft.util.TextUtil;
-import me.melontini.dark_matter.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

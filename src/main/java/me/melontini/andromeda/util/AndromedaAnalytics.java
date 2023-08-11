@@ -4,11 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.analytics.Analytics;
-import me.melontini.dark_matter.analytics.Prop;
-import me.melontini.dark_matter.analytics.crashes.Crashlytics;
-import me.melontini.dark_matter.analytics.mixpanel.MixpanelAnalytics;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.analytics.Analytics;
+import me.melontini.dark_matter.api.analytics.Prop;
+import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
+import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
+import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import org.spongepowered.asm.service.MixinService;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class AndromedaAnalytics {
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
-    private static final MixpanelAnalytics.Handler HANDLER = MixpanelAnalytics.init(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
+    private static final MixpanelHandler HANDLER = MixpanelAnalytics.init(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
     public static void handleUpload() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
             if (Andromeda.CONFIG.sendOptionalData) {

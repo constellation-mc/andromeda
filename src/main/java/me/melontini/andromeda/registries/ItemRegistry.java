@@ -13,10 +13,10 @@ import me.melontini.andromeda.items.minecarts.NoteBlockMinecartItem;
 import me.melontini.andromeda.items.minecarts.SpawnerMinecartItem;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
-import me.melontini.dark_matter.content.ContentBuilder;
-import me.melontini.dark_matter.minecraft.client.util.DrawUtil;
-import me.melontini.dark_matter.minecraft.util.MinecraftUtil;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.content.ContentBuilder;
+import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
+import me.melontini.dark_matter.api.minecraft.util.MinecraftUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
-import static me.melontini.dark_matter.content.RegistryUtil.asItem;
+import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
 public class ItemRegistry {
     public static RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.ROSE_OF_THE_VALLEY);

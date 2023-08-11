@@ -1,8 +1,8 @@
 package me.melontini.andromeda.screens;
 
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
-import me.melontini.dark_matter.content.data.NbtBuilder;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;

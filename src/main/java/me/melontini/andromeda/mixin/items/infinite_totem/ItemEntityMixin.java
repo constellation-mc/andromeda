@@ -5,7 +5,7 @@ import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.util.classes.Tuple;
+import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;

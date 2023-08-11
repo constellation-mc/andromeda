@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.gui.gui_particles;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.glitter.client.util.ScreenParticleHelper;
+import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
