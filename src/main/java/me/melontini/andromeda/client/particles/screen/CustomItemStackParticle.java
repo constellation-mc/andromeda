@@ -1,8 +1,8 @@
 package me.melontini.andromeda.client.particles.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.melontini.dark_matter.glitter.client.particles.ItemStackParticle;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;

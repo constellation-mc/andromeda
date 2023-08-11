@@ -1,6 +1,6 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.dark_matter.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;

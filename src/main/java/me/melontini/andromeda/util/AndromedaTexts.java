@@ -1,7 +1,6 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.dark_matter.minecraft.util.TextUtil;
-import net.minecraft.text.MutableText;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 

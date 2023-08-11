@@ -1,7 +1,7 @@
 package me.melontini.andromeda.content.managers;
 
-import me.melontini.dark_matter.util.MakeSure;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;

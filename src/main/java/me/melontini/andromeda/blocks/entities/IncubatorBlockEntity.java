@@ -4,8 +4,8 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.blocks.IncubatorBlock;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.data.EggProcessingData;
-import me.melontini.dark_matter.content.data.NBTUtil;
-import me.melontini.dark_matter.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
@@ -154,14 +154,14 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         super.readNbt(nbt);
         this.processingTime = nbt.getInt("ProcessingTime");
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        NBTUtil.readInventoryFromNbt(nbt, this);
+        NbtUtil.readInventoryFromNbt(nbt, this);
     }
 
     @Override
     public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("ProcessingTime", this.processingTime);
-        NBTUtil.writeInventoryToNbt(nbt, this);
+        NbtUtil.writeInventoryToNbt(nbt, this);
     }
 
     @Override
