@@ -27,8 +27,8 @@ public class EntityTypeRegistry {
     public static EntityType<FurnaceBoatEntity> BOAT_WITH_FURNACE = RegistryUtil.createEntityType(Andromeda.CONFIG.newBoats.isFurnaceBoatOn, new Identifier(MODID, "furnace_boat"), FabricEntityTypeBuilder.<FurnaceBoatEntity>create(SpawnGroup.MISC, FurnaceBoatEntity::new).dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
     public static EntityType<JukeboxBoatEntity> BOAT_WITH_JUKEBOX = RegistryUtil.createEntityType(Andromeda.CONFIG.newBoats.isJukeboxBoatOn, new Identifier(MODID, "jukebox_boat"), FabricEntityTypeBuilder.<JukeboxBoatEntity>create(SpawnGroup.MISC, JukeboxBoatEntity::new).dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
     public static EntityType<HopperBoatEntity> BOAT_WITH_HOPPER = RegistryUtil.createEntityType(Andromeda.CONFIG.newBoats.isHopperBoatOn, new Identifier(MODID, "hopper_boat"), FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new).dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
-    public static EntityType<FlyingItemEntity> FLYING_ITEM = RegistryUtil.createEntityType(new Identifier(MODID, "flying_item"), EntityType.Builder.<FlyingItemEntity>create(FlyingItemEntity::new, SpawnGroup.MISC)
-            .setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10));
+    public static EntityType<FlyingItemEntity> FLYING_ITEM = RegistryUtil.createEntityType(new Identifier(MODID, "flying_item"), FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
+            .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10));
 
     public static void register() {
         AndromedaLog.info("EntityTypeRegistry init complete!");
