@@ -16,8 +16,8 @@ import me.melontini.andromeda.util.AndromedaTexts;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.content.ContentBuilder;
+import me.melontini.dark_matter.api.content.interfaces.DarkMatterEntries;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
-import me.melontini.dark_matter.impl.content.DarkMatterEntries;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
@@ -134,11 +134,11 @@ public class ItemRegistry {
         if (list == null || list.isEmpty()) return; //we shouldn't add line breaks if there are no items.
 
         int rows = MathStuff.fastCeil(list.size() / 9d);
-        entries.addAll(list);
+        entries.addAll(list, DarkMatterEntries.Visibility.TAB);
         int left = (rows * 9) - list.size();
         for (int i = 0; i < left; i++) {
-            entries.add(ItemStack.EMPTY); //fill the gaps
+            entries.add(ItemStack.EMPTY, DarkMatterEntries.Visibility.TAB); //fill the gaps
         }
-        if (lineBreak) entries.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY)); //line break
+        if (lineBreak) entries.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY), DarkMatterEntries.Visibility.TAB); //line break
     }
 }
