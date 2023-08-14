@@ -2,6 +2,7 @@ package me.melontini.andromeda.util.translations;
 
 import com.google.common.collect.Sets;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.GitTracker;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.loader.api.FabricLoader;
@@ -19,7 +20,7 @@ public class AndromedaTranslations {
     public static final Path TRANSLATION_PACK = SharedConstants.HIDDEN_PATH.resolve("andromeda_translations");
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
     private static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
-    private static final String URL = "https://raw.githubusercontent.com/melontini/andromeda/1.19-fabric/src/main/resources/assets/andromeda/lang/";
+    private static final String URL = GitTracker.RAW_URL + "/" + GitTracker.OWNER + "/" + GitTracker.REPO + "/" + GitTracker.getDefaultBranch() + "/src/main/resources/assets/andromeda/lang/";
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static String languageCode = "en_us";
 
