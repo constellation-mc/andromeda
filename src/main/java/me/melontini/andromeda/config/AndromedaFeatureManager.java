@@ -18,6 +18,9 @@ public class AndromedaFeatureManager {
                 config.quickFire = false;
             }
         });
+        registerProcessor("safe_beds_conflict", config -> {
+            if (config.safeBeds) config.bedsExplodeEverywhere = false;
+        });
     }
 
     public static void registerProcessor(String feature, FeatureProcessor processor) {

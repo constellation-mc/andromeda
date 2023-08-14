@@ -1,9 +1,6 @@
 
 name: publish
-on:
-  push:
-    tags:
-      - 'v*'
+on: [workflow_dispatch]
 
 jobs:
   publish:
@@ -42,6 +39,10 @@ jobs:
 
           java: |
             17
+
+          github-tag: v${{ env.VERSION_PLAIN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-prerelease: false
 
           modrinth-id: TseYlb0f
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}

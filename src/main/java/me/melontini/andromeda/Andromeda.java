@@ -1,6 +1,7 @@
 package me.melontini.andromeda;
 
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.config.AndromedaFeatureManager;
 import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
@@ -32,6 +33,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -52,6 +54,12 @@ public class Andromeda implements ModInitializer {
         }, Excluded.IfPlatform.class);
 
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
+
+        AutoConfig.getConfigHolder(AndromedaConfig.class).registerSaveListener((configHolder, config) -> {
+            AndromedaFeatureManager.processFeatures(config);
+            return ActionResult.SUCCESS;
+        });
+
         return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     });
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
