@@ -11,13 +11,11 @@ import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import org.spongepowered.asm.service.MixinService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.List;
 
 public class AndromedaAnalytics {
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
@@ -67,22 +65,15 @@ public class AndromedaAnalytics {
             for (String string : report.getCauseAsString().lines().toList()) stackTrace.add(string);
             object.add("stackTrace", stackTrace);
 
-            //fill loaded mods.
-            JsonArray mods = new JsonArray();
-            List<ModContainer> loadedMods = FabricLoader.getInstance().getAllMods().stream().sorted((a, b) -> a.getMetadata().getId().compareToIgnoreCase(b.getMetadata().getId())).filter(modContainer -> {
-                String id = modContainer.getMetadata().getId();
-                if (id.matches("(^fabric|^quilted_fabric|^terraform|^libjf)[-_][a-zA-Z_\\-]+[-|_]v\\d+")) return false;
-                else if (id.matches("quilt_[a-zA-Z_\\-]+")) return false;
-                else if (id.startsWith("dark-matter-") && !id.equals("dark-matter-base")) return false;
-                else if (id.matches("^org_jetbrains_kotlinx?_kotlinx?")) return false;
-                else if (id.startsWith("cardinal-components-")) return false;
-                return true;
-            }).toList();
-            for (ModContainer mod : loadedMods)
-                mods.add(mod.getMetadata().getId() + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")");
-            object.add("mods", mods);
-
             object.addProperty("environment", envType.toString().toLowerCase());
+            object.addProperty("platform", SharedConstants.PLATFORM.toString().toLowerCase());
+
+            JsonArray mods = new JsonArray();
+            String[] importantMods = new String[]{"andromeda", "minecraft", "modmenu", "dark-matter-base", "fabric-api", "fabricloader", "cloth-config", "cloth_config", "connectormod", "forge"};
+            for (String importantMod : importantMods) {
+                FabricLoader.getInstance().getModContainer(importantMod).ifPresent(mod -> mods.add(importantMod + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")"));
+            }
+            object.add("mods", mods);
 
             messageBuilder.trackEvent(CRASH_UUID, "Crash", object);
         }, true));
