@@ -22,6 +22,7 @@ import java.util.List;
 public class AndromedaAnalytics {
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
     private static final MixpanelHandler HANDLER = MixpanelAnalytics.init(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
+
     public static void handleUpload() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
             if (Andromeda.CONFIG.sendOptionalData) {
@@ -39,12 +40,10 @@ public class AndromedaAnalytics {
                 });
 
                 Path fakeConfig = SharedConstants.HIDDEN_PATH.resolve("config_copy.json");
-                if (!Files.exists(fakeConfig)) {
-                    try {
-                        Files.delete(fakeConfig);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Files.deleteIfExists(fakeConfig);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } else {
                 HANDLER.send(messageBuilder -> messageBuilder.delete(Analytics.getUUIDString()));
