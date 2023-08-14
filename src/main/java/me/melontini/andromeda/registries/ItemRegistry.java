@@ -10,10 +10,11 @@ import me.melontini.andromeda.items.minecarts.NoteBlockMinecartItem;
 import me.melontini.andromeda.items.minecarts.SpawnerMinecartItem;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.content.ContentBuilder;
+import me.melontini.dark_matter.api.content.interfaces.DarkMatterEntries;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
-import me.melontini.dark_matter.api.minecraft.util.MinecraftUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
@@ -26,10 +27,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
@@ -68,11 +71,11 @@ public class ItemRegistry {
         return new ItemStack(SPAWNER_MINECART);
     });
     public static ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(new Identifier(MODID, "group"))
-            .entries(itemStacks -> {
+            .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
                 if (Andromeda.CONFIG.incubatorSettings.enableIncubator) misc.add(ItemRegistry.INCUBATOR.getDefaultStack());
                 if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem) misc.add(ItemRegistry.INFINITE_TOTEM.getDefaultStack());
-                MinecraftUtil.appendStacks(itemStacks, misc);
+                appendStacks(entries, misc, true);
 
                 List<ItemStack> carts = new ArrayList<>();
                 if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn) carts.add(ItemRegistry.ANVIL_MINECART.getDefaultStack());
@@ -81,7 +84,7 @@ public class ItemRegistry {
                 if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn)
                     carts.add(ItemRegistry.NOTE_BLOCK_MINECART.getDefaultStack());
                 carts.add(ItemRegistry.SPAWNER_MINECART.getDefaultStack());
-                MinecraftUtil.appendStacks(itemStacks, carts);
+                appendStacks(entries, carts, true);
 
                 List<ItemStack> boats = new ArrayList<>();
                 for (BoatEntity.Type value : BoatEntity.Type.values()) {
@@ -94,7 +97,7 @@ public class ItemRegistry {
                     if (Andromeda.CONFIG.newBoats.isHopperBoatOn)
                         boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper")).getDefaultStack());
                 }
-                MinecraftUtil.appendStacks(itemStacks, boats, false);
+                appendStacks(entries, boats, false);
             }).icon(() -> ITEM_GROUP_ICON).animatedIcon(() -> (matrixStack, itemX, itemY, selected, isTopRow) -> {
                 MinecraftClient client = MinecraftClient.getInstance();
 
@@ -123,5 +126,17 @@ public class ItemRegistry {
 
     public static Identifier boatId(BoatEntity.Type type, String boat) {
         return new Identifier(MODID, type.getName().replace(":", "_") + "_boat_with_" + boat);
+    }
+
+    private static void appendStacks(DarkMatterEntries entries, Collection<ItemStack> list, boolean lineBreak) {
+        if (list == null || list.isEmpty()) return; //we shouldn't add line breaks if there are no items.
+
+        int rows = MathStuff.fastCeil(list.size() / 9d);
+        entries.addAll(list, DarkMatterEntries.Visibility.TAB);
+        int left = (rows * 9) - list.size();
+        for (int i = 0; i < left; i++) {
+            entries.add(ItemStack.EMPTY, DarkMatterEntries.Visibility.TAB); //fill the gaps
+        }
+        if (lineBreak) entries.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY), DarkMatterEntries.Visibility.TAB); //line break
     }
 }

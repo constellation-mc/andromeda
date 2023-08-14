@@ -9,6 +9,7 @@ import me.melontini.andromeda.util.AdvancementGeneration;
 import me.melontini.andromeda.util.AndromedaAnalytics;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
+import me.melontini.andromeda.util.annotations.config.Excluded;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -36,6 +37,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +45,12 @@ import java.util.UUID;
 public class Andromeda implements ModInitializer {
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
+        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+            Excluded.IfPlatform ifPlatform = field.getAnnotation(Excluded.IfPlatform.class);
+            if (ifPlatform.value() == SharedConstants.PLATFORM) return Collections.emptyList();
+            else return list;
+        }, Excluded.IfPlatform.class);
+
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
         return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     });
