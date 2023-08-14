@@ -15,6 +15,7 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaAnalytics;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
 import me.melontini.andromeda.util.translations.AndromedaTranslations;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
@@ -58,6 +59,10 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -76,10 +81,22 @@ public class AndromedaClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         if (Andromeda.CONFIG.autoUpdateTranslations) {
-            Set<String> languages = Sets.newHashSet("en_us");
-            String s = AndromedaTranslations.getSelectedLanguage();
-            if (!s.isEmpty()) languages.add(s);
-            MessageHandler.EXECUTOR.submit(() -> AndromedaTranslations.downloadTranslations(languages));
+            boolean shouldUpdate = true;
+            if (Files.exists(AndromedaTranslations.LANG_PATH.resolve("en_us.json"))) {
+                try {
+                    FileTime lastModifiedTime = Files.getLastModifiedTime(AndromedaTranslations.LANG_PATH.resolve("en_us.json"));
+                    shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
+                } catch (Exception ignored) {}
+            }
+
+            if (shouldUpdate) {
+                Set<String> languages = Sets.newHashSet("en_us");
+                String s = AndromedaTranslations.getSelectedLanguage();
+                if (!s.isEmpty()) languages.add(s);
+                MessageHandler.EXECUTOR.submit(() -> AndromedaTranslations.downloadTranslations(languages));
+            } else {
+                AndromedaLog.info("Skipping translations update.");
+            }
         }
         ClientSideNetworking.register();
         registerEntityRenderers();
