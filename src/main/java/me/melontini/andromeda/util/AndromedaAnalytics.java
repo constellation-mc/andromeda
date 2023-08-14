@@ -69,7 +69,7 @@ public class AndromedaAnalytics {
             object.addProperty("platform", SharedConstants.PLATFORM.toString().toLowerCase());
 
             JsonArray mods = new JsonArray();
-            String[] importantMods = new String[]{"andromeda", "minecraft", "modmenu", "dark-matter-base", "fabric-api", "fabricloader", "cloth-config", "cloth_config", "connectormod", "forge"};
+            String[] importantMods = new String[]{"andromeda", "minecraft", "modmenu", "dark-matter-base", "fabric-api", "fabricloader", "cloth-config", "cloth_config", "connectormod", "forge", "iceberg"};
             for (String importantMod : importantMods) {
                 FabricLoader.getInstance().getModContainer(importantMod).ifPresent(mod -> mods.add(importantMod + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")"));
             }
