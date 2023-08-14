@@ -3,6 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.config.AndromedaFeatureManager;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
@@ -34,6 +35,7 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
     @Override
     public void onLoad(String mixinPackage) {
         super.onLoad(mixinPackage);
+        AndromedaLog.devInfo("Platform: " + SharedConstants.PLATFORM);
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
         if (Files.exists(mtConfig)) {
             try {
@@ -107,12 +109,14 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
         if (Files.exists(config)) {
             try {
                 CONFIG = gson.fromJson(Files.readString(config), AndromedaConfig.class);
+                AndromedaFeatureManager.processFeatures(CONFIG);
                 Files.write(config, gson.toJson(CONFIG).getBytes());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
             CONFIG = new AndromedaConfig();
+            AndromedaFeatureManager.processFeatures(CONFIG);
             try {
                 Files.createFile(config);
                 Files.write(config, gson.toJson(CONFIG).getBytes());
