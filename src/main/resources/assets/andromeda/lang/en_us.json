@@ -174,7 +174,7 @@
   "text.autoconfig.andromeda.option.villagersFollowEmeraldBlocks.@Tooltip": "Makes villagers follow if you have an emerald block in hand.",
   "text.autoconfig.andromeda.option.betterFurnaceMinecart": "Better Furnace Minecart",
   "text.autoconfig.andromeda.option.betterFurnaceMinecart.@Tooltip[0]": "A few tweaks to make furnace minecarts just a bit better:",
-  "text.autoconfig.andromeda.option.betterFurnaceMinecart.@Tooltip[1]": "- Fuel is now saved as an Integer. You can change the fuel limit below.",
+  "text.autoconfig.andromeda.option.betterFurnaceMinecart.@Tooltip[1]": "- Carts can now store more fuel. You can change the fuel limit below.",
   "text.autoconfig.andromeda.option.betterFurnaceMinecart.@Tooltip[2]": "- You can now use any type of fuel, such as lava buckets, coal blocks, etc.",
   "text.autoconfig.andromeda.option.maxFurnaceMinecartFuel": "Max Furnace Minecart Fuel",
   "text.autoconfig.andromeda.option.maxFurnaceMinecartFuel.@Tooltip": "Set the maximum allowed fuel for the furnace minecart. The default is 45000, and the maximum limit is 2147483647.",
