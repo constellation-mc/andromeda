@@ -244,7 +244,7 @@
   "text.autoconfig.andromeda.option.frameIndependentAdvancementShadow.@Tooltip[0]": "You know that shadow in the advancements menu when you hover over any advancement?",
   "text.autoconfig.andromeda.option.frameIndependentAdvancementShadow.@Tooltip[1]": "Now it won't speed up/slowdown when your frame rate changes.",
   "text.autoconfig.andromeda.option.properlyAlignedRecipeAlternatives": "Properly Aligned Recipe Alternatives",
-  "text.autoconfig.andromeda.option.properlyAlignedRecipeAlternatives.@Tooltip": "Now recipe groups won't look janky when there's a lot of recipes in one group.",
+  "text.autoconfig.andromeda.option.properlyAlignedRecipeAlternatives.@Tooltip": "Recipe groups won't look janky when there are a lot of recipes in a group.",
 
   "text.autoconfig.andromeda.category.mechanics": "Mechanics",
   "text.autoconfig.andromeda.option.villagerGifting": "[EXP] Villager Gifting",
