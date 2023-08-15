@@ -82,6 +82,7 @@ public class AndromedaFeatureManager {
                 featureConfig.putAll(featureConfigEntry);
             }
         }
+        if (featureConfig.isEmpty()) return;
 
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, Object> entry : featureConfig.entrySet()) {
