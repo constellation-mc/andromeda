@@ -16,7 +16,7 @@ public class AndromedaFeatureManager {
 
     private static void registerDefaultProcessors() {
         registerProcessor("connector_mod", config -> {
-            if (SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) {
+            if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
                 return Map.of(
                         "compatMode", true,
                         "totemSettings.enableInfiniteTotem", false,
