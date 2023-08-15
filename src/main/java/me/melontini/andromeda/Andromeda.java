@@ -10,7 +10,6 @@ import me.melontini.andromeda.util.AdvancementGeneration;
 import me.melontini.andromeda.util.AndromedaAnalytics;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.config.Excluded;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -47,10 +46,8 @@ import java.util.UUID;
 public class Andromeda implements ModInitializer {
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
-        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
-            Excluded.IfPlatform ifPlatform = field.getAnnotation(Excluded.IfPlatform.class);
-            return list.stream().peek(gui -> gui.setRequirement(() -> ifPlatform.value() != SharedConstants.PLATFORM)).toList();
-        }, Excluded.IfPlatform.class);
+        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
+                list.stream().peek(gui -> gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field))).toList(), AndromedaFeatureManager::isModified);
 
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
 
