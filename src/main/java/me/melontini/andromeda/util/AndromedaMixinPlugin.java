@@ -39,7 +39,7 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
         if (Files.exists(mtConfig)) {
             try {
-                Files.move(mtConfig, FabricLoader.getInstance().getConfigDir().resolve("andromeda.json"));
+                Files.move(mtConfig, SharedConstants.CONFIG_PATH);
             } catch (IOException e) {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
@@ -105,7 +105,7 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
 
     private static void loadConfigFromFile() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Path config = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
+        Path config = SharedConstants.CONFIG_PATH;
         if (Files.exists(config)) {
             try {
                 CONFIG = gson.fromJson(Files.readString(config), AndromedaConfig.class);
