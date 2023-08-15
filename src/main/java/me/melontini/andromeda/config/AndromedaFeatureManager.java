@@ -88,7 +88,7 @@ public class AndromedaFeatureManager {
         for (Map.Entry<String, Object> entry : featureConfig.entrySet()) {
             builder.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
         }
-        LOGGER.info("AndromedaFeatureManager: Setting config options:\n" + builder);
+        LOGGER.info("Setting config options:\n" + builder);
 
         for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
             String configOption = configEntry.getKey();
