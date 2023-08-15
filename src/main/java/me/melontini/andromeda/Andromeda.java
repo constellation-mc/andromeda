@@ -16,6 +16,7 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -41,13 +42,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Andromeda implements ModInitializer {
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
         AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
-                list.stream().peek(gui -> gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field))).toList(), AndromedaFeatureManager::isModified);
+                list.stream().peek(gui -> {
+                    gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field));
+                    if (gui instanceof TooltipListEntry<?> tooltipGui) {
+                        Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + AndromedaFeatureManager.blameProcessor(field))};
+                        tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
+                    }
+                }).toList(), AndromedaFeatureManager::isModified);
 
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
 

@@ -16,11 +16,11 @@ import java.util.*;
 public class AndromedaFeatureManager {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
     private static final Map<String, FeatureProcessor> processors = new HashMap<>();
-    private static final Set<Field> modifiedFields = new HashSet<>();
+    private static final Map<Field, String> modifiedFields = new HashMap<>();
 
     private static void registerDefaultProcessors() {
         registerProcessor("connector_mod", config -> {
-            if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
+            if (SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) {
                 return Map.of(
                         "compatMode", true,
                         "totemSettings.enableInfiniteTotem", false,
@@ -68,28 +68,33 @@ public class AndromedaFeatureManager {
     }
 
     public static boolean isModified(Field field) {
-        return modifiedFields.contains(field);
+        return modifiedFields.containsKey(field);
+    }
+
+    public static String blameProcessor(Field field) {
+        return modifiedFields.get(field);
     }
 
     public static void processFeatures(AndromedaConfig config) {
         if (!config.enableFeatureManager) return;
         modifiedFields.clear();
 
-        Map<String, Object> featureConfig = new HashMap<>();
         for (Map.Entry<String, FeatureProcessor> entry : processors.entrySet()) {
             Map<String, Object> featureConfigEntry = entry.getValue().process(config);
             if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
-                featureConfig.putAll(featureConfigEntry);
+                LOGGER.info("Processor: {}", entry.getKey());
+                StringBuilder builder = new StringBuilder();
+                builder.append("Config: ");
+                for (String s : featureConfigEntry.keySet()) {
+                    builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; ");
+                }
+                LOGGER.info(builder.toString());
+                configure(config, entry.getKey(), featureConfigEntry);
             }
         }
-        if (featureConfig.isEmpty()) return;
+    }
 
-        StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : featureConfig.entrySet()) {
-            builder.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
-        }
-        LOGGER.info("Setting config options:\n" + builder);
-
+    private static void configure(AndromedaConfig config, String processor, Map<String, Object> featureConfig) {
         for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
             String configOption = configEntry.getKey();
             List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
@@ -101,11 +106,11 @@ public class AndromedaFeatureManager {
                         obj = FieldUtils.readField(obj, fields.get(i), true);
                     }
                     Field field = obj.getClass().getField(fields.get(fields.size() - 1));
-                    modifiedFields.add(field);
+                    modifiedFields.put(field, processor);
                     FieldUtils.writeField(field, obj, configEntry.getValue());
                 } else {
                     Field field = config.getClass().getField(configOption);
-                    modifiedFields.add(field);
+                    modifiedFields.put(field, processor);
                     FieldUtils.writeField(field, config, configEntry.getValue());
                 }
             } catch (NoSuchFieldException e) {
