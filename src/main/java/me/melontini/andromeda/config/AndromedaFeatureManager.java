@@ -70,14 +70,14 @@ public class AndromedaFeatureManager {
                         obj = FieldUtils.readField(obj, fields.get(i), true);
                     }
                     Field field = obj.getClass().getField(fields.get(fields.size() - 1));
+                    FieldUtils.writeField(field, obj, configEntry.getValue());
                     modifiedFields.put(field, processor);
                     fieldToString.putIfAbsent(field, configOption);
-                    FieldUtils.writeField(field, obj, configEntry.getValue());
                 } else {
                     Field field = config.getClass().getField(configOption);
+                    FieldUtils.writeField(field, config, configEntry.getValue());
                     modifiedFields.put(field, processor);
                     fieldToString.putIfAbsent(field, configOption);
-                    FieldUtils.writeField(field, config, configEntry.getValue());
                 }
             } catch (NoSuchFieldException e) {
                 LOGGER.info("Invalid config option in AndromedaFeatureManager: " + configOption + " This is no fault of yours.");
