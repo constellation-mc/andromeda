@@ -45,9 +45,6 @@ import java.util.UUID;
 public class Andromeda implements ModInitializer {
     public static EntityAttributeModifier LEAF_SLOWNESS;
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
-        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
-                list.stream().peek(gui -> gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field))).toList(), AndromedaFeatureManager::isModified);
-
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
 
         AutoConfig.getConfigHolder(AndromedaConfig.class).registerSaveListener((configHolder, config) -> {

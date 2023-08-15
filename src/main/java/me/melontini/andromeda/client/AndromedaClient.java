@@ -9,6 +9,8 @@ import me.melontini.andromeda.client.render.FlyingItemEntityRenderer;
 import me.melontini.andromeda.client.render.block.IncubatorBlockRenderer;
 import me.melontini.andromeda.client.screens.FletchingScreen;
 import me.melontini.andromeda.client.screens.MerchantInventoryScreen;
+import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.config.AndromedaFeatureManager;
 import me.melontini.andromeda.mixin.gui.gui_particles.accessors.HandledScreenAccessor;
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
@@ -23,6 +25,9 @@ import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -63,6 +68,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,6 +85,15 @@ public class AndromedaClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
+                list.stream().peek(gui -> {
+                    gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field));
+                    if (gui instanceof TooltipListEntry<?> tooltipGui) {
+                        Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + AndromedaFeatureManager.blameProcessor(field))};
+                        tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
+                    }
+                }).toList(), AndromedaFeatureManager::isModified);
+
         if (Andromeda.CONFIG.autoUpdateTranslations) {
             boolean shouldUpdate = true;
             if (Files.exists(AndromedaTranslations.LANG_PATH.resolve("en_us.json"))) {

@@ -69,6 +69,7 @@
     "items.mending_fix.AnvilScreenMixin",
     "items.tooltips.clock.ItemMixin",
     "items.tooltips.compass.ItemMixin",
+    "misc.auto_config.ComposedGuiRegistryAccessMixin",
     "misc.translations.MinecraftClientMixin",
     "misc.translations.ReloadableResourceManagerImplMixin",
     "misc.unknown.nice_level.LevelLoadingScreenMixin",
