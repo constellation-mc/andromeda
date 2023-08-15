@@ -2,6 +2,10 @@ package me.melontini.andromeda.config;
 
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +36,24 @@ public class AndromedaFeatureManager {
             }
             if (config.bedsExplodeEverywhere) {
                 return Map.of("safeBeds", false);
+            }
+            return null;
+        });
+        registerProcessor("iceberg", config -> {
+            Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer("iceberg");
+            Optional<ModContainer> minecraft = FabricLoader.getInstance().getModContainer("minecraft");
+            if (mod.isPresent() && minecraft.isPresent()) {
+                try {
+                    if (minecraft.get().getMetadata().getVersion().compareTo(Version.parse("1.20")) >= 0
+                            && mod.get().getMetadata().getVersion().compareTo(Version.parse("1.1.13")) < 0) {
+                        return Map.of(
+                                "tooltipNotName", false,
+                                "itemFrameTooltips", false
+                        );
+                    }
+                } catch (VersionParsingException e) {
+                    return null;
+                }
             }
             return null;
         });
