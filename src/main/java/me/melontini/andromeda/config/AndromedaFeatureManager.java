@@ -1,41 +1,21 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
+import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AndromedaFeatureManager {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
     private static final Map<String, FeatureProcessor> processors = new HashMap<>();
-    private static final Set<Field> modifiedFields = new HashSet<>();
-
-    private static void registerDefaultProcessors() {
-        registerProcessor("connector_mod", config -> {
-            if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
-                return Map.of(
-                        "compatMode", true,
-                        "totemSettings.enableInfiniteTotem", false,
-                        "totemSettings.enableTotemAscension", false,
-                        "quickFire", false
-                );
-            }
-            return null;
-        });
-        registerProcessor("safe_beds_conflict", config -> {
-            if (config.safeBeds) {
-                return Map.of("bedsExplodeEverywhere", false);
-            }
-            if (config.bedsExplodeEverywhere) {
-                return Map.of("safeBeds", false);
-            }
-            return null;
-        });
-    }
+    private static final Map<Field, String> modifiedFields = new HashMap<>();
 
     public static void registerProcessor(String feature, FeatureProcessor processor) {
         processors.putIfAbsent(feature, processor);
@@ -46,27 +26,33 @@ public class AndromedaFeatureManager {
     }
 
     public static boolean isModified(Field field) {
-        return modifiedFields.contains(field);
+        return modifiedFields.containsKey(field);
+    }
+
+    public static String blameProcessor(Field field) {
+        return modifiedFields.get(field);
     }
 
     public static void processFeatures(AndromedaConfig config) {
         if (!config.enableFeatureManager) return;
         modifiedFields.clear();
 
-        Map<String, Object> featureConfig = new HashMap<>();
         for (Map.Entry<String, FeatureProcessor> entry : processors.entrySet()) {
             Map<String, Object> featureConfigEntry = entry.getValue().process(config);
             if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
-                featureConfig.putAll(featureConfigEntry);
+                LOGGER.info("Processor: {}", entry.getKey());
+                StringBuilder builder = new StringBuilder();
+                builder.append("Config: ");
+                for (String s : featureConfigEntry.keySet()) {
+                    builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; ");
+                }
+                LOGGER.info(builder.toString());
+                configure(config, entry.getKey(), featureConfigEntry);
             }
         }
+    }
 
-        StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : featureConfig.entrySet()) {
-            builder.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
-        }
-        LOGGER.info("AndromedaFeatureManager: Setting config options:\n" + builder);
-
+    private static void configure(AndromedaConfig config, String processor, Map<String, Object> featureConfig) {
         for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
             String configOption = configEntry.getKey();
             List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
@@ -78,11 +64,11 @@ public class AndromedaFeatureManager {
                         obj = FieldUtils.readField(obj, fields.get(i), true);
                     }
                     Field field = obj.getClass().getField(fields.get(fields.size() - 1));
-                    modifiedFields.add(field);
+                    modifiedFields.put(field, processor);
                     FieldUtils.writeField(field, obj, configEntry.getValue());
                 } else {
                     Field field = config.getClass().getField(configOption);
-                    modifiedFields.add(field);
+                    modifiedFields.put(field, processor);
                     FieldUtils.writeField(field, config, configEntry.getValue());
                 }
             } catch (NoSuchFieldException e) {
@@ -98,7 +84,7 @@ public class AndromedaFeatureManager {
     }
 
     static {
-        registerDefaultProcessors();
+        FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
     }
 
 }
