@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.lang.reflect.Field;
 import java.util.List;
 
-@Mixin(ComposedGuiRegistryAccess.class)
+@Mixin(value = ComposedGuiRegistryAccess.class, priority = 999)
 public class ComposedGuiRegistryAccessMixin {
     @Shadow(remap = false) private List<GuiRegistryAccess> children;
 
