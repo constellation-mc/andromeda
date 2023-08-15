@@ -2,20 +2,22 @@ package me.melontini.andromeda.config;
 
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.metadata.CustomValue;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AndromedaFeatureManager {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
     private static final Map<String, FeatureProcessor> processors = new HashMap<>();
+    private static final Map<String, List<String>> modBlame = new HashMap<>();
     private static final Map<Field, String> modifiedFields = new HashMap<>();
+    private static final Map<Field, String> fieldToString = new HashMap<>();
+
 
     public static void registerProcessor(String feature, FeatureProcessor processor) {
         processors.putIfAbsent(feature, processor);
@@ -31,6 +33,10 @@ public class AndromedaFeatureManager {
 
     public static String blameProcessor(Field field) {
         return modifiedFields.get(field);
+    }
+
+    public static String[] blameMod(Field feature) {
+        return modBlame.get(fieldToString.get(feature)).toArray(String[]::new);
     }
 
     public static void processFeatures(AndromedaConfig config) {
@@ -65,10 +71,12 @@ public class AndromedaFeatureManager {
                     }
                     Field field = obj.getClass().getField(fields.get(fields.size() - 1));
                     modifiedFields.put(field, processor);
+                    fieldToString.putIfAbsent(field, configOption);
                     FieldUtils.writeField(field, obj, configEntry.getValue());
                 } else {
                     Field field = config.getClass().getField(configOption);
                     modifiedFields.put(field, processor);
+                    fieldToString.putIfAbsent(field, configOption);
                     FieldUtils.writeField(field, config, configEntry.getValue());
                 }
             } catch (NoSuchFieldException e) {
@@ -85,6 +93,28 @@ public class AndromedaFeatureManager {
 
     static {
         FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
+        //This needs to be here to interact with private fields.
+        AndromedaFeatureManager.registerProcessor("mod_json", config -> {
+            Map<String, Object> modJson = new HashMap<>();
+            for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
+                if (mod.getMetadata().containsCustomValue("andromeda:features")) {
+                    CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
+                    if (customValue.getType() != CustomValue.CvType.OBJECT) LOGGER.error("andromeda:feature_manager must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
+                    else {
+                        CustomValue.CvObject object = customValue.getAsObject();
+                        for (Map.Entry<String, CustomValue> feature : object) {
+                            if (feature.getValue().getType() != CustomValue.CvType.BOOLEAN) {
+                                LOGGER.error("Unsupported andromeda:feature_manager type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
+                            } else {
+                                modJson.put(feature.getKey(), feature.getValue().getAsBoolean());
+                                modBlame.computeIfAbsent(feature.getKey(), k -> new ArrayList<>()).add(mod.getMetadata().getId());
+                            }
+                        }
+                    }
+                }
+            }
+            return modJson.isEmpty() ? null : modJson;
+        });
     }
 
 }
