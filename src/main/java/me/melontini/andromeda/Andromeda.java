@@ -40,7 +40,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -50,8 +49,7 @@ public class Andromeda implements ModInitializer {
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
         AutoConfig.getGuiRegistry(AndromedaConfig.class).registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             Excluded.IfPlatform ifPlatform = field.getAnnotation(Excluded.IfPlatform.class);
-            if (ifPlatform.value() == SharedConstants.PLATFORM) return Collections.emptyList();
-            else return list;
+            return list.stream().peek(gui -> gui.setRequirement(() -> ifPlatform.value() != SharedConstants.PLATFORM)).toList();
         }, Excluded.IfPlatform.class);
 
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
