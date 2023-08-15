@@ -107,7 +107,7 @@ public class AndromedaFeatureManager {
                                 LOGGER.error("Unsupported andromeda:feature_manager type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
                             } else {
                                 modJson.put(feature.getKey(), feature.getValue().getAsBoolean());
-                                modBlame.computeIfAbsent(feature.getKey(), k -> new ArrayList<>()).add(mod.getMetadata().getId());
+                                modBlame.computeIfAbsent(feature.getKey(), k -> new ArrayList<>()).add(mod.getMetadata().getName());
                             }
                         }
                     }
