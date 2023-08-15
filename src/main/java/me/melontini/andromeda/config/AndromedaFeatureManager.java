@@ -32,6 +32,7 @@ public class AndromedaFeatureManager {
     }
 
     public static void processFeatures(AndromedaConfig config) {
+        if (!config.enableFeatureManager) return;
         features.forEach((feature, processor) -> processor.process(config));
     }
 

@@ -456,6 +456,10 @@ public class AndromedaConfig implements ConfigData {
     public boolean debugMessages = false;
 
     @ConfigEntry.Category("misc")
+    @ConfigEntry.Gui.Tooltip
+    public boolean enableFeatureManager = true;
+
+    @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.RequiresRestart
     public boolean unknown = false;
 }
