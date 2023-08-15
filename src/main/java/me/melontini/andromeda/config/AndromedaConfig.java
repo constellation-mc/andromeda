@@ -1,8 +1,6 @@
 package me.melontini.andromeda.config;
 
 import com.google.common.collect.Lists;
-import me.melontini.andromeda.util.SharedConstants;
-import me.melontini.andromeda.util.annotations.config.Excluded;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -43,7 +41,6 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip
-    @Excluded.IfPlatform(SharedConstants.Platform.CONNECTOR)
     public boolean quickFire = false;
 
     @ConfigEntry.Category("blocks")
@@ -289,19 +286,16 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.CollapsibleObject
-    @Excluded.IfPlatform(SharedConstants.Platform.CONNECTOR)
     public TotemSettings totemSettings = new TotemSettings();
 
     public static class TotemSettings {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        @Excluded.IfPlatform(SharedConstants.Platform.CONNECTOR)
         public boolean enableInfiniteTotem = false;
 
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
-        @Excluded.IfPlatform(SharedConstants.Platform.CONNECTOR)
         public boolean enableTotemAscension = true;
     }
 
@@ -454,6 +448,10 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip
     public boolean debugMessages = false;
+
+    @ConfigEntry.Category("misc")
+    @ConfigEntry.Gui.Tooltip
+    public boolean enableFeatureManager = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.RequiresRestart
