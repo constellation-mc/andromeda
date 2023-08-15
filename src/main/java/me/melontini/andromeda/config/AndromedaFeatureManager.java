@@ -34,8 +34,8 @@ public class AndromedaFeatureManager {
     }
 
     public static void processFeatures(AndromedaConfig config) {
-        if (!config.enableFeatureManager) return;
         modifiedFields.clear();
+        if (!config.enableFeatureManager) return;
 
         for (Map.Entry<String, FeatureProcessor> entry : processors.entrySet()) {
             Map<String, Object> featureConfigEntry = entry.getValue().process(config);
