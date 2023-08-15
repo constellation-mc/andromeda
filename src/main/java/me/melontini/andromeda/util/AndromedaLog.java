@@ -1,10 +1,16 @@
 package me.melontini.andromeda.util;
 
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import org.apache.logging.log4j.LogManager;
 
 public class AndromedaLog {
-    private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("Andromeda"), PrependingLogger.NAME_METHOD_MIX_WRAPPED);
+    private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("Andromeda"), logger -> {
+        StackWalker.StackFrame frame = Utilities.STACK_WALKER.walk(s -> s.skip(4).findFirst().orElse(null));
+        String caller = frame.getDeclaringClass().getSimpleName();
+        if (frame.getClassName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
+        return (!Utilities.IS_DEV ? "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
+    });
     private static boolean debug;
 
     public static void setDebug(boolean debug) {

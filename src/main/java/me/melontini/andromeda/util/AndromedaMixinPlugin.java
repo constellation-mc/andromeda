@@ -35,7 +35,7 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
     @Override
     public void onLoad(String mixinPackage) {
         super.onLoad(mixinPackage);
-        AndromedaLog.devInfo("Platform: " + SharedConstants.PLATFORM);
+        LOGGER.info("Platform: " + SharedConstants.PLATFORM);
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
         if (Files.exists(mtConfig)) {
             try {

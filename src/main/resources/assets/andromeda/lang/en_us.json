@@ -316,5 +316,7 @@
   "text.autoconfig.andromeda.option.compatMode.@Tooltip[1]": "but requires a game restart after enabling/disabling any option.",
   "text.autoconfig.andromeda.option.debugMessages": "Enable debug messages?",
   "text.autoconfig.andromeda.option.debugMessages.@Tooltip": "When turned on, log messages could get spammy.",
+  "text.autoconfig.andromeda.option.enableFeatureManager": "Enable FeatureManager",
+  "text.autoconfig.andromeda.option.enableFeatureManager.@Tooltip": "Not recommended to turn off. Used to resolve conflicts",
   "text.autoconfig.andromeda.option.unknown": "???"
 }
