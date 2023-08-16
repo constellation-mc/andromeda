@@ -114,7 +114,7 @@ public class AndromedaClient implements ClientModInitializer {
                 if (!s.isEmpty()) languages.add(s);
                 MessageHandler.EXECUTOR.submit(() -> AndromedaTranslations.downloadTranslations(languages));
             } else {
-                AndromedaLog.info("Skipping translations update.");
+                AndromedaLog.info("Skipped translations update.");
             }
         }
         ClientSideNetworking.register();

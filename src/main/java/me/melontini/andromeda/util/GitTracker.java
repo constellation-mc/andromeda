@@ -46,7 +46,7 @@ public class GitTracker {
 
         if (shouldUpdate) {
             tryUpdateGitInfo(lastResponse);
-        } else AndromedaLog.info("Skipped updating git info");
+        } else AndromedaLog.info("Skipped git info update.");
 
         if (Files.exists(lastResponse)) {
             tryUpdateInfoFromJson(lastResponse);
