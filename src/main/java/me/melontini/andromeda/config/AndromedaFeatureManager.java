@@ -13,10 +13,10 @@ import java.util.*;
 
 public class AndromedaFeatureManager {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
-    private static final Map<String, FeatureProcessor> processors = new HashMap<>();
+    private static final Map<String, FeatureProcessor> processors = new LinkedHashMap<>(5);
     private static final Map<String, List<String>> modBlame = new HashMap<>();
-    private static final Map<Field, String> modifiedFields = new HashMap<>();
-    private static final Map<Field, String> fieldToString = new HashMap<>();
+    private static final Map<Field, String> modifiedFields = new IdentityHashMap<>();
+    private static final Map<Field, String> fieldToString = new IdentityHashMap<>();
 
 
     public static void registerProcessor(String feature, FeatureProcessor processor) {
@@ -95,7 +95,7 @@ public class AndromedaFeatureManager {
         FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
         //This needs to be here to interact with private fields.
         AndromedaFeatureManager.registerProcessor("mod_json", config -> {
-            Map<String, Object> modJson = new HashMap<>();
+            Map<String, Object> modJson = new LinkedHashMap<>();
             for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
                 if (mod.getMetadata().containsCustomValue("andromeda:features")) {
                     CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
