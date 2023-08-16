@@ -43,6 +43,7 @@ public class GitTracker {
             } catch (Exception ignored) {
             }
         }
+        if (!shouldUpdate) shouldUpdate = SharedConstants.MOD_UPDATED;
 
         if (shouldUpdate) {
             tryUpdateGitInfo(lastResponse);
