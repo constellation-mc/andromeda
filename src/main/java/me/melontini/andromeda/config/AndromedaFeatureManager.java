@@ -36,7 +36,7 @@ public class AndromedaFeatureManager {
     }
 
     public static String[] blameMod(Field feature) {
-        return modBlame.get(fieldToString.get(feature)).toArray(String[]::new);
+        return modBlame.get(fieldToString.get(feature)).stream().sorted(String::compareToIgnoreCase).toArray(String[]::new);
     }
 
     public static void processFeatures(AndromedaConfig config) {
