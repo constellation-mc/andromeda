@@ -16,6 +16,7 @@
   "andromeda.config.tooltip.manager.connector_mod": "State forced to fix issues with Connector.",
   "andromeda.config.tooltip.manager.safe_beds_conflict": "Conflicting feature enabled!",
   "andromeda.config.tooltip.manager.iceberg": "Conflicts with Iceberg versions <1.1.13.",
+  "andromeda.config.tooltip.manager.mod_json": "Set by: %s",
 
   "commands.andromeda.damage.invulnerable": "Target is invulnerable to the given damage type",
   "commands.andromeda.damage.success": "Applied %s damage to %s",
