@@ -92,7 +92,6 @@ public class AndromedaFeatureManager {
     }
 
     static {
-        FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
         //This needs to be here to interact with private fields.
         AndromedaFeatureManager.registerProcessor("mod_json", config -> {
             Map<String, Object> modJson = new LinkedHashMap<>();
@@ -115,6 +114,7 @@ public class AndromedaFeatureManager {
             }
             return modJson.isEmpty() ? null : modJson;
         });
+        FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
     }
 
 }
