@@ -14,7 +14,7 @@ import java.util.*;
 public class AndromedaFeatureManager {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
     private static final Map<String, FeatureProcessor> processors = new LinkedHashMap<>(5);
-    private static final Map<String, List<String>> modBlame = new HashMap<>();
+    private static final Map<String, Set<String>> modBlame = new HashMap<>();
     private static final Map<Field, String> modifiedFields = new IdentityHashMap<>();
     private static final Map<Field, String> fieldToString = new IdentityHashMap<>();
 
@@ -107,7 +107,7 @@ public class AndromedaFeatureManager {
                                 LOGGER.error("Unsupported andromeda:feature_manager type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
                             } else {
                                 modJson.put(feature.getKey(), feature.getValue().getAsBoolean());
-                                modBlame.computeIfAbsent(feature.getKey(), k -> new ArrayList<>()).add(mod.getMetadata().getName());
+                                modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
                             }
                         }
                     }
