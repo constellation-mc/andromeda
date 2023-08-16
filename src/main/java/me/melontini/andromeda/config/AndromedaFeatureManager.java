@@ -124,8 +124,8 @@ public class AndromedaFeatureManager {
                             LOGGER.error("Missing \"value\" field in andromeda:features. Mod: " + mod.getMetadata().getId());
                             continue;
                         }
-                        if (!testMinecraftPredicate(featureObject, feature.getKey())) continue;
-                        if (!testAndromedaPredicate(featureObject, feature.getKey())) continue;
+                        if (!testModVersion(featureObject, "minecraft", feature.getKey())) continue;
+                        if (!testModVersion(featureObject, "andromeda", feature.getKey())) continue;
                         if (featureObject.get("value").getType() == CustomValue.CvType.BOOLEAN) {
                             modJson.put(feature.getKey(), featureObject.get("value").getAsBoolean());
                             modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
@@ -137,26 +137,13 @@ public class AndromedaFeatureManager {
         }
     }
 
-    private static boolean testAndromedaPredicate(CustomValue.CvObject featureObject, String modBlame) {
-        if (featureObject.containsKey("andromeda")) {
+    private static boolean testModVersion(CustomValue.CvObject featureObject, String modId, String modBlame) {
+        if (featureObject.containsKey(modId)) {
             try {
-                VersionPredicate predicate = VersionPredicate.parse(featureObject.get("andromeda").getAsString());
-                return predicate.test(FabricLoader.getInstance().getModContainer("andromeda").orElseThrow().getMetadata().getVersion());
+                VersionPredicate predicate = VersionPredicate.parse(featureObject.get(modId).getAsString());
+                return predicate.test(FabricLoader.getInstance().getModContainer(modId).orElseThrow().getMetadata().getVersion());
             } catch (VersionParsingException e) {
-                LOGGER.error("Couldn't parse version predicate provided by " + modBlame);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean testMinecraftPredicate(CustomValue.CvObject featureObject, String modBlame) {
-        if (featureObject.containsKey("minecraft")) {
-            try {
-                VersionPredicate predicate = VersionPredicate.parse(featureObject.get("minecraft").getAsString());
-                return predicate.test(FabricLoader.getInstance().getModContainer("minecraft").orElseThrow().getMetadata().getVersion());
-            } catch (VersionParsingException e) {
-                LOGGER.error("Couldn't parse version predicate provided by " + modBlame);
+                LOGGER.error("Couldn't parse version predicate for {} provided by {}", modId, modBlame);
                 return false;
             }
         }
