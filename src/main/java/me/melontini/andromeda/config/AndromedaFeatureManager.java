@@ -3,7 +3,9 @@ package me.melontini.andromeda.config;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
+import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
@@ -97,19 +99,7 @@ public class AndromedaFeatureManager {
             Map<String, Object> modJson = new LinkedHashMap<>();
             for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
                 if (mod.getMetadata().containsCustomValue("andromeda:features")) {
-                    CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
-                    if (customValue.getType() != CustomValue.CvType.OBJECT) LOGGER.error("andromeda:feature_manager must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
-                    else {
-                        CustomValue.CvObject object = customValue.getAsObject();
-                        for (Map.Entry<String, CustomValue> feature : object) {
-                            if (feature.getValue().getType() != CustomValue.CvType.BOOLEAN) {
-                                LOGGER.error("Unsupported andromeda:feature_manager type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
-                            } else {
-                                modJson.put(feature.getKey(), feature.getValue().getAsBoolean());
-                                modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
-                            }
-                        }
-                    }
+                    parseMetadata(mod, modJson);
                 }
             }
             return modJson.isEmpty() ? null : modJson;
@@ -117,4 +107,59 @@ public class AndromedaFeatureManager {
         FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
     }
 
+    private static void parseMetadata(ModContainer mod, Map<String, Object> modJson) {
+        CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
+        if (customValue.getType() != CustomValue.CvType.OBJECT) LOGGER.error("andromeda:features must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
+        else {
+            CustomValue.CvObject object = customValue.getAsObject();
+            for (Map.Entry<String, CustomValue> feature : object) {
+                switch (feature.getValue().getType()) {
+                    case BOOLEAN -> {
+                        modJson.put(feature.getKey(), feature.getValue().getAsBoolean());
+                        modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
+                    }
+                    case OBJECT -> {
+                        CustomValue.CvObject featureObject = feature.getValue().getAsObject();
+                        if (!featureObject.containsKey("value")) {
+                            LOGGER.error("Missing \"value\" field in andromeda:features. Mod: " + mod.getMetadata().getId());
+                            continue;
+                        }
+                        if (!testMinecraftPredicate(featureObject, feature.getKey())) continue;
+                        if (!testAndromedaPredicate(featureObject, feature.getKey())) continue;
+                        if (featureObject.get("value").getType() == CustomValue.CvType.BOOLEAN) {
+                            modJson.put(feature.getKey(), featureObject.get("value").getAsBoolean());
+                            modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
+                        } else LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
+                    }
+                    default -> LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
+                }
+            }
+        }
+    }
+
+    private static boolean testAndromedaPredicate(CustomValue.CvObject featureObject, String modBlame) {
+        if (featureObject.containsKey("andromeda")) {
+            try {
+                VersionPredicate predicate = VersionPredicate.parse(featureObject.get("andromeda").getAsString());
+                return predicate.test(FabricLoader.getInstance().getModContainer("andromeda").orElseThrow().getMetadata().getVersion());
+            } catch (VersionParsingException e) {
+                LOGGER.error("Couldn't parse version predicate provided by " + modBlame);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean testMinecraftPredicate(CustomValue.CvObject featureObject, String modBlame) {
+        if (featureObject.containsKey("minecraft")) {
+            try {
+                VersionPredicate predicate = VersionPredicate.parse(featureObject.get("minecraft").getAsString());
+                return predicate.test(FabricLoader.getInstance().getModContainer("minecraft").orElseThrow().getMetadata().getVersion());
+            } catch (VersionParsingException e) {
+                LOGGER.error("Couldn't parse version predicate provided by " + modBlame);
+                return false;
+            }
+        }
+        return true;
+    }
 }
