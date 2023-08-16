@@ -13,6 +13,11 @@
   "death.attack.andromeda_agony": "%s死于痛苦",
   "death.attack.andromeda_bricked": "%1$s被%2$s用砖块砸晕了",
 
+  "andromeda.config.tooltip.manager.connector_mod": "强制修复与Connector模组的冲突",
+  "andromeda.config.tooltip.manager.safe_beds_conflict": "已启用冲突的特性！",
+  "andromeda.config.tooltip.manager.iceberg": "与低于1.1.13版本的Iceberg前置冲突。",
+  "andromeda.config.tooltip.manager.mod_json": "由%s设定",
+
   "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
   "commands.andromeda.damage.success": "已将%s伤害施加于%s",
 
@@ -316,5 +321,7 @@
   "text.autoconfig.andromeda.option.compatMode.@Tooltip[1]": "这么做唯一的坏处是，每次修改这个模组的选项后，你都需要重启游戏。",
   "text.autoconfig.andromeda.option.debugMessages": "启用调试信息",
   "text.autoconfig.andromeda.option.debugMessages.@Tooltip": "开启后，你游戏的日志文件将会被数不清的条目淹没。别怪我没提醒过哦",
+  "text.autoconfig.andromeda.option.enableFeatureManager": "启用功能管理器",
+  "text.autoconfig.andromeda.option.enableFeatureManager.@Tooltip": "不推荐关闭。它的用处是解决模组冲突",
   "text.autoconfig.andromeda.option.unknown": "???"
 }
