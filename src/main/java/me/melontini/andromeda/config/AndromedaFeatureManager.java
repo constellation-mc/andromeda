@@ -15,8 +15,8 @@ public class AndromedaFeatureManager {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
     private static final Map<String, FeatureProcessor> processors = new LinkedHashMap<>(5);
     private static final Map<String, Set<String>> modBlame = new HashMap<>();
-    private static final Map<Field, String> modifiedFields = new IdentityHashMap<>();
-    private static final Map<Field, String> fieldToString = new IdentityHashMap<>();
+    private static final Map<Field, String> modifiedFields = new HashMap<>();
+    private static final Map<Field, String> fieldToString = new HashMap<>();
 
 
     public static void registerProcessor(String feature, FeatureProcessor processor) {
