@@ -443,6 +443,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.RequiresRestart
     public boolean enableFeatureManager = true;
 
     @ConfigEntry.Category("misc")
