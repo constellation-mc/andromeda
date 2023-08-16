@@ -288,7 +288,7 @@
   "text.autoconfig.andromeda.option.guiParticles.creativeScreenParticlesVelX": "X velocity of Creative Screen Particles",
   "text.autoconfig.andromeda.option.guiParticles.gameModeSwitcherParticles": "Gamemode Switcher Particles",
   "text.autoconfig.andromeda.option.itemFrameTooltips": "Item Frame Tooltips",
-  "text.autoconfig.andromeda.option.itemFrameTooltips.@Tooltip": "Enables in-game tooltips for item frames.",
+  "text.autoconfig.andromeda.option.itemFrameTooltips.@Tooltip": "Enables in-world tooltips for item frames.",
 
   "text.autoconfig.andromeda.category.misc": "Misc",
   "text.autoconfig.andromeda.option.damageBackport": "/damage backport",
