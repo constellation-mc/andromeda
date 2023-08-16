@@ -19,6 +19,7 @@ import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaAnalytics;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.translations.AndromedaTranslations;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -107,6 +108,7 @@ public class AndromedaClient implements ClientModInitializer {
                     shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
                 } catch (Exception ignored) {}
             }
+            if (!shouldUpdate) shouldUpdate = SharedConstants.MOD_UPDATED;
 
             if (shouldUpdate) {
                 Set<String> languages = Sets.newHashSet("en_us");
@@ -114,7 +116,7 @@ public class AndromedaClient implements ClientModInitializer {
                 if (!s.isEmpty()) languages.add(s);
                 MessageHandler.EXECUTOR.submit(() -> AndromedaTranslations.downloadTranslations(languages));
             } else {
-                AndromedaLog.info("Skipping translations update.");
+                AndromedaLog.info("Skipped translations update.");
             }
         }
         ClientSideNetworking.register();

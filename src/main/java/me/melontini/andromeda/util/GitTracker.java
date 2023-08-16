@@ -43,10 +43,11 @@ public class GitTracker {
             } catch (Exception ignored) {
             }
         }
+        if (!shouldUpdate) shouldUpdate = SharedConstants.MOD_UPDATED;
 
         if (shouldUpdate) {
             tryUpdateGitInfo(lastResponse);
-        } else AndromedaLog.info("Skipped updating git info");
+        } else AndromedaLog.info("Skipped git info update.");
 
         if (Files.exists(lastResponse)) {
             tryUpdateInfoFromJson(lastResponse);
