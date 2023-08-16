@@ -32,7 +32,6 @@ jobs:
           version: ${{ env.VERSION_PLAIN }}
 
           game-versions: |
-            1.20
             1.20.1
 
           loaders: |
