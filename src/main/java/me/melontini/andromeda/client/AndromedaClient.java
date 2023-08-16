@@ -67,6 +67,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -89,8 +90,13 @@ public class AndromedaClient implements ClientModInitializer {
                 list.stream().peek(gui -> {
                     gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field));
                     if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                        Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + AndromedaFeatureManager.blameProcessor(field))};
-                        tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
+                        if ("mod_json".equals(AndromedaFeatureManager.blameProcessor(field))) {
+                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(AndromedaFeatureManager.blameMod(field)))};
+                            tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
+                        } else {
+                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + AndromedaFeatureManager.blameProcessor(field))};
+                            tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
+                        }
                     }
                 }).toList(), AndromedaFeatureManager::isModified);
 
