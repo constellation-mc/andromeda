@@ -100,6 +100,11 @@ public class AndromedaClient implements ClientModInitializer {
                     }
                 }).toList(), AndromedaFeatureManager::isModified);
 
+        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+            list.forEach(gui -> gui.setRequiresRestart(true));
+            return list;
+        }, field -> Andromeda.CONFIG.compatMode);
+
         if (Andromeda.CONFIG.autoUpdateTranslations) {
             boolean shouldUpdate = true;
             if (Files.exists(AndromedaTranslations.LANG_PATH.resolve("en_us.json"))) {
