@@ -21,7 +21,7 @@ public class AndromedaTranslations {
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
     private static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
     private static final String URL = GitTracker.RAW_URL + "/" + GitTracker.OWNER + "/" + GitTracker.REPO + "/" + GitTracker.getDefaultBranch() + "/src/main/resources/assets/andromeda/lang/";
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
     private static String languageCode = "en_us";
 
     public static void onResourceReload(String code) {
