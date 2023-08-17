@@ -66,15 +66,15 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
                             Map<String, Object> values = mapAnnotationNode(node1);
                             List<String> configOptions = (List<String>) values.get("value");
                             for (String configOption : configOptions) {
-                                List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
+                                String[] fields = configOption.split("\\.");
 
                                 try {
-                                    if (fields.size() > 1) {//🤯🤯🤯
-                                        Object obj = AndromedaConfig.class.getField(fields.get(0)).get(CONFIG);
-                                        for (int i = 1; i < (fields.size() - 1); i++) {
-                                            obj = obj.getClass().getField(fields.get(i)).get(obj);
+                                    if (fields.length > 1) {//🤯🤯🤯
+                                        Object obj = CONFIG.getClass().getField(fields[0]).get(CONFIG);
+                                        for (int i = 1; i < (fields.length - 1); i++) {
+                                            obj = obj.getClass().getField(fields[i]).get(obj);
                                         }
-                                        load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
+                                        load = obj.getClass().getField(fields[fields.length - 1]).getBoolean(obj);
                                     } else {
                                         load = CONFIG.getClass().getField(configOption).getBoolean(CONFIG);
                                     }
