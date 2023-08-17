@@ -129,7 +129,7 @@
   "text.autoconfig.andromeda.option.incubatorSettings.incubatorRecipe": "Enable Incubator Recipe",
   "text.autoconfig.andromeda.option.incubatorSettings.incubatorRecipe.@Tooltip": "Enables the andromeda certified incubator recipe. Don't forget to run /reload!",
   "text.autoconfig.andromeda.option.usefulFletching": "Useful Fletching Table",
-  "text.autoconfig.andromeda.option.usefulFletching.@Tooltip": "Gives the Fletching Table a GUI where you can tighten your bow's string, improving accuracy.",
+  "text.autoconfig.andromeda.option.usefulFletching.@Tooltip": "Gives the Fletching Table a GUI where you can tighten the string of your bow for improved accuracy.",
   "text.autoconfig.andromeda.option.bedsExplodeEverywhere": "Beds Explode Everywhere",
   "text.autoconfig.andromeda.option.bedsExplodeEverywhere.@Tooltip[0]": "Makes beds explode in every dimension.",
   "text.autoconfig.andromeda.option.bedsExplodeEverywhere.@Tooltip[1]": "Conflicts with Safe Beds!",
@@ -320,7 +320,7 @@
   "text.autoconfig.andromeda.option.compatMode.@Tooltip[0]": "Improves mod compatibility by not loading mixins if their related option is disabled,",
   "text.autoconfig.andromeda.option.compatMode.@Tooltip[1]": "but requires a game restart after enabling/disabling any option.",
   "text.autoconfig.andromeda.option.debugMessages": "Enable debug messages?",
-  "text.autoconfig.andromeda.option.debugMessages.@Tooltip": "When turned on, log messages could get spammy.",
+  "text.autoconfig.andromeda.option.debugMessages.@Tooltip": "If enabled, log messages could get spammy.",
   "text.autoconfig.andromeda.option.enableFeatureManager": "Enable FeatureManager",
   "text.autoconfig.andromeda.option.enableFeatureManager.@Tooltip": "Not recommended to turn off. Used to resolve conflicts",
   "text.autoconfig.andromeda.option.unknown": "???"

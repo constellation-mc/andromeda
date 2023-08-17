@@ -55,7 +55,6 @@
   ],
   "client": [
     "a_impl.rideable_inventory.ClientPlayerInteractionManagerMixin",
-    "accessors.ScreenAccessor",
     "bugfixes.AdvancementTabMixin",
     "bugfixes.RecipeAlternativesWidgetMixin",
     "gui.bye_adventure.GameModeSelectionMixin",
@@ -64,7 +63,6 @@
     "gui.gui_particles.CreativeInventoryScreenMixin",
     "gui.gui_particles.EnchantmentScreenMixin",
     "gui.gui_particles.GameModeSelectionScreenMixin",
-    "gui.gui_particles.accessors.HandledScreenAccessor",
     "gui.name_tooltips.InGameHudMixin",
     "items.mending_fix.AnvilScreenMixin",
     "items.tooltips.clock.ItemMixin",
