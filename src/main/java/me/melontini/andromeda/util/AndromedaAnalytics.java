@@ -24,18 +24,20 @@ public class AndromedaAnalytics {
     public static void handleUpload() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
             if (Andromeda.CONFIG.sendOptionalData) {
-                HANDLER.send(messageBuilder -> {
-                    JsonObject object = new JsonObject();
-                    object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
-                    object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
-                    object.addProperty("modloader", Utilities.supply(() -> {
-                        String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
-                        if (sn.isEmpty()) return "Other";
-                        return sn;
-                    }));
-                    AndromedaLog.info("Uploading optional data (Environment): \n" + object);
-                    messageBuilder.set(Analytics.getUUIDString(), object);
-                });
+                if (SharedConstants.MOD_UPDATED) {
+                    HANDLER.send(messageBuilder -> {
+                        JsonObject object = new JsonObject();
+                        object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
+                        object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
+                        object.addProperty("modloader", Utilities.supply(() -> {
+                            String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
+                            if (sn.isEmpty()) return "Other";
+                            return sn;
+                        }));
+                        AndromedaLog.info("Uploading optional data (Environment): \n" + object);
+                        messageBuilder.set(Analytics.getUUIDString(), object);
+                    });
+                } else AndromedaLog.info("Skipped optional data upload (Environment)");
 
                 Path fakeConfig = SharedConstants.HIDDEN_PATH.resolve("config_copy.json");
                 try {
