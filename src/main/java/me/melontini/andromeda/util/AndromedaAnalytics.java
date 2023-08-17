@@ -43,7 +43,7 @@ public class AndromedaAnalytics {
                 try {
                     Files.deleteIfExists(fakeConfig);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    AndromedaLog.warn("Failed to delete config_copy.json", e);
                 }
             } else {
                 HANDLER.send(messageBuilder -> messageBuilder.delete(Analytics.getUUIDString()));
