@@ -11,7 +11,6 @@ import me.melontini.andromeda.client.screens.FletchingScreen;
 import me.melontini.andromeda.client.screens.MerchantInventoryScreen;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.AndromedaFeatureManager;
-import me.melontini.andromeda.mixin.gui.gui_particles.accessors.HandledScreenAccessor;
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
@@ -137,13 +136,9 @@ public class AndromedaClient implements ClientModInitializer {
                 ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
                     AbstractFurnaceScreen<?> furnaceScreen = (AbstractFurnaceScreen<?>) screen;
                     if (furnaceScreen.getScreenHandler().isBurning() && Utilities.RANDOM.nextInt(10) == 0) {
-                        int x = ((HandledScreenAccessor) furnaceScreen).andromeda$getX();
-                        int y = ((HandledScreenAccessor) furnaceScreen).andromeda$getY();
-
-
                         ScreenParticleHelper.addScreenParticle(screen, ParticleTypes.FLAME,
-                                MathStuff.nextDouble(Utilities.RANDOM, x + 56, x + 56 + 14),
-                                y + 36 + 13, MathStuff.nextDouble(Utilities.RANDOM, -0.01, 0.01),
+                                MathStuff.nextDouble(Utilities.RANDOM, furnaceScreen.x + 56, furnaceScreen.x + 56 + 14),
+                                furnaceScreen.y + 36 + 13, MathStuff.nextDouble(Utilities.RANDOM, -0.01, 0.01),
                                 0.05);
                     }
                 });
