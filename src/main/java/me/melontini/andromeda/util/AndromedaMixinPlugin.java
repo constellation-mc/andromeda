@@ -91,7 +91,7 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
             }
         }
         if (log)
-            LOGGER.info("{} : {}", mixinClassName.replaceFirst("me\\.melontini\\.andromeda\\.mixin\\.", ""), load ? "loaded" : "not loaded");
+            LOGGER.info("{} : {}", mixinClassName.replaceFirst("me\\.melontini\\.andromeda\\.mixin\\.", ""), load ? "applied ✅" : "skipped ⏩");
         return load;
     }
 
