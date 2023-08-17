@@ -21,12 +21,12 @@ public class AndromedaFeatureManager {
     private static final Map<Field, String> fieldToString = new HashMap<>();
 
 
-    public static void registerProcessor(String feature, FeatureProcessor processor) {
-        processors.putIfAbsent(feature, processor);
+    public static void registerProcessor(String id, FeatureProcessor processor) {
+        processors.putIfAbsent(id, processor);
     }
 
-    public static void unregisterProcessor(String feature) {
-        processors.remove(feature);
+    public static void unregisterProcessor(String id) {
+        processors.remove(id);
     }
 
     public static boolean isModified(Field field) {
