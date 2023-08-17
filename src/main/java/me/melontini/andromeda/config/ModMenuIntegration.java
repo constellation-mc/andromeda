@@ -3,7 +3,6 @@ package me.melontini.andromeda.config;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import me.melontini.andromeda.client.AndromedaClient;
-import me.melontini.andromeda.mixin.accessors.ScreenAccessor;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,9 +29,9 @@ public class ModMenuIntegration implements ModMenuApi {
     }
 
     private static <T extends Element & Drawable & Selectable> T addDrawableChild(Screen screen, T drawableElement) {
-        ((ScreenAccessor) screen).andromeda$getDrawables().add(drawableElement);
-        ((ScreenAccessor) screen).andromeda$getChildren().add(drawableElement);
-        ((ScreenAccessor) screen).andromeda$getSelectables().add(drawableElement);
+        screen.drawables.add(drawableElement);
+        screen.children.add(drawableElement);
+        screen.selectables.add(drawableElement);
         return drawableElement;
     }
 }

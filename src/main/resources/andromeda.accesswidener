@@ -6,6 +6,9 @@ accessible class net/minecraft/client/particle/ParticleManager$SpriteAwareFactor
 accessible class net/minecraft/block/entity/BlockEntityType$BlockEntityFactory
 accessible class net/minecraft/block/entity/BeehiveBlockEntity$Bee
 # Fields
+accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
+accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/List;
+accessible field net/minecraft/client/gui/screen/Screen children Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen y I
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen x I
 accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen$ButtonWidget gameMode Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;
