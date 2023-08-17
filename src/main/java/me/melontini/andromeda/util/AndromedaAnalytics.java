@@ -34,10 +34,10 @@ public class AndromedaAnalytics {
                             if (sn.isEmpty()) return "Other";
                             return sn;
                         }));
-                        AndromedaLog.info("Uploading optional data (Environment): \n" + object);
+                        AndromedaLog.info("Uploading optional data.: " + object);
                         messageBuilder.set(Analytics.getUUIDString(), object);
                     });
-                } else AndromedaLog.info("Skipped optional data upload (Environment)");
+                } else AndromedaLog.info("Skipped optional data upload.");
 
                 Path fakeConfig = SharedConstants.HIDDEN_PATH.resolve("config_copy.json");
                 try {
