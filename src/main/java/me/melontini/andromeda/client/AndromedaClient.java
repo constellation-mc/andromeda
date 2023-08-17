@@ -28,6 +28,7 @@ import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -86,7 +87,8 @@ public class AndromedaClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
+        GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
+        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
                 list.stream().peek(gui -> {
                     gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field));
                     if (gui instanceof TooltipListEntry<?> tooltipGui) {
@@ -100,7 +102,7 @@ public class AndromedaClient implements ClientModInitializer {
                     }
                 }).toList(), AndromedaFeatureManager::isModified);
 
-        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> gui.setRequiresRestart(true));
             return list;
         }, field -> Andromeda.CONFIG.compatMode);
