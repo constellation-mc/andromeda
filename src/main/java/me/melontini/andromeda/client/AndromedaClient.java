@@ -33,6 +33,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -83,6 +84,7 @@ public class AndromedaClient implements ClientModInitializer {
     public static String DEBUG_SPLASH;
     public static ItemStack FRAME_STACK = ItemStack.EMPTY;
     private float tooltipFlow;
+    private float oldTooltipFlow;
 
     @Override
     public void onInitializeClient() {
@@ -156,6 +158,14 @@ public class AndromedaClient implements ClientModInitializer {
             ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(MODID, "dark"), modContainer, ResourcePackActivationType.NORMAL);
         });
 
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            var cast = client.crosshairTarget;
+            getCast(cast);
+            oldTooltipFlow = tooltipFlow;
+            tooltipFlow = !FRAME_STACK.isEmpty() ? MathHelper.lerp(0.25f, tooltipFlow, 1) :
+                    MathHelper.lerp(0.1f, tooltipFlow, 0);
+        });
+
         AndromedaAnalytics.handleUpload();
     }
 
@@ -163,18 +173,15 @@ public class AndromedaClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register((matrices, delta) -> {
             if (Andromeda.CONFIG.itemFrameTooltips && MinecraftClient.getInstance().currentScreen == null) {
                 var client = MinecraftClient.getInstance();
-                var cast = client.crosshairTarget;
-
-                getCast(cast);
 
                 if (!FRAME_STACK.isEmpty()) {
-                    tooltipFlow = MathHelper.lerp(0.25f * client.getLastFrameDuration(), tooltipFlow, 1);
+                    float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
                     matrices.push();
                     matrices.translate(0, 0, -450);
                     matrices.scale(1, 1, 1);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
-                    RenderSystem.setShaderColor(1, 1, 1, Math.min(tooltipFlow, 0.8f));
+                    RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
                     var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(FRAME_STACK);
                     list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
@@ -190,12 +197,10 @@ public class AndromedaClient implements ClientModInitializer {
                         j += tooltipComponent.getHeight();
                     }
 
-                    DrawUtil.renderTooltipFromComponents(matrices, list1, ((client.getWindow().getScaledWidth() / 2f) - (tooltipFlow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
+                    DrawUtil.renderTooltipFromComponents(matrices, list1, ((client.getWindow().getScaledWidth() / 2f) - (flow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
                     RenderSystem.disableBlend();
                     matrices.pop();
-                } else {
-                    tooltipFlow = MathHelper.lerp(0.1f * client.getLastFrameDuration(), tooltipFlow, 0);
                 }
             }
         });
