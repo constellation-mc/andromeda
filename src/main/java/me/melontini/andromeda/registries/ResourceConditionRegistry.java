@@ -229,7 +229,7 @@ public class ResourceConditionRegistry {
             }
         });
 
-        AndromedaLog.info("ResourceConditionRegistry init complete");
+        AndromedaLog.info("ResourceConditionRegistry init complete!");
     }
 
     private static void readCommands(JsonObject json, ItemBehaviorData.CommandHolder holder) {

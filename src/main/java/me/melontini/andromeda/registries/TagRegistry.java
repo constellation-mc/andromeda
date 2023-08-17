@@ -1,5 +1,6 @@
 package me.melontini.andromeda.registries;
 
+import me.melontini.andromeda.util.AndromedaLog;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -20,5 +21,6 @@ public class TagRegistry {
 
     public static void register() {
         VillagerGifts.register();
+        AndromedaLog.info("TagRegistry init complete!");
     }
 }
