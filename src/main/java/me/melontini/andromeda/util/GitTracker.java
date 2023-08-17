@@ -83,6 +83,7 @@ public class GitTracker {
                 if (!PRESERVE_KEYS.contains(s)) jsonResponse.remove(s);
             }
 
+            if (!Files.exists(lastResponse)) Files.createDirectories(lastResponse.getParent());
             Files.writeString(lastResponse, jsonResponse.toString());
         } catch (Exception e) {
             AndromedaLog.warn("Couldn't update git info", e);

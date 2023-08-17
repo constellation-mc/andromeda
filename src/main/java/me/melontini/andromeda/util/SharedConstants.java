@@ -37,6 +37,7 @@ public class SharedConstants {
 
     private static void writeVersion(Path lastVer) {
         try {
+            if (!Files.exists(lastVer.getParent())) Files.createDirectories(lastVer.getParent());
             Files.writeString(lastVer, MOD_VERSION);
         } catch (IOException ignored) {}
     }
