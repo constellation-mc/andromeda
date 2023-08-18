@@ -16,11 +16,26 @@ public class SharedConstants {
     public static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
     public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
     public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
-    public static final boolean CONNECTOR_LOADED = FabricLoader.getInstance().isModLoaded("connectormod");
-    public static final Platform PLATFORM = CONNECTOR_LOADED ? Platform.CONNECTOR : Platform.FABRIC;
+    public static final Platform PLATFORM;
     public static final boolean MOD_UPDATED;
 
     static {
+        PLATFORM = getPlatform();
+        MOD_UPDATED = checkModUpdate();
+    }
+
+    private static Platform getPlatform() {
+        if (FabricLoader.getInstance().isModLoaded("connectormod")) {
+            try {
+                //The above check should be fine, but just in case.
+                Class.forName("dev.su5ed.sinytra.connector.mod.ConnectorLoader");
+                return Platform.CONNECTOR;
+            } catch (ClassNotFoundException ignored) {};
+        }
+        return Platform.FABRIC;
+    }
+
+    private static boolean checkModUpdate() {
         Path lastVer = SharedConstants.HIDDEN_PATH.resolve("last_version.txt");
         boolean modUpdated = true;
         if (Files.exists(lastVer)) {
@@ -32,7 +47,7 @@ public class SharedConstants {
             } catch (VersionParsingException | IOException ignored) {}
         }
         writeVersion(lastVer);
-        MOD_UPDATED = modUpdated;
+        return modUpdated;
     }
 
     private static void writeVersion(Path lastVer) {
