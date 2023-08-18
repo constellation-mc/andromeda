@@ -4,6 +4,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
+import org.spongepowered.asm.service.MixinService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,6 +33,10 @@ public class SharedConstants {
                 return Platform.CONNECTOR;
             } catch (ClassNotFoundException ignored) {};
         }
+        if (FabricLoader.getInstance().isModLoaded("quilt_loader")) {
+            String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
+            if ("quilt".equalsIgnoreCase(sn)) return Platform.QUILT;
+        }
         return Platform.FABRIC;
     }
 
@@ -59,6 +64,9 @@ public class SharedConstants {
 
     public enum Platform {
         FABRIC,
-        CONNECTOR
+        CONNECTOR,
+        QUILT,
+        FORGE,
+        NEOFORGED
     }
 }
