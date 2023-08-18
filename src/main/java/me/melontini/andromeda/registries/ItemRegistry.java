@@ -57,18 +57,21 @@ public class ItemRegistry {
     public static JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
+
     public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
             .itemGroup(ItemGroup.COMBAT).registerCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
+
     public static Item LOCKPICK = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
             .itemGroup(ItemGroup.TOOLS).registerCondition(Andromeda.CONFIG.lockpickEnabled).build();
+
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
     private static final ItemStack ITEM_GROUP_ICON = Utilities.supply(() -> {
-        if (Andromeda.CONFIG.unknown) {
+        if (Andromeda.CONFIG.unknown && ROSE_OF_THE_VALLEY != null) {
             return new ItemStack(ROSE_OF_THE_VALLEY);
         }
-        if (Andromeda.CONFIG.incubatorSettings.enableIncubator) {
+        if (Andromeda.CONFIG.incubatorSettings.enableIncubator && INCUBATOR != null) {
             return new ItemStack(INCUBATOR);
         }
         return new ItemStack(SPAWNER_MINECART);
@@ -76,15 +79,18 @@ public class ItemRegistry {
     public static ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(new Identifier(MODID, "group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
-                if (Andromeda.CONFIG.incubatorSettings.enableIncubator) misc.add(ItemRegistry.INCUBATOR.getDefaultStack());
-                if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem) misc.add(ItemRegistry.INFINITE_TOTEM.getDefaultStack());
+                if (Andromeda.CONFIG.incubatorSettings.enableIncubator && ItemRegistry.INCUBATOR != null)
+                    misc.add(ItemRegistry.INCUBATOR.getDefaultStack());
+                if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem && ItemRegistry.INFINITE_TOTEM != null)
+                    misc.add(ItemRegistry.INFINITE_TOTEM.getDefaultStack());
                 appendStacks(entries, misc, true);
 
                 List<ItemStack> carts = new ArrayList<>();
-                if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn) carts.add(ItemRegistry.ANVIL_MINECART.getDefaultStack());
-                if (Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn)
+                if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn && ItemRegistry.ANVIL_MINECART != null)
+                    carts.add(ItemRegistry.ANVIL_MINECART.getDefaultStack());
+                if (Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn && ItemRegistry.JUKEBOX_MINECART != null)
                     carts.add(ItemRegistry.JUKEBOX_MINECART.getDefaultStack());
-                if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn)
+                if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn && ItemRegistry.NOTE_BLOCK_MINECART != null)
                     carts.add(ItemRegistry.NOTE_BLOCK_MINECART.getDefaultStack());
                 carts.add(ItemRegistry.SPAWNER_MINECART.getDefaultStack());
                 appendStacks(entries, carts, true);
