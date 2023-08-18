@@ -9,9 +9,8 @@ import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
-import org.spongepowered.asm.service.MixinService;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,11 +28,7 @@ public class AndromedaAnalytics {
                         JsonObject object = new JsonObject();
                         object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
                         object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
-                        object.addProperty("modloader", Utilities.supply(() -> {
-                            String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
-                            if (sn.isEmpty()) return "Other";
-                            return sn;
-                        }));
+                        object.addProperty("modloader", StringUtils.capitalize(SharedConstants.PLATFORM.name().toLowerCase()));
                         AndromedaLog.info("Uploading optional data.: " + object);
                         messageBuilder.set(Analytics.getUUIDString(), object);
                     });
