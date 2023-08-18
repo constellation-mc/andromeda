@@ -1,5 +1,7 @@
 ### What's New:
 
+No hotfixes today. Just lukewarm fixes.
+
 * Fixed the `.andromeda` folder not getting created in some cases.
 * Made all options require restart if Compat Mode is on.
 * Fixed some classes appearing as `[]` in the log.
