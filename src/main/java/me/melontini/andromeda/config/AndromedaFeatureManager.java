@@ -104,7 +104,7 @@ public class AndromedaFeatureManager {
             FabricLoader.getInstance().getAllMods().stream()
                     .filter(mod -> mod.getMetadata().containsCustomValue("andromeda:features"))
                     .forEach(mod -> parseMetadata(mod, modJson));
-            return modJson.isEmpty() ? null : modJson;
+            return modJson;
         });
         FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
     }
