@@ -51,7 +51,7 @@ public abstract class EntityMixin extends Entity {
                 } else {
                     if (attributeInstance != null)
                         if (attributeInstance.hasModifier(LEAF_SLOWNESS)) {
-                            attributeInstance.removeModifier(LEAF_SLOWNESS);
+                            attributeInstance.removeModifier(LEAF_SLOWNESS.getId());
                         }
                 }
             }
