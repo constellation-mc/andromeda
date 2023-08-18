@@ -14,10 +14,7 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LootContextPredicate;
-import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -25,7 +22,6 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.function.CommandFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
@@ -150,20 +146,24 @@ public class AdvancementGeneration {
                         if (stacks.contains(stackEntry.stack)) continue;
                         stacks.add(stackEntry.stack);
                         names.add(String.valueOf(i));
-                        predicates.add(new ItemPredicate(null, Set.of(stackEntry.stack.getItem()), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, stackEntry.stack.getNbt() != null ? new NbtPredicate(stackEntry.stack.getNbt()) : NbtPredicate.ANY));
+                        ItemPredicate.Builder predicateBuilder = ItemPredicate.Builder.create()
+                                .items(stackEntry.stack.getItem());
+                        if (stackEntry.stack.getNbt() != null) predicateBuilder.nbt(stackEntry.stack.getNbt());
+                        Optional.ofNullable(predicateBuilder.build()).ifPresent(predicates::add);
                     }
                 } else if (entry instanceof Ingredient.TagEntry tagEntry) {
                     if (tags.contains(tagEntry.tag)) continue;
                     tags.add(tagEntry.tag);
                     names.add(String.valueOf(i));
-                    predicates.add(new ItemPredicate(tagEntry.tag, null, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, NbtPredicate.ANY));
+                    Optional.ofNullable(ItemPredicate.Builder.create().tag(tagEntry.tag).build())
+                            .ifPresent(predicates::add);
                 } else {
                     AndromedaLog.error("unknown ingredient found in {}", id);
                 }
             }
-            builder.criterion(String.valueOf(i), new InventoryChangedCriterion.Conditions(LootContextPredicate.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, predicates.toArray(ItemPredicate[]::new)));
+            builder.criterion(String.valueOf(i), InventoryChangedCriterion.Conditions.items(predicates.toArray(ItemPredicate[]::new)));
         }
-        builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.EMPTY, id));
+        builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.create(), id));
 
         String[][] reqs;
         if (Andromeda.CONFIG.autogenRecipeAdvancements.requireAllItems) {
@@ -186,7 +186,7 @@ public class AdvancementGeneration {
         tags.clear();
         stacks.clear();
 
-        builder.rewards(new AdvancementRewards(0, new Identifier[0], new Identifier[]{id}, CommandFunction.LazyContainer.EMPTY));
+        Optional.ofNullable(AdvancementRewards.Builder.recipe(id).build()).ifPresent(builder::rewards);
         return builder;
     }
 }
