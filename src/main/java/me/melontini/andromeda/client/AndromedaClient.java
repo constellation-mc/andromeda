@@ -11,7 +11,6 @@ import me.melontini.andromeda.client.screens.FletchingScreen;
 import me.melontini.andromeda.client.screens.MerchantInventoryScreen;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.AndromedaFeatureManager;
-import me.melontini.andromeda.mixin.gui.gui_particles.accessors.HandledScreenAccessor;
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
@@ -28,11 +27,13 @@ import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -81,12 +82,14 @@ public class AndromedaClient implements ClientModInitializer {
     public static final Style WIKI_LINK = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
 
     public static String DEBUG_SPLASH;
-    public static ItemStack FRAME_STACK = ItemStack.EMPTY;
+    private static ItemStack frameStack = ItemStack.EMPTY;
     private float tooltipFlow;
+    private float oldTooltipFlow;
 
     @Override
     public void onInitializeClient() {
-        AutoConfig.getGuiRegistry(AndromedaConfig.class).registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
+        GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
+        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
                 list.stream().peek(gui -> {
                     gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field));
                     if (gui instanceof TooltipListEntry<?> tooltipGui) {
@@ -99,6 +102,11 @@ public class AndromedaClient implements ClientModInitializer {
                         }
                     }
                 }).toList(), AndromedaFeatureManager::isModified);
+
+        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+            list.forEach(gui -> gui.setRequiresRestart(true));
+            return list;
+        }, field -> Andromeda.CONFIG.compatMode);
 
         if (Andromeda.CONFIG.autoUpdateTranslations) {
             boolean shouldUpdate = true;
@@ -130,13 +138,9 @@ public class AndromedaClient implements ClientModInitializer {
                 ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
                     AbstractFurnaceScreen<?> furnaceScreen = (AbstractFurnaceScreen<?>) screen;
                     if (furnaceScreen.getScreenHandler().isBurning() && Utilities.RANDOM.nextInt(10) == 0) {
-                        int x = ((HandledScreenAccessor) furnaceScreen).andromeda$getX();
-                        int y = ((HandledScreenAccessor) furnaceScreen).andromeda$getY();
-
-
                         ScreenParticleHelper.addScreenParticle(screen, ParticleTypes.FLAME,
-                                MathStuff.nextDouble(Utilities.RANDOM, x + 56, x + 56 + 14),
-                                y + 36 + 13, MathStuff.nextDouble(Utilities.RANDOM, -0.01, 0.01),
+                                MathStuff.nextDouble(Utilities.RANDOM, furnaceScreen.x + 56, furnaceScreen.x + 56 + 14),
+                                furnaceScreen.y + 36 + 13, MathStuff.nextDouble(Utilities.RANDOM, -0.01, 0.01),
                                 0.05);
                     }
                 });
@@ -154,6 +158,16 @@ public class AndromedaClient implements ClientModInitializer {
             ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(MODID, "dark"), modContainer, ResourcePackActivationType.NORMAL);
         });
 
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            if (Andromeda.CONFIG.itemFrameTooltips) {
+                var cast = client.crosshairTarget;
+                getCast(cast);
+                oldTooltipFlow = tooltipFlow;
+                tooltipFlow = !frameStack.isEmpty() ? MathHelper.lerp(0.25f, tooltipFlow, 1) :
+                        MathHelper.lerp(0.1f, tooltipFlow, 0);
+            }
+        });
+
         AndromedaAnalytics.handleUpload();
     }
 
@@ -161,23 +175,20 @@ public class AndromedaClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register((matrices, delta) -> {
             if (Andromeda.CONFIG.itemFrameTooltips && MinecraftClient.getInstance().currentScreen == null) {
                 var client = MinecraftClient.getInstance();
-                var cast = client.crosshairTarget;
 
-                getCast(cast);
-
-                if (!FRAME_STACK.isEmpty()) {
-                    tooltipFlow = MathHelper.lerp(0.25f * client.getLastFrameDuration(), tooltipFlow, 1);
+                if (!frameStack.isEmpty()) {
+                    float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
                     matrices.push();
                     matrices.translate(0, 0, -450);
                     matrices.scale(1, 1, 1);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
-                    RenderSystem.setShaderColor(1, 1, 1, Math.min(tooltipFlow, 0.8f));
-                    var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(FRAME_STACK);
+                    RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
+                    var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(frameStack);
                     list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
-                    FRAME_STACK.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
+                    frameStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
                         TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
                         if (component == null) component = TooltipComponent.of(datax);
                         return component;
@@ -188,12 +199,10 @@ public class AndromedaClient implements ClientModInitializer {
                         j += tooltipComponent.getHeight();
                     }
 
-                    DrawUtil.renderTooltipFromComponents(matrices, list1, ((client.getWindow().getScaledWidth() / 2f) - (tooltipFlow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
+                    DrawUtil.renderTooltipFromComponents(matrices, list1, ((client.getWindow().getScaledWidth() / 2f) - (flow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
                     RenderSystem.disableBlend();
                     matrices.pop();
-                } else {
-                    tooltipFlow = MathHelper.lerp(0.1f * client.getLastFrameDuration(), tooltipFlow, 0);
                 }
             }
         });
@@ -203,11 +212,11 @@ public class AndromedaClient implements ClientModInitializer {
         if (cast != null) if (cast.getType() == HitResult.Type.ENTITY) {
             EntityHitResult hitResult = (EntityHitResult) cast;
             if (hitResult.getEntity() instanceof ItemFrameEntity itemFrameEntity) {
-                FRAME_STACK = itemFrameEntity.getHeldItemStack();
+                frameStack = itemFrameEntity.getHeldItemStack();
                 return;
             }
         }
-        FRAME_STACK = ItemStack.EMPTY;
+        frameStack = ItemStack.EMPTY;
     }
 
     public void registerBlockRenderers() {

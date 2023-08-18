@@ -9,9 +9,8 @@ import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
-import org.spongepowered.asm.service.MixinService;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,24 +23,22 @@ public class AndromedaAnalytics {
     public static void handleUpload() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
             if (Andromeda.CONFIG.sendOptionalData) {
-                HANDLER.send(messageBuilder -> {
-                    JsonObject object = new JsonObject();
-                    object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
-                    object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
-                    object.addProperty("modloader", Utilities.supply(() -> {
-                        String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
-                        if (sn.isEmpty()) return "Other";
-                        return sn;
-                    }));
-                    AndromedaLog.info("Uploading optional data (Environment): \n" + object);
-                    messageBuilder.set(Analytics.getUUIDString(), object);
-                });
+                if (SharedConstants.MOD_UPDATED) {
+                    HANDLER.send(messageBuilder -> {
+                        JsonObject object = new JsonObject();
+                        object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
+                        object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
+                        object.addProperty("modloader", StringUtils.capitalize(SharedConstants.PLATFORM.name().toLowerCase()));
+                        AndromedaLog.info("Uploading optional data.: " + object);
+                        messageBuilder.set(Analytics.getUUIDString(), object);
+                    });
+                } else AndromedaLog.info("Skipped optional data upload.");
 
                 Path fakeConfig = SharedConstants.HIDDEN_PATH.resolve("config_copy.json");
                 try {
                     Files.deleteIfExists(fakeConfig);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    AndromedaLog.warn("Failed to delete config_copy.json", e);
                 }
             } else {
                 HANDLER.send(messageBuilder -> messageBuilder.delete(Analytics.getUUIDString()));
@@ -49,12 +46,24 @@ public class AndromedaAnalytics {
         }
     }
 
+    private static boolean findAndromedaInTrace(Throwable cause) {
+        for (StackTraceElement element : cause.getStackTrace()) {
+            if (element.isNativeMethod()) continue;
+            String cls = element.getClassName();
+            if (cls.contains("me.melontini.andromeda.")) return true;
+            if (cls.contains("net.minecraft.")) {
+                String mthd = element.getMethodName();
+                return (mthd.contains("$andromeda$") || mthd.contains(".andromeda$"));
+            }
+        }
+        return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
+    }
+
     public static void registerCrashHandler() {
         Crashlytics.addHandler("andromeda", (report, cause, latestLog, envType) -> {
             if (!FabricLoader.getInstance().isDevelopmentEnvironment() && Andromeda.CONFIG.sendCrashReports) {
-                if (cause instanceof AndromedaException e && !e.shouldReport()) return false;
-                String s = report.getCauseAsString();
-                return s.contains("me.melontini.andromeda.");
+                if (cause instanceof AndromedaException e) return e.shouldReport();
+                return findAndromedaInTrace(cause);
             } else return false;
         }, (report, cause, latestLog, envType) -> HANDLER.send(messageBuilder -> {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");

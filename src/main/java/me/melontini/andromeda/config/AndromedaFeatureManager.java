@@ -21,12 +21,12 @@ public class AndromedaFeatureManager {
     private static final Map<Field, String> fieldToString = new HashMap<>();
 
 
-    public static void registerProcessor(String feature, FeatureProcessor processor) {
-        processors.putIfAbsent(feature, processor);
+    public static void registerProcessor(String id, FeatureProcessor processor) {
+        processors.putIfAbsent(id, processor);
     }
 
-    public static void unregisterProcessor(String feature) {
-        processors.remove(feature);
+    public static void unregisterProcessor(String id) {
+        processors.remove(id);
     }
 
     public static boolean isModified(Field field) {
@@ -48,30 +48,29 @@ public class AndromedaFeatureManager {
         for (Map.Entry<String, FeatureProcessor> entry : processors.entrySet()) {
             Map<String, Object> featureConfigEntry = entry.getValue().process(config);
             if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
+
                 LOGGER.info("Processor: {}", entry.getKey());
-                StringBuilder builder = new StringBuilder();
-                builder.append("Config: ");
-                for (String s : featureConfigEntry.keySet()) {
-                    builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; ");
-                }
+                StringBuilder builder = new StringBuilder().append("Config: ");
+                featureConfigEntry.keySet().forEach(s -> builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; "));
                 LOGGER.info(builder.toString());
+
                 configure(config, entry.getKey(), featureConfigEntry);
             }
         }
     }
 
     private static void configure(AndromedaConfig config, String processor, Map<String, Object> featureConfig) {
+        Set<String> skipped = new HashSet<>();
         for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
             String configOption = configEntry.getKey();
-            List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
-
             try {
-                if (fields.size() > 1) {//🤯🤯🤯
-                    Object obj = config.getClass().getField(fields.get(0)).get(config);
-                    for (int i = 1; i < fields.size() - 1; i++) {
-                        obj = FieldUtils.readField(obj, fields.get(i), true);
+                if (configOption.contains(".")) {
+                    String[] fields = configOption.split("\\.");
+                    Object obj = config.getClass().getField(fields[0]).get(config);
+                    for (int i = 1; i < fields.length - 1; i++) {
+                        obj = FieldUtils.readField(obj, fields[i], true);
                     }
-                    Field field = obj.getClass().getField(fields.get(fields.size() - 1));
+                    Field field = obj.getClass().getField(fields[fields.length - 1]);
                     FieldUtils.writeField(field, obj, configEntry.getValue());
                     modifiedFields.put(field, processor);
                     fieldToString.putIfAbsent(field, configOption);
@@ -82,10 +81,15 @@ public class AndromedaFeatureManager {
                     fieldToString.putIfAbsent(field, configOption);
                 }
             } catch (NoSuchFieldException e) {
-                LOGGER.info("Invalid config option in AndromedaFeatureManager: " + configOption + " This is no fault of yours.");
+                skipped.add(configOption);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
+        }
+        if (!skipped.isEmpty()) {
+            StringBuilder builder = new StringBuilder().append("Skipped: ");
+            skipped.forEach(s -> builder.append(s).append("; "));
+            LOGGER.warn(builder);
         }
     }
 
@@ -97,19 +101,18 @@ public class AndromedaFeatureManager {
         //This needs to be here to interact with private fields.
         AndromedaFeatureManager.registerProcessor("mod_json", config -> {
             Map<String, Object> modJson = new LinkedHashMap<>();
-            for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
-                if (mod.getMetadata().containsCustomValue("andromeda:features")) {
-                    parseMetadata(mod, modJson);
-                }
-            }
-            return modJson.isEmpty() ? null : modJson;
+            FabricLoader.getInstance().getAllMods().stream()
+                    .filter(mod -> mod.getMetadata().containsCustomValue("andromeda:features"))
+                    .forEach(mod -> parseMetadata(mod, modJson));
+            return modJson;
         });
         FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
     }
 
     private static void parseMetadata(ModContainer mod, Map<String, Object> modJson) {
         CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
-        if (customValue.getType() != CustomValue.CvType.OBJECT) LOGGER.error("andromeda:features must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
+        if (customValue.getType() != CustomValue.CvType.OBJECT)
+            LOGGER.error("andromeda:features must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
         else {
             CustomValue.CvObject object = customValue.getAsObject();
             for (Map.Entry<String, CustomValue> feature : object) {
@@ -129,9 +132,11 @@ public class AndromedaFeatureManager {
                         if (featureObject.get("value").getType() == CustomValue.CvType.BOOLEAN) {
                             modJson.put(feature.getKey(), featureObject.get("value").getAsBoolean());
                             modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
-                        } else LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
+                        } else
+                            LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
                     }
-                    default -> LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
+                    default ->
+                            LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
                 }
             }
         }
