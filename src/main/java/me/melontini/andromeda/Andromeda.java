@@ -12,7 +12,6 @@ import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
@@ -57,8 +56,6 @@ public class Andromeda implements ModInitializer {
     public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
     public static final RegistryKey<DamageType> AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SharedConstants.MODID, "agony"));
     public static final RegistryKey<DamageType> BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SharedConstants.MODID, "bricked"));
-    public static final Map<PlayerEntity, AbstractMinecartEntity> LINKING_CARTS = new HashMap<>();
-    public static final Map<PlayerEntity, AbstractMinecartEntity> UNLINKING_CARTS = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -98,8 +95,6 @@ public class Andromeda implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            Andromeda.LINKING_CARTS.clear();
-            Andromeda.UNLINKING_CARTS.clear();
             ItemBehaviorManager.clear();
         });
 

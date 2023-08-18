@@ -55,7 +55,6 @@
     "world.self_planting.ItemEntityMixin"
   ],
   "client": [
-    "accessors.ScreenAccessor",
     "bugfixes.AdvancementTabMixin",
     "gui.bye_adventure.GameModeSelectionMixin",
     "gui.bye_adventure.GameModeSelectionScreenMixin",
@@ -63,7 +62,6 @@
     "gui.gui_particles.CreativeInventoryScreenMixin",
     "gui.gui_particles.EnchantmentScreenMixin",
     "gui.gui_particles.GameModeSelectionScreenMixin",
-    "gui.gui_particles.accessors.HandledScreenAccessor",
     "gui.name_tooltips.InGameHudMixin",
     "items.mending_fix.AnvilScreenMixin",
     "items.tooltips.clock.ItemMixin",

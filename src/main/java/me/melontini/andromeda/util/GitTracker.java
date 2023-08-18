@@ -12,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class GitTracker {
     private static String DEFAULT_BRANCH = "1.19-fabric";
     private static final Set<String> PRESERVE_KEYS = Sets.newHashSet("default_branch", "stargazers_count");
 
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(5)).build();
 
     public static String getDefaultBranch() {
         return DEFAULT_BRANCH;
@@ -83,6 +84,7 @@ public class GitTracker {
                 if (!PRESERVE_KEYS.contains(s)) jsonResponse.remove(s);
             }
 
+            if (!Files.exists(lastResponse)) Files.createDirectories(lastResponse.getParent());
             Files.writeString(lastResponse, jsonResponse.toString());
         } catch (Exception e) {
             AndromedaLog.warn("Couldn't update git info", e);
