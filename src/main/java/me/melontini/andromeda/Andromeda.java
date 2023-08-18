@@ -59,8 +59,6 @@ public class Andromeda implements ModInitializer {
     public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
     public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
     public static final DamageSource AGONY = new DamageSource("andromeda_agony");
-    public static final Map<PlayerEntity, AbstractMinecartEntity> LINKING_CARTS = new HashMap<>();
-    public static final Map<PlayerEntity, AbstractMinecartEntity> UNLINKING_CARTS = new HashMap<>();
 
     public static DamageSource bricked(@Nullable Entity attacker) {
         return new BrickedDamageSource(attacker);
@@ -104,8 +102,6 @@ public class Andromeda implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            Andromeda.LINKING_CARTS.clear();
-            Andromeda.UNLINKING_CARTS.clear();
             ItemBehaviorManager.clear();
         });
 
