@@ -112,12 +112,23 @@ public class AndromedaConfig implements ConfigData {
         public int campfireEffectsRange = 10;
 
         @ConfigEntry.Category("blocks")
-        @ConfigEntry.Gui.Tooltip(count = 2)
-        public List<String> campfireEffectsList = Arrays.asList("minecraft:regeneration");
+        public List<Effect> effectList = Arrays.asList(new Effect());
 
-        @ConfigEntry.Category("blocks")
-        @ConfigEntry.Gui.Tooltip
-        public List<Integer> campfireEffectsAmplifierList = Arrays.asList(0);
+        public static class Effect {
+
+            public String identifier;
+            public int amplifier;
+
+            public Effect(String identifier, int amplifier) {
+                this.identifier = identifier;
+                this.amplifier = amplifier;
+            }
+
+            public Effect() {
+                this.identifier = "minecraft:regeneration";
+                this.amplifier = 0;
+            }
+        }
     }
 
     @ConfigEntry.Category("entities")

@@ -92,6 +92,10 @@
 
   "text.autoconfig.andromeda.title": "Andromeda config",
 
+  "text.autoconfig.andromeda.option.Effect": "Effect",
+  "text.autoconfig.andromeda.option.Effect.identifier": "Identifier",
+  "text.autoconfig.andromeda.option.Effect.amplifier": "Amplifier",
+
   "text.autoconfig.andromeda.category.world": "World",
   "text.autoconfig.andromeda.option.autoPlanting": "Self Planting Crops",
   "text.autoconfig.andromeda.option.autoPlanting.@Tooltip[0]": "If possible, crops will plant themselves after some time.",
@@ -144,6 +148,7 @@
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffects.@Tooltip": "Makes campfires emit potion effects within a certain range.",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive": "Apply Effects to Passive Entities?",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive.@Tooltip": "If off, effects will only apply to players",
+  "text.autoconfig.andromeda.option.campfireTweaks.effectList": "List of effects you want the campfire to emit",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList": "List of effects you want the campfire to emit",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[0]": "Enter your Potion Identifier here!",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[1]": "There can be more than one.",

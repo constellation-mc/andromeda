@@ -1,9 +1,9 @@
 package me.melontini.andromeda.mixin.blocks.campfire_effects;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.util.PotionUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
@@ -37,18 +37,13 @@ public class CampfireBlockEntityMixin {
                             entities.add((LivingEntity) entity);
                         }
                     });
-                    List<String> identifiers = Andromeda.CONFIG.campfireTweaks.campfireEffectsList;
-                    List<Integer> amplifiers = Andromeda.CONFIG.campfireTweaks.campfireEffectsAmplifierList;
+                    List<AndromedaConfig.CampfireTweaks.Effect> effects = Andromeda.CONFIG.campfireTweaks.effectList;
 
                     for (LivingEntity player : entities) {
-                        if (identifiers.size() == amplifiers.size()) {
-                            for (int i = 0; i < identifiers.size(); i++) {
-                                StatusEffectInstance effectInstance = new StatusEffectInstance(PotionUtil.getStatusEffect(Identifier.tryParse(identifiers.get(i))),
-                                        200, amplifiers.get(i), true, false, true);
-                                player.addStatusEffect(effectInstance);
-                            }
-                        } else {
-                            throw new AndromedaException(false, String.format("campfireEffectsList (size: %s) & campfireEffectsAmplifierList (size: %s) don't match in size!", identifiers.size(), amplifiers.size()));
+                        for (AndromedaConfig.CampfireTweaks.Effect effect : effects) {
+                            StatusEffectInstance effectInstance = new StatusEffectInstance(PotionUtil.getStatusEffect(Identifier.tryParse(effect.identifier)),
+                                    200, effect.amplifier, true, false, true);
+                            player.addStatusEffect(effectInstance);
                         }
                     }
                 }
