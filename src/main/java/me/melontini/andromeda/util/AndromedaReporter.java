@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 
-public class AndromedaAnalytics {
+public class AndromedaReporter {
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
     private static final MixpanelHandler HANDLER = MixpanelAnalytics.init(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
 

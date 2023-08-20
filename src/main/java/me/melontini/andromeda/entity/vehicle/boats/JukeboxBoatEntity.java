@@ -118,7 +118,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
 
     @Override
     public Item asItem() {
-        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName() + "_boat_with_jukebox"));
+        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName().replace(":", "_") + "_boat_with_jukebox"));
     }
 
     @Override

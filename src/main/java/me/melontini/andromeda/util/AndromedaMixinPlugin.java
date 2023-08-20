@@ -18,7 +18,6 @@ import org.spongepowered.asm.service.MixinService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -66,20 +65,12 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
                             Map<String, Object> values = mapAnnotationNode(node1);
                             List<String> configOptions = (List<String>) values.get("value");
                             for (String configOption : configOptions) {
-                                String[] fields = configOption.split("\\.");
-
                                 try {
-                                    if (fields.length > 1) {//🤯🤯🤯
-                                        Object obj = CONFIG.getClass().getField(fields[0]).get(CONFIG);
-                                        for (int i = 1; i < (fields.length - 1); i++) {
-                                            obj = obj.getClass().getField(fields[i]).get(obj);
-                                        }
-                                        load = obj.getClass().getField(fields[fields.length - 1]).getBoolean(obj);
-                                    } else {
-                                        load = CONFIG.getClass().getField(configOption).getBoolean(CONFIG);
-                                    }
+                                    load = (boolean) ConfigHelper.getConfigOption(configOption, CONFIG);
                                 } catch (NoSuchFieldException e) {
                                     throw new AndromedaException("Invalid config option in MixinRelatedConfigOption: " + configOption + " This is no fault of yours.");
+                                } catch (ClassCastException e) {
+                                    throw new AndromedaException("Non-boolean config option in MixinRelatedConfigOption: " + configOption + " This is no fault of yours.");
                                 }
                                 if (!load) break;
                             }
@@ -91,7 +82,8 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
             }
         }
         if (log)
-            LOGGER.info("{} : {}", mixinClassName.replaceFirst("me\\.melontini\\.andromeda\\.mixin\\.", ""), load ? "applied ✅" : "skipped ⏩");
+            LOGGER.info("{} ({}) : {}", mixinClassName.replaceFirst("me\\.melontini\\.andromeda\\.mixin\\.", ""),
+                    targetClassName.replaceFirst("net\\.minecraft\\.", ""), load ? "applied ✅" : "skipped ⏩");
         return load;
     }
 
