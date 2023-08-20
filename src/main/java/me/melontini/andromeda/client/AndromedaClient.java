@@ -16,6 +16,7 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.*;
+import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
@@ -62,6 +63,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
@@ -126,6 +128,24 @@ public class AndromedaClient implements ClientModInitializer {
             list.forEach(gui -> gui.setRequiresRestart(true));
             return list;
         }, field -> Andromeda.CONFIG.compatMode);
+
+        registry.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+            list.forEach(gui -> {
+                if (gui instanceof TooltipListEntry<?> tooltipGui) {
+                    FeatureEnvironment environment = field.getAnnotation(FeatureEnvironment.class);
+
+                    if (tooltipGui.getTooltipSupplier() != null) {
+                        Optional<Text[]> optional = tooltipGui.getTooltipSupplier().get();
+                        Text[] text = optional.map(texts -> ArrayUtils.add(texts, TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase()))).orElseGet(() -> new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())});
+                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
+                    } else {
+                        Text[] text = new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())};
+                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
+                    }
+                }
+            });
+            return list;
+        }, FeatureEnvironment.class);
 
         if (Andromeda.CONFIG.autoUpdateTranslations) {
             boolean shouldUpdate = true;

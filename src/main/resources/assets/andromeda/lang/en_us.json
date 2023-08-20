@@ -18,6 +18,10 @@
   "andromeda.config.tooltip.manager.iceberg": "Conflicts with Iceberg versions <1.1.13.",
   "andromeda.config.tooltip.manager.mod_json": "Set by: %s",
 
+  "andromeda.config.tooltip.environment.client": "Client-only feature",
+  "andromeda.config.tooltip.environment.server": "Server-only feature.",
+  "andromeda.config.tooltip.environment.both": "Required on both Client and Server.",
+
   "commands.andromeda.damage.invulnerable": "Target is invulnerable to the given damage type",
   "commands.andromeda.damage.success": "Applied %s damage to %s",
 
