@@ -86,7 +86,7 @@ public class HopperBoatEntity extends StorageBoatEntity implements Hopper {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName() + "_boat_with_hopper"));
+        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName().replace(":", "_") + "_boat_with_hopper"));
     }
 
     public boolean canOperate() {

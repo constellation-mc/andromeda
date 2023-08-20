@@ -2,8 +2,8 @@ package me.melontini.andromeda.entity.vehicle.boats;
 
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
-import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -118,7 +118,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName() + "_boat_with_jukebox"));
+        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName().replace(":", "_") + "_boat_with_jukebox"));
     }
 
     @Override
