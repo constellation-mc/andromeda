@@ -187,7 +187,7 @@ public class AndromedaClient implements ClientModInitializer {
             }
         });
 
-        AndromedaAnalytics.handleUpload();
+        AndromedaReporter.handleUpload();
     }
 
     private void inGameTooltips() {

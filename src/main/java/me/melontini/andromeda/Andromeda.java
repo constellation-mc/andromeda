@@ -85,7 +85,7 @@ public class Andromeda implements ModInitializer {
     }
 
     private void initMain() {
-        AndromedaAnalytics.registerCrashHandler();
+        AndromedaReporter.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
         EntityTypeRegistry.register();
