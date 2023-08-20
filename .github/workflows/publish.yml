@@ -42,6 +42,7 @@ jobs:
 
           github-tag: v${{ env.VERSION_PLAIN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-commitish: ${{ github.sha }}
           github-prerelease: false
 
           modrinth-id: TseYlb0f
