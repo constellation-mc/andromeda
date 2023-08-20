@@ -17,7 +17,7 @@ import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.andromeda.util.translations.AndromedaTranslations;
+import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -129,9 +129,9 @@ public class AndromedaClient implements ClientModInitializer {
 
         if (Andromeda.CONFIG.autoUpdateTranslations) {
             boolean shouldUpdate = true;
-            if (Files.exists(AndromedaTranslations.LANG_PATH.resolve("en_us.json"))) {
+            if (Files.exists(TranslationUpdater.LANG_PATH.resolve("en_us.json"))) {
                 try {
-                    FileTime lastModifiedTime = Files.getLastModifiedTime(AndromedaTranslations.LANG_PATH.resolve("en_us.json"));
+                    FileTime lastModifiedTime = Files.getLastModifiedTime(TranslationUpdater.LANG_PATH.resolve("en_us.json"));
                     shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
                 } catch (Exception ignored) {}
             }
@@ -139,9 +139,9 @@ public class AndromedaClient implements ClientModInitializer {
 
             if (shouldUpdate) {
                 Set<String> languages = Sets.newHashSet("en_us");
-                String s = AndromedaTranslations.getSelectedLanguage();
+                String s = TranslationUpdater.getSelectedLanguage();
                 if (!s.isEmpty()) languages.add(s);
-                MessageHandler.EXECUTOR.submit(() -> AndromedaTranslations.downloadTranslations(languages));
+                MessageHandler.EXECUTOR.submit(() -> TranslationUpdater.downloadTranslations(languages));
             } else {
                 AndromedaLog.info("Skipped translations update.");
             }
