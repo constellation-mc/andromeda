@@ -19,6 +19,7 @@ public class AndromedaFeatureManager {
     private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
     private static final Map<Field, String> MODIFIED_FIELDS = new HashMap<>();
     private static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
+    private static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
 
 
     public static void registerProcessor(String id, FeatureProcessor processor) {
@@ -100,16 +101,15 @@ public class AndromedaFeatureManager {
     static {
         //This needs to be here to interact with private fields.
         AndromedaFeatureManager.registerProcessor("mod_json", config -> {
-            Map<String, Object> modJson = new LinkedHashMap<>();
-            FabricLoader.getInstance().getAllMods().stream()
+            if (MOD_JSON.isEmpty()) FabricLoader.getInstance().getAllMods().stream()
                     .filter(mod -> mod.getMetadata().containsCustomValue("andromeda:features"))
-                    .forEach(mod -> parseMetadata(mod, modJson));
-            return modJson;
+                    .forEach(AndromedaFeatureManager::parseMetadata);
+            return MOD_JSON;
         });
         FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
     }
 
-    private static void parseMetadata(ModContainer mod, Map<String, Object> modJson) {
+    private static void parseMetadata(ModContainer mod) {
         CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
         if (customValue.getType() != CustomValue.CvType.OBJECT)
             LOGGER.error("andromeda:features must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
@@ -118,7 +118,7 @@ public class AndromedaFeatureManager {
             for (Map.Entry<String, CustomValue> feature : object) {
                 switch (feature.getValue().getType()) {
                     case BOOLEAN -> {
-                        modJson.put(feature.getKey(), feature.getValue().getAsBoolean());
+                        MOD_JSON.put(feature.getKey(), feature.getValue().getAsBoolean());
                         MOD_BLAME.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
                     }
                     case OBJECT -> {
@@ -130,7 +130,7 @@ public class AndromedaFeatureManager {
                         if (!testModVersion(featureObject, "minecraft", feature.getKey())) continue;
                         if (!testModVersion(featureObject, "andromeda", feature.getKey())) continue;
                         if (featureObject.get("value").getType() == CustomValue.CvType.BOOLEAN) {
-                            modJson.put(feature.getKey(), featureObject.get("value").getAsBoolean());
+                            MOD_JSON.put(feature.getKey(), featureObject.get("value").getAsBoolean());
                             MOD_BLAME.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
                         } else
                             LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
