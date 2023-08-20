@@ -11,7 +11,6 @@ import me.melontini.andromeda.items.minecarts.SpawnerMinecartItem;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.interfaces.DarkMatterEntries;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
@@ -20,10 +19,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Util;
@@ -54,34 +50,34 @@ public class ItemRegistry {
     public static JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
+
     public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
             .itemGroup(ItemGroup.COMBAT).registerCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
+
     public static Item LOCKPICK = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
             .itemGroup(ItemGroup.TOOLS).registerCondition(Andromeda.CONFIG.lockpickEnabled).build();
+
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
-    private static final ItemStack ITEM_GROUP_ICON = Utilities.supply(() -> {
-        if (Andromeda.CONFIG.unknown) {
-            return new ItemStack(ROSE_OF_THE_VALLEY);
-        }
-        if (Andromeda.CONFIG.incubatorSettings.enableIncubator) {
-            return new ItemStack(INCUBATOR);
-        }
-        return new ItemStack(SPAWNER_MINECART);
-    });
+
+    private static ItemStack ITEM_GROUP_ICON;
+
     public static ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(new Identifier(MODID, "group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
-                if (Andromeda.CONFIG.incubatorSettings.enableIncubator) misc.add(ItemRegistry.INCUBATOR.getDefaultStack());
-                if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem) misc.add(ItemRegistry.INFINITE_TOTEM.getDefaultStack());
+                if (Andromeda.CONFIG.incubatorSettings.enableIncubator && ItemRegistry.INCUBATOR != null)
+                    misc.add(ItemRegistry.INCUBATOR.getDefaultStack());
+                if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem && ItemRegistry.INFINITE_TOTEM != null)
+                    misc.add(ItemRegistry.INFINITE_TOTEM.getDefaultStack());
                 appendStacks(entries, misc, true);
 
                 List<ItemStack> carts = new ArrayList<>();
-                if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn) carts.add(ItemRegistry.ANVIL_MINECART.getDefaultStack());
-                if (Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn)
+                if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn && ItemRegistry.ANVIL_MINECART != null)
+                    carts.add(ItemRegistry.ANVIL_MINECART.getDefaultStack());
+                if (Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn && ItemRegistry.JUKEBOX_MINECART != null)
                     carts.add(ItemRegistry.JUKEBOX_MINECART.getDefaultStack());
-                if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn)
+                if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn && ItemRegistry.NOTE_BLOCK_MINECART != null)
                     carts.add(ItemRegistry.NOTE_BLOCK_MINECART.getDefaultStack());
                 carts.add(ItemRegistry.SPAWNER_MINECART.getDefaultStack());
                 appendStacks(entries, carts, true);
@@ -98,7 +94,7 @@ public class ItemRegistry {
                         boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper")).getDefaultStack());
                 }
                 appendStacks(entries, boats, false);
-            }).icon(() -> ITEM_GROUP_ICON).animatedIcon(() -> (matrixStack, itemX, itemY, selected, isTopRow) -> {
+            }).icon(ItemRegistry::getAndSetIcon).animatedIcon(() -> (matrixStack, itemX, itemY, selected, isTopRow) -> {
                 MinecraftClient client = MinecraftClient.getInstance();
 
                 float angle = Util.getMeasuringTimeMs() * 0.09f;
@@ -108,8 +104,8 @@ public class ItemRegistry {
                 matrixStack.scale(1.0F, -1.0F, 1.0F);
                 matrixStack.scale(16.0F, 16.0F, 16.0F);
                 matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(angle));
-                BakedModel model = client.getItemRenderer().getModel(ITEM_GROUP_ICON, null, null, 0);
-                DrawUtil.renderGuiItemModelCustomMatrixNoTransform(matrixStack, ITEM_GROUP_ICON, model);
+                BakedModel model = client.getItemRenderer().getModel(getAndSetIcon(), null, null, 0);
+                DrawUtil.renderGuiItemModelCustomMatrixNoTransform(matrixStack, getAndSetIcon(), model);
                 matrixStack.pop();
             }).displayName(AndromedaTexts.ITEM_GROUP_NAME).build();
 
@@ -138,5 +134,19 @@ public class ItemRegistry {
             entries.add(ItemStack.EMPTY, DarkMatterEntries.Visibility.TAB); //fill the gaps
         }
         if (lineBreak) entries.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY), DarkMatterEntries.Visibility.TAB); //line break
+    }
+
+    private static ItemStack getAndSetIcon() {
+        if (ITEM_GROUP_ICON == null) {
+            if (Andromeda.CONFIG.unknown && ROSE_OF_THE_VALLEY != null) {
+                ITEM_GROUP_ICON = new ItemStack(ROSE_OF_THE_VALLEY);
+            } else if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem && INFINITE_TOTEM != null) {
+                ITEM_GROUP_ICON = new ItemStack(INFINITE_TOTEM);
+            } else if (Andromeda.CONFIG.incubatorSettings.enableIncubator && INCUBATOR != null) {
+                ITEM_GROUP_ICON = new ItemStack(INCUBATOR);
+            } else ITEM_GROUP_ICON = new ItemStack(Items.BEDROCK);
+        }
+
+        return ITEM_GROUP_ICON;
     }
 }

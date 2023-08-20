@@ -1,6 +1,8 @@
 package me.melontini.andromeda.config;
 
 import com.google.common.collect.Lists;
+import me.melontini.andromeda.util.annotations.config.Environment;
+import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -16,6 +18,7 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip(count = 2)
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.SERVER)
     public SelfPlanting autoPlanting = new SelfPlanting();
 
     public static class SelfPlanting {
@@ -33,52 +36,63 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip(count = 2)
+    @FeatureEnvironment(Environment.SERVER)
     public boolean canBeeNestsFall = true;
 
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public boolean temperatureBasedCropGrowthSpeed = false;
 
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public boolean quickFire = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
     @ConfigEntry.Gui.RequiresRestart
-    public boolean cactusBottleFilling = true;
+    @FeatureEnvironment(Environment.BOTH)
+    public boolean cactusBottleFilling = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 3)
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.BOTH)
     public IncubatorSettings incubatorSettings = new IncubatorSettings();
 
     public static class IncubatorSettings {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean enableIncubator = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean enableIncubator = false;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.SERVER)
         public boolean incubatorRandomness = true;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.SERVER)
         public boolean incubatorRecipe = true; //Used in JSON
     }
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip()
     @ConfigEntry.Gui.RequiresRestart
-    public boolean usefulFletching = true;
+    @FeatureEnvironment(Environment.BOTH)
+    public boolean usefulFletching = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
+    @FeatureEnvironment(Environment.SERVER)
     public boolean bedsExplodeEverywhere = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public float bedExplosionPower = 5.0F;
 
     @ConfigEntry.Category("blocks")
@@ -87,11 +101,13 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
+    @FeatureEnvironment(Environment.SERVER)
     public boolean leafSlowdown = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.SERVER)
     public CampfireTweaks campfireTweaks = new CampfireTweaks();
 
     public static class CampfireTweaks {
@@ -108,16 +124,28 @@ public class AndromedaConfig implements ConfigData {
         public int campfireEffectsRange = 10;
 
         @ConfigEntry.Category("blocks")
-        @ConfigEntry.Gui.Tooltip(count = 2)
-        public List<String> campfireEffectsList = Arrays.asList("minecraft:regeneration");
+        public List<Effect> effectList = Arrays.asList(new Effect());
 
-        @ConfigEntry.Category("blocks")
-        @ConfigEntry.Gui.Tooltip
-        public List<Integer> campfireEffectsAmplifierList = Arrays.asList(0);
+        public static class Effect {
+
+            public String identifier;
+            public int amplifier;
+
+            public Effect(String identifier, int amplifier) {
+                this.identifier = identifier;
+                this.amplifier = amplifier;
+            }
+
+            public Effect() {
+                this.identifier = "minecraft:regeneration";
+                this.amplifier = 0;
+            }
+        }
     }
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.SERVER)
     public Snowballs snowballs = new Snowballs();
 
     public static class Snowballs {
@@ -139,6 +167,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.SERVER)
     public Slimes slimes = new Slimes();
 
     public static class Slimes {
@@ -162,27 +191,33 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip(count = 2)
+    @FeatureEnvironment(Environment.SERVER)
     public boolean beeFlowerDuplication = true;
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public boolean beeTallFlowerDuplication = true;
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
+    @FeatureEnvironment(Environment.SERVER)
     public boolean villagersFollowEmeraldBlocks = false;
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip(count = 3)
+    @FeatureEnvironment(Environment.SERVER)
     public boolean betterFurnaceMinecart = true;
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip()
+    @FeatureEnvironment(Environment.SERVER)
     public int maxFurnaceMinecartFuel = 45000;
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip(count = 3)
+    @FeatureEnvironment(Environment.SERVER)
     public boolean furnaceMinecartTakeFuelWhenLow = true;
 
     @ConfigEntry.Category("entities")
@@ -194,17 +229,20 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isAnvilMinecartOn = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isAnvilMinecartOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isNoteBlockMinecartOn = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isNoteBlockMinecartOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isJukeboxMinecartOn = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isJukeboxMinecartOn = false;
     }
 
     @ConfigEntry.Category("entities")
@@ -216,45 +254,54 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isFurnaceBoatOn = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isFurnaceBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isTNTBoatOn = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isTNTBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isJukeboxBoatOn = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isJukeboxBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isHopperBoatOn = true;
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isHopperBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
+        @FeatureEnvironment(Environment.BOTH)
         public boolean isChestBoatOn = true;
     }
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.CLIENT)
     public Tooltips tooltips = new Tooltips();
 
     public static class Tooltips {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.CLIENT)
         public boolean clock = true;
 
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.CLIENT)
         public boolean compass = true;
     }
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.RequiresRestart
+    @FeatureEnvironment(Environment.BOTH)
     public boolean lockpickEnabled = false;
 
     @ConfigEntry.Category("items")
@@ -278,6 +325,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean slightlyBetterItemNames = false;
 
     @ConfigEntry.Category("items")
@@ -289,6 +337,7 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
+        @FeatureEnvironment(Environment.BOTH)
         public boolean enableInfiniteTotem = false;
 
         @ConfigEntry.Category("items")
@@ -298,6 +347,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip(count = 4)
+    @FeatureEnvironment(Environment.BOTH)
     public boolean balancedMending = false;
 
     @ConfigEntry.Category("items")
@@ -306,18 +356,22 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip(count = 2)
-    public boolean minecartSpawnerPicking = true;
+    @FeatureEnvironment(Environment.BOTH)
+    public boolean minecartSpawnerPicking = false;
 
     @ConfigEntry.Category("bugfixes")
     @ConfigEntry.Gui.Tooltip(count = 2)
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean frameIndependentAdvancementShadow = true;
 
     @ConfigEntry.Category("bugfixes")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean properlyAlignedRecipeAlternatives = true;
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public boolean villagerGifting = false;
 
     @ConfigEntry.Category("mechanics")
@@ -343,6 +397,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.BOTH)
     public boolean throwableItems = true;
 
     @ConfigEntry.Category("mechanics")
@@ -351,15 +406,18 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean tooltipNotName = false;
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean noMoreAdventure = false;
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.CLIENT)
     public GuiParticles guiParticles = new GuiParticles();
 
     public static class GuiParticles {
@@ -384,19 +442,23 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("gui")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean itemFrameTooltips = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public boolean damageBackport = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.CollapsibleObject
+    @FeatureEnvironment(Environment.SERVER)
     public AutoGenRecipes autogenRecipeAdvancements = new AutoGenRecipes();
 
     public static class AutoGenRecipes {
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.SERVER)
         public boolean autogenRecipeAdvancements = true;
 
         @ConfigEntry.Category("misc")
@@ -418,6 +480,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.BOTH)
     public boolean minorInconvenience = false;
 
     @ConfigEntry.Category("misc")
@@ -427,11 +490,13 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip()
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean autoUpdateTranslations = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip(count = 2)
     @ConfigEntry.Gui.RequiresRestart
+    @FeatureEnvironment(Environment.CLIENT)
     public boolean sendOptionalData = true;
 
     @ConfigEntry.Category("misc")
@@ -449,5 +514,6 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.RequiresRestart
+    @FeatureEnvironment(Environment.BOTH)
     public boolean unknown = false;
 }

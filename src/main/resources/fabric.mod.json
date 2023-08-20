@@ -20,9 +20,6 @@
   "environment": "*",
   "accessWidener" : "andromeda.accesswidener",
   "entrypoints": {
-    "preLaunch": [
-      "me.melontini.andromeda.util.AndromedaPreLaunch"
-    ],
     "client": [
       "me.melontini.andromeda.client.AndromedaClient"
     ],

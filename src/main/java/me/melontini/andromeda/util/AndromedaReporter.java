@@ -9,15 +9,14 @@ import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
-import org.spongepowered.asm.service.MixinService;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 
-public class AndromedaAnalytics {
+public class AndromedaReporter {
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
     private static final MixpanelHandler HANDLER = MixpanelAnalytics.init(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
 
@@ -29,11 +28,7 @@ public class AndromedaAnalytics {
                         JsonObject object = new JsonObject();
                         object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
                         object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
-                        object.addProperty("modloader", Utilities.supply(() -> {
-                            String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
-                            if (sn.isEmpty()) return "Other";
-                            return sn;
-                        }));
+                        object.addProperty("modloader", StringUtils.capitalize(SharedConstants.PLATFORM.name().toLowerCase()));
                         AndromedaLog.info("Uploading optional data.: " + object);
                         messageBuilder.set(Analytics.getUUIDString(), object);
                     });

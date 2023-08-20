@@ -33,7 +33,7 @@ public class DyeParticle extends AbstractScreenParticle {
     }
 
     @Override
-    protected void tickLogic() {
+    protected void tick() {
         int window = Math.max(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
         oldScale = scale;
         scale = MathHelper.lerp(0.15f, scale, window / 25f);
