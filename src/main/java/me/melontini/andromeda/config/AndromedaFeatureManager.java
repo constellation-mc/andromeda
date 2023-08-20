@@ -1,12 +1,12 @@
 package me.melontini.andromeda.config;
 
+import me.melontini.andromeda.util.ConfigHelper;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,22 +65,9 @@ public class AndromedaFeatureManager {
         for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
             String configOption = configEntry.getKey();
             try {
-                if (configOption.contains(".")) {
-                    String[] fields = configOption.split("\\.");
-                    Object obj = config.getClass().getField(fields[0]).get(config);
-                    for (int i = 1; i < fields.length - 1; i++) {
-                        obj = FieldUtils.readField(obj, fields[i], true);
-                    }
-                    Field field = obj.getClass().getField(fields[fields.length - 1]);
-                    FieldUtils.writeField(field, obj, configEntry.getValue());
-                    MODIFIED_FIELDS.put(field, processor);
-                    FIELD_TO_STRING.putIfAbsent(field, configOption);
-                } else {
-                    Field field = config.getClass().getField(configOption);
-                    FieldUtils.writeField(field, config, configEntry.getValue());
-                    MODIFIED_FIELDS.put(field, processor);
-                    FIELD_TO_STRING.putIfAbsent(field, configOption);
-                }
+                Field f = ConfigHelper.setConfigOption(configOption, config, configEntry.getValue());
+                MODIFIED_FIELDS.put(f, processor);
+                FIELD_TO_STRING.putIfAbsent(f, configOption);
             } catch (NoSuchFieldException e) {
                 skipped.add(configOption);
             } catch (IllegalAccessException e) {
