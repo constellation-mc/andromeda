@@ -15,37 +15,37 @@ import java.util.*;
 
 public class AndromedaFeatureManager {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
-    private static final Map<String, FeatureProcessor> processors = new LinkedHashMap<>(5);
-    private static final Map<String, Set<String>> modBlame = new HashMap<>();
-    private static final Map<Field, String> modifiedFields = new HashMap<>();
-    private static final Map<Field, String> fieldToString = new HashMap<>();
+    private static final Map<String, FeatureProcessor> PROCESSORS = new LinkedHashMap<>(5);
+    private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
+    private static final Map<Field, String> MODIFIED_FIELDS = new HashMap<>();
+    private static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
 
 
     public static void registerProcessor(String id, FeatureProcessor processor) {
-        processors.putIfAbsent(id, processor);
+        PROCESSORS.putIfAbsent(id, processor);
     }
 
     public static void unregisterProcessor(String id) {
-        processors.remove(id);
+        PROCESSORS.remove(id);
     }
 
     public static boolean isModified(Field field) {
-        return modifiedFields.containsKey(field);
+        return MODIFIED_FIELDS.containsKey(field);
     }
 
     public static String blameProcessor(Field field) {
-        return modifiedFields.get(field);
+        return MODIFIED_FIELDS.get(field);
     }
 
     public static String[] blameMod(Field feature) {
-        return modBlame.get(fieldToString.get(feature)).stream().sorted(String::compareToIgnoreCase).toArray(String[]::new);
+        return MOD_BLAME.get(FIELD_TO_STRING.get(feature)).stream().sorted(String::compareToIgnoreCase).toArray(String[]::new);
     }
 
     public static void processFeatures(AndromedaConfig config) {
-        modifiedFields.clear();
+        MODIFIED_FIELDS.clear();
         if (!config.enableFeatureManager) return;
 
-        for (Map.Entry<String, FeatureProcessor> entry : processors.entrySet()) {
+        for (Map.Entry<String, FeatureProcessor> entry : PROCESSORS.entrySet()) {
             Map<String, Object> featureConfigEntry = entry.getValue().process(config);
             if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
 
@@ -72,13 +72,13 @@ public class AndromedaFeatureManager {
                     }
                     Field field = obj.getClass().getField(fields[fields.length - 1]);
                     FieldUtils.writeField(field, obj, configEntry.getValue());
-                    modifiedFields.put(field, processor);
-                    fieldToString.putIfAbsent(field, configOption);
+                    MODIFIED_FIELDS.put(field, processor);
+                    FIELD_TO_STRING.putIfAbsent(field, configOption);
                 } else {
                     Field field = config.getClass().getField(configOption);
                     FieldUtils.writeField(field, config, configEntry.getValue());
-                    modifiedFields.put(field, processor);
-                    fieldToString.putIfAbsent(field, configOption);
+                    MODIFIED_FIELDS.put(field, processor);
+                    FIELD_TO_STRING.putIfAbsent(field, configOption);
                 }
             } catch (NoSuchFieldException e) {
                 skipped.add(configOption);
@@ -119,7 +119,7 @@ public class AndromedaFeatureManager {
                 switch (feature.getValue().getType()) {
                     case BOOLEAN -> {
                         modJson.put(feature.getKey(), feature.getValue().getAsBoolean());
-                        modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
+                        MOD_BLAME.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
                     }
                     case OBJECT -> {
                         CustomValue.CvObject featureObject = feature.getValue().getAsObject();
@@ -131,7 +131,7 @@ public class AndromedaFeatureManager {
                         if (!testModVersion(featureObject, "andromeda", feature.getKey())) continue;
                         if (featureObject.get("value").getType() == CustomValue.CvType.BOOLEAN) {
                             modJson.put(feature.getKey(), featureObject.get("value").getAsBoolean());
-                            modBlame.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
+                            MOD_BLAME.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
                         } else
                             LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
                     }
