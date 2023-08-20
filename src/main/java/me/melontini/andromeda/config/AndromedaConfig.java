@@ -50,7 +50,7 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
     @ConfigEntry.Gui.RequiresRestart
-    public boolean cactusBottleFilling = true;
+    public boolean cactusBottleFilling = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 3)
