@@ -96,9 +96,9 @@ public class AndromedaClient implements ClientModInitializer {
             initClient();
         } catch (Exception e) {
             String cause = CauseFinder.findCause(e);
-            if ("andromeda".equalsIgnoreCase(cause) || "dark-matter".equalsIgnoreCase(cause)) {
+            if ("andromeda".equalsIgnoreCase(cause)) {
                 throw new AndromedaException(true, "Failed to initialize Andromeda. Please report this to: " + FabricLoader.getInstance().getModContainer("andromeda").orElseThrow().getMetadata().getContact().get("issues"), e);
-            } else if (cause != null && !cause.isBlank()) {
+            } else {
                 Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(cause);
                 if (mod.isPresent()) {
                     if (mod.get().getMetadata().getContact().asMap().containsKey("issues")) {
