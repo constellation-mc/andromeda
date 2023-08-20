@@ -61,7 +61,7 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean enableIncubator = true;
+        public boolean enableIncubator = false;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
@@ -75,7 +75,7 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip()
     @ConfigEntry.Gui.RequiresRestart
-    public boolean usefulFletching = true;
+    public boolean usefulFletching = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
@@ -209,17 +209,17 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isAnvilMinecartOn = true;
+        public boolean isAnvilMinecartOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isNoteBlockMinecartOn = true;
+        public boolean isNoteBlockMinecartOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isJukeboxMinecartOn = true;
+        public boolean isJukeboxMinecartOn = false;
     }
 
     @ConfigEntry.Category("entities")
@@ -231,22 +231,22 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isFurnaceBoatOn = true;
+        public boolean isFurnaceBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isTNTBoatOn = true;
+        public boolean isTNTBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isJukeboxBoatOn = true;
+        public boolean isJukeboxBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
-        public boolean isHopperBoatOn = true;
+        public boolean isHopperBoatOn = false;
     }
 
     @ConfigEntry.Category("items")
