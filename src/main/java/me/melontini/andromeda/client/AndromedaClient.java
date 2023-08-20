@@ -15,7 +15,10 @@ import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
-import me.melontini.andromeda.util.*;
+import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.AndromedaReporter;
+import me.melontini.andromeda.util.CauseFinder;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
@@ -224,7 +227,7 @@ public class AndromedaClient implements ClientModInitializer {
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
                     var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(frameStack);
-                    list.add(AndromedaTexts.ITEM_IN_FRAME);
+                    //list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
                     frameStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
