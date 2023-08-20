@@ -375,6 +375,7 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public boolean villagerGifting = false;
 
     @ConfigEntry.Category("mechanics")
