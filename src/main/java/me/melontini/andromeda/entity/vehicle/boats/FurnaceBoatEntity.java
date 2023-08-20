@@ -88,7 +88,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName() + "_boat_with_furnace"));
+        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName().replace(":", "_") + "_boat_with_furnace"));
     }
 
     public int getFuel() {

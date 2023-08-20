@@ -122,7 +122,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName() + "_boat_with_tnt"));
+        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName().replace(":", "_") + "_boat_with_tnt"));
     }
 
     @Override

@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-public class AndromedaTranslations {
+public class TranslationUpdater {
     public static final Path TRANSLATION_PACK = SharedConstants.HIDDEN_PATH.resolve("andromeda_translations");
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
     private static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");

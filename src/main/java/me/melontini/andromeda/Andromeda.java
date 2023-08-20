@@ -5,12 +5,10 @@ import me.melontini.andromeda.config.AndromedaFeatureManager;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.*;
-import me.melontini.andromeda.util.AdvancementGeneration;
-import me.melontini.andromeda.util.AndromedaAnalytics;
-import me.melontini.andromeda.util.SharedConstants;
-import me.melontini.andromeda.util.WorldUtil;
+import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
@@ -19,11 +17,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.registry.Registries;
@@ -37,6 +35,7 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Andromeda implements ModInitializer {
@@ -59,7 +58,27 @@ public class Andromeda implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        AndromedaAnalytics.registerCrashHandler();
+        try {
+            initMain();
+        } catch (Exception e) {
+            String cause = CauseFinder.findCause(e);
+            if ("andromeda".equalsIgnoreCase(cause) || "dark-matter".equalsIgnoreCase(cause)) {
+                throw new AndromedaException(true, "Failed to initialize Andromeda. Please report this to: " + FabricLoader.getInstance().getModContainer("andromeda").orElseThrow().getMetadata().getContact().get("issues"), e);
+            } else if (cause != null && !cause.isBlank()) {
+                Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(cause);
+                if (mod.isPresent()) {
+                    if (mod.get().getMetadata().getContact().asMap().containsKey("issues")) {
+                        throw new AndromedaException(false, "Failed to initialize Andromeda due to errors provided by: " + cause + ".\n Please report this to: " + mod.get().getMetadata().getContact().get("issues"), e);
+                    }
+                    throw new AndromedaException(false, "Failed to initialize Andromeda due to errors provided by:" + cause, e);
+                }
+            }
+            throw new AndromedaException(true, "Failed to initialize Andromeda.", e);
+        }
+    }
+
+    private void initMain() {
+        AndromedaReporter.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
         EntityTypeRegistry.register();

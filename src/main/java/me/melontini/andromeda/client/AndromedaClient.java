@@ -15,11 +15,13 @@ import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
-import me.melontini.andromeda.util.AndromedaAnalytics;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.andromeda.util.AndromedaReporter;
+import me.melontini.andromeda.util.CauseFinder;
 import me.melontini.andromeda.util.SharedConstants;
-import me.melontini.andromeda.util.translations.AndromedaTranslations;
+import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -43,6 +45,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.client.MinecraftClient;
@@ -65,6 +68,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
@@ -90,6 +94,26 @@ public class AndromedaClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        try {
+            initClient();
+        } catch (Exception e) {
+            String cause = CauseFinder.findCause(e);
+            if ("andromeda".equalsIgnoreCase(cause) || "dark-matter".equalsIgnoreCase(cause)) {
+                throw new AndromedaException(true, "Failed to initialize Andromeda. Please report this to: " + FabricLoader.getInstance().getModContainer("andromeda").orElseThrow().getMetadata().getContact().get("issues"), e);
+            } else if (cause != null && !cause.isBlank()) {
+                Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(cause);
+                if (mod.isPresent()) {
+                    if (mod.get().getMetadata().getContact().asMap().containsKey("issues")) {
+                        throw new AndromedaException(false, "Failed to initialize Andromeda due to errors provided by: " + cause + ".\n Please report this to: " + mod.get().getMetadata().getContact().get("issues"), e);
+                    }
+                    throw new AndromedaException(false, "Failed to initialize Andromeda due to errors provided by:" + cause, e);
+                }
+            }
+            throw new AndromedaException(true, "Failed to initialize Andromeda.", e);
+        }
+    }
+
+    private void initClient() {
         GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
                 list.stream().peek(gui -> {
@@ -110,11 +134,29 @@ public class AndromedaClient implements ClientModInitializer {
             return list;
         }, field -> Andromeda.CONFIG.compatMode);
 
+        registry.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+            list.forEach(gui -> {
+                if (gui instanceof TooltipListEntry<?> tooltipGui) {
+                    FeatureEnvironment environment = field.getAnnotation(FeatureEnvironment.class);
+
+                    if (tooltipGui.getTooltipSupplier() != null) {
+                        Optional<Text[]> optional = tooltipGui.getTooltipSupplier().get();
+                        Text[] text = optional.map(texts -> ArrayUtils.add(texts, TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase()))).orElseGet(() -> new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())});
+                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
+                    } else {
+                        Text[] text = new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())};
+                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
+                    }
+                }
+            });
+            return list;
+        }, FeatureEnvironment.class);
+
         if (Andromeda.CONFIG.autoUpdateTranslations) {
             boolean shouldUpdate = true;
-            if (Files.exists(AndromedaTranslations.LANG_PATH.resolve("en_us.json"))) {
+            if (Files.exists(TranslationUpdater.LANG_PATH.resolve("en_us.json"))) {
                 try {
-                    FileTime lastModifiedTime = Files.getLastModifiedTime(AndromedaTranslations.LANG_PATH.resolve("en_us.json"));
+                    FileTime lastModifiedTime = Files.getLastModifiedTime(TranslationUpdater.LANG_PATH.resolve("en_us.json"));
                     shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
                 } catch (Exception ignored) {}
             }
@@ -122,9 +164,9 @@ public class AndromedaClient implements ClientModInitializer {
 
             if (shouldUpdate) {
                 Set<String> languages = Sets.newHashSet("en_us");
-                String s = AndromedaTranslations.getSelectedLanguage();
+                String s = TranslationUpdater.getSelectedLanguage();
                 if (!s.isEmpty()) languages.add(s);
-                MessageHandler.EXECUTOR.submit(() -> AndromedaTranslations.downloadTranslations(languages));
+                MessageHandler.EXECUTOR.submit(() -> TranslationUpdater.downloadTranslations(languages));
             } else {
                 AndromedaLog.info("Skipped translations update.");
             }
@@ -170,7 +212,7 @@ public class AndromedaClient implements ClientModInitializer {
             }
         });
 
-        AndromedaAnalytics.handleUpload();
+        AndromedaReporter.handleUpload();
     }
 
     private void inGameTooltips() {
@@ -188,7 +230,7 @@ public class AndromedaClient implements ClientModInitializer {
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
                     var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), frameStack);
-                    list.add(AndromedaTexts.ITEM_IN_FRAME);
+                    //list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
                     frameStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
