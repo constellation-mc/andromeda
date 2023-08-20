@@ -17,10 +17,8 @@ import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.CauseFinder;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
-import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -45,7 +43,6 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.client.MinecraftClient;
@@ -92,26 +89,6 @@ public class AndromedaClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        try {
-            initClient();
-        } catch (Exception e) {
-            String cause = CauseFinder.findCause(e);
-            if ("andromeda".equalsIgnoreCase(cause)) {
-                throw new AndromedaException(true, "Failed to initialize Andromeda. Please report this to: " + FabricLoader.getInstance().getModContainer("andromeda").orElseThrow().getMetadata().getContact().get("issues"), e);
-            } else {
-                Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(cause);
-                if (mod.isPresent()) {
-                    if (mod.get().getMetadata().getContact().asMap().containsKey("issues")) {
-                        throw new AndromedaException(false, "Failed to initialize Andromeda due to errors provided by: " + cause + ".\n Please report this to: " + mod.get().getMetadata().getContact().get("issues"), e);
-                    }
-                    throw new AndromedaException(false, "Failed to initialize Andromeda due to errors provided by:" + cause, e);
-                }
-            }
-            throw new AndromedaException(true, "Failed to initialize Andromeda.", e);
-        }
-    }
-
-    private void initClient() {
         GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
                 list.stream().peek(gui -> {
