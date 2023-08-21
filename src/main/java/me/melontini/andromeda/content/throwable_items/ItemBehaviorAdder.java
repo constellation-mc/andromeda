@@ -221,6 +221,7 @@ public class ItemBehaviorAdder {
                 } else if (hitResult.getType() == HitResult.Type.ENTITY) {
                     EntityHitResult result = (EntityHitResult) hitResult;
                     Entity entity = result.getEntity();
+                    if (entity instanceof LivingEntity livingEntity) livingEntity.takeKnockback(0.4, -flyingItemEntity.getVelocity().getX(), -flyingItemEntity.getVelocity().getZ());
                     entity.setOnFireFor(8);
                     Random random = world.getRandom();
                     world.playSound(null, flyingItemEntity.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
