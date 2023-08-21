@@ -17,7 +17,6 @@
     "blocks.falling_propagule.PropaguleBlockMixin",
     "blocks.leaf_tweak.EntityMixin",
     "entities.baiting_villagers.VillagerEntityMixin",
-    "entities.boat_impl.BoatEntityMixin",
     "entities.flower_duplication.BeeEntityMixin",
     "entities.flower_duplication.BoneMealItemMixin",
     "entities.furnace_minecart.FurnaceMinecartIntakeMixin",
