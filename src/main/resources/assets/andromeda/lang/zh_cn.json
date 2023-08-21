@@ -18,6 +18,10 @@
   "andromeda.config.tooltip.manager.iceberg": "与低于1.1.13版本的Iceberg前置冲突。",
   "andromeda.config.tooltip.manager.mod_json": "由%s设定",
 
+  "andromeda.config.tooltip.environment.client": "仅客户端特性",
+  "andromeda.config.tooltip.environment.server": "仅服务端特性。",
+  "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步开启。",
+
   "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
   "commands.andromeda.damage.success": "已将%s伤害施加于%s",
 
@@ -92,6 +96,10 @@
 
   "text.autoconfig.andromeda.title": "群星模组配置",
 
+  "text.autoconfig.andromeda.option.Effect": "状态效果",
+  "text.autoconfig.andromeda.option.Effect.identifier": "名称",
+  "text.autoconfig.andromeda.option.Effect.amplifier": "倍率",
+  
   "text.autoconfig.andromeda.category.world": "世界",
   "text.autoconfig.andromeda.option.autoPlanting": "自种植作物",
   "text.autoconfig.andromeda.option.autoPlanting.@Tooltip[0]": "作物将尝试在一段时间后种植自身。",
@@ -145,6 +153,7 @@
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive": "友善生物治愈",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive.@Tooltip": "若关闭，治愈效果将仅作用于玩家",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList": "你想要生效的药水效果列表",
+  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList": "将你希望能给予的效果列在这里",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[0]": "将药水名称列在此处！",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[1]": "此值可大于1。",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsAmplifierList": "效果等级",
