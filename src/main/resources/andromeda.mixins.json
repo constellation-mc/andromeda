@@ -22,7 +22,7 @@
     "entities.flower_duplication.BoneMealItemMixin",
     "entities.furnace_minecart.FurnaceMinecartIntakeMixin",
     "entities.furnace_minecart.FurnaceMinecartMixin",
-    "entities.slimes.flee.FaceTowardTargetGoalMixin",
+    "entities.slimes.flee.MobEntityMixin",
     "entities.slimes.merge.SlimeEntityMixin",
     "entities.slimes.slowness.SlimeEntityMixin",
     "entities.snowball_tweaks.cooldown.SnowballItemMixin",
