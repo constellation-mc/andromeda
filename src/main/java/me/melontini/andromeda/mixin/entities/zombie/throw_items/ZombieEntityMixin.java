@@ -36,7 +36,7 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
     private void initCustomGoals(CallbackInfo ci) {
         if (Andromeda.CONFIG.newThrowableItems.enable &&
                 Andromeda.CONFIG.newThrowableItems.canZombiesThrowItems)
-            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Andromeda.CONFIG.newThrowableItems.zombieThrowInterval, 16));
+            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Andromeda.CONFIG.newThrowableItems.zombieThrowInterval, 4, 16));
     }
 
     @Override

@@ -16,6 +16,7 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     private final double mobSpeed;
     private final int minInterval;
     private final int maxInterval;
+    private final float minRange;
     private final float range;
     private final float rangeSquared;
     private LivingEntity target;
@@ -23,15 +24,20 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     private int updateCountdownTicks;
 
     public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int intervalTicks, float range) {
-        this(mob, mobSpeed, intervalTicks, intervalTicks, range);
+        this(mob, mobSpeed, intervalTicks, intervalTicks, 0, range);
     }
 
-    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int minInterval, int maxInterval, float range) {
+    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int intervalTicks, float minRange, float range) {
+        this(mob, mobSpeed, intervalTicks, intervalTicks, minRange, range);
+    }
+
+    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int minInterval, int maxInterval, float minRange, float range) {
         this.owner = mob;
         this.mob = (MobEntity) mob;
         this.mobSpeed = mobSpeed;
         this.minInterval = minInterval;
         this.maxInterval = maxInterval;
+        this.minRange = minRange;
         this.range = range;
         this.rangeSquared = range * range;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
@@ -41,9 +47,12 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     public boolean canStart() {
         if (ItemBehaviorManager.hasBehaviors(this.mob.getMainHandStack().getItem())) {
             LivingEntity livingEntity = this.mob.getTarget();
-            if (livingEntity != null && livingEntity.isAlive() && livingEntity.distanceTo(this.mob) <= this.range) {
-                this.target = livingEntity;
-                return true;
+            if (livingEntity != null && livingEntity.isAlive() ) {
+                double d = this.mob.distanceTo(livingEntity);
+                if (d <= this.range && d >= this.minRange) {
+                    this.target = livingEntity;
+                    return true;
+                }
             }
         }
         return false;
