@@ -429,7 +429,7 @@ public class AndromedaConfig implements ConfigData {
         public int zombieThrowInterval = 40;
 
         @ConfigEntry.Category("mechanics")
-        @ConfigEntry.Gui.Tooltip
+        @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean preventUselessItems = true;
 
     }
