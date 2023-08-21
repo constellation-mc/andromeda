@@ -153,7 +153,7 @@
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive": "友善生物治愈",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive.@Tooltip": "若关闭，治愈效果将仅作用于玩家",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList": "你想要生效的药水效果列表",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList": "将你希望能给予的效果列在这里",
+  "text.autoconfig.andromeda.option.campfireTweaks.effectList": "将你希望能给予的效果列在这里",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[0]": "将药水名称列在此处！",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[1]": "此值可大于1。",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsAmplifierList": "效果等级",
