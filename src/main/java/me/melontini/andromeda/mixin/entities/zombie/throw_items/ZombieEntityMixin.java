@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ZombieEntity.class)
-@MixinRelatedConfigOption({"throwableItems.enable", "canZombiesThrowItems"})
+@MixinRelatedConfigOption({"newThrowableItems.enable", "newThrowableItems.canZombiesThrowItems"})
 public abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
 
     protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
