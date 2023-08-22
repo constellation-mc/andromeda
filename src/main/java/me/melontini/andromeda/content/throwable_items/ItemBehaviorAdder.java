@@ -1,6 +1,7 @@
 package me.melontini.andromeda.content.throwable_items;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.api.ItemBehaviors;
 import me.melontini.andromeda.entity.FlyingItemEntity;
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
@@ -56,7 +57,7 @@ public class ItemBehaviorAdder {
             Items.LIME_DYE, Items.MAGENTA_DYE, Items.LIGHT_GRAY_DYE,
             Items.GRAY_DYE);
 
-    public static ItemBehavior dataPack(ItemBehaviorData data) {
+    public static ItemBehaviors.Behavior dataPack(ItemBehaviorData data) {
         return (stack, flyingItemEntity, world, user, hitResult) -> {//default behavior to handle datapacks
             if (!world.isClient()) {
                 ServerWorld serverWorld = (ServerWorld) world;
@@ -292,11 +293,11 @@ public class ItemBehaviorAdder {
         sendParticlePacket(flyingItemEntity, pos, true, stack, colored, color);
     }
 
-    public static void addBehavior(Item item, ItemBehavior behavior) {
+    public static void addBehavior(Item item, ItemBehaviors.Behavior behavior) {
         ItemBehaviorManager.addBehavior(item, behavior);
     }
 
-    public static void addBehavior(ItemBehavior behavior, Item... items) {
+    public static void addBehavior(ItemBehaviors.Behavior behavior, Item... items) {
         ItemBehaviorManager.addBehaviors(behavior, items);
     }
 
