@@ -19,13 +19,11 @@ import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
@@ -40,6 +38,7 @@ import net.minecraft.client.gui.screen.ingame.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.MinecartEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -60,18 +59,24 @@ import java.util.stream.Collectors;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 @Environment(EnvType.CLIENT)
-public class AndromedaClient implements ClientModInitializer {
+public class AndromedaClient {
 
-    public static final Identifier WIKI_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/wiki_button.png");
-    public static final Style WIKI_LINK = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
+    private static AndromedaClient INSTANCE;
 
-    public static String DEBUG_SPLASH;
+    public final Identifier WIKI_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/wiki_button.png");
+    public final Style WIKI_LINK = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
 
-    private static ItemStack frameStack = ItemStack.EMPTY;
+    public String DEBUG_SPLASH;
+
+    private ItemStack frameStack = ItemStack.EMPTY;
     private float tooltipFlow;
     private float oldTooltipFlow;
 
-    @Override
+    public static void init() {
+        INSTANCE = new AndromedaClient();
+        INSTANCE.onInitializeClient();
+    }
+
     public void onInitializeClient() {
         AutoConfigTransformers.register();
         if (Andromeda.CONFIG.autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
@@ -100,7 +105,7 @@ public class AndromedaClient implements ClientModInitializer {
 
         HandledScreens.register(ScreenHandlerRegistry.MERCHANT_INVENTORY_SCREEN_HANDLER, MerchantInventoryScreen::new);
 
-        ParticleFactoryRegistry.getInstance().register(Andromeda.KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
+        ParticleFactoryRegistry.getInstance().register(Andromeda.get().KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
             ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(MODID, "dark"), modContainer, ResourcePackActivationType.NORMAL);
@@ -173,7 +178,7 @@ public class AndromedaClient implements ClientModInitializer {
 
         if (Andromeda.CONFIG.incubatorSettings.enableIncubator) {
             BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.INCUBATOR_BLOCK);
-            BlockEntityRendererRegistry.register(BlockRegistry.INCUBATOR_BLOCK_ENTITY, IncubatorBlockRenderer::new);
+            BlockEntityRendererFactories.register(BlockRegistry.INCUBATOR_BLOCK_ENTITY, IncubatorBlockRenderer::new);
         }
     }
 
@@ -196,4 +201,9 @@ public class AndromedaClient implements ClientModInitializer {
 
         EntityRendererRegistry.register(EntityTypeRegistry.FLYING_ITEM, FlyingItemEntityRenderer::new);
     }
+
+    public static AndromedaClient get() {
+        return INSTANCE;
+    }
+
 }

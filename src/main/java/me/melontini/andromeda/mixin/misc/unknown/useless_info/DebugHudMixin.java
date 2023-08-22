@@ -19,6 +19,6 @@ public class DebugHudMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;getServerWorldDebugString()Ljava/lang/String;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "getLeftText")
     private void andromeda$leftText(CallbackInfoReturnable<List<String>> cir, @Local List<String> list) {
-        if (Andromeda.CONFIG.unknown) if (AndromedaClient.DEBUG_SPLASH != null) list.add(AndromedaClient.DEBUG_SPLASH);
+        if (Andromeda.CONFIG.unknown) if (AndromedaClient.get().DEBUG_SPLASH != null) list.add(AndromedaClient.get().DEBUG_SPLASH);
     }
 }

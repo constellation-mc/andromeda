@@ -80,14 +80,14 @@ public class ResourceConditionRegistry {
 
             @Override
             public void reload(ResourceManager manager) {
-                Andromeda.PLANT_DATA.clear();
+                Andromeda.get().PLANT_DATA.clear();
                 var map = manager.findResources("am_crop_temperatures", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
                         JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
 
                         Block block = parseFromId(object.get("identifier").getAsString(), Registry.BLOCK);
-                        Andromeda.PLANT_DATA.putIfAbsent(block, new PlantTemperatureData(
+                        Andromeda.get().PLANT_DATA.putIfAbsent(block, new PlantTemperatureData(
                                 block,
                                 object.get("min").getAsFloat(),
                                 object.get("max").getAsFloat(),
@@ -110,11 +110,11 @@ public class ResourceConditionRegistry {
 
             @Override
             public void reload(ResourceManager manager) {
-                Andromeda.EGG_DATA.clear();
+                Andromeda.get().EGG_DATA.clear();
                 //well...
                 for (Item item : Registry.ITEM) {
                     if (item instanceof SpawnEggItem spawnEggItem) {
-                        Andromeda.EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(spawnEggItem, spawnEggItem.getEntityType(new NbtCompound()), 8000));
+                        Andromeda.get().EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(spawnEggItem, spawnEggItem.getEntityType(new NbtCompound()), 8000));
                     }
                 }
 
@@ -125,7 +125,7 @@ public class ResourceConditionRegistry {
 
                         EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registry.ENTITY_TYPE);
                         Item item = parseFromId(object.get("identifier").getAsString(), Registry.ITEM);
-                        Andromeda.EGG_DATA.putIfAbsent(item, new EggProcessingData(item, entity, object.get("time").getAsInt()));
+                        Andromeda.get().EGG_DATA.putIfAbsent(item, new EggProcessingData(item, entity, object.get("time").getAsInt()));
                     } catch (Exception e) {
                         AndromedaLog.error("Error while loading am_egg_processing. id: " + entry.getKey(), e);
                     }

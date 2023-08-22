@@ -21,7 +21,7 @@ public class ServerWorldMixin {
     private void andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random, Operation<Void> operation) {
         if (Andromeda.CONFIG.temperatureBasedCropGrowthSpeed) {
             if (state.getBlock() instanceof PlantBlock) {
-                PlantTemperatureData data = Andromeda.PLANT_DATA.get(state.getBlock());
+                PlantTemperatureData data = Andromeda.get().PLANT_DATA.get(state.getBlock());
                 if (data != null) {
                     float temp = ((ServerWorld) (Object) this).getBiome(pos).value().getTemperature();
                     if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {

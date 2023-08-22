@@ -20,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.melontini.andromeda.Andromeda.LEAF_SLOWNESS;
-
 @Mixin(LivingEntity.class)
 @MixinRelatedConfigOption("leafSlowdown")
 public abstract class EntityMixin extends Entity {
@@ -43,15 +41,15 @@ public abstract class EntityMixin extends Entity {
                     if (((LivingEntity) (Object) this) instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))
                         return;
                     if (attributeInstance != null)
-                        if (!attributeInstance.hasModifier(LEAF_SLOWNESS)) {
-                            attributeInstance.addTemporaryModifier(LEAF_SLOWNESS);
+                        if (!attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
+                            attributeInstance.addTemporaryModifier(Andromeda.get().LEAF_SLOWNESS);
                         }
                     /*Does this even work?*/
                     setVelocity(getVelocity().getX(), getVelocity().getY() * 0.7, getVelocity().getZ());
                 } else {
                     if (attributeInstance != null)
-                        if (attributeInstance.hasModifier(LEAF_SLOWNESS)) {
-                            attributeInstance.removeModifier(LEAF_SLOWNESS);
+                        if (attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
+                            attributeInstance.removeModifier(Andromeda.get().LEAF_SLOWNESS);
                         }
                 }
             }

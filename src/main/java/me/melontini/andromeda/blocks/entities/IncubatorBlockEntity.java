@@ -61,7 +61,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             ItemStack stack = this.inventory.get(0);
             BlockState state = world.getBlockState(this.pos);
             if (!stack.isEmpty() && this.processingTime == -1) {
-                EggProcessingData data = Andromeda.EGG_DATA.get(stack.getItem());
+                EggProcessingData data = Andromeda.get().EGG_DATA.get(stack.getItem());
                 if (data != null) {
                     this.processingTime = Andromeda.CONFIG.incubatorSettings.incubatorRandomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
@@ -74,8 +74,8 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             }
 
             if (this.processingTime == 0) {
-                if (Andromeda.EGG_DATA.containsKey(stack.getItem())) {
-                    EggProcessingData data = Andromeda.EGG_DATA.get(stack.getItem());
+                if (Andromeda.get().EGG_DATA.containsKey(stack.getItem())) {
+                    EggProcessingData data = Andromeda.get().EGG_DATA.get(stack.getItem());
                     Entity entity = data.entity().create(world);
                     BlockPos entityPos = pos.offset(state.get(IncubatorBlock.FACING));
                     if (entity != null) {
@@ -218,7 +218,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
         assert world != null;
-        return dir != world.getBlockState(this.pos).get(IncubatorBlock.FACING) && Andromeda.EGG_DATA.containsKey(stack.getItem());
+        return dir != world.getBlockState(this.pos).get(IncubatorBlock.FACING) && Andromeda.get().EGG_DATA.containsKey(stack.getItem());
     }
 
     @Override

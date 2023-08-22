@@ -16,7 +16,6 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -41,7 +40,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Andromeda implements ModInitializer {
+public class Andromeda {
+
+    private static Andromeda INSTANCE;
 
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
@@ -54,21 +55,25 @@ public class Andromeda implements ModInitializer {
         return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     });
 
-    public static Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
-    public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
+    public Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
+    public Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
 
-    public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
+    public DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
 
-    public static EntityAttributeModifier LEAF_SLOWNESS;
+    public EntityAttributeModifier LEAF_SLOWNESS;
 
-    public static final DamageSource AGONY = new DamageSource("andromeda_agony");
+    public final DamageSource AGONY = new DamageSource("andromeda_agony");
 
     public static DamageSource bricked(@Nullable Entity attacker) {
         return new BrickedDamageSource(attacker);
     }
 
-    @Override
-    public void onInitialize() {
+    public static void init() {
+        INSTANCE = new Andromeda();
+        INSTANCE.onInitialize();
+    }
+
+    private void onInitialize() {
         AndromedaReporter.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
@@ -92,8 +97,8 @@ public class Andromeda implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            Andromeda.PLANT_DATA.clear();
-            Andromeda.EGG_DATA.clear();
+            Andromeda.get().PLANT_DATA.clear();
+            Andromeda.get().EGG_DATA.clear();
             if (CONFIG.tradingGoatHorn) {
                 ServerWorld world = server.getWorld(World.OVERWORLD);
                 if (world != null) {
@@ -132,6 +137,10 @@ public class Andromeda implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             if (CONFIG.damageBackport) DamageCommand.register(dispatcher);
         });
+    }
+
+    public static Andromeda get() {
+        return INSTANCE;
     }
 
     private static class BrickedDamageSource extends DamageSource {

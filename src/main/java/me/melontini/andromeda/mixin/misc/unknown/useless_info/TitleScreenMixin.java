@@ -17,6 +17,6 @@ public class TitleScreenMixin extends Screen {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resource/SplashTextResourceSupplier;get()Ljava/lang/String;"), method = "init")
     private void andromeda$init(CallbackInfo ci) {
-        AndromedaClient.DEBUG_SPLASH = this.client.getSplashTextLoader().get();
+        AndromedaClient.get().DEBUG_SPLASH = this.client.getSplashTextLoader().get();
     }
 }
