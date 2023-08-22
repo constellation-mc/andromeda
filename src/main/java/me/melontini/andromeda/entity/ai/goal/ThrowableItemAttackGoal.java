@@ -13,13 +13,14 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
 
     private final ItemThrowerMob<T> owner;
     private final MobEntity mob;
+    private LivingEntity target;
+
     private final double mobSpeed;
     private final int minInterval;
     private final int maxInterval;
     private final float minRange;
     private final float range;
-    private final float rangeSquared;
-    private LivingEntity target;
+
     private int seenTargetTicks;
     private int updateCountdownTicks;
 
@@ -39,7 +40,6 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
         this.maxInterval = maxInterval;
         this.minRange = minRange;
         this.range = range;
-        this.rangeSquared = range * range;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
 
@@ -90,7 +90,7 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
             this.seenTargetTicks = 0;
         }
 
-        if (!(d > this.rangeSquared) && this.seenTargetTicks >= 5) this.mob.getNavigation().stop();
+        if (!(d > this.range) && this.seenTargetTicks >= 5) this.mob.getNavigation().stop();
         else this.mob.getNavigation().startMovingTo(this.target, this.mobSpeed);
 
 
