@@ -8,6 +8,7 @@ import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ConfigHelper;
+import me.melontini.andromeda.util.EntrypointRunner;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
@@ -15,7 +16,6 @@ import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -142,7 +142,7 @@ public class ResourceConditionRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
-                FabricLoader.getInstance().getEntrypoints("andromeda:collect_behaviors", Runnable.class).forEach(Runnable::run);
+                EntrypointRunner.runEntrypoint("andromeda:collect_behaviors", Runnable.class, Runnable::run);
 
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {

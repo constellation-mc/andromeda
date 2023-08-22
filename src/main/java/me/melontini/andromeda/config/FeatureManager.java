@@ -2,6 +2,7 @@ package me.melontini.andromeda.config;
 
 import me.melontini.andromeda.api.FeatureConfig;
 import me.melontini.andromeda.util.ConfigHelper;
+import me.melontini.andromeda.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -90,7 +91,7 @@ public class FeatureManager {
                     .forEach(FeatureManager::parseMetadata);
             return MOD_JSON;
         });
-        FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);
+        EntrypointRunner.runEntrypoint("andromeda:feature_manager", Runnable.class, Runnable::run);
     }
 
     private static void parseMetadata(ModContainer mod) {
