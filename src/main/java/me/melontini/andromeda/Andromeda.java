@@ -1,7 +1,7 @@
 package me.melontini.andromeda;
 
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.AndromedaFeatureManager;
+import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
@@ -47,7 +47,7 @@ public class Andromeda implements ModInitializer {
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
 
         AutoConfig.getConfigHolder(AndromedaConfig.class).registerSaveListener((configHolder, config) -> {
-            AndromedaFeatureManager.processFeatures(config);
+            FeatureManager.processFeatures(config);
             return ActionResult.SUCCESS;
         });
 

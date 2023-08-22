@@ -1,5 +1,6 @@
 package me.melontini.andromeda.config;
 
+import me.melontini.andromeda.api.FeatureConfig;
 import me.melontini.andromeda.util.SharedConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -12,7 +13,7 @@ import java.util.Optional;
 public class DefaultProcessors implements Runnable {
     @Override
     public void run() {
-        AndromedaFeatureManager.registerProcessor("connector_mod", config -> {
+        FeatureConfig.registerProcessor("connector_mod", config -> {
             if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
                 return Map.of(
                         "compatMode", true,
@@ -23,7 +24,8 @@ public class DefaultProcessors implements Runnable {
             }
             return null;
         });
-        AndromedaFeatureManager.registerProcessor("safe_beds_conflict", config -> {
+
+        FeatureConfig.registerProcessor("safe_beds_conflict", config -> {
             if (config.safeBeds) {
                 return Map.of("bedsExplodeEverywhere", false);
             }
@@ -32,7 +34,8 @@ public class DefaultProcessors implements Runnable {
             }
             return null;
         });
-        AndromedaFeatureManager.registerProcessor("iceberg", config -> {
+
+        FeatureConfig.registerProcessor("iceberg", config -> {
             Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer("iceberg");
             Optional<ModContainer> minecraft = FabricLoader.getInstance().getModContainer("minecraft");
             if (mod.isPresent() && minecraft.isPresent()) {

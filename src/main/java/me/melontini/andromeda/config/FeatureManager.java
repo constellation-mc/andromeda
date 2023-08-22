@@ -1,5 +1,6 @@
 package me.melontini.andromeda.config;
 
+import me.melontini.andromeda.api.FeatureConfig;
 import me.melontini.andromeda.util.ConfigHelper;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import net.fabricmc.loader.api.FabricLoader;
@@ -8,21 +9,21 @@ import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import org.apache.logging.log4j.LogManager;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class AndromedaFeatureManager {
-    private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaFeatureManager"), PrependingLogger.LOGGER_NAME);
-    private static final Map<String, FeatureProcessor> PROCESSORS = new LinkedHashMap<>(5);
+public class FeatureManager {
+
+    private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("FeatureManager"), PrependingLogger.LOGGER_NAME);
+    private static final Map<String, FeatureConfig.Processor> PROCESSORS = new LinkedHashMap<>(5);
     private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
     private static final Map<Field, String> MODIFIED_FIELDS = new HashMap<>();
     private static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
     private static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
 
 
-    public static void registerProcessor(String id, FeatureProcessor processor) {
+    public static void registerProcessor(String id, FeatureConfig.Processor processor) {
         PROCESSORS.putIfAbsent(id, processor);
     }
 
@@ -46,7 +47,7 @@ public class AndromedaFeatureManager {
         MODIFIED_FIELDS.clear();
         if (!config.enableFeatureManager) return;
 
-        for (Map.Entry<String, FeatureProcessor> entry : PROCESSORS.entrySet()) {
+        for (Map.Entry<String, FeatureConfig.Processor> entry : PROCESSORS.entrySet()) {
             Map<String, Object> featureConfigEntry = entry.getValue().process(config);
             if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
 
@@ -81,16 +82,12 @@ public class AndromedaFeatureManager {
         }
     }
 
-    public interface FeatureProcessor {
-        @Nullable Map<String, Object> process(AndromedaConfig config);
-    }
-
     static {
         //This needs to be here to interact with private fields.
-        AndromedaFeatureManager.registerProcessor("mod_json", config -> {
+        FeatureManager.registerProcessor("mod_json", config -> {
             if (MOD_JSON.isEmpty()) FabricLoader.getInstance().getAllMods().stream()
                     .filter(mod -> mod.getMetadata().containsCustomValue("andromeda:features"))
-                    .forEach(AndromedaFeatureManager::parseMetadata);
+                    .forEach(FeatureManager::parseMetadata);
             return MOD_JSON;
         });
         FabricLoader.getInstance().getEntrypoints("andromeda:feature_manager", Runnable.class).forEach(Runnable::run);

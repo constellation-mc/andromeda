@@ -2,7 +2,7 @@ package me.melontini.andromeda.client.config;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.AndromedaFeatureManager;
+import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -21,17 +21,17 @@ public class AutoConfigTransformers {
 
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
                 list.stream().peek(gui -> {
-                    gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field));
+                    gui.setRequirement(() -> !FeatureManager.isModified(field));
                     if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                        if ("mod_json".equals(AndromedaFeatureManager.blameProcessor(field))) {
-                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(AndromedaFeatureManager.blameMod(field)))};
+                        if ("mod_json".equals(FeatureManager.blameProcessor(field))) {
+                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(FeatureManager.blameMod(field)))};
                             tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
                         } else {
-                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + AndromedaFeatureManager.blameProcessor(field))};
+                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + FeatureManager.blameProcessor(field))};
                             tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
                         }
                     }
-                }).toList(), AndromedaFeatureManager::isModified);
+                }).toList(), FeatureManager::isModified);
 
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> gui.setRequiresRestart(true));
