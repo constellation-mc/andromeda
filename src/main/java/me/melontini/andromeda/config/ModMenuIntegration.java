@@ -21,7 +21,7 @@ public class ModMenuIntegration implements ModMenuApi {
             Screen c = AutoConfig.getConfigScreen(AndromedaConfig.class, parent).get();
             ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
                 if (screen == c) {
-                    addDrawableChild(screen, new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, AndromedaClient.WIKI_BUTTON_TEXTURE, 32, 64, button -> screen.handleTextClick(AndromedaClient.WIKI_LINK)));
+                    addDrawableChild(screen, new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, AndromedaClient.get().WIKI_BUTTON_TEXTURE, 32, 64, button -> screen.handleTextClick(AndromedaClient.get().WIKI_LINK)));
                 }
             });
             return c;

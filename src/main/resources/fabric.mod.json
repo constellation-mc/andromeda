@@ -21,16 +21,19 @@
   "accessWidener" : "andromeda.accesswidener",
   "entrypoints": {
     "client": [
-      "me.melontini.andromeda.client.AndromedaClient"
+      "me.melontini.andromeda.client.AndromedaClient::init"
     ],
     "main": [
-      "me.melontini.andromeda.Andromeda"
+      "me.melontini.andromeda.Andromeda::init"
     ],
     "modmenu": [
       "me.melontini.andromeda.config.ModMenuIntegration"
     ],
     "andromeda:feature_manager": [
       "me.melontini.andromeda.config.DefaultProcessors"
+    ],
+    "andromeda:collect_behaviors": [
+      "me.melontini.andromeda.content.throwable_items.DefaultBehaviors"
     ]
   },
   "mixins": [

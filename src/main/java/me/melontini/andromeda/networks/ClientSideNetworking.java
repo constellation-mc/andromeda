@@ -141,6 +141,7 @@ public class ClientSideNetworking {
                 }
             });
         });
+
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.COLORED_FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
             ItemStack dye = buf.readItemStack();
             client.execute(() -> {
@@ -148,6 +149,7 @@ public class ClientSideNetworking {
                 ScreenParticleHelper.addParticle(new DyeParticle(MathStuff.nextDouble(Utilities.RANDOM, a/2d - (a/3d), a/2d + a/3d),client.getWindow().getScaledHeight()/2d,0,0, dye));
             });
         });
+
         AndromedaLog.devInfo("ClientSideNetworking init complete!");
     }
 }

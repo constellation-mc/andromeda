@@ -55,6 +55,17 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     }
 
     @Override
+    public void updateVelocity() {
+        super.updateVelocity();
+        Vec3d vec3d = this.getVelocity();
+        if (this.getFuel() > 0) {
+            Vec3d rotationVec = this.getRotationVec(1.0F);
+            if (this.location == BoatEntity.Location.ON_LAND) this.setVelocity(rotationVec.getX() * 0.1, vec3d.y, rotationVec.getZ() * 0.1);
+            else this.setVelocity(rotationVec.getX() * 0.4, vec3d.y, rotationVec.getZ() * 0.4);
+        }
+    }
+
+    @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
         AndromedaConfig config = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
         ItemStack itemStack = player.getStackInHand(hand);

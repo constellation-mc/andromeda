@@ -3,7 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.AndromedaFeatureManager;
+import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
@@ -101,14 +101,14 @@ public class AndromedaMixinPlugin extends ExtendedPlugin {
         if (Files.exists(config)) {
             try {
                 CONFIG = gson.fromJson(Files.readString(config), AndromedaConfig.class);
-                AndromedaFeatureManager.processFeatures(CONFIG);
+                FeatureManager.processFeatures(CONFIG);
                 Files.write(config, gson.toJson(CONFIG).getBytes());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
             CONFIG = new AndromedaConfig();
-            AndromedaFeatureManager.processFeatures(CONFIG);
+            FeatureManager.processFeatures(CONFIG);
             try {
                 Files.createFile(config);
                 Files.write(config, gson.toJson(CONFIG).getBytes());

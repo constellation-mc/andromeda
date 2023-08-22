@@ -1,7 +1,7 @@
 package me.melontini.andromeda;
 
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.AndromedaFeatureManager;
+import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
@@ -11,12 +11,11 @@ import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
-import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -40,29 +39,40 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Andromeda implements ModInitializer {
-    public static EntityAttributeModifier LEAF_SLOWNESS;
+public class Andromeda {
+
+    private static Andromeda INSTANCE;
+
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
 
         AutoConfig.getConfigHolder(AndromedaConfig.class).registerSaveListener((configHolder, config) -> {
-            AndromedaFeatureManager.processFeatures(config);
+            FeatureManager.processFeatures(config);
             return ActionResult.SUCCESS;
         });
 
         return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     });
-    public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
-    public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
-    public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
-    public static final DamageSource AGONY = new DamageSource("andromeda_agony");
+
+    public Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
+    public Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
+
+    public DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
+
+    public EntityAttributeModifier LEAF_SLOWNESS;
+
+    public final DamageSource AGONY = new DamageSource("andromeda_agony");
 
     public static DamageSource bricked(@Nullable Entity attacker) {
         return new BrickedDamageSource(attacker);
     }
 
-    @Override
-    public void onInitialize() {
+    public static void init() {
+        INSTANCE = new Andromeda();
+        INSTANCE.onInitialize();
+    }
+
+    private void onInitialize() {
         AndromedaReporter.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
@@ -83,8 +93,8 @@ public class Andromeda implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            Andromeda.PLANT_DATA.clear();
-            Andromeda.EGG_DATA.clear();
+            Andromeda.get().PLANT_DATA.clear();
+            Andromeda.get().EGG_DATA.clear();
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
@@ -111,6 +121,10 @@ public class Andromeda implements ModInitializer {
         });
     }
 
+    public static Andromeda get() {
+        return INSTANCE;
+    }
+
     private static class BrickedDamageSource extends DamageSource {
         private final Entity attacker;
 
@@ -122,6 +136,12 @@ public class Andromeda implements ModInitializer {
         @Override
         public Text getDeathMessage(LivingEntity entity) {
             return TextUtil.translatable("death.attack.andromeda_bricked", entity.getDisplayName(), attacker != null ? attacker.getDisplayName() : "");
+        }
+
+        @Nullable
+        @Override
+        public Entity getAttacker() {
+            return attacker;
         }
     }
 
