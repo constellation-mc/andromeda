@@ -30,7 +30,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
@@ -94,7 +97,7 @@ public class ResourceConditionRegistry {
                                 object.get("aMax").getAsFloat()
                         ));
                     } catch (Exception e) {
-                        AndromedaLog.error("Error while loading am_crop_temperatures. id: " + entry.getKey(), e);
+                        AndromedaLog.error("Error while loading am_crop_temperatures. id: " + entry, e);
                     }
                 }
             }
@@ -126,7 +129,7 @@ public class ResourceConditionRegistry {
                         Item item = parseFromId(object.get("identifier").getAsString(), Registry.ITEM);
                         Andromeda.get().EGG_DATA.putIfAbsent(item, new EggProcessingData(item, entity, object.get("time").getAsInt()));
                     } catch (Exception e) {
-                        AndromedaLog.error("Error while loading am_egg_processing. id: " + entry.getKey(), e);
+                        AndromedaLog.error("Error while loading am_egg_processing. id: " + entry, e);
                     }
                 }
             }
@@ -187,7 +190,7 @@ public class ResourceConditionRegistry {
                             }
                         }
                     } catch (Exception e) {
-                        AndromedaLog.error("Error while loading am_item_throw_behavior. id: " + entry.getKey(), e);
+                        AndromedaLog.error("Error while loading am_item_throw_behavior. id: " + entry, e);
                     }
                 }
             }
