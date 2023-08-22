@@ -2,10 +2,10 @@ package me.melontini.andromeda.registries;
 
 import com.google.gson.*;
 import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ConfigHelper;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
 import me.melontini.andromeda.util.data.PlantData;
@@ -46,18 +46,8 @@ public class ResourceConditionRegistry {
                 if (element.isJsonPrimitive()) {
                     try {
                         String configOption = element.getAsString();
-                        List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
-
                         try {
-                            if (fields.size() > 1) {//🤯🤯🤯
-                                Object obj = AndromedaConfig.class.getField(fields.get(0)).get(Andromeda.CONFIG);
-                                for (int i = 1; i < (fields.size() - 1); i++) {
-                                    obj = obj.getClass().getField(fields.get(i)).get(obj);
-                                }
-                                load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
-                            } else {
-                                load = Andromeda.CONFIG.getClass().getField(configOption).getBoolean(Andromeda.CONFIG);
-                            }
+                            load = (boolean) ConfigHelper.getConfigOption(configOption, Andromeda.CONFIG);
                         } catch (NoSuchFieldException e) {
                             throw new AndromedaException("Invalid config option: " + configOption);
                         }
