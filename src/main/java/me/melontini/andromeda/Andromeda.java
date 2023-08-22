@@ -59,7 +59,7 @@ public class Andromeda {
     public EntityAttributeModifier LEAF_SLOWNESS;
 
     public final RegistryKey<DamageType> AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SharedConstants.MODID, "agony"));
-    public static final RegistryKey<DamageType> BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SharedConstants.MODID, "bricked"));
+    public final RegistryKey<DamageType> BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SharedConstants.MODID, "bricked"));
 
     public static void init() {
         INSTANCE = new Andromeda();

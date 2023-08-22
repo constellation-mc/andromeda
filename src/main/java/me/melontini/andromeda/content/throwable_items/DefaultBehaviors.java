@@ -2,6 +2,7 @@ package me.melontini.andromeda.content.throwable_items;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.networks.AndromedaPackets;
+import me.melontini.andromeda.util.MiscUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
@@ -11,6 +12,7 @@ import net.minecraft.block.TntBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
@@ -89,7 +91,7 @@ public class DefaultBehaviors implements Runnable {
                             ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.COLORED_FLYING_STACK_LANDED, buf);
                         } else {
                             Vec3d pos = hitResult.getPos();
-                            List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(new BlockPos(pos)).expand(0.5), LivingEntity::isAlive);
+                            List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(MiscUtil.vec3dAsBlockPos(pos)).expand(0.5), LivingEntity::isAlive);
                             playerEntities.stream().min(Comparator.comparingDouble(player -> player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())))
                                     .ifPresent(player -> {
                                         PacketByteBuf buf = PacketByteBufs.create();
@@ -117,7 +119,7 @@ public class DefaultBehaviors implements Runnable {
             if (!world.isClient) {
                 if (hitResult.getType() == HitResult.Type.ENTITY) {
                     Entity entity = ((EntityHitResult) hitResult).getEntity();
-                    entity.damage(Andromeda.bricked(user), 2);
+                    entity.damage(new DamageSource(MiscUtil.getTypeReference(world, Andromeda.get().BRICKED), user), 2);
                     if (entity instanceof LivingEntity livingEntity) {
                         livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 0));
                     }
@@ -181,7 +183,7 @@ public class DefaultBehaviors implements Runnable {
                 }
             } else {
                 Vec3d pos = hitResult.getPos();
-                List<LivingEntity> livingEntities = world.getEntitiesByClass(LivingEntity.class, new Box(new BlockPos(pos)).expand(0.5), LivingEntity::isAlive);
+                List<LivingEntity> livingEntities = world.getEntitiesByClass(LivingEntity.class, new Box(MiscUtil.vec3dAsBlockPos(pos)).expand(0.5), LivingEntity::isAlive);
                 livingEntities.stream().min(Comparator.comparingDouble(livingEntity -> livingEntity.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())))
                         .ifPresent(livingEntity -> {
                             for (StatusEffectInstance instance : instances) {
