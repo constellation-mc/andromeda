@@ -8,6 +8,7 @@ import net.minecraft.util.registry.Registry;
 import java.util.*;
 
 public class ItemBehaviorManager {
+
     private static final Map<Item, Holder> ITEM_BEHAVIORS = new IdentityHashMap<>();
     private static final Object2IntOpenHashMap<Item> CUSTOM_COOLDOWNS = new Object2IntOpenHashMap<>();
     private static final Set<Item> OVERRIDE_VANILLA = new HashSet<>();

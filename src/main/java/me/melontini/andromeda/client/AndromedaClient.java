@@ -1,34 +1,24 @@
 package me.melontini.andromeda.client;
 
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.client.config.AutoConfigTransformers;
 import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
 import me.melontini.andromeda.client.render.BoatWithBlockRenderer;
 import me.melontini.andromeda.client.render.FlyingItemEntityRenderer;
 import me.melontini.andromeda.client.render.block.IncubatorBlockRenderer;
 import me.melontini.andromeda.client.screens.FletchingScreen;
 import me.melontini.andromeda.client.screens.MerchantInventoryScreen;
-import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.AndromedaFeatureManager;
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.SharedConstants;
-import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
-import me.melontini.dark_matter.api.analytics.MessageHandler;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
-import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -63,89 +53,28 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.nio.file.Files;
-import java.nio.file.attribute.FileTime;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 @Environment(EnvType.CLIENT)
 public class AndromedaClient implements ClientModInitializer {
+
     public static final Identifier WIKI_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/wiki_button.png");
     public static final Style WIKI_LINK = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
 
     public static String DEBUG_SPLASH;
+
     private static ItemStack frameStack = ItemStack.EMPTY;
     private float tooltipFlow;
     private float oldTooltipFlow;
 
     @Override
     public void onInitializeClient() {
-        GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
-        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
-                list.stream().peek(gui -> {
-                    gui.setRequirement(() -> !AndromedaFeatureManager.isModified(field));
-                    if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                        if ("mod_json".equals(AndromedaFeatureManager.blameProcessor(field))) {
-                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(AndromedaFeatureManager.blameMod(field)))};
-                            tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
-                        } else {
-                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + AndromedaFeatureManager.blameProcessor(field))};
-                            tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
-                        }
-                    }
-                }).toList(), AndromedaFeatureManager::isModified);
-
-        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
-            list.forEach(gui -> gui.setRequiresRestart(true));
-            return list;
-        }, field -> Andromeda.CONFIG.compatMode);
-
-        registry.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
-            list.forEach(gui -> {
-                if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    FeatureEnvironment environment = field.getAnnotation(FeatureEnvironment.class);
-
-                    if (tooltipGui.getTooltipSupplier() != null) {
-                        Optional<Text[]> optional = tooltipGui.getTooltipSupplier().get();
-                        Text[] text = optional.map(texts -> ArrayUtils.add(texts, TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase()))).orElseGet(() -> new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())});
-                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
-                    } else {
-                        Text[] text = new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())};
-                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
-                    }
-                }
-            });
-            return list;
-        }, FeatureEnvironment.class);
-
-        if (Andromeda.CONFIG.autoUpdateTranslations) {
-            boolean shouldUpdate = true;
-            if (Files.exists(TranslationUpdater.LANG_PATH.resolve("en_us.json"))) {
-                try {
-                    FileTime lastModifiedTime = Files.getLastModifiedTime(TranslationUpdater.LANG_PATH.resolve("en_us.json"));
-                    shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
-                } catch (Exception ignored) {}
-            }
-            if (!shouldUpdate) shouldUpdate = SharedConstants.MOD_UPDATED;
-
-            if (shouldUpdate) {
-                Set<String> languages = Sets.newHashSet("en_us");
-                String s = TranslationUpdater.getSelectedLanguage();
-                if (!s.isEmpty()) languages.add(s);
-                MessageHandler.EXECUTOR.submit(() -> TranslationUpdater.downloadTranslations(languages));
-            } else {
-                AndromedaLog.info("Skipped translations update.");
-            }
-        }
+        AutoConfigTransformers.register();
+        if (Andromeda.CONFIG.autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
         registerEntityRenderers();
         registerBlockRenderers();

@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ItemBehaviorAdder {
+
     private static final Set<Item> DYE_ITEMS = Set.of(
             Items.RED_DYE, Items.BLUE_DYE, Items.LIGHT_BLUE_DYE,
             Items.CYAN_DYE, Items.BLACK_DYE, Items.BROWN_DYE,
@@ -138,6 +139,7 @@ public class ItemBehaviorAdder {
                 }
             }
         });
+
         ItemBehaviorManager.addBehavior(Items.INK_SAC, (stack, flyingItemEntity, world, user, hitResult) -> {
             if (!world.isClient) {
                 addEffects(hitResult, world, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0));
@@ -297,4 +299,5 @@ public class ItemBehaviorAdder {
     public static void addBehavior(ItemBehavior behavior, Item... items) {
         ItemBehaviorManager.addBehaviors(behavior, items);
     }
+
 }

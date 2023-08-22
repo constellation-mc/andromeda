@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Andromeda implements ModInitializer {
-    public static EntityAttributeModifier LEAF_SLOWNESS;
+
     public static AndromedaConfig CONFIG = Utilities.supply(() -> {
         AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
 
@@ -53,9 +53,14 @@ public class Andromeda implements ModInitializer {
 
         return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     });
+
     public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
     public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
+
     public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;
+
+    public static EntityAttributeModifier LEAF_SLOWNESS;
+
     public static final DamageSource AGONY = new DamageSource("andromeda_agony");
 
     public static DamageSource bricked(@Nullable Entity attacker) {
