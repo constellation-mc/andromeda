@@ -39,14 +39,14 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
     }
 
     @Inject(at = @At("HEAD"), method = "initCustomGoals")
-    private void initCustomGoals(CallbackInfo ci) {
+    private void andromeda$initCustomGoals(CallbackInfo ci) {
         if (Andromeda.CONFIG.newThrowableItems.enable &&
                 Andromeda.CONFIG.newThrowableItems.canZombiesThrowItems)
             this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Andromeda.CONFIG.newThrowableItems.zombieThrowInterval, 4, 16));
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
-    private void tick(CallbackInfo ci) {
+    private void andromeda$tick(CallbackInfo ci) {
         if (this.andromeda$cooldown > 0) this.andromeda$cooldown--;
     }
 
@@ -93,12 +93,12 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
     }
 
     @Inject(at = @At("HEAD"), method = "writeCustomDataToNbt")
-    private void writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
+    private void andromeda$writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
        if (this.andromeda$cooldown > 0) nbt.putInt("AM-Throw-Cooldown", this.andromeda$cooldown);
     }
 
     @Inject(at = @At("HEAD"), method = "readCustomDataFromNbt")
-    private void readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
+    private void andromeda$readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("AM-Throw-Cooldown")) this.andromeda$cooldown = nbt.getInt("AM-Throw-Cooldown");
     }
 
