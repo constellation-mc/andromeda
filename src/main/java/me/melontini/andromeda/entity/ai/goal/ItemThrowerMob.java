@@ -6,4 +6,6 @@ public interface ItemThrowerMob<T extends LivingEntity> {
 
     void am$throwItem(LivingEntity target, float pullProgress);
 
+    int am$cooldown();
+
 }

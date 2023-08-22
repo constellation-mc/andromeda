@@ -3,6 +3,7 @@ package me.melontini.andromeda.entity.ai.goal;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -47,9 +48,10 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     public boolean canStart() {
         if (ItemBehaviorManager.hasBehaviors(this.mob.getMainHandStack().getItem())) {
             LivingEntity livingEntity = this.mob.getTarget();
-            if (livingEntity != null && livingEntity.isAlive() ) {
+            if (livingEntity != null && livingEntity.isAlive() && this.owner.am$cooldown() <= 0) {
                 double d = this.mob.distanceTo(livingEntity);
-                if (d <= this.range && d >= this.minRange) {
+                Path path = this.mob.getNavigation().getCurrentPath();
+                if ((d <= this.range && d >= this.minRange) || (path != null && !path.reachesTarget())) {
                     this.target = livingEntity;
                     return true;
                 }
