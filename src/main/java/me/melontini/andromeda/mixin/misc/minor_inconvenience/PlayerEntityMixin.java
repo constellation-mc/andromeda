@@ -25,9 +25,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/LivingEntity.damage (Lnet/minecraft/entity/damage/DamageSource;F)Z", shift = At.Shift.BEFORE), method = "damage", cancellable = true)
-    private void mTweaks$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (Andromeda.CONFIG.minorInconvenience && !getWorld().isClient && !source.isOf(Andromeda.AGONY)) {
-            Optional<RegistryEntry.Reference<DamageType>> type = this.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).getEntry(Andromeda.AGONY);
+    private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (Andromeda.CONFIG.minorInconvenience && !getWorld().isClient && !source.isOf(Andromeda.get().AGONY)) {
+            Optional<RegistryEntry.Reference<DamageType>> type = this.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).getEntry(Andromeda.get().AGONY);
             DamageSource damagesource = new DamageSource(type.orElseThrow(), this);
             super.damage(damagesource, Float.MAX_VALUE);
             this.getWorld().createExplosion(null, damagesource, null, this.getBlockX() + 0.5, this.getBlockY() + 0.5, this.getBlockZ() + 0.5, 5.0F, true, World.ExplosionSourceType.MOB);

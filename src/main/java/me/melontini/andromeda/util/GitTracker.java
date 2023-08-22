@@ -22,9 +22,12 @@ public class GitTracker {
 
     public static final String OWNER = "melontini";
     public static final String REPO = "andromeda";
+
     public static final String RAW_URL = "https://raw.githubusercontent.com";
     public static final String API_URL = "https://api.github.com";
+
     private static String DEFAULT_BRANCH = "1.19-fabric";
+
     private static final Set<String> PRESERVE_KEYS = Sets.newHashSet("default_branch", "stargazers_count");
 
     private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(5)).build();

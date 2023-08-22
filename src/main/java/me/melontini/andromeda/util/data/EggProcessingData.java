@@ -1,13 +1,17 @@
 package me.melontini.andromeda.util.data;
 
-public class EggProcessingData {
-    public String identifier;
-    public String entity;
-    public int time;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
 
-    public EggProcessingData(String identifier, String entity, int time) {
-        this.identifier = identifier;
-        this.entity = entity;
-        this.time = time;
+public record EggProcessingData(Item item, EntityType<?> entity, int time) {
+
+    @Override
+    public String toString() {
+        return "EggProcessingData{" +
+                "item=" + item +
+                ", entity=" + entity +
+                ", time=" + time +
+                '}';
     }
+
 }

@@ -149,6 +149,11 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("entities")
+    @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
+    public boolean allZombiesCanPickUpItems = false;
+
+    @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.SERVER)
     public Snowballs snowballs = new Snowballs();
@@ -396,12 +401,33 @@ public class AndromedaConfig implements ConfigData {
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.BOTH)
-    public boolean throwableItems = true;
+    public ThrowableItems newThrowableItems = new ThrowableItems();
 
-    @ConfigEntry.Category("mechanics")
-    @ConfigEntry.Gui.Tooltip
-    public List<String> throwableItemsBlacklist = Lists.newArrayList();
+    public static class ThrowableItems {
+
+        @ConfigEntry.Category("mechanics")
+        public boolean enable = false;
+
+        @ConfigEntry.Category("mechanics")
+        @ConfigEntry.Gui.Tooltip
+        public List<String> blacklist = Lists.newArrayList();
+
+        @ConfigEntry.Category("mechanics")
+        @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.SERVER)
+        public boolean canZombiesThrowItems = true;
+
+        @ConfigEntry.Category("mechanics")
+        @ConfigEntry.Gui.Tooltip
+        public int zombieThrowInterval = 40;
+
+        @ConfigEntry.Category("mechanics")
+        @ConfigEntry.Gui.Tooltip(count = 2)
+        public boolean preventUselessItems = true;
+
+    }
 
     @ConfigEntry.Category("mechanics")
     @ConfigEntry.Gui.Tooltip(count = 3)

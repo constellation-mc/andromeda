@@ -1,25 +1,29 @@
 package me.melontini.andromeda.registries;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ConfigHelper;
+import me.melontini.andromeda.util.EntrypointRunner;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
-import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
@@ -27,15 +31,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class ResourceConditionRegistry {
-
-    static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void register() {
         ResourceConditions.register(new Identifier(MODID, "config_option"), object -> {
@@ -46,18 +47,8 @@ public class ResourceConditionRegistry {
                 if (element.isJsonPrimitive()) {
                     try {
                         String configOption = element.getAsString();
-                        List<String> fields = Arrays.stream(configOption.split("\\.")).toList();
-
                         try {
-                            if (fields.size() > 1) {//🤯🤯🤯
-                                Object obj = AndromedaConfig.class.getField(fields.get(0)).get(Andromeda.CONFIG);
-                                for (int i = 1; i < (fields.size() - 1); i++) {
-                                    obj = obj.getClass().getField(fields.get(i)).get(obj);
-                                }
-                                load = obj.getClass().getField(fields.get(1)).getBoolean(obj);
-                            } else {
-                                load = Andromeda.CONFIG.getClass().getField(configOption).getBoolean(Andromeda.CONFIG);
-                            }
+                            load = (boolean) ConfigHelper.getConfigOption(configOption, Andromeda.CONFIG);
                         } catch (NoSuchFieldException e) {
                             throw new AndromedaException("Invalid config option: " + configOption);
                         }
@@ -90,21 +81,22 @@ public class ResourceConditionRegistry {
 
             @Override
             public void reload(ResourceManager manager) {
-                Andromeda.PLANT_DATA.clear();
+                Andromeda.get().PLANT_DATA.clear();
                 var map = manager.findResources("am_crop_temperatures", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
-                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
-                        //LogUtil.devInfo(jsonElement);
-                        PlantData data = GSON.fromJson(jsonElement, PlantData.class);
+                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
 
-                        if (Registries.BLOCK.get(Identifier.tryParse(data.identifier)) == Blocks.AIR) {
-                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", data.identifier));
-                        }
-
-                        Andromeda.PLANT_DATA.putIfAbsent(Registries.BLOCK.get(Identifier.tryParse(data.identifier)), data);
-                    } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for am_crop_temperatures", e);
+                        Block block = parseFromId(object.get("identifier").getAsString(), Registries.BLOCK);
+                        Andromeda.get().PLANT_DATA.putIfAbsent(block, new PlantTemperatureData(
+                                block,
+                                object.get("min").getAsFloat(),
+                                object.get("max").getAsFloat(),
+                                object.get("aMin").getAsFloat(),
+                                object.get("aMax").getAsFloat()
+                        ));
+                    } catch (Exception e) {
+                        AndromedaLog.error("Error while loading am_crop_temperatures. id: " + entry.getKey(), e);
                     }
                 }
             }
@@ -119,32 +111,24 @@ public class ResourceConditionRegistry {
 
             @Override
             public void reload(ResourceManager manager) {
-                Andromeda.EGG_DATA.clear();
+                Andromeda.get().EGG_DATA.clear();
                 //well...
                 for (Item item : Registries.ITEM) {
                     if (item instanceof SpawnEggItem spawnEggItem) {
-                        Andromeda.EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(Registries.ITEM.getId(spawnEggItem).toString(), Registries.ENTITY_TYPE.getId(spawnEggItem.getEntityType(new NbtCompound())).toString(), 8000));
+                        Andromeda.get().EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(spawnEggItem, spawnEggItem.getEntityType(new NbtCompound()), 8000));
                     }
                 }
 
                 var map = manager.findResources("am_egg_processing", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
-                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
-                        //LogUtil.devInfo(jsonElement);
-                        EggProcessingData data = GSON.fromJson(jsonElement, EggProcessingData.class);
+                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
 
-                        if (Registries.ENTITY_TYPE.get(Identifier.tryParse(data.entity)) == EntityType.PIG && !Objects.equals(data.entity, "minecraft:pig")) {
-                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid entity identifier provided! %s", data.entity));
-                        }
-
-                        if (Registries.ITEM.get(Identifier.tryParse(data.identifier)) == Items.AIR) {
-                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid item identifier provided! %s", data.identifier));
-                        }
-
-                        Andromeda.EGG_DATA.putIfAbsent(Registries.ITEM.get(Identifier.tryParse(data.identifier)), data);
-                    } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for am_egg_processing", e);
+                        EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registries.ENTITY_TYPE);
+                        Item item = parseFromId(object.get("identifier").getAsString(), Registries.ITEM);
+                        Andromeda.get().EGG_DATA.putIfAbsent(item, new EggProcessingData(item, entity, object.get("time").getAsInt()));
+                    } catch (Exception e) {
+                        AndromedaLog.error("Error while loading am_egg_processing. id: " + entry.getKey(), e);
                     }
                 }
             }
@@ -159,7 +143,8 @@ public class ResourceConditionRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
-                ItemBehaviorAdder.addDefaults();
+                EntrypointRunner.runEntrypoint("andromeda:collect_behaviors", Runnable.class, Runnable::run);
+
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
@@ -168,51 +153,33 @@ public class ResourceConditionRegistry {
 
                         Set<Item> items = new HashSet<>();
 
-                        if (!json.has("item_id")) {
-                            throw new InvalidIdentifierException("(Andromeda) missing item_id!");
-                        }
+                        if (!json.has("item_id")) throw new InvalidIdentifierException("(Andromeda) missing item_id!");
+
                         JsonElement element = json.get("item_id");
                         if (element.isJsonArray()) {
-                            for (JsonElement e : element.getAsJsonArray()) {
-                                Item item = Registries.ITEM.get(Identifier.tryParse(e.getAsString()));
-                                if (item == Items.AIR) {
-                                    throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", item));
-                                }
-                                items.add(item);
-                            }
+                            element.getAsJsonArray().forEach(e -> items.add(parseFromId(e.getAsString(), Registries.ITEM)));
                         } else {
-                            Item item = Registries.ITEM.get(Identifier.tryParse(element.getAsString()));
-                            if (item == Items.AIR) {
-                                throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", item));
-                            }
-                            items.add(item);
+                            items.add(parseFromId(element.getAsString(), Registries.ITEM));
                         }
 
-                        data.on_entity_hit = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_entity_hit",  new JsonObject()), data.on_entity_hit);
-
-                        data.on_block_hit = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_block_hit",  new JsonObject()), data.on_block_hit);
-
-                        data.on_miss = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_miss",  new JsonObject()), data.on_miss);
-
-                        data.on_any_hit = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_any_hit",  new JsonObject()), data.on_any_hit);
+                        data.on_entity_hit = readCommands(JsonHelper.getObject(json, "on_entity_hit",  new JsonObject()));
+                        data.on_block_hit = readCommands(JsonHelper.getObject(json, "on_block_hit",  new JsonObject()));
+                        data.on_miss = readCommands(JsonHelper.getObject(json, "on_miss",  new JsonObject()));
+                        data.on_any_hit = readCommands(JsonHelper.getObject(json, "on_any_hit",  new JsonObject()));
 
                         data.spawn_item_particles = JsonHelper.getBoolean(json, "spawn_item_particles", true);
-
                         data.spawn_colored_particles = JsonHelper.getBoolean(json, "spawn_colored_particles", false);
-
                         JsonObject colors = JsonHelper.getObject(json, "particle_colors", new JsonObject());
-                        data.particle_colors = new ItemBehaviorData.ParticleColors();
-                        data.particle_colors.red = JsonHelper.getInt(colors, "red", 0);
-                        data.particle_colors.green = JsonHelper.getInt(colors, "green", 0);
-                        data.particle_colors.blue = JsonHelper.getInt(colors, "blue", 0);
+                        data.particle_colors = new ItemBehaviorData.ParticleColors(
+                                JsonHelper.getInt(colors, "red", 0),
+                                JsonHelper.getInt(colors, "green", 0),
+                                JsonHelper.getInt(colors, "blue", 0)
+                        );
 
                         boolean override_vanilla = JsonHelper.getBoolean(json, "override_vanilla",  false);
                         boolean complement = JsonHelper.getBoolean(json, "complement",  true);
                         int cooldown_time = JsonHelper.getInt(json, "cooldown", 50);
+
                         for (Item item : items) {
                             ItemBehaviorManager.addBehavior(item, ItemBehaviorAdder.dataPack(data), complement);
                             if (override_vanilla) ItemBehaviorManager.overrideVanilla(item);
@@ -221,62 +188,40 @@ public class ResourceConditionRegistry {
                                 ItemBehaviorManager.addCustomCooldown(item, cooldown_time);
                             }
                         }
-                    } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for am_item_drop_behavior", e);
+                    } catch (Exception e) {
+                        AndromedaLog.error("Error while loading am_item_throw_behavior. id: " + entry.getKey(), e);
                     }
                 }
-                AndromedaLog.devInfo("Successfully loaded am_item_throw_behavior");
             }
         });
 
         AndromedaLog.info("ResourceConditionRegistry init complete!");
     }
 
-    private static void readCommands(JsonObject json, ItemBehaviorData.CommandHolder holder) {
-        var item_arr = JsonHelper.getArray(json, "item_commands", null);
-        if (item_arr != null) {
-            List<String> item_commands = new ArrayList<>(item_arr.size());
-            for (JsonElement element : item_arr) {
-                item_commands.add(element.getAsString());
-            }
-            holder.item_commands = item_commands.toArray(String[]::new);
-        }
-
-
-        var user_arr = JsonHelper.getArray(json, "user_commands", null);
-        if (user_arr != null) {
-            List<String> user_commands = new ArrayList<>(user_arr.size());
-            for (JsonElement element : user_arr) {
-                user_commands.add(element.getAsString());
-            }
-            holder.user_commands = user_commands.toArray(String[]::new);
-        }
-
-        var server_arr = JsonHelper.getArray(json, "server_commands", null);
-        if (server_arr != null) {
-            List<String> server_commands = new ArrayList<>(server_arr.size());
-            for (JsonElement element : server_arr) {
-                server_commands.add(element.getAsString());
-            }
-            holder.server_commands = server_commands.toArray(String[]::new);
-        }
-
-        var hit_entity_arr = JsonHelper.getArray(json, "hit_entity_commands", null);
-        if (hit_entity_arr != null) {
-            List<String> server_commands = new ArrayList<>(hit_entity_arr.size());
-            for (JsonElement element : hit_entity_arr) {
-                server_commands.add(element.getAsString());
-            }
-            holder.hit_entity_commands = server_commands.toArray(String[]::new);
-        }
-
-        var hit_block_arr = JsonHelper.getArray(json, "hit_block_commands", null);
-        if (hit_block_arr != null) {
-            List<String> server_commands = new ArrayList<>(hit_block_arr.size());
-            for (JsonElement element : hit_block_arr) {
-                server_commands.add(element.getAsString());
-            }
-            holder.hit_block_commands = server_commands.toArray(String[]::new);
-        }
+    private static <T> T parseFromId(String id, Registry<T> registry) {
+        Identifier identifier = Identifier.tryParse(id);
+        if (!registry.containsId(identifier)) throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! id: %s, registry: %s", identifier, registry));
+        return registry.get(identifier);
     }
+
+    private static ItemBehaviorData.CommandHolder readCommands(JsonObject json) {
+        return new ItemBehaviorData.CommandHolder(readCommands(json, "item_commands"),
+                readCommands(json, "user_commands"),
+                readCommands(json, "server_commands"),
+                readCommands(json, "hit_entity_commands"),
+                readCommands(json, "hit_block_commands"));
+    }
+
+    private static List<String> readCommands(JsonObject json, String source) {
+        var item_arr = JsonHelper.getArray(json, source, null);
+        if (item_arr != null) {
+            List<String> commands = new ArrayList<>();
+            for (JsonElement element : item_arr) {
+                commands.add(element.getAsString());
+            }
+            return commands;
+        }
+        return null;
+    }
+
 }
