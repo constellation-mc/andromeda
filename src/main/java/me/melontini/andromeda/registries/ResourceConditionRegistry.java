@@ -160,51 +160,33 @@ public class ResourceConditionRegistry {
 
                         Set<Item> items = new HashSet<>();
 
-                        if (!json.has("item_id")) {
-                            throw new InvalidIdentifierException("(Andromeda) missing item_id!");
-                        }
+                        if (!json.has("item_id")) throw new InvalidIdentifierException("(Andromeda) missing item_id!");
+
                         JsonElement element = json.get("item_id");
                         if (element.isJsonArray()) {
-                            for (JsonElement e : element.getAsJsonArray()) {
-                                Item item = Registry.ITEM.get(Identifier.tryParse(e.getAsString()));
-                                if (item == Items.AIR) {
-                                    throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", item));
-                                }
-                                items.add(item);
-                            }
+                            element.getAsJsonArray().forEach(e -> items.add(parseItemFromId(e.getAsString())));
                         } else {
-                            Item item = Registry.ITEM.get(Identifier.tryParse(element.getAsString()));
-                            if (item == Items.AIR) {
-                                throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", item));
-                            }
-                            items.add(item);
+                            items.add(parseItemFromId(element.getAsString()));
                         }
 
-                        data.on_entity_hit = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_entity_hit",  new JsonObject()), data.on_entity_hit);
-
-                        data.on_block_hit = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_block_hit",  new JsonObject()), data.on_block_hit);
-
-                        data.on_miss = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_miss",  new JsonObject()), data.on_miss);
-
-                        data.on_any_hit = new ItemBehaviorData.CommandHolder();
-                        readCommands(JsonHelper.getObject(json, "on_any_hit",  new JsonObject()), data.on_any_hit);
+                        data.on_entity_hit = readCommands(JsonHelper.getObject(json, "on_entity_hit",  new JsonObject()));
+                        data.on_block_hit = readCommands(JsonHelper.getObject(json, "on_block_hit",  new JsonObject()));
+                        data.on_miss = readCommands(JsonHelper.getObject(json, "on_miss",  new JsonObject()));
+                        data.on_any_hit = readCommands(JsonHelper.getObject(json, "on_any_hit",  new JsonObject()));
 
                         data.spawn_item_particles = JsonHelper.getBoolean(json, "spawn_item_particles", true);
-
                         data.spawn_colored_particles = JsonHelper.getBoolean(json, "spawn_colored_particles", false);
-
                         JsonObject colors = JsonHelper.getObject(json, "particle_colors", new JsonObject());
-                        data.particle_colors = new ItemBehaviorData.ParticleColors();
-                        data.particle_colors.red = JsonHelper.getInt(colors, "red", 0);
-                        data.particle_colors.green = JsonHelper.getInt(colors, "green", 0);
-                        data.particle_colors.blue = JsonHelper.getInt(colors, "blue", 0);
+                        data.particle_colors = new ItemBehaviorData.ParticleColors(
+                                JsonHelper.getInt(colors, "red", 0),
+                                JsonHelper.getInt(colors, "green", 0),
+                                JsonHelper.getInt(colors, "blue", 0)
+                        );
 
                         boolean override_vanilla = JsonHelper.getBoolean(json, "override_vanilla",  false);
                         boolean complement = JsonHelper.getBoolean(json, "complement",  true);
                         int cooldown_time = JsonHelper.getInt(json, "cooldown", 50);
+
                         for (Item item : items) {
                             ItemBehaviorManager.addBehavior(item, ItemBehaviorAdder.dataPack(data), complement);
                             if (override_vanilla) ItemBehaviorManager.overrideVanilla(item);
@@ -224,51 +206,32 @@ public class ResourceConditionRegistry {
         AndromedaLog.info("ResourceConditionRegistry init complete!");
     }
 
-    private static void readCommands(JsonObject json, ItemBehaviorData.CommandHolder holder) {
-        var item_arr = JsonHelper.getArray(json, "item_commands", null);
-        if (item_arr != null) {
-            List<String> item_commands = new ArrayList<>(item_arr.size());
-            for (JsonElement element : item_arr) {
-                item_commands.add(element.getAsString());
-            }
-            holder.item_commands = item_commands.toArray(String[]::new);
+    private static Item parseItemFromId(String id) {
+        Item item = Registry.ITEM.get(Identifier.tryParse(id));
+        if (item == Items.AIR) {
+            throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", item));
         }
-
-
-        var user_arr = JsonHelper.getArray(json, "user_commands", null);
-        if (user_arr != null) {
-            List<String> user_commands = new ArrayList<>(user_arr.size());
-            for (JsonElement element : user_arr) {
-                user_commands.add(element.getAsString());
-            }
-            holder.user_commands = user_commands.toArray(String[]::new);
-        }
-
-        var server_arr = JsonHelper.getArray(json, "server_commands", null);
-        if (server_arr != null) {
-            List<String> server_commands = new ArrayList<>(server_arr.size());
-            for (JsonElement element : server_arr) {
-                server_commands.add(element.getAsString());
-            }
-            holder.server_commands = server_commands.toArray(String[]::new);
-        }
-
-        var hit_entity_arr = JsonHelper.getArray(json, "hit_entity_commands", null);
-        if (hit_entity_arr != null) {
-            List<String> server_commands = new ArrayList<>(hit_entity_arr.size());
-            for (JsonElement element : hit_entity_arr) {
-                server_commands.add(element.getAsString());
-            }
-            holder.hit_entity_commands = server_commands.toArray(String[]::new);
-        }
-
-        var hit_block_arr = JsonHelper.getArray(json, "hit_block_commands", null);
-        if (hit_block_arr != null) {
-            List<String> server_commands = new ArrayList<>(hit_block_arr.size());
-            for (JsonElement element : hit_block_arr) {
-                server_commands.add(element.getAsString());
-            }
-            holder.hit_block_commands = server_commands.toArray(String[]::new);
-        }
+        return item;
     }
+
+    private static ItemBehaviorData.CommandHolder readCommands(JsonObject json) {
+        return new ItemBehaviorData.CommandHolder(readCommands(json, "item_commands"),
+                readCommands(json, "user_commands"),
+                readCommands(json, "server_commands"),
+                readCommands(json, "hit_entity_commands"),
+                readCommands(json, "hit_block_commands"));
+    }
+
+    private static List<String> readCommands(JsonObject json, String source) {
+        var item_arr = JsonHelper.getArray(json, source, null);
+        if (item_arr != null) {
+            List<String> commands = new ArrayList<>();
+            for (JsonElement element : item_arr) {
+                commands.add(element.getAsString());
+            }
+            return commands;
+        }
+        return null;
+    }
+
 }

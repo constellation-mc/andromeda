@@ -37,30 +37,30 @@ public class ItemBehaviorAdder {
                 }
                 executeCommands(serverWorld, flyingItemEntity, user, hitResult, data.on_any_hit);
 
-                sendParticlePacket(flyingItemEntity, flyingItemEntity.getPos(), data.spawn_item_particles, stack, data.spawn_colored_particles, ColorUtil.toColor(data.particle_colors.red, data.particle_colors.green, data.particle_colors.blue));
+                sendParticlePacket(flyingItemEntity, flyingItemEntity.getPos(), data.spawn_item_particles, stack, data.spawn_colored_particles, ColorUtil.toColor(data.particle_colors.red(), data.particle_colors.green(), data.particle_colors.blue()));
             }
         };
     }
 
     private static void executeCommands(ServerWorld serverWorld, FlyingItemEntity flyingItemEntity, Entity user, HitResult hitResult, ItemBehaviorData.CommandHolder data) {
-        if (data.item_commands != null) {
+        if (data.item_commands() != null) {
             ServerCommandSource source = new ServerCommandSource(
                     serverWorld.getServer(), flyingItemEntity.getPos(), new Vec2f(flyingItemEntity.getPitch(), flyingItemEntity.getYaw()), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
-            for (String command : data.item_commands) {
+            for (String command : data.item_commands()) {
                 serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
             }
         }
 
-        if (data.user_commands != null && user != null) {
+        if (data.user_commands() != null && user != null) {
             ServerCommandSource source = new ServerCommandSource(
                     serverWorld.getServer(), user.getPos(), new Vec2f(user.getPitch(), user.getYaw()), serverWorld, 4, user.getEntityName(), TextUtil.literal(user.getEntityName()), serverWorld.getServer(), user).withSilent();
-            for (String command : data.user_commands) {
+            for (String command : data.user_commands()) {
                 serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
             }
         }
 
-        if (data.server_commands != null) {
-            for (String command : data.server_commands) {
+        if (data.server_commands() != null) {
+            for (String command : data.server_commands()) {
                 serverWorld.getServer().getCommandManager().executeWithPrefix(serverWorld.getServer().getCommandSource().withSilent(), command);
             }
         }
@@ -69,21 +69,21 @@ public class ItemBehaviorAdder {
             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
             Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity) {
-                if (data.hit_entity_commands != null) {
+                if (data.hit_entity_commands() != null) {
                     ServerCommandSource source = new ServerCommandSource(
                             serverWorld.getServer(), entity.getPos(), new Vec2f(entity.getPitch(), entity.getYaw()), serverWorld, 4, entity.getEntityName(), TextUtil.literal(entity.getEntityName()), serverWorld.getServer(), entity).withSilent();
-                    for (String command : data.hit_entity_commands) {
+                    for (String command : data.hit_entity_commands()) {
                         serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
                     }
                 }
             }
         } else if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) hitResult;
-            if (data.hit_block_commands != null) {
+            if (data.hit_block_commands() != null) {
                 Vec3d vec3d = new Vec3d(blockHitResult.getBlockPos().getX(), blockHitResult.getBlockPos().getY(), blockHitResult.getBlockPos().getZ());
                 ServerCommandSource source = new ServerCommandSource(
                         serverWorld.getServer(), vec3d, new Vec2f(0, 0), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
-                for (String command : data.hit_block_commands) {
+                for (String command : data.hit_block_commands()) {
                     serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
                 }
             }
