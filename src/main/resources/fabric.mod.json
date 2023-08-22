@@ -31,6 +31,9 @@
     ],
     "andromeda:feature_manager": [
       "me.melontini.andromeda.config.DefaultProcessors"
+    ],
+    "andromeda:collect_behaviors": [
+      "me.melontini.andromeda.content.throwable_items.DefaultBehaviors"
     ]
   },
   "mixins": [

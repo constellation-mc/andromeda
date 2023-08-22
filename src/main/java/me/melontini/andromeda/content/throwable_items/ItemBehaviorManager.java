@@ -22,7 +22,6 @@ public class ItemBehaviorManager {
         return Collections.unmodifiableList(holder.behaviors);
     }
 
-
     public static void addBehavior(Item item, ItemBehaviors.Behavior behavior, boolean complement) {
         Holder holder = ITEM_BEHAVIORS.computeIfAbsent(item, Holder::new);
         holder.addBehavior(behavior, complement);
@@ -45,6 +44,8 @@ public class ItemBehaviorManager {
 
     public static void clear() {
         ITEM_BEHAVIORS.clear();
+        CUSTOM_COOLDOWNS.clear();
+        OVERRIDE_VANILLA.clear();
     }
 
     public static void overrideVanilla(Item item) {

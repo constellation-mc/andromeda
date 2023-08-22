@@ -9,6 +9,9 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Meant to be used with the {@code andromeda:collect_behaviors} entrypoint, implementing the {@link java.lang.Runnable} interface.
+ */
 public final class ItemBehaviors {
 
     public static void addBehavior(Item item, Behavior behavior, boolean complement) {

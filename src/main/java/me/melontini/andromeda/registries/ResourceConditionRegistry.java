@@ -13,6 +13,7 @@ import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -149,7 +150,8 @@ public class ResourceConditionRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
-                ItemBehaviorAdder.addDefaults();
+                FabricLoader.getInstance().getEntrypoints("andromeda:collect_behaviors", Runnable.class).forEach(Runnable::run);
+
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
