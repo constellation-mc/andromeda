@@ -1,6 +1,8 @@
 package me.melontini.andromeda.registries;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
@@ -14,7 +16,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -28,15 +30,12 @@ import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class ResourceConditionRegistry {
-
-    static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void register() {
         ResourceConditions.register(new Identifier(MODID, "config_option"), object -> {
@@ -86,22 +85,17 @@ public class ResourceConditionRegistry {
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
                         JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
-                        //LogUtil.devInfo(object);
-                        PlantTemperatureData data = new PlantTemperatureData(
-                                Identifier.tryParse(object.get("identifier").getAsString()),
+
+                        Block block = parseFromId(object.get("identifier").getAsString(), Registry.BLOCK);
+                        Andromeda.PLANT_DATA.putIfAbsent(block, new PlantTemperatureData(
+                                block,
                                 object.get("min").getAsFloat(),
                                 object.get("max").getAsFloat(),
                                 object.get("aMin").getAsFloat(),
                                 object.get("aMax").getAsFloat()
-                        );
-
-                        if (Registry.BLOCK.get(data.identifier()) == Blocks.AIR) {
-                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", data.identifier()));
-                        }
-
-                        Andromeda.PLANT_DATA.putIfAbsent(Registry.BLOCK.get(data.identifier()), data);
-                    } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for am_crop_temperatures", e);
+                        ));
+                    } catch (Exception e) {
+                        AndromedaLog.error("Error while loading am_crop_temperatures. id: " + entry.getKey(), e);
                     }
                 }
             }
@@ -120,28 +114,20 @@ public class ResourceConditionRegistry {
                 //well...
                 for (Item item : Registry.ITEM) {
                     if (item instanceof SpawnEggItem spawnEggItem) {
-                        Andromeda.EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(Registry.ITEM.getId(spawnEggItem).toString(), Registry.ENTITY_TYPE.getId(spawnEggItem.getEntityType(new NbtCompound())).toString(), 8000));
+                        Andromeda.EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(spawnEggItem, spawnEggItem.getEntityType(new NbtCompound()), 8000));
                     }
                 }
 
                 var map = manager.findResources("am_egg_processing", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
-                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
-                        //LogUtil.devInfo(jsonElement);
-                        EggProcessingData data = GSON.fromJson(jsonElement, EggProcessingData.class);
+                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
 
-                        if (Registry.ENTITY_TYPE.get(Identifier.tryParse(data.entity)) == EntityType.PIG && !Objects.equals(data.entity, "minecraft:pig")) {
-                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid entity identifier provided! %s", data.entity));
-                        }
-
-                        if (Registry.ITEM.get(Identifier.tryParse(data.identifier)) == Items.AIR) {
-                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid item identifier provided! %s", data.identifier));
-                        }
-
-                        Andromeda.EGG_DATA.putIfAbsent(Registry.ITEM.get(Identifier.tryParse(data.identifier)), data);
-                    } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for am_egg_processing", e);
+                        EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registry.ENTITY_TYPE);
+                        Item item = parseFromId(object.get("identifier").getAsString(), Registry.ITEM);
+                        Andromeda.EGG_DATA.putIfAbsent(item, new EggProcessingData(item, entity, object.get("time").getAsInt()));
+                    } catch (Exception e) {
+                        AndromedaLog.error("Error while loading am_egg_processing. id: " + entry.getKey(), e);
                     }
                 }
             }
@@ -170,9 +156,9 @@ public class ResourceConditionRegistry {
 
                         JsonElement element = json.get("item_id");
                         if (element.isJsonArray()) {
-                            element.getAsJsonArray().forEach(e -> items.add(parseItemFromId(e.getAsString())));
+                            element.getAsJsonArray().forEach(e -> items.add(parseFromId(e.getAsString(), Registry.ITEM)));
                         } else {
-                            items.add(parseItemFromId(element.getAsString()));
+                            items.add(parseFromId(element.getAsString(), Registry.ITEM));
                         }
 
                         data.on_entity_hit = readCommands(JsonHelper.getObject(json, "on_entity_hit",  new JsonObject()));
@@ -201,23 +187,20 @@ public class ResourceConditionRegistry {
                                 ItemBehaviorManager.addCustomCooldown(item, cooldown_time);
                             }
                         }
-                    } catch (IOException e) {
-                        AndromedaLog.error("Error while parsing JSON for am_item_drop_behavior", e);
+                    } catch (Exception e) {
+                        AndromedaLog.error("Error while loading am_item_throw_behavior. id: " + entry.getKey(), e);
                     }
                 }
-                AndromedaLog.devInfo("Successfully loaded am_item_throw_behavior");
             }
         });
 
         AndromedaLog.info("ResourceConditionRegistry init complete!");
     }
 
-    private static Item parseItemFromId(String id) {
-        Item item = Registry.ITEM.get(Identifier.tryParse(id));
-        if (item == Items.AIR) {
-            throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", item));
-        }
-        return item;
+    private static <T> T parseFromId(String id, Registry<T> registry) {
+        Identifier identifier = Identifier.tryParse(id);
+        if (!registry.containsId(identifier)) throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! id: %s, registry: %s", identifier, registry));
+        return registry.get(identifier);
     }
 
     private static ItemBehaviorData.CommandHolder readCommands(JsonObject json) {

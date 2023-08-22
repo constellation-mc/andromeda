@@ -21,12 +21,10 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +63,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             if (!stack.isEmpty() && this.processingTime == -1) {
                 EggProcessingData data = Andromeda.EGG_DATA.get(stack.getItem());
                 if (data != null) {
-                    this.processingTime = Andromeda.CONFIG.incubatorSettings.incubatorRandomness ? (int) (data.time + (Math.random() * (data.time * 0.3) * 2) - data.time * 0.3) : data.time;
+                    this.processingTime = Andromeda.CONFIG.incubatorSettings.incubatorRandomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     markDirty();
                 }
@@ -78,7 +76,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             if (this.processingTime == 0) {
                 if (Andromeda.EGG_DATA.containsKey(stack.getItem())) {
                     EggProcessingData data = Andromeda.EGG_DATA.get(stack.getItem());
-                    Entity entity = Registry.ENTITY_TYPE.get(Identifier.tryParse(data.entity)).create(world);
+                    Entity entity = data.entity().create(world);
                     BlockPos entityPos = pos.offset(state.get(IncubatorBlock.FACING));
                     if (entity != null) {
                         entity.setPos(entityPos.getX() + 0.5, entityPos.getY() + 0.5, entityPos.getZ() + 0.5);
