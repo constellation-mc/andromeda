@@ -39,9 +39,11 @@ import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
 public class ItemRegistry {
     public static RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.ROSE_OF_THE_VALLEY);
+
     public static SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "spawner_minecart"), () -> new SpawnerMinecartItem(AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroups.REDSTONE).build();
+
     public static AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroups.REDSTONE).registerCondition(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn).build();

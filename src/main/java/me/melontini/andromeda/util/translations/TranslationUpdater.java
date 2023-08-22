@@ -5,6 +5,7 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.GitTracker;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.dark_matter.api.analytics.MessageHandler;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -14,15 +15,41 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 public class TranslationUpdater {
+
     public static final Path TRANSLATION_PACK = SharedConstants.HIDDEN_PATH.resolve("andromeda_translations");
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
     private static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
+
     private static final String URL = GitTracker.RAW_URL + "/" + GitTracker.OWNER + "/" + GitTracker.REPO + "/" + GitTracker.getDefaultBranch() + "/src/main/resources/assets/andromeda/lang/";
     private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
+
     private static String languageCode = "en_us";
+
+    public static void checkAndUpdate() {
+        boolean shouldUpdate = true;
+        if (Files.exists(TranslationUpdater.LANG_PATH.resolve("en_us.json"))) {
+            try {
+                FileTime lastModifiedTime = Files.getLastModifiedTime(TranslationUpdater.LANG_PATH.resolve("en_us.json"));
+                shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
+            } catch (Exception ignored) {}
+        }
+        if (!shouldUpdate) shouldUpdate = SharedConstants.MOD_UPDATED;
+
+        if (shouldUpdate) {
+            Set<String> languages = Sets.newHashSet("en_us");
+            String s = TranslationUpdater.getSelectedLanguage();
+            if (!s.isEmpty()) languages.add(s);
+            MessageHandler.EXECUTOR.submit(() -> TranslationUpdater.downloadTranslations(languages));
+        } else {
+            AndromedaLog.info("Skipped translations update.");
+        }
+    }
 
     public static void onResourceReload(String code) {
         if (!languageCode.equals(code)) {

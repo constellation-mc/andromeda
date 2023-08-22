@@ -1,5 +1,7 @@
 package me.melontini.andromeda.util.data;
 
+import java.util.List;
+
 public class ItemBehaviorData {
     public CommandHolder on_entity_hit;
     public CommandHolder on_block_hit;
@@ -9,18 +11,11 @@ public class ItemBehaviorData {
     public boolean spawn_colored_particles;
     public ParticleColors particle_colors;
 
-    public static class ParticleColors {
-        public int red;
-        public int green;
-        public int blue;
+    public record ParticleColors(int red, int green, int blue) {
     }
 
-    public static class CommandHolder {
-        public String[] item_commands;
-        public String[] user_commands;
-        public String[] server_commands;
-        public String[] hit_entity_commands;
-        public String[] hit_block_commands;
+    public record CommandHolder(List<String> item_commands, List<String> user_commands, List<String> server_commands,
+                                List<String> hit_entity_commands, List<String> hit_block_commands) {
     }
 
 }

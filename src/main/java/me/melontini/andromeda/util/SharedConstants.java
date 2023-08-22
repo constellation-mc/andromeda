@@ -11,14 +11,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class SharedConstants {
+
     public static final String MODID = "andromeda";
+
     public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer(MODID).orElseThrow();
     public static final String MOD_VERSION = MOD_CONTAINER.getMetadata().getVersion().getFriendlyString();
+    public static final boolean MOD_UPDATED;
+
     public static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
     public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
+
     public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
+
     public static final Platform PLATFORM;
-    public static final boolean MOD_UPDATED;
+
 
     static {
         PLATFORM = getPlatform();

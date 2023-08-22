@@ -21,9 +21,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/LivingEntity.damage (Lnet/minecraft/entity/damage/DamageSource;F)Z", shift = At.Shift.BEFORE), method = "damage", cancellable = true)
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (Andromeda.CONFIG.minorInconvenience && !world.isClient && source != Andromeda.AGONY) {
-            super.damage(Andromeda.AGONY, Float.MAX_VALUE);
-            this.world.createExplosion(null, Andromeda.AGONY, null, this.getBlockX() + 0.5, this.getBlockY() + 0.5, this.getBlockZ() + 0.5, 5.0F, true, World.ExplosionSourceType.MOB);
+        if (Andromeda.CONFIG.minorInconvenience && !world.isClient && source != Andromeda.get().AGONY) {
+            super.damage(Andromeda.get().AGONY, Float.MAX_VALUE);
+            this.world.createExplosion(null, Andromeda.get().AGONY, null, this.getBlockX() + 0.5, this.getBlockY() + 0.5, this.getBlockZ() + 0.5, 5.0F, true, World.ExplosionSourceType.MOB);
             cir.setReturnValue(false);
         }
     }

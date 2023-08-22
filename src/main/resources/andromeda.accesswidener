@@ -6,6 +6,7 @@ accessible class net/minecraft/client/particle/ParticleManager$SpriteAwareFactor
 accessible class net/minecraft/block/entity/BlockEntityType$BlockEntityFactory
 accessible class net/minecraft/block/entity/BeehiveBlockEntity$Bee
 # Fields
+accessible field net/minecraft/entity/vehicle/BoatEntity location Lnet/minecraft/entity/vehicle/BoatEntity$Location;
 accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen children Ljava/util/List;
@@ -31,6 +32,7 @@ accessible field net/minecraft/item/MinecartItem type Lnet/minecraft/entity/vehi
 accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
 # Methods
+extendable method net/minecraft/entity/vehicle/BoatEntity updateVelocity ()V
 accessible method net/minecraft/entity/mob/MobEntity changeAngle (FFF)F
 accessible method net/minecraft/client/particle/ParticleManager registerFactory (Lnet/minecraft/particle/ParticleType;Lnet/minecraft/client/particle/ParticleManager$SpriteAwareFactory;)V
 accessible method net/minecraft/client/particle/ParticleTextureData <init> (Ljava/util/List;)V

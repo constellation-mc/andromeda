@@ -50,7 +50,7 @@ public class IncubatorBlock extends BlockWithEntity {
         IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
         if (!world.isClient)
             if (entity != null)
-                if (Andromeda.EGG_DATA.containsKey(stack.getItem()) && hand.equals(Hand.MAIN_HAND)) {
+                if (Andromeda.get().EGG_DATA.containsKey(stack.getItem()) && hand.equals(Hand.MAIN_HAND)) {
                     return entity.insertEgg(stack) ? ActionResult.SUCCESS : ActionResult.FAIL;
                 } else if (stack.isEmpty() && hand.equals(Hand.MAIN_HAND)) {
                     return entity.takeEgg(player, stack) ? ActionResult.SUCCESS : ActionResult.FAIL;
