@@ -11,7 +11,7 @@ import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
-import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -54,7 +54,7 @@ public class Andromeda implements ModInitializer {
         return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
     });
 
-    public static Map<Block, PlantData> PLANT_DATA = new HashMap<>();
+    public static Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
     public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
 
     public static DefaultParticleType KNOCKOFF_TOTEM_PARTICLE;

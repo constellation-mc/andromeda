@@ -8,7 +8,7 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ConfigHelper;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
-import me.melontini.andromeda.util.data.PlantData;
+import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -85,15 +85,21 @@ public class ResourceConditionRegistry {
                 var map = manager.findResources("am_crop_temperatures", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try {
-                        var jsonElement = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
-                        //LogUtil.devInfo(jsonElement);
-                        PlantData data = GSON.fromJson(jsonElement, PlantData.class);
+                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
+                        //LogUtil.devInfo(object);
+                        PlantTemperatureData data = new PlantTemperatureData(
+                                Identifier.tryParse(object.get("identifier").getAsString()),
+                                object.get("min").getAsFloat(),
+                                object.get("max").getAsFloat(),
+                                object.get("aMin").getAsFloat(),
+                                object.get("aMax").getAsFloat()
+                        );
 
-                        if (Registry.BLOCK.get(Identifier.tryParse(data.identifier)) == Blocks.AIR) {
-                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", data.identifier));
+                        if (Registry.BLOCK.get(data.identifier()) == Blocks.AIR) {
+                            throw new InvalidIdentifierException(String.format("(Andromeda) invalid identifier provided! %s", data.identifier()));
                         }
 
-                        Andromeda.PLANT_DATA.putIfAbsent(Registry.BLOCK.get(Identifier.tryParse(data.identifier)), data);
+                        Andromeda.PLANT_DATA.putIfAbsent(Registry.BLOCK.get(data.identifier()), data);
                     } catch (IOException e) {
                         AndromedaLog.error("Error while parsing JSON for am_crop_temperatures", e);
                     }
