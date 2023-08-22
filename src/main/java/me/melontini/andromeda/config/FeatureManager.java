@@ -15,7 +15,7 @@ import java.util.*;
 
 public class FeatureManager {
 
-    private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("FeatureManager"), PrependingLogger.LOGGER_NAME);
+    static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("FeatureManager"), PrependingLogger.LOGGER_NAME);
     private static final Map<String, FeatureConfig.Processor> PROCESSORS = new LinkedHashMap<>(5);
     private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
     private static final Map<Field, String> MODIFIED_FIELDS = new HashMap<>();
