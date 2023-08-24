@@ -162,6 +162,8 @@
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsRange.@Tooltip": "Sets a range for campfire to emit effects",
 
   "text.autoconfig.andromeda.category.entities": "Entities",
+  "text.autoconfig.andromeda.option.allZombiesCanPickUpItems": "All Zombies Can Pick up Items",
+  "text.autoconfig.andromeda.option.allZombiesCanPickUpItems.@Tooltip": "Allows all zombies to pick up items, no matter the difficulty.",
   "text.autoconfig.andromeda.option.snowballs": "Snowball Tweaks",
   "text.autoconfig.andromeda.option.snowballs.freeze": "Freeze Entities",
   "text.autoconfig.andromeda.option.snowballs.freeze.@Tooltip": "Makes snowballs freeze damaged entities.",
@@ -286,7 +288,7 @@
   "text.autoconfig.andromeda.option.newThrowableItems.canZombiesThrowItems": "Can Zombies Throw Items?",
   "text.autoconfig.andromeda.option.newThrowableItems.canZombiesThrowItems.@Tooltip": "Allows zombies to throw items with behaviors.",
   "text.autoconfig.andromeda.option.newThrowableItems.zombieThrowInterval": "Throw Interval",
-  "text.autoconfig.andromeda.option.newThrowableItems.zombieThrowInterval.@Tooltip": "Zombies don't respect custom cooldowns, so here we are.",
+  "text.autoconfig.andromeda.option.newThrowableItems.zombieThrowInterval.@Tooltip": "In addition to the cooldown, zombies have an interval between throws.",
   "text.autoconfig.andromeda.option.newThrowableItems.preventUselessItems": "Prevent Useless Items",
   "text.autoconfig.andromeda.option.newThrowableItems.preventUselessItems.@Tooltip[0]": "Prevents zombies from picking up garbage with no use.",
   "text.autoconfig.andromeda.option.newThrowableItems.preventUselessItems.@Tooltip[1]": "Useful items include: tools, armor and any item with behavior.",
