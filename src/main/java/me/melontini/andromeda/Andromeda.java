@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Andromeda {
@@ -142,7 +143,7 @@ public class Andromeda {
     }
 
     public static Andromeda get() {
-        return INSTANCE;
+        return Objects.requireNonNull(INSTANCE, "Andromeda not initialized");
     }
 
     private static class BrickedDamageSource extends DamageSource {

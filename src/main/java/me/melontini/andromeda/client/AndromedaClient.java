@@ -56,6 +56,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
@@ -209,7 +210,7 @@ public class AndromedaClient {
     }
 
     public static AndromedaClient get() {
-        return INSTANCE;
+        return Objects.requireNonNull(INSTANCE, "AndromedaClient not initialized");
     }
 
 }
