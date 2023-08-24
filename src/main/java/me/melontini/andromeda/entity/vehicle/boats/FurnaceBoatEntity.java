@@ -1,8 +1,7 @@
 package me.melontini.andromeda.entity.vehicle.boats;
 
-import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.impl.content.registry.FuelRegistryImpl;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -67,11 +66,10 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
-        AndromedaConfig config = AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
         ItemStack itemStack = player.getStackInHand(hand);
         if (FuelRegistryImpl.INSTANCE.get(itemStack.getItem()) != null) {
             int itemFuel = FuelRegistryImpl.INSTANCE.get(itemStack.getItem());
-            if ((this.getFuel() + (itemFuel * 2.25)) <= config.maxFurnaceMinecartFuel) {
+            if ((this.getFuel() + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
                     if (itemStack.getItem().getRecipeRemainder() != null)
                         player.getInventory().offerOrDrop(itemStack.getItem().getRecipeRemainder().getDefaultStack());
