@@ -59,9 +59,9 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
 
         var entity = andromeda$getFlyingItemEntity(target);
         world.spawnEntity(entity);
-        this.getMainHandStack().decrement(1);
         if (Utilities.RANDOM.nextBoolean())
-            this.andromeda$cooldown += MathStuff.nextInt(Utilities.RANDOM, (int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28));
+            this.andromeda$cooldown += Math.max(MathStuff.nextInt(Utilities.RANDOM, (int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28)), ItemBehaviorManager.getCooldown(this.getMainHandStack().getItem()));
+        this.getMainHandStack().decrement(1);
     }
 
     @Unique
