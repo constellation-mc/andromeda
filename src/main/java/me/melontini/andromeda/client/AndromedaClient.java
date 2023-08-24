@@ -14,11 +14,13 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
+import me.melontini.andromeda.util.EntrypointRunner;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -78,6 +80,8 @@ public class AndromedaClient {
     }
 
     public void onInitializeClient() {
+        EntrypointRunner.runEntrypoint("andromeda:pre-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
+
         AutoConfigTransformers.register();
         if (Andromeda.CONFIG.autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
@@ -122,6 +126,8 @@ public class AndromedaClient {
         });
 
         AndromedaReporter.handleUpload();
+
+        EntrypointRunner.runEntrypoint("andromeda:post-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
     }
 
     private void inGameTooltips() {
