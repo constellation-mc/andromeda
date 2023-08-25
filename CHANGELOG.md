@@ -1,20 +1,22 @@
 ### What's New:
 
-No hotfixes today. Just lukewarm fixes.
+#### Oops! All zombies!
 
-* Fixed the `.andromeda` folder not getting created in some cases.
-* Fixed the item group causing a crash if you enabled an unregistered item and didn't restart Minecraft.
-* Fixed furnace boats going underwater.
-* Changed effect list for "Campfire Effects". You need to specify effects again.
-* GUI particles will no longer flash for a frame after closing their screen.
-* Most features now... feature an environment marker. (Client/Server/Both)
-* Made all options require restart if Compat Mode is on.
-* Fixed some classes appearing as `[]` in the log.
-* Optional data will only get uploaded after mod update or first install.
-* Replaced accessors with AWs.
-* Added success logs to more registries.
-* Improved "Item Frame Tooltips" logic.
-* Switched to builders in AdvancementGeneration.
+New Tweaks:
+* Can Zombies Throw Items?
+  * An extension of "Throwable Items".
+  * Allows zombies to throw items with behaviors.
+* Zombies Don't Pickup Garbage
+  * Prevents zombies from picking up garbage with no use.
+* All Zombies Can Pick up Items
+  * Gives all zombies the ability to pickup items.
+
+***
+
+* Added `fabric:load_conditions` support to mod's resources.
+* Tried to improve JSON parsing. It should be faster* and have better error messages.
+* Moved `FeatureConfig` and `ItemBehaviors` to `api`. You still need to use their entrypoints.
+* Added `andromeda:pre/post-main` and `andromeda:pre/post-client` entrypoints.
+* Removed BoatEntityMixin in favor of AWs and an `@Override` in FurnaceBoatEntity.
 * Updated Chinese translation. Courtesy of [Rad233](https://github.com/Rad233).
 * Updated Dark Matter.
-* Some other things.
