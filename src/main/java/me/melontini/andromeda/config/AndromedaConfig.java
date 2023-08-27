@@ -149,6 +149,11 @@ public class AndromedaConfig implements ConfigData {
     }
 
     @ConfigEntry.Category("entities")
+    @ConfigEntry.Gui.Tooltip(count = 3)
+    @FeatureEnvironment(Environment.SERVER)
+    public boolean zombiesPreventUselessItems = false;
+
+    @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip
     @FeatureEnvironment(Environment.SERVER)
     public boolean allZombiesCanPickUpItems = false;
@@ -166,6 +171,14 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
         public boolean extinguish = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean melt = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean layers = false;
 
         @ConfigEntry.Category("entities")
         public boolean enableCooldown = true;
@@ -427,10 +440,6 @@ public class AndromedaConfig implements ConfigData {
         @ConfigEntry.Category("mechanics")
         @ConfigEntry.Gui.Tooltip
         public int zombieThrowInterval = 40;
-
-        @ConfigEntry.Category("mechanics")
-        @ConfigEntry.Gui.Tooltip(count = 2)
-        public boolean preventUselessItems = true;
 
     }
 

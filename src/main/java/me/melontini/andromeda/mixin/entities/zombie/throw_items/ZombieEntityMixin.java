@@ -1,6 +1,5 @@
 package me.melontini.andromeda.mixin.entities.zombie.throw_items;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.entity.FlyingItemEntity;
@@ -13,9 +12,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -59,9 +55,9 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
 
         var entity = andromeda$getFlyingItemEntity(target);
         world.spawnEntity(entity);
-        this.getMainHandStack().decrement(1);
         if (Utilities.RANDOM.nextBoolean())
-            this.andromeda$cooldown += MathStuff.nextInt(Utilities.RANDOM, (int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28));
+            this.andromeda$cooldown += Math.max(MathStuff.nextInt(Utilities.RANDOM, (int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28)), ItemBehaviorManager.getCooldown(this.getMainHandStack().getItem()));
+        this.getMainHandStack().decrement(1);
     }
 
     @Unique
@@ -80,16 +76,6 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
     @Override
     public int am$cooldown() {
         return this.andromeda$cooldown;
-    }
-
-    @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/HostileEntity;canPickupItem(Lnet/minecraft/item/ItemStack;)Z"), method = "canPickupItem")
-    public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
-        if (Andromeda.CONFIG.newThrowableItems.enable &&
-                Andromeda.CONFIG.newThrowableItems.canZombiesThrowItems &&
-                Andromeda.CONFIG.newThrowableItems.preventUselessItems)
-            return original && (stack.getItem() instanceof ToolItem || stack.getItem() instanceof ArmorItem || ItemBehaviorManager.hasBehaviors(stack.getItem()));
-        else
-            return original;
     }
 
     @Inject(at = @At("HEAD"), method = "writeCustomDataToNbt")

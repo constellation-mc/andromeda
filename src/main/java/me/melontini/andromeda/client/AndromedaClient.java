@@ -15,10 +15,12 @@ import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -54,6 +56,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
@@ -78,6 +81,8 @@ public class AndromedaClient {
     }
 
     public void onInitializeClient() {
+        EntrypointRunner.runEntrypoint("andromeda:pre-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
+
         AutoConfigTransformers.register();
         if (Andromeda.CONFIG.autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
@@ -118,10 +123,13 @@ public class AndromedaClient {
                 oldTooltipFlow = tooltipFlow;
                 tooltipFlow = !frameStack.isEmpty() ? MathHelper.lerp(0.25f, tooltipFlow, 1) :
                         MathHelper.lerp(0.1f, tooltipFlow, 0);
+                if (Math.abs(tooltipFlow) < 1.0E-5F) tooltipFlow = 0;
             }
         });
 
         AndromedaReporter.handleUpload();
+
+        EntrypointRunner.runEntrypoint("andromeda:post-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
     }
 
     private void inGameTooltips() {
@@ -203,7 +211,7 @@ public class AndromedaClient {
     }
 
     public static AndromedaClient get() {
-        return INSTANCE;
+        return Objects.requireNonNull(INSTANCE, "AndromedaClient not initialized");
     }
 
 }
