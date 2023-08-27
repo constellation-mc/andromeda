@@ -14,8 +14,8 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.EntrypointRunner;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -123,6 +123,7 @@ public class AndromedaClient {
                 oldTooltipFlow = tooltipFlow;
                 tooltipFlow = !frameStack.isEmpty() ? MathHelper.lerp(0.25f, tooltipFlow, 1) :
                         MathHelper.lerp(0.1f, tooltipFlow, 0);
+                if (Math.abs(tooltipFlow) < 1.0E-5F) tooltipFlow = 0;
             }
         });
 

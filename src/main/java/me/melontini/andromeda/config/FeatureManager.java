@@ -2,7 +2,7 @@ package me.melontini.andromeda.config;
 
 import me.melontini.andromeda.api.FeatureConfig;
 import me.melontini.andromeda.util.ConfigHelper;
-import me.melontini.andromeda.util.EntrypointRunner;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
