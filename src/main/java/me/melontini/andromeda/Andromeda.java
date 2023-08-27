@@ -12,10 +12,12 @@ import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -37,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Andromeda {
@@ -73,6 +76,8 @@ public class Andromeda {
     }
 
     private void onInitialize() {
+        EntrypointRunner.runEntrypoint("andromeda:pre-main", ModInitializer.class, ModInitializer::onInitialize);
+
         AndromedaReporter.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
@@ -119,10 +124,12 @@ public class Andromeda {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             if (CONFIG.damageBackport) DamageCommand.register(dispatcher);
         });
+
+        EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
     }
 
     public static Andromeda get() {
-        return INSTANCE;
+        return Objects.requireNonNull(INSTANCE, "Andromeda not initialized");
     }
 
     private static class BrickedDamageSource extends DamageSource {

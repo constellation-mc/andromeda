@@ -8,11 +8,11 @@ import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ConfigHelper;
-import me.melontini.andromeda.util.EntrypointRunner;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.ItemBehaviorData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
@@ -30,10 +30,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
@@ -87,6 +84,7 @@ public class ResourceConditionRegistry {
                 for (Identifier entry : map) {
                     try {
                         JsonObject object = JsonHelper.deserialize(new InputStreamReader(manager.getResource(entry).getInputStream()));
+                        if (!ResourceConditions.objectMatchesConditions(object)) continue;
 
                         Block block = parseFromId(object.get("identifier").getAsString(), Registry.BLOCK);
                         Andromeda.get().PLANT_DATA.putIfAbsent(block, new PlantTemperatureData(
@@ -124,6 +122,7 @@ public class ResourceConditionRegistry {
                 for (Identifier entry : map) {
                     try {
                         JsonObject object = JsonHelper.deserialize(new InputStreamReader(manager.getResource(entry).getInputStream()));
+                        if (!ResourceConditions.objectMatchesConditions(object)) continue;
 
                         EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registry.ENTITY_TYPE);
                         Item item = parseFromId(object.get("identifier").getAsString(), Registry.ITEM);
@@ -149,37 +148,38 @@ public class ResourceConditionRegistry {
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.endsWith(".json"));
                 for (Identifier entry : map) {
                     try {
-                        JsonObject json = JsonHelper.deserialize(new InputStreamReader(manager.getResource(entry).getInputStream()));
+                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(manager.getResource(entry).getInputStream()));
+                        if (!ResourceConditions.objectMatchesConditions(object)) continue;
                         ItemBehaviorData data = new ItemBehaviorData();
 
                         Set<Item> items = new HashSet<>();
 
-                        if (!json.has("item_id")) throw new InvalidIdentifierException("(Andromeda) missing item_id!");
+                        if (!object.has("item_id")) throw new InvalidIdentifierException("(Andromeda) missing item_id!");
 
-                        JsonElement element = json.get("item_id");
+                        JsonElement element = object.get("item_id");
                         if (element.isJsonArray()) {
                             element.getAsJsonArray().forEach(e -> items.add(parseFromId(e.getAsString(), Registry.ITEM)));
                         } else {
                             items.add(parseFromId(element.getAsString(), Registry.ITEM));
                         }
 
-                        data.on_entity_hit = readCommands(JsonHelper.getObject(json, "on_entity_hit",  new JsonObject()));
-                        data.on_block_hit = readCommands(JsonHelper.getObject(json, "on_block_hit",  new JsonObject()));
-                        data.on_miss = readCommands(JsonHelper.getObject(json, "on_miss",  new JsonObject()));
-                        data.on_any_hit = readCommands(JsonHelper.getObject(json, "on_any_hit",  new JsonObject()));
+                        data.on_entity_hit = readCommands(JsonHelper.getObject(object, "on_entity_hit",  new JsonObject()));
+                        data.on_block_hit = readCommands(JsonHelper.getObject(object, "on_block_hit",  new JsonObject()));
+                        data.on_miss = readCommands(JsonHelper.getObject(object, "on_miss",  new JsonObject()));
+                        data.on_any_hit = readCommands(JsonHelper.getObject(object, "on_any_hit",  new JsonObject()));
 
-                        data.spawn_item_particles = JsonHelper.getBoolean(json, "spawn_item_particles", true);
-                        data.spawn_colored_particles = JsonHelper.getBoolean(json, "spawn_colored_particles", false);
-                        JsonObject colors = JsonHelper.getObject(json, "particle_colors", new JsonObject());
+                        data.spawn_item_particles = JsonHelper.getBoolean(object, "spawn_item_particles", true);
+                        data.spawn_colored_particles = JsonHelper.getBoolean(object, "spawn_colored_particles", false);
+                        JsonObject colors = JsonHelper.getObject(object, "particle_colors", new JsonObject());
                         data.particle_colors = new ItemBehaviorData.ParticleColors(
                                 JsonHelper.getInt(colors, "red", 0),
                                 JsonHelper.getInt(colors, "green", 0),
                                 JsonHelper.getInt(colors, "blue", 0)
                         );
 
-                        boolean override_vanilla = JsonHelper.getBoolean(json, "override_vanilla",  false);
-                        boolean complement = JsonHelper.getBoolean(json, "complement",  true);
-                        int cooldown_time = JsonHelper.getInt(json, "cooldown", 50);
+                        boolean override_vanilla = JsonHelper.getBoolean(object, "override_vanilla",  false);
+                        boolean complement = JsonHelper.getBoolean(object, "complement",  true);
+                        int cooldown_time = JsonHelper.getInt(object, "cooldown", 50);
 
                         for (Item item : items) {
                             ItemBehaviorManager.addBehavior(item, ItemBehaviorAdder.dataPack(data), complement);

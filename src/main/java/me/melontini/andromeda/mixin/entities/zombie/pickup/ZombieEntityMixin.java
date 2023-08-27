@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ZombieEntity.class)
-@MixinRelatedConfigOption({"allZombiesCanPickUpItems"})
+@MixinRelatedConfigOption("allZombiesCanPickUpItems")
 public abstract class ZombieEntityMixin extends HostileEntity {
 
     protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {

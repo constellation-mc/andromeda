@@ -9,6 +9,7 @@ import net.minecraft.util.registry.Registry;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class TagRegistry {
+
     public static class VillagerGifts {
         public static final TagKey<Item> MAJOR_POSITIVE = TagKey.of(Registry.ITEM_KEY, new Identifier(MODID, "villager_gifts/major_positive"));
 
@@ -21,6 +22,8 @@ public class TagRegistry {
         public static void register() {
         }
     }
+
+    public static final TagKey<Item> ZOMBIES_PICKUP = TagKey.of(Registry.ITEM_KEY, new Identifier(MODID, "zombies_pickup"));
 
     public static void register() {
         VillagerGifts.register();
