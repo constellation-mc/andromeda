@@ -173,6 +173,14 @@ public class AndromedaConfig implements ConfigData {
         public boolean extinguish = true;
 
         @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean melt = true;
+
+        @ConfigEntry.Category("entities")
+        @ConfigEntry.Gui.Tooltip
+        public boolean layers = false;
+
+        @ConfigEntry.Category("entities")
         public boolean enableCooldown = true;
 
         @ConfigEntry.Category("entities")

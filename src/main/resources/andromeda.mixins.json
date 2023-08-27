@@ -26,6 +26,8 @@
     "entities.slimes.slowness.SlimeEntityMixin",
     "entities.snowball_tweaks.cooldown.SnowballItemMixin",
     "entities.snowball_tweaks.freeze.SnowballEntityMixin",
+    "entities.snowball_tweaks.layers.SnowballEntityMixin",
+    "entities.snowball_tweaks.melt.SnowballEntityMixin",
     "entities.snowball_tweaks.put_out_fire.SnowballEntityMixin",
     "entities.zombie.clean_pickup.ZombieEntityMixin",
     "entities.zombie.pickup.ZombieEntityMixin",

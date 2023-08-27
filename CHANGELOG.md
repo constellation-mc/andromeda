@@ -1,7 +1,5 @@
 ### What's New:
 
-#### Oops! All zombies!
-
 New Tweaks:
 * Can Zombies Throw Items?
   * An extension of "Throwable Items".
@@ -10,6 +8,9 @@ New Tweaks:
   * Prevents zombies from picking up garbage with no use.
 * All Zombies Can Pick up Items
   * Gives all zombies the ability to pickup items.
+* New Snowball Tweaks!
+  * Melt When on Fire: Snowballs will melt if set on fire.
+  * Build Up Layers: Snowballs will freeze water and build up snow layers on hit.
 
 ***
 
