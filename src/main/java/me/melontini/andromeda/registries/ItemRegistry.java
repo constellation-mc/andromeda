@@ -100,7 +100,7 @@ public class ItemRegistry {
                         boats.add(Registries.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper")).getDefaultStack());
                 }
                 appendStacks(entries, boats, false);
-            }).icon(ItemRegistry::getAndSetIcon).animatedIcon(() -> (context, itemX, itemY, selected, isTopRow) -> {
+            }).icon(ItemRegistry::getAndSetIcon).animatedIcon(() -> (group, context, itemX, itemY, selected, isTopRow) -> {
                 MinecraftClient client = MinecraftClient.getInstance();
 
                 float angle = Util.getMeasuringTimeMs() * 0.09f;

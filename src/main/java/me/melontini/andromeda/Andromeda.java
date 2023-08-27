@@ -11,9 +11,11 @@ import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -34,6 +36,7 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Andromeda {
@@ -67,6 +70,8 @@ public class Andromeda {
     }
 
     private void onInitialize() {
+        EntrypointRunner.runEntrypoint("andromeda:pre-main", ModInitializer.class, ModInitializer::onInitialize);
+
         AndromedaReporter.registerCrashHandler();
         BlockRegistry.register();
         ItemRegistry.register();
@@ -126,10 +131,12 @@ public class Andromeda {
                 server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
             }
         });
+
+        EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
     }
 
     public static Andromeda get() {
-        return INSTANCE;
+        return Objects.requireNonNull(INSTANCE, "Andromeda not initialized");
     }
 
 }

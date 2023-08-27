@@ -10,28 +10,39 @@ import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 @Mixin(GameModeSelectionScreen.class)
 @MixinRelatedConfigOption("guiParticles.gameModeSwitcherParticles")
 public abstract class GameModeSelectionScreenMixin extends Screen {
-    private static final Map<GameModeSelectionScreen.GameModeSelection, List<ItemStack>> GAME_MODE_STACKS = Utilities.consume(new HashMap<>(), map -> {
-        map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, Registries.ITEM.stream().map(Item::getDefaultStack).toList());
-        map.put(GameModeSelectionScreen.GameModeSelection.ADVENTURE, Lists.newArrayList(Items.COMPASS.getDefaultStack(), Items.MAP.getDefaultStack(), Items.FILLED_MAP.getDefaultStack()));
-        map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, Lists.newArrayList(Items.IRON_SWORD.getDefaultStack(), Items.APPLE.getDefaultStack(), Items.DIAMOND.getDefaultStack(), Items.LEATHER_BOOTS.getDefaultStack(), Items.ROTTEN_FLESH.getDefaultStack(), Items.ENDER_PEARL.getDefaultStack()));
-        map.put(GameModeSelectionScreen.GameModeSelection.SPECTATOR, Lists.newArrayList(Items.ENDER_EYE.getDefaultStack()));
+
+    @Unique
+    private static final List<ItemStack> ANDROMEDA$ADVENTURE = Lists.newArrayList(Items.COMPASS.getDefaultStack(), Items.MAP.getDefaultStack(), Items.FILLED_MAP.getDefaultStack());
+    @Unique
+    private static final List<ItemStack> ANDROMEDA$SURVIVAL = Lists.newArrayList(Items.IRON_SWORD.getDefaultStack(), Items.APPLE.getDefaultStack(), Items.DIAMOND.getDefaultStack(), Items.LEATHER_BOOTS.getDefaultStack(), Items.ROTTEN_FLESH.getDefaultStack(), Items.ENDER_PEARL.getDefaultStack());
+    @Unique
+    private static final List<ItemStack> ANDROMEDA$SPECTATOR = Lists.newArrayList(Items.ENDER_EYE.getDefaultStack());
+
+    @Unique
+    private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>> ANDROMEDA$GAME_MODE_STACKS = Utilities.consume(new HashMap<>(), map -> {
+        map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> Registries.ITEM.getRandom(Random.create()).orElseThrow().value().getDefaultStack());
+        map.put(GameModeSelectionScreen.GameModeSelection.ADVENTURE, () -> Utilities.pickAtRandom(ANDROMEDA$ADVENTURE));
+        map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));
+        map.put(GameModeSelectionScreen.GameModeSelection.SPECTATOR, () -> Utilities.pickAtRandom(ANDROMEDA$SPECTATOR));
     });
 
     @Shadow
@@ -55,15 +66,12 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
                 double x = widget.getX() + widget.getWidth() / 2d;
                 double y = widget.getY() + widget.getHeight() / 2d;
 
-                if (GAME_MODE_STACKS.containsKey(gameMode)) {
-                    var list = GAME_MODE_STACKS.get(gameMode);
-                    if (list.isEmpty()) return;
-
+                if (ANDROMEDA$GAME_MODE_STACKS.containsKey(gameMode)) {
                     ScreenParticleHelper.addParticles(() -> new ItemStackParticle(
                             x, y,
                             MathStuff.nextDouble(Utilities.RANDOM, -2, 2),
                             MathStuff.nextDouble(Utilities.RANDOM, -2, 2),
-                            Utilities.pickAtRandom(list)), 5);
+                            ANDROMEDA$GAME_MODE_STACKS.get(gameMode).get()), 5);
                 } else {
                     ScreenParticleHelper.addParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 10);
                 }
