@@ -23,7 +23,7 @@ public class TagRegistry {
         }
     }
 
-    public static final TagKey<Item> ZOMBIES_PICKUP = TagKey.of(Registry.ITEM_KEY, new Identifier(MODID, "zombies_pickup"));
+    public static final TagKey<Item> ZOMBIES_PICKUP = TagKey.of(RegistryKeys.ITEM, new Identifier(MODID, "zombies_pickup"));
 
     public static void register() {
         VillagerGifts.register();
