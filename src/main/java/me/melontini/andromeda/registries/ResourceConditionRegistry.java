@@ -19,7 +19,6 @@ import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.Resource;
@@ -30,7 +29,9 @@ import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.*;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
@@ -65,7 +66,7 @@ public class ResourceConditionRegistry {
 
             for (JsonElement element : array) {
                 if (element.isJsonPrimitive()) {
-                    if (Registry.ITEM.get(new Identifier(element.getAsString())) == Items.AIR) return false;
+                    if (!Registry.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
                 }
             }
 
@@ -83,8 +84,8 @@ public class ResourceConditionRegistry {
                 Andromeda.get().PLANT_DATA.clear();
                 var map = manager.findResources("am_crop_temperatures", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
-                    try {
-                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
+                    try (InputStream stream = entry.getValue().getInputStream(); Reader reader = new InputStreamReader(stream)) {
+                        JsonObject object = JsonHelper.deserialize(reader);
                         if (!ResourceConditions.objectMatchesConditions(object)) continue;
 
                         Block block = parseFromId(object.get("identifier").getAsString(), Registry.BLOCK);
@@ -121,8 +122,8 @@ public class ResourceConditionRegistry {
 
                 var map = manager.findResources("am_egg_processing", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
-                    try {
-                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
+                    try (InputStream stream = entry.getValue().getInputStream(); Reader reader = new InputStreamReader(stream)) {
+                        JsonObject object = JsonHelper.deserialize(reader);
                         if (!ResourceConditions.objectMatchesConditions(object)) continue;
 
                         EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registry.ENTITY_TYPE);
@@ -148,8 +149,8 @@ public class ResourceConditionRegistry {
 
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
-                    try {
-                        JsonObject object = JsonHelper.deserialize(new InputStreamReader(entry.getValue().getInputStream()));
+                    try (InputStream stream = entry.getValue().getInputStream(); Reader reader = new InputStreamReader(stream)) {
+                        JsonObject object = JsonHelper.deserialize(reader);
                         if (!ResourceConditions.objectMatchesConditions(object)) continue;
 
                         ItemBehaviorData data = new ItemBehaviorData();
