@@ -4,7 +4,6 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -15,6 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,7 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SlimeEntity.class)
 @MixinRelatedConfigOption("slimes.merge")
 public abstract class SlimeEntityMixin extends MobEntity {
-    private int andromeda$mergeCD = MathStuff.nextInt(Utilities.RANDOM, 700, 2000);
+
+    @Unique
+    private int andromeda$mergeCD = MathStuff.nextInt(700, 2000);
     @Shadow public abstract int getSize();
 
     @Shadow public abstract void setSize(int size, boolean heal);
@@ -48,7 +50,7 @@ public abstract class SlimeEntityMixin extends MobEntity {
 
             slime.discard();
             this.setSize(size, true);
-            this.andromeda$mergeCD = MathStuff.nextInt(Utilities.RANDOM, 700, 2000);
+            this.andromeda$mergeCD = MathStuff.nextInt(700, 2000);
             AndromedaLog.devInfo("Slime {} and {} merged, cooldown is {}!", this.toString(), slime.toString(), this.andromeda$mergeCD);
         }
     }
@@ -65,6 +67,6 @@ public abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (Andromeda.CONFIG.slimes.merge) this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(Utilities.RANDOM, 700, 2000));
+        if (Andromeda.CONFIG.slimes.merge) this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(700, 2000));
     }
 }

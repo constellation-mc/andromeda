@@ -5,7 +5,6 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.particles.screen.CustomItemStackParticle;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
@@ -31,7 +30,7 @@ public abstract class CreativeInventoryScreenMixin extends AbstractInventoryScre
         if (Andromeda.CONFIG.guiParticles.creativeScreenParticles) {
             Slot slot1 = this.handler.slots.get(index);
             ScreenParticleHelper.addScreenParticle(new CustomItemStackParticle(this.x + slot1.x + 8, this.y + slot1.y + 8,
-                    MathStuff.nextDouble(Utilities.RANDOM,
+                    MathStuff.nextDouble(
                             -Andromeda.CONFIG.guiParticles.creativeScreenParticlesVelX,
                             Andromeda.CONFIG.guiParticles.creativeScreenParticlesVelX), 0.6, slot1.getStack()));
         }

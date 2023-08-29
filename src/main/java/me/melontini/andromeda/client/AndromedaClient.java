@@ -95,10 +95,10 @@ public class AndromedaClient {
             if (screen1 instanceof AbstractFurnaceScreen<?> abstractFurnaceScreen && Andromeda.CONFIG.guiParticles.furnaceScreenParticles) {
                 ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
                     AbstractFurnaceScreen<?> furnaceScreen = (AbstractFurnaceScreen<?>) screen;
-                    if (furnaceScreen.getScreenHandler().isBurning() && Utilities.RANDOM.nextInt(10) == 0) {
+                    if (furnaceScreen.getScreenHandler().isBurning() && MathStuff.threadRandom().nextInt(10) == 0) {
                         ScreenParticleHelper.addScreenParticle(screen, ParticleTypes.FLAME,
-                                MathStuff.nextDouble(Utilities.RANDOM, furnaceScreen.x + 56, furnaceScreen.x + 56 + 14),
-                                furnaceScreen.y + 36 + 13, MathStuff.nextDouble(Utilities.RANDOM, -0.01, 0.01),
+                                MathStuff.nextDouble(furnaceScreen.x + 56, furnaceScreen.x + 56 + 14),
+                                furnaceScreen.y + 36 + 13, MathStuff.nextDouble(-0.01, 0.01),
                                 0.05);
                     }
                 });

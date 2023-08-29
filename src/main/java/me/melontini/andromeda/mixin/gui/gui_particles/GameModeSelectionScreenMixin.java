@@ -69,8 +69,7 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
                 if (ANDROMEDA$GAME_MODE_STACKS.containsKey(gameMode.get())) {
                     ScreenParticleHelper.addParticles(() -> new ItemStackParticle(
                             x, y,
-                            MathStuff.nextDouble(Utilities.RANDOM, -2, 2),
-                            MathStuff.nextDouble(Utilities.RANDOM, -2, 2),
+                            MathStuff.nextDouble(-2, 2), MathStuff.nextDouble(-2, 2),
                             ANDROMEDA$GAME_MODE_STACKS.get(gameMode.get()).get()), 5);
                 } else {
                     ScreenParticleHelper.addParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 10);

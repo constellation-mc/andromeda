@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util;
 
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -28,9 +28,9 @@ public class ItemStackUtil {
     public static void spawnWithRVelocity(@NotNull BlockPos pos, ItemStack stack, World world, double range) {
         MakeSure.notNulls(pos, stack, world);
         ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack,
-                Utilities.RANDOM.nextDouble(range + range) - range,
+                MathStuff.nextDouble(-range, range),
                 0,
-                Utilities.RANDOM.nextDouble(range + range) - range);
+                MathStuff.nextDouble(-range, range));
         itemEntity.setToDefaultPickupDelay();
         world.spawnEntity(itemEntity);
     }
@@ -38,9 +38,9 @@ public class ItemStackUtil {
     public static void spawnWithRVelocity(@NotNull Vec3d pos, ItemStack stack, World world, double range) {
         MakeSure.notNulls(pos, stack, world);
         ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack,
-                Utilities.RANDOM.nextDouble(range + range) - range,
+                MathStuff.nextDouble(-range, range),
                 0,
-                Utilities.RANDOM.nextDouble(range + range) - range);
+                MathStuff.nextDouble(-range, range));
         itemEntity.setToDefaultPickupDelay();
         world.spawnEntity(itemEntity);
     }

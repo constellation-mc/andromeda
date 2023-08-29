@@ -7,7 +7,6 @@ import me.melontini.andromeda.entity.ai.goal.ItemThrowerMob;
 import me.melontini.andromeda.entity.ai.goal.ThrowableItemAttackGoal;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.HostileEntity;
@@ -55,8 +54,8 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
 
         var entity = andromeda$getFlyingItemEntity(target);
         world.spawnEntity(entity);
-        if (Utilities.RANDOM.nextBoolean())
-            this.andromeda$cooldown += Math.max(MathStuff.nextInt(Utilities.RANDOM, (int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28)), ItemBehaviorManager.getCooldown(this.getMainHandStack().getItem()));
+        if (MathStuff.threadRandom().nextBoolean())
+            this.andromeda$cooldown += Math.max(MathStuff.nextInt((int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28)), ItemBehaviorManager.getCooldown(this.getMainHandStack().getItem()));
         this.getMainHandStack().decrement(1);
     }
 

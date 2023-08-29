@@ -6,7 +6,6 @@ import me.melontini.andromeda.client.sound.PersistentMovingSoundInstance;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -125,16 +124,17 @@ public class ClientSideNetworking {
                         (MinecraftClient.getInstance()).particleManager.addParticle(
                                 new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
                                 x, y, z,
-                                Utilities.RANDOM.nextGaussian() * 0.15,
-                                Utilities.RANDOM.nextDouble() * 0.2,
-                                Utilities.RANDOM.nextGaussian() * 0.15
+                                MathStuff.threadRandom().nextGaussian() * 0.15,
+                                MathStuff.threadRandom().nextDouble() * 0.2,
+                                MathStuff.threadRandom().nextGaussian() * 0.15
                         );
                     }
                 }
 
                 if (spawnColor) {
                     for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 15 : 7); i++) {
-                        Particle particle = (MinecraftClient.getInstance()).particleManager.addParticle(ParticleTypes.EFFECT, x, y, z, Utilities.RANDOM.nextGaussian() * 0.15, 0.5, Utilities.RANDOM.nextGaussian() * 0.15);
+                        Particle particle = (MinecraftClient.getInstance()).particleManager.addParticle(ParticleTypes.EFFECT, x, y, z,
+                                MathStuff.threadRandom().nextGaussian() * 0.15, 0.5, MathStuff.threadRandom().nextGaussian() * 0.15);
                         if (particle != null) {
                             particle.setColor(r, g, b);
                         }
@@ -147,7 +147,7 @@ public class ClientSideNetworking {
             ItemStack dye = buf.readItemStack();
             client.execute(() -> {
                 int a = client.getWindow().getScaledWidth();
-                ScreenParticleHelper.addParticle(new DyeParticle(MathStuff.nextDouble(Utilities.RANDOM, a/2d - (a/3d), a/2d + a/3d),client.getWindow().getScaledHeight()/2d,0,0, dye));
+                ScreenParticleHelper.addParticle(new DyeParticle(MathStuff.nextDouble(a/2d - (a/3d), a/2d + a/3d),client.getWindow().getScaledHeight()/2d,0,0, dye));
             });
         });
 
