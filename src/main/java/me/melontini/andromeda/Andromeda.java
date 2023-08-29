@@ -84,7 +84,7 @@ public class Andromeda {
         ItemRegistry.register();
         EntityTypeRegistry.register();
         ServerSideNetworking.register();
-        ResourceConditionRegistry.register();
+        ResourceRegistry.register();
         ScreenHandlerRegistry.register();
         TagRegistry.register();
 

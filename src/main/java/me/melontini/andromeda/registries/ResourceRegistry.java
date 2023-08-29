@@ -36,7 +36,7 @@ import java.util.*;
 
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
-public class ResourceConditionRegistry {
+public class ResourceRegistry {
 
     public static void register() {
         ResourceConditions.register(new Identifier(MODID, "config_option"), object -> {
