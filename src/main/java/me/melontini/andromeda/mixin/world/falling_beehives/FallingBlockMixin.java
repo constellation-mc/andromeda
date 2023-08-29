@@ -4,6 +4,7 @@ import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,6 +20,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -74,7 +76,8 @@ public abstract class FallingBlockMixin extends Entity {
                                 bee.setTarget(optional.get());
                             }
                             for (ItemStack stack : stacks) {
-                                ItemStackUtil.spawnWithRVelocity(this.getPos(), stack, world, 0.3);
+                                ItemStackUtil.spawnVelocity(this.getPos(), stack, world,
+                                        -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
                             }
                         } else {
                             world.breakBlock(beehiveBlockEntity.getPos(), false);
@@ -90,7 +93,8 @@ public abstract class FallingBlockMixin extends Entity {
                                 }
                             }
                             for (ItemStack stack : stacks) {
-                                ItemStackUtil.spawnWithRVelocity(this.getPos(), stack, world, 0.3);
+                                ItemStackUtil.spawnVelocity(this.getPos(), stack, world,
+                                        new Vec3d(MathStuff.nextDouble(-.3, .3), MathStuff.nextDouble(.05, .2), MathStuff.nextDouble(-.3, .3)));
                             }
                         }
                     }

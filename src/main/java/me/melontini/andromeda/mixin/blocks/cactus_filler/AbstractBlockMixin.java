@@ -1,10 +1,10 @@
 package me.melontini.andromeda.mixin.blocks.cactus_filler;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.MiscUtil;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -54,7 +54,8 @@ public class AbstractBlockMixin {
 
                     if (state.get(BlockUtil.WATER_LEVEL_3) == 3) {
                         world.breakBlock(pos1.down(), false, player);
-                        ItemStackUtil.spawnWithRVelocity(pos1, Items.DEAD_BUSH.getDefaultStack(), world, 0.2);
+                        ItemStackUtil.spawnVelocity(pos1, Items.DEAD_BUSH.getDefaultStack(), world,
+                                -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
                     } else {
                         world.setBlockState(pos1.down(), state.cycle(BlockUtil.WATER_LEVEL_3));
                     }

@@ -25,22 +25,34 @@ public class ItemStackUtil {
         world.spawnEntity(itemEntity);
     }
 
-    public static void spawnWithRVelocity(@NotNull BlockPos pos, ItemStack stack, World world, double range) {
+    public static void spawnVelocity(@NotNull BlockPos pos, ItemStack stack, World world, double minX, double maxX, double minY, double maxY, double minZ, double maxZ) {
         MakeSure.notNulls(pos, stack, world);
         ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack,
-                MathStuff.nextDouble(-range, range),
-                0,
-                MathStuff.nextDouble(-range, range));
+                MathStuff.nextDouble(minX, maxX), MathStuff.nextDouble(minY, maxY), MathStuff.nextDouble(minZ, maxZ));
         itemEntity.setToDefaultPickupDelay();
         world.spawnEntity(itemEntity);
     }
 
-    public static void spawnWithRVelocity(@NotNull Vec3d pos, ItemStack stack, World world, double range) {
+    public static void spawnVelocity(@NotNull Vec3d pos, ItemStack stack, World world, double minX, double maxX, double minY, double maxY, double minZ, double maxZ) {
         MakeSure.notNulls(pos, stack, world);
         ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack,
-                MathStuff.nextDouble(-range, range),
-                0,
-                MathStuff.nextDouble(-range, range));
+                MathStuff.nextDouble(minX, maxX), MathStuff.nextDouble(minY, maxY), MathStuff.nextDouble(minZ, maxZ));
+        itemEntity.setToDefaultPickupDelay();
+        world.spawnEntity(itemEntity);
+    }
+
+    public static void spawnVelocity(@NotNull BlockPos pos, ItemStack stack, World world, Vec3d vec3d) {
+        MakeSure.notNulls(pos, stack, world);
+        ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack,
+                vec3d.x, vec3d.y, vec3d.z);
+        itemEntity.setToDefaultPickupDelay();
+        world.spawnEntity(itemEntity);
+    }
+
+    public static void spawnVelocity(@NotNull Vec3d pos, ItemStack stack, World world, Vec3d vec3d) {
+        MakeSure.notNulls(pos, stack, world);
+        ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack,
+                vec3d.x, vec3d.y, vec3d.z);
         itemEntity.setToDefaultPickupDelay();
         world.spawnEntity(itemEntity);
     }
