@@ -1,9 +1,6 @@
 package me.melontini.andromeda.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
@@ -50,7 +47,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
         }
-        loadConfigFromFile();
+        CONFIG = ConfigHelper.loadConfigFromFile();
         boolean log = CONFIG.debugMessages || this.isDev();
         AndromedaLog.setDebug(log);
 
@@ -110,29 +107,6 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     public void afterApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
         if (targetClass.visibleAnnotations != null && !targetClass.visibleAnnotations.isEmpty()) {//strip our annotation from the class
             targetClass.visibleAnnotations.removeIf(node -> MIXIN_TO_OPTION_ANNOTATION.equals(node.desc));
-        }
-    }
-
-    private static void loadConfigFromFile() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Path config = SharedConstants.CONFIG_PATH;
-        if (Files.exists(config)) {
-            try {
-                CONFIG = gson.fromJson(Files.readString(config), AndromedaConfig.class);
-                FeatureManager.processFeatures(CONFIG);
-                Files.write(config, gson.toJson(CONFIG).getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            CONFIG = new AndromedaConfig();
-            FeatureManager.processFeatures(CONFIG);
-            try {
-                Files.createFile(config);
-                Files.write(config, gson.toJson(CONFIG).getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
