@@ -37,7 +37,7 @@ public class FurnaceMinecartMixin {
             if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
                     if (stack.getItem().getRecipeRemainder() != null)
-                        player.getInventory().offerOrDrop(stack.getItem().getRecipeRemainder(stack));
+                        player.getInventory().offerOrDrop(stack.getRecipeRemainder());
                     stack.decrement(1);
                 }
 
