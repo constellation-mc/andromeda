@@ -26,7 +26,9 @@ public abstract class PropaguleBlockMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/PropaguleBlock;isFullyGrown(Lnet/minecraft/block/BlockState;)Z", shift = At.Shift.BEFORE), method = "randomTick")
     private void andromeda$randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
-        if (Andromeda.CONFIG.fallingPropagule && isFullyGrown(state) && random.nextInt(40) == 0) {
+        if (!Andromeda.CONFIG.fallingPropagule) return;
+
+        if (isFullyGrown(state) && random.nextInt(40) == 0) {
             FallingBlockEntity fallingBlock = new FallingBlockEntity(
                     world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
                     state.contains(Properties.WATERLOGGED) ? state.with(Properties.WATERLOGGED, Boolean.FALSE) : state);

@@ -31,21 +31,21 @@ public abstract class PlayerEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
     private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
+        if (!Andromeda.CONFIG.unknown) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
-        if (Andromeda.CONFIG.unknown) {
-            if (!player.world.isClient) if (Random.create().nextInt(100000) == 0) {
-                Optional<BlockPos> optional = WorldUtil.pickRandomSpot(player.world, player.getBlockPos(), 10, Random.create());
-                if (optional.isPresent()) {
-                    BlockPos pos = optional.get();
-                    ArmorStandEntity stand = new ArmorStandEntity(player.world, pos.getX(), pos.getY(), pos.getZ());
-                    ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-                    stack.setNbt(NbtBuilder.create().putString("SkullOwner", player.getDisplayName().getString()).build());
+        if (!player.world.isClient) if (Random.create().nextInt(100000) == 0) {
+            Optional<BlockPos> optional = WorldUtil.pickRandomSpot(player.world, player.getBlockPos(), 10, Random.create());
+            if (optional.isPresent()) {
+                BlockPos pos = optional.get();
+                ArmorStandEntity stand = new ArmorStandEntity(player.world, pos.getX(), pos.getY(), pos.getZ());
+                ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-                    stand.equipStack(EquipmentSlot.HEAD, stack);
-                    player.world.spawnEntity(stand);
-                    playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
-                }
+                stack.setNbt(NbtBuilder.create().putString("SkullOwner", player.getDisplayName().getString()).build());
+
+                stand.equipStack(EquipmentSlot.HEAD, stack);
+                player.world.spawnEntity(stand);
+                playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
             }
         }
     }

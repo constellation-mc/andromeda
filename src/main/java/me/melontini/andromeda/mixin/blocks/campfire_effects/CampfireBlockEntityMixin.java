@@ -28,8 +28,9 @@ import java.util.List;
 public class CampfireBlockEntityMixin {
     @Inject(at = @At("HEAD"), method = "litServerTick")
     private static void andromeda$litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
-        if (Andromeda.CONFIG.campfireTweaks.campfireEffects) {
-            if (world.getTime() % 180 == 0) {
+        if (!Andromeda.CONFIG.campfireTweaks.campfireEffects) return;
+
+        if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
                     List<LivingEntity> entities = new ArrayList<>();
                     world.getEntityLookup().forEachIntersects(new Box(pos).expand(Andromeda.CONFIG.campfireTweaks.campfireEffectsRange), entity -> {
@@ -48,6 +49,5 @@ public class CampfireBlockEntityMixin {
                     }
                 }
             }
-        }
     }
 }

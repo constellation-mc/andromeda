@@ -29,7 +29,9 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (Andromeda.CONFIG.tooltips.compass) if (world != null) if (world.isClient) {
+        if (!Andromeda.CONFIG.tooltips.compass) return;
+
+        if (world != null) if (world.isClient) {
             if (stack.getItem() == Items.COMPASS && MinecraftClient.getInstance().player != null) {
                 boolean lodestone = stack.hasNbt() && CompassItem.hasLodestone(stack);
                 GlobalPos globalPos = lodestone ? CompassItem.createLodestonePos(stack.getNbt()) : CompassItem.createSpawnPos(world);

@@ -24,7 +24,9 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (Andromeda.CONFIG.usefulFletching) if (stack.getItem() instanceof BowItem) {
+        if (!Andromeda.CONFIG.usefulFletching) return;
+
+        if (stack.getItem() instanceof BowItem) {
             int a = NbtUtil.getInt(stack.getNbt(), "AM-Tightened", 0);
             if (a > 0) {
                 tooltip.add(TextUtil.translatable("tooltip.andromeda.bow.tight", a).formatted(Formatting.GRAY));

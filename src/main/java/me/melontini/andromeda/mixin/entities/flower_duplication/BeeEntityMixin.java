@@ -35,13 +35,13 @@ public abstract class BeeEntityMixin extends AnimalEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;tick()V", shift = At.Shift.AFTER), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (Andromeda.CONFIG.beeFlowerDuplication) {
-            if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
+        if (!Andromeda.CONFIG.beeFlowerDuplication) return;
 
-            if (this.pollinateGoal != null) {
-                if (this.pollinateGoal.isRunning() && this.pollinateGoal.completedPollination() && this.andromeda$canPlant()) {
-                    this.andromeda$growFlower();
-                }
+        if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
+
+        if (this.pollinateGoal != null) {
+            if (this.pollinateGoal.isRunning() && this.pollinateGoal.completedPollination() && this.andromeda$canPlant()) {
+                this.andromeda$growFlower();
             }
         }
     }

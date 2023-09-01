@@ -28,7 +28,9 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (Andromeda.CONFIG.tooltips.recoveryCompass) if (world != null) if (world.isClient) {
+        if (!Andromeda.CONFIG.tooltips.recoveryCompass) return;
+
+        if (world != null) if (world.isClient) {
             if (stack.getItem() == Items.RECOVERY_COMPASS && MinecraftClient.getInstance().player != null) {
                 var optional = MinecraftClient.getInstance().player.getLastDeathPos();
                 if (optional.isPresent()) {

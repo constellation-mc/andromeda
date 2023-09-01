@@ -24,9 +24,9 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickButton(II)V", shift = At.Shift.AFTER), method = "mouseClicked")
     private void andromeda$particles(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (Andromeda.CONFIG.guiParticles.enchantmentScreenParticles) {
-            Slot slot = this.handler.slots.get(0);
-            ScreenParticleHelper.addScreenParticles(ParticleTypes.END_ROD, this.x + slot.x + 8, this.y + slot.y + 8, 0.5, 0.5, 0.07, 10);
-        }
+        if (!Andromeda.CONFIG.guiParticles.enchantmentScreenParticles) return;
+
+        Slot slot = this.handler.slots.get(0);
+        ScreenParticleHelper.addScreenParticles(ParticleTypes.END_ROD, this.x + slot.x + 8, this.y + slot.y + 8, 0.5, 0.5, 0.07, 10);
     }
 }

@@ -47,10 +47,12 @@ public abstract class FallingBlockMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/world/World.getBlockEntity (Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/entity/BlockEntity;", shift = At.Shift.AFTER), method = "tick")
     public void andromeda$tick(CallbackInfo ci) {
+        if (!Andromeda.CONFIG.canBeeNestsFall) return;
+
         BlockPos blockPos = this.getBlockPos();
         BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
         if (blockEntity != null) {
-            if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity && Andromeda.CONFIG.canBeeNestsFall) {
+            if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity) {
                 if (this.block.getBlock() == Blocks.BEE_NEST) {
                     if (blockEntityData != null && blockEntityData.getBoolean("AM-FromFallenBlock")) {
                         blockEntityData.putBoolean("AM-FromFallenBlock", false);

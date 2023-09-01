@@ -31,7 +31,9 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!this.world.isClient() && Andromeda.CONFIG.betterFurnaceMinecart && Andromeda.CONFIG.furnaceMinecartTakeFuelWhenLow && this.fuel < 100) {
+        if (!Andromeda.CONFIG.betterFurnaceMinecart || !Andromeda.CONFIG.furnaceMinecartTakeFuelWhenLow) return;
+
+        if (!this.world.isClient() && this.fuel < 100) {
             if (world.getTime() % 20 == 0) {
                 if (SharedConstants.FABRICATION_LOADED) {
                     try {

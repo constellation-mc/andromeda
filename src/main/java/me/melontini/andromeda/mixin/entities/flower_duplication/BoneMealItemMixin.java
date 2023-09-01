@@ -21,8 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class BoneMealItemMixin {
     @Inject(at = @At("HEAD"), method = "useOnFertilizable", cancellable = true)
     private static void andromeda$useOnFertilizable(ItemStack stack, World world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+        if (!Andromeda.CONFIG.beeTallFlowerDuplication) return;
+
         BlockState blockState = world.getBlockState(pos);
-        if (blockState.getBlock() instanceof TallFlowerBlock && Andromeda.CONFIG.beeTallFlowerDuplication) {
+        if (blockState.getBlock() instanceof TallFlowerBlock) {
             if (!world.isClient) {
                 if (Andromeda.CONFIG.unknown && world.random.nextInt(100) == 0) {
                     world.createExplosion(null, DamageSource.explosion((LivingEntity) null), null,

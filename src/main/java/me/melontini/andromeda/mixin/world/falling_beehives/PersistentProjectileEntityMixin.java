@@ -3,7 +3,10 @@ package me.melontini.andromeda.mixin.world.falling_beehives;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import net.minecraft.block.*;
+import net.minecraft.block.AirBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -32,23 +35,23 @@ public abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
     @SuppressWarnings("ConstantConditions")
     @Inject(at = @At("TAIL"), method = "onBlockHit")
     private void andromeda$onBeeNestHit(BlockHitResult blockHitResult, CallbackInfo ci) {
+        if (!Andromeda.CONFIG.canBeeNestsFall) return;
+
         Entity entity = this;
         BlockPos pos = blockHitResult.getBlockPos();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if (entity instanceof ArrowEntity) {
-            if (Andromeda.CONFIG.canBeeNestsFall) {
-                if (block == Blocks.BEE_NEST) {
-                    BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) world.getBlockEntity(pos);
-                    if (beehiveBlockEntity != null) {
-                        if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {
-                            BlockState up = world.getBlockState(pos.offset(Direction.UP));
-                            if (up.isIn(BlockTags.LOGS) || up.isIn(BlockTags.LEAVES)) {
-                                for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {
-                                    if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
-                                        trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
-                                        break;
-                                    }
+            if (block == Blocks.BEE_NEST) {
+                BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) world.getBlockEntity(pos);
+                if (beehiveBlockEntity != null) {
+                    if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {
+                        BlockState up = world.getBlockState(pos.offset(Direction.UP));
+                        if (up.isIn(BlockTags.LOGS) || up.isIn(BlockTags.LEAVES)) {
+                            for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {
+                                if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
+                                    trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
+                                    break;
                                 }
                             }
                         }

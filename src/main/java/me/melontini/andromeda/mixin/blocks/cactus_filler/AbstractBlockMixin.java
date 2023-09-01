@@ -33,7 +33,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class AbstractBlockMixin {
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
     private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (Andromeda.CONFIG.cactusBottleFilling) if (state.getBlock() instanceof CactusBlock) {
+        if (!Andromeda.CONFIG.cactusBottleFilling) return;
+
+        if (state.getBlock() instanceof CactusBlock) {
             ItemStack stack = player.getStackInHand(hand);
             if (stack.isOf(Items.GLASS_BOTTLE)) {
                 BlockPos pos1 = pos;

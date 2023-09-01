@@ -32,5 +32,4 @@ public abstract class ZombieEntityMixin extends HostileEntity {
         else
             return original;
     }
-
 }

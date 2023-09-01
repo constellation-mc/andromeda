@@ -17,12 +17,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SnowballEntityMixin {
     @Inject(at = @At("TAIL"), method = "onEntityHit")
     private void andromeda$extinguish(EntityHitResult entityHitResult, CallbackInfo ci) {
-        if (Andromeda.CONFIG.snowballs.extinguish) {
-            Entity entity = entityHitResult.getEntity();
-            if (entity.isOnFire()) {
-                entity.extinguish();
-                entity.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (MathStuff.threadRandom().nextFloat() - MathStuff.threadRandom().nextFloat()) * 0.4F);
-            }
+        if (!Andromeda.CONFIG.snowballs.extinguish) return;
+
+        Entity entity = entityHitResult.getEntity();
+        if (entity.isOnFire()) {
+            entity.extinguish();
+            entity.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (MathStuff.threadRandom().nextFloat() - MathStuff.threadRandom().nextFloat()) * 0.4F);
         }
     }
 }

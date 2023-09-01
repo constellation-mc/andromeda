@@ -26,31 +26,30 @@ public class FurnaceMinecartMixin {
 
     @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
     public void andromeda$interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if (!Andromeda.CONFIG.betterFurnaceMinecart) return;
         ItemStack stack = player.getStackInHand(hand);
         Item item = stack.getItem();
 
         FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
-        if (Andromeda.CONFIG.betterFurnaceMinecart) {
-            if (FuelRegistryImpl.INSTANCE.get(item) != null) {
-                int itemFuel = FuelRegistryImpl.INSTANCE.get(item);
-                if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
-                    if (!player.getAbilities().creativeMode) {
-                        if (stack.getItem().getRecipeRemainder() != null)
-                            player.getInventory().offerOrDrop(stack.getItem().getRecipeRemainder().getDefaultStack());
-                        stack.decrement(1);
-                    }
-
-                    this.fuel += (itemFuel * 2.25);
+        if (FuelRegistryImpl.INSTANCE.get(item) != null) {
+            int itemFuel = FuelRegistryImpl.INSTANCE.get(item);
+            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
+                if (!player.getAbilities().creativeMode) {
+                    if (stack.getItem().getRecipeRemainder() != null)
+                        player.getInventory().offerOrDrop(stack.getItem().getRecipeRemainder().getDefaultStack());
+                    stack.decrement(1);
                 }
-            }
 
-            if (this.fuel > 0) {
-                furnaceMinecart.pushX = furnaceMinecart.getX() - player.getX();
-                furnaceMinecart.pushZ = furnaceMinecart.getZ() - player.getZ();
+                this.fuel += (itemFuel * 2.25);
             }
-
-            cir.setReturnValue(ActionResult.success(furnaceMinecart.world.isClient));
         }
+
+        if (this.fuel > 0) {
+            furnaceMinecart.pushX = furnaceMinecart.getX() - player.getX();
+            furnaceMinecart.pushZ = furnaceMinecart.getZ() - player.getZ();
+        }
+
+        cir.setReturnValue(ActionResult.success(furnaceMinecart.world.isClient));
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")

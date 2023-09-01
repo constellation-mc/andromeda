@@ -33,25 +33,25 @@ public abstract class EntityMixin extends Entity {
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (Andromeda.CONFIG.leafSlowdown) {
-            EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-            if (!this.world.isClient) {
-                if (this.world.getBlockState(getBlockPos().down()).isIn(BlockTags.LEAVES)
-                        || (this.world.getBlockState(new BlockPos(getBlockPos().down(2))).isIn(BlockTags.LEAVES) && this.world.getBlockState(new BlockPos(getBlockPos().down())).isOf(Blocks.AIR))) {
-                    if (((LivingEntity) (Object) this) instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))
-                        return;
-                    if (attributeInstance != null)
-                        if (!attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
-                            attributeInstance.addTemporaryModifier(Andromeda.get().LEAF_SLOWNESS);
-                        }
-                    /*Does this even work?*/
-                    setVelocity(getVelocity().getX(), getVelocity().getY() * 0.7, getVelocity().getZ());
-                } else {
-                    if (attributeInstance != null)
-                        if (attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
-                            attributeInstance.removeModifier(Andromeda.get().LEAF_SLOWNESS);
-                        }
-                }
+        if (!Andromeda.CONFIG.leafSlowdown) return;
+
+        EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        if (!this.world.isClient) {
+            if (this.world.getBlockState(getBlockPos().down()).isIn(BlockTags.LEAVES)
+                    || (this.world.getBlockState(new BlockPos(getBlockPos().down(2))).isIn(BlockTags.LEAVES) && this.world.getBlockState(new BlockPos(getBlockPos().down())).isOf(Blocks.AIR))) {
+                if (((LivingEntity) (Object) this) instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))
+                    return;
+                if (attributeInstance != null)
+                    if (!attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
+                        attributeInstance.addTemporaryModifier(Andromeda.get().LEAF_SLOWNESS);
+                    }
+                /*Does this even work?*/
+                setVelocity(getVelocity().getX(), getVelocity().getY() * 0.7, getVelocity().getZ());
+            } else {
+                if (attributeInstance != null)
+                    if (attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
+                        attributeInstance.removeModifier(Andromeda.get().LEAF_SLOWNESS);
+                    }
             }
         }
     }

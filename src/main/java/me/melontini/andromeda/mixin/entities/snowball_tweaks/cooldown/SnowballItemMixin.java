@@ -24,8 +24,8 @@ public abstract class SnowballItemMixin extends Item {
 
     @Inject(at = @At("TAIL"), method = "use")
     private void andromeda$useCooldown(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (Andromeda.CONFIG.snowballs.enableCooldown) {
-            user.getItemCooldownManager().set(this, Andromeda.CONFIG.snowballs.cooldown);
-        }
+        if (!Andromeda.CONFIG.snowballs.enableCooldown) return;
+
+        user.getItemCooldownManager().set(this, Andromeda.CONFIG.snowballs.cooldown);
     }
 }

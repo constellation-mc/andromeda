@@ -35,18 +35,19 @@ public abstract class ItemStackMixin {
     @Shadow
     public abstract int getDamage();
 
-    @Shadow public abstract Rarity getRarity();
+    @Shadow
+    public abstract Rarity getRarity();
 
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip", locals = LocalCapture.CAPTURE_FAILSOFT)
     private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list, MutableText mutableText) {
-        if (Andromeda.CONFIG.slightlyBetterItemNames) {
-            if (!this.getItem().isDamageable()) {
-                if (this.getCount() > 1)
-                    mutableText.append(TextUtil.literal(" x" + this.getCount()).formatted(getRarity().formatting));
-            } else {
-                if (this.getDamage() > 0)
-                    mutableText.append(TextUtil.literal(" " + ((this.getMaxDamage() - this.getDamage()) * 100 / this.getMaxDamage()) + "%").formatted(getRarity().formatting));
-            }
+        if (!Andromeda.CONFIG.slightlyBetterItemNames) return;
+
+        if (!this.getItem().isDamageable()) {
+            if (this.getCount() > 1)
+                mutableText.append(TextUtil.literal(" x" + this.getCount()).formatted(getRarity().formatting));
+        } else {
+            if (this.getDamage() > 0)
+                mutableText.append(TextUtil.literal(" " + ((this.getMaxDamage() - this.getDamage()) * 100 / this.getMaxDamage()) + "%").formatted(getRarity().formatting));
         }
     }
 }

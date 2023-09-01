@@ -24,7 +24,9 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (Andromeda.CONFIG.tooltips.clock) if (world != null) if (world.isClient) {
+        if (!Andromeda.CONFIG.tooltips.clock) return;
+
+        if (world != null && world.isClient) {
             if (stack.getItem() == Items.CLOCK) {
                 //totally not stolen from here https://bukkit.org/threads/how-can-i-convert-minecraft-long-time-to-real-hours-and-minutes.122912/
                 int i = MathStuff.fastFloor((world.getTimeOfDay() / 1000d + 8) % 24);

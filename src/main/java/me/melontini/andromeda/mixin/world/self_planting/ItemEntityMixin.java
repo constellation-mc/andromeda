@@ -34,11 +34,13 @@ public abstract class ItemEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void andromeda$tryPlant(CallbackInfo ci) {
+        if (!Andromeda.CONFIG.autoPlanting.enabled) return;
+
         Entity entity = (Entity) (Object) this;
         ItemStack stack = this.getStack();
         BlockPos pos = entity.getBlockPos();
         World world = entity.getWorld();
-        if (Andromeda.CONFIG.autoPlanting.enabled && !world.isClient()) {
+        if (!world.isClient()) {
             if (entity.age % andromeda$random.nextInt(20, 101) == 0) {
                 if (stack.getItem() instanceof BlockItem) {
                     if (((BlockItem) stack.getItem()).getBlock() instanceof PlantBlock) {
