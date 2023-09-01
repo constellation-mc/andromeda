@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import net.fabricmc.fabric.impl.content.registry.FuelRegistryImpl;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
 import net.minecraft.item.Item;
@@ -32,8 +32,8 @@ public class FurnaceMinecartMixin {
         Item item = stack.getItem();
 
         FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
-        if (FuelRegistryImpl.INSTANCE.get(item) != null) {
-            int itemFuel = FuelRegistryImpl.INSTANCE.get(item);
+        if (FuelRegistry.INSTANCE.get(item) != null) {
+            int itemFuel = FuelRegistry.INSTANCE.get(item);
             if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
                     if (stack.getItem().getRecipeRemainder() != null)
@@ -41,7 +41,7 @@ public class FurnaceMinecartMixin {
                     stack.decrement(1);
                 }
 
-                this.fuel += (itemFuel * 2.25);
+                this.fuel += (int) (itemFuel * 2.25);
             }
         }
 

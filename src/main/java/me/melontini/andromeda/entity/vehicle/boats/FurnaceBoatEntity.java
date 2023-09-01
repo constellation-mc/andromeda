@@ -2,7 +2,7 @@ package me.melontini.andromeda.entity.vehicle.boats;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
-import net.fabricmc.fabric.impl.content.registry.FuelRegistryImpl;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -67,8 +67,8 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        if (FuelRegistryImpl.INSTANCE.get(stack.getItem()) != null) {
-            int itemFuel = FuelRegistryImpl.INSTANCE.get(stack.getItem());
+        if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
+            int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
             if ((this.getFuel() + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
                     if (stack.getItem().getRecipeRemainder() != null)
@@ -76,7 +76,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
                     stack.decrement(1);
                 }
 
-                this.setFuel((int) (getFuel() + (itemFuel * 2.25)));
+                this.setFuel((int) (this.getFuel() + (itemFuel * 2.25)));
                 return ActionResult.SUCCESS;
             }
         }
