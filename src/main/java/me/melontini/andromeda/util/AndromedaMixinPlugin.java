@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings("UnstableApiUsage")
 public class AndromedaMixinPlugin extends ExtendablePlugin {
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaMixinPlugin"), PrependingLogger.LOGGER_NAME);
     private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
     private static AndromedaConfig CONFIG;
-    private static boolean log;
 
     static {
         LOGGER.info("Definitely up to a lot of good");
@@ -51,12 +51,13 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             }
         }
         loadConfigFromFile();
-        log = CONFIG.debugMessages || FabricLoader.getInstance().isDevelopmentEnvironment();
+        boolean log = CONFIG.debugMessages || this.isDev();
         AndromedaLog.setDebug(log);
 
         if (CONFIG.compatMode) {
             LOGGER.warn("Compat mode is on!");
         }
+        if (this.isDev()) LOGGER.warn("Will be verifying config annotations!");
     }
 
     @Override
@@ -71,21 +72,38 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 for (String configOption : configOptions) {
                     try {
                         load = (boolean) ConfigHelper.getConfigOption(configOption, CONFIG);
-                    } catch (NoSuchFieldException e) {
-                        throw new AndromedaException("Invalid config option in MixinRelatedConfigOption: " + configOption + " This is no fault of yours.");
-                    } catch (ClassCastException e) {
-                        throw new AndromedaException("Non-boolean config option in MixinRelatedConfigOption: " + configOption + " This is no fault of yours.");
                     } catch (Exception e) {
-                        throw new AndromedaException("Exception while evaluating shouldApplyMixin", e);
+                        LOGGER.warn("Couldn't check @MixinRelatedConfigOption(%s) from %s This is no fault of yours.".formatted(configOption, mixinClassName), e);
                     }
                     if (!load) break;
                 }
             }
         }
-        if (log)
-            LOGGER.info("{} ({}) : {}", mixinClassName.replaceFirst("me\\.melontini\\.andromeda\\.mixin\\.", ""),
-                    targetClassName.replaceFirst("net\\.minecraft\\.", ""), load ? "applied ✅" : "skipped ⏩");
+        if (this.isDev()) verifyConfigAnnotation(mixinNode, mixinClassName);
+
         return load;
+    }
+
+    private static void verifyConfigAnnotation(ClassNode mixinNode, String mixinClassName) {
+        LOGGER.debug("Verifying @MixinRelatedConfigOption from " + mixinClassName);
+        AnnotationNode annotationNode = Annotations.getVisible(mixinNode, MixinRelatedConfigOption.class);
+        if (annotationNode != null) {
+            Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
+            List<String> configOptions = (List<String>) values.get("value");
+            boolean dummy = true;
+            for (String configOption : configOptions) {
+                try {
+                    dummy = (boolean) ConfigHelper.getConfigOption(configOption, CONFIG);
+                } catch (NoSuchFieldException e) {
+                    throw new AndromedaException("Invalid config option in @MixinRelatedConfigOption(%s) from %s".formatted(configOption, mixinClassName));
+                } catch (ClassCastException e) {
+                    throw new AndromedaException("Non-boolean config option in @MixinRelatedConfigOption(%s) from %s".formatted(configOption, mixinClassName));
+                } catch (Exception e) {
+                    throw new AndromedaException("Exception while evaluating shouldApplyMixin", e);
+                }
+            }
+            LOGGER.debug("Verified @MixinRelatedConfigOption from %s. State: %s".formatted(mixinClassName, dummy));
+        } else LOGGER.debug("No @MixinRelatedConfigOption found in " + mixinClassName);
     }
 
     @Override
