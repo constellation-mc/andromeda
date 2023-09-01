@@ -71,7 +71,8 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
             int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
             if ((this.getFuel() + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
-                    if (stack.getItem().getRecipeRemainder() != null)
+                    ItemStack reminder = stack.getRecipeRemainder();
+                    if (!reminder.isEmpty())
                         player.getInventory().offerOrDrop(stack.getRecipeRemainder());
                     stack.decrement(1);
                 }

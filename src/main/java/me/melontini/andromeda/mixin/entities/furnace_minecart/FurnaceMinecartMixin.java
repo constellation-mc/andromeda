@@ -36,7 +36,8 @@ public class FurnaceMinecartMixin {
             int itemFuel = FuelRegistry.INSTANCE.get(item);
             if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
-                    if (stack.getItem().getRecipeRemainder() != null)
+                    ItemStack reminder = stack.getRecipeRemainder();
+                    if (!reminder.isEmpty())
                         player.getInventory().offerOrDrop(stack.getRecipeRemainder());
                     stack.decrement(1);
                 }
