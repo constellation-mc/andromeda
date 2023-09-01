@@ -1,5 +1,7 @@
 package me.melontini.andromeda.mixin.entities.furnace_minecart;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.fabricmc.fabric.impl.content.registry.FuelRegistryImpl;
@@ -14,7 +16,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -52,10 +53,10 @@ public class FurnaceMinecartMixin {
         cir.setReturnValue(ActionResult.success(furnaceMinecart.world.isClient));
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")
-    private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, /* short */ short value) {
+    @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")
+    private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, /* short */ short value, Operation<Void> operation) {
         if (Andromeda.CONFIG.betterFurnaceMinecart) nbt.putInt(key, this.fuel);
-        else nbt.putShort(key, value);
+        else operation.call(nbt, key, value);
     }
 
     @Inject(at = @At(value = "TAIL"), method = "readCustomDataFromNbt")
