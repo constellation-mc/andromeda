@@ -66,21 +66,21 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (FuelRegistryImpl.INSTANCE.get(itemStack.getItem()) != null) {
-            int itemFuel = FuelRegistryImpl.INSTANCE.get(itemStack.getItem());
+        ItemStack stack = player.getStackInHand(hand);
+        if (FuelRegistryImpl.INSTANCE.get(stack.getItem()) != null) {
+            int itemFuel = FuelRegistryImpl.INSTANCE.get(stack.getItem());
             if ((this.getFuel() + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
-                    if (itemStack.getItem().getRecipeRemainder() != null)
-                        player.getInventory().offerOrDrop(itemStack.getItem().getRecipeRemainder().getDefaultStack());
-                    itemStack.decrement(1);
+                    if (stack.getItem().getRecipeRemainder() != null)
+                        player.getInventory().offerOrDrop(stack.getItem().getRecipeRemainder(stack));
+                    stack.decrement(1);
                 }
 
                 this.setFuel((int) (getFuel() + (itemFuel * 2.25)));
+                return ActionResult.SUCCESS;
             }
         }
-        super.interact(player, hand);
-        return ActionResult.SUCCESS;
+        return super.interact(player, hand);
     }
 
     @Override

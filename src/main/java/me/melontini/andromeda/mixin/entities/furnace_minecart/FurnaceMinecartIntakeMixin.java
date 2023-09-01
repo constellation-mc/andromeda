@@ -54,7 +54,7 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
                             int itemFuel = FuelRegistryImpl.INSTANCE.get(stack.getItem());
                             if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
                                 if (stack.getItem().getRecipeRemainder() != null)
-                                    ItemStackUtil.spawn(entity.getPos(), stack.getItem().getRecipeRemainder().getDefaultStack(), world);
+                                    ItemStackUtil.spawn(entity.getPos(), stack.getItem().getRecipeRemainder(stack), world);
                                 stack.decrement(1);
 
                                 this.fuel += (itemFuel * 2.25);
