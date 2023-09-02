@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static me.melontini.andromeda.util.ItemStackUtil.getStackOrEmpty;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
@@ -72,32 +73,24 @@ public class ItemRegistry {
     public static ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(new Identifier(MODID, "group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
-                if (Andromeda.CONFIG.incubatorSettings.enableIncubator && ItemRegistry.INCUBATOR != null)
-                    misc.add(ItemRegistry.INCUBATOR.getDefaultStack());
-                if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem && ItemRegistry.INFINITE_TOTEM != null)
-                    misc.add(ItemRegistry.INFINITE_TOTEM.getDefaultStack());
+                misc.add(getStackOrEmpty(ItemRegistry.INCUBATOR));
+                misc.add(getStackOrEmpty(ItemRegistry.INFINITE_TOTEM));
+                misc.add(getStackOrEmpty(ItemRegistry.LOCKPICK));
                 appendStacks(entries, misc, true);
 
                 List<ItemStack> carts = new ArrayList<>();
-                if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn && ItemRegistry.ANVIL_MINECART != null)
-                    carts.add(ItemRegistry.ANVIL_MINECART.getDefaultStack());
-                if (Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn && ItemRegistry.JUKEBOX_MINECART != null)
-                    carts.add(ItemRegistry.JUKEBOX_MINECART.getDefaultStack());
-                if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn && ItemRegistry.NOTE_BLOCK_MINECART != null)
-                    carts.add(ItemRegistry.NOTE_BLOCK_MINECART.getDefaultStack());
-                carts.add(ItemRegistry.SPAWNER_MINECART.getDefaultStack());
+                carts.add(getStackOrEmpty(ItemRegistry.ANVIL_MINECART));
+                carts.add(getStackOrEmpty(ItemRegistry.JUKEBOX_MINECART));
+                carts.add(getStackOrEmpty(ItemRegistry.NOTE_BLOCK_MINECART));
+                carts.add(getStackOrEmpty(ItemRegistry.SPAWNER_MINECART));
                 appendStacks(entries, carts, true);
 
                 List<ItemStack> boats = new ArrayList<>();
                 for (BoatEntity.Type value : BoatEntity.Type.values()) {
-                    if (Andromeda.CONFIG.newBoats.isFurnaceBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_furnace")).getDefaultStack());
-                    if (Andromeda.CONFIG.newBoats.isJukeboxBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_jukebox")).getDefaultStack());
-                    if (Andromeda.CONFIG.newBoats.isTNTBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_tnt")).getDefaultStack());
-                    if (Andromeda.CONFIG.newBoats.isHopperBoatOn)
-                        boats.add(Registry.ITEM.get(new Identifier(MODID, value.getName().replace(":", "_") + "_boat_with_hopper")).getDefaultStack());
+                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "furnace"))));
+                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "hopper"))));
+                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "tnt"))));
+                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "jukebox"))));
                 }
                 appendStacks(entries, boats, false);
             }).icon(ItemRegistry::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> {
@@ -132,6 +125,7 @@ public class ItemRegistry {
     private static void appendStacks(DarkMatterEntries entries, Collection<ItemStack> list, boolean lineBreak) {
         if (list == null || list.isEmpty()) return; //we shouldn't add line breaks if there are no items.
 
+        list.removeIf(stack -> stack == null || stack.isEmpty());
         int rows = MathStuff.fastCeil(list.size() / 9d);
         entries.addAll(list, DarkMatterEntries.Visibility.TAB);
         int left = (rows * 9) - list.size();
