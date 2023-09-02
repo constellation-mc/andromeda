@@ -11,8 +11,10 @@ import net.minecraft.util.registry.Registry;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class ScreenHandlerRegistry {
+
     public static ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER;
     public static ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER;
+
     public static void register() {
         if (Andromeda.CONFIG.usefulFletching) {
             FLETCHING_SCREEN_HANDLER = new ScreenHandlerType<>(FletchingScreenHandler::new);

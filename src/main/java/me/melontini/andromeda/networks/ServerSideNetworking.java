@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ServerSideNetworking {
+
     public static void register() {
         if (Andromeda.CONFIG.newBoats.isTNTBoatOn)
             ServerPlayNetworking.registerGlobalReceiver(AndromedaPackets.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {

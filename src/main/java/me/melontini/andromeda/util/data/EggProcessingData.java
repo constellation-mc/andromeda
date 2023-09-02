@@ -13,5 +13,4 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
                 ", time=" + time +
                 '}';
     }
-
 }

@@ -4,6 +4,7 @@ import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.Utilities;
 
 public class AndromedaLog {
+
     private static final PrependingLogger LOGGER = PrependingLogger.get("Andromeda", logger -> {
         StackWalker.StackFrame frame = Utilities.STACK_WALKER.walk(s -> s.skip(3).findFirst().orElse(null));
         String[] split = frame.getClassName().split("\\.");
@@ -12,6 +13,7 @@ public class AndromedaLog {
         return ((!Utilities.isDev() && SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) ?
                 "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
     });
+
     private static boolean debug;
 
     public static void setDebug(boolean debug) {

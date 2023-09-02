@@ -20,6 +20,7 @@ import net.minecraft.util.Identifier;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class EntityTypeRegistry {
+
     public static EntityType<AnvilMinecartEntity> ANVIL_MINECART_ENTITY = RegistryUtil.createEntityType(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn, new Identifier(MODID, "anvil_minecart"),
             FabricEntityTypeBuilder.<AnvilMinecartEntity>create(SpawnGroup.MISC, AnvilMinecartEntity::new).dimensions(new EntityDimensions(0.98F, 0.7F, true)));
 
@@ -48,6 +49,4 @@ public class EntityTypeRegistry {
     public static void register() {
         AndromedaLog.info("EntityTypeRegistry init complete!");
     }
-
-
 }

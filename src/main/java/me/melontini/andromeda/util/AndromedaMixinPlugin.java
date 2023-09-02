@@ -23,9 +23,10 @@ import java.util.Set;
 
 @SuppressWarnings("UnstableApiUsage")
 public class AndromedaMixinPlugin extends ExtendablePlugin {
+
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaMixinPlugin"), PrependingLogger.LOGGER_NAME);
-    private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
     private static AndromedaConfig CONFIG;
+    private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
 
     static {
         LOGGER.info("Definitely up to a lot of good");

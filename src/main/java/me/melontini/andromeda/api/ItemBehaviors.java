@@ -35,5 +35,4 @@ public final class ItemBehaviors {
         void onCollision(ItemStack stack, FlyingItemEntity flyingItemEntity, World world, @Nullable Entity user, HitResult hitResult);
 
     }
-
 }

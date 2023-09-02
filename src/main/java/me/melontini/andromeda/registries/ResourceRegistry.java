@@ -227,5 +227,4 @@ public class ResourceRegistry {
         }
         return null;
     }
-
 }

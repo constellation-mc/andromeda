@@ -15,6 +15,7 @@ import net.minecraft.util.math.Vec3f;
 import java.util.Objects;
 
 public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBlockEntity> {
+
     public IncubatorBlockRenderer(BlockEntityRendererFactory.Context context) {
     }
 

@@ -213,5 +213,4 @@ public class AndromedaClient {
     public static AndromedaClient get() {
         return Objects.requireNonNull(INSTANCE, "AndromedaClient not initialized");
     }
-
 }

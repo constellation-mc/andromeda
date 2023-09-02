@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
+
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     public int processingTime = -1;
 

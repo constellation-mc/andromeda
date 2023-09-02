@@ -38,6 +38,7 @@ import static me.melontini.andromeda.util.SharedConstants.MODID;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
 public class ItemRegistry {
+
     public static RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.ROSE_OF_THE_VALLEY);
 
     public static SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder
