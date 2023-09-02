@@ -2,6 +2,7 @@ package me.melontini.andromeda.entity.vehicle.boats;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
+import me.melontini.andromeda.registries.ItemRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -98,7 +98,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName().replace(":", "_") + "_boat_with_furnace"));
+        return Registry.ITEM.get(ItemRegistry.boatId(this.getBoatType(), "furnace"));
     }
 
     public int getFuel() {

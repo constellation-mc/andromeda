@@ -2,6 +2,7 @@ package me.melontini.andromeda.entity.vehicle.boats;
 
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
+import me.melontini.andromeda.registries.ItemRegistry;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
@@ -122,7 +122,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName().replace(":", "_") + "_boat_with_tnt"));
+        return Registry.ITEM.get(ItemRegistry.boatId(this.getBoatType(), "tnt"));
     }
 
     @Override
