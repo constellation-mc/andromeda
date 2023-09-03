@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.blocks.cactus_filler;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.ItemStackUtil;
@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class AbstractBlockMixin {
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
     private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (!Andromeda.CONFIG.cactusBottleFilling) return;
+        if (!Config.get().cactusBottleFilling) return;
 
         if (state.getBlock() instanceof CactusBlock) {
             ItemStack stack = player.getStackInHand(hand);

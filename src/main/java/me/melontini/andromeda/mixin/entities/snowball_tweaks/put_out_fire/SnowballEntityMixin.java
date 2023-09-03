@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.entities.snowball_tweaks.put_out_fire;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.Entity;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SnowballEntityMixin {
     @Inject(at = @At("TAIL"), method = "onEntityHit")
     private void andromeda$extinguish(EntityHitResult entityHitResult, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.snowballs.extinguish) return;
+        if (!Config.get().snowballs.extinguish) return;
 
         Entity entity = entityHitResult.getEntity();
         if (entity.isOnFire()) {

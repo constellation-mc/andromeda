@@ -1,6 +1,6 @@
 package me.melontini.andromeda.entity.vehicle.boats;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ItemRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
@@ -69,7 +69,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
         ItemStack stack = player.getStackInHand(hand);
         if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
             int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
-            if ((this.getFuel() + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
+            if ((this.getFuel() + (itemFuel * 2.25)) <= Config.get().maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
                     ItemStack reminder = stack.getRecipeRemainder();
                     if (!reminder.isEmpty())

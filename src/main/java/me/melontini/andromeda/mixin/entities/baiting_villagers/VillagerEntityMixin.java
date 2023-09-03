@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.entities.baiting_villagers;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.entity.ai.goal.VillagerTemptGoal;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.EntityType;
@@ -25,7 +25,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;setVillagerData(Lnet/minecraft/village/VillagerData;)V", shift = At.Shift.AFTER), method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;Lnet/minecraft/village/VillagerType;)V")
     private void andromeda$init(EntityType<? extends VillagerEntity> entityType, World world, VillagerType type, CallbackInfo ci) {
-        if (Andromeda.CONFIG.villagersFollowEmeraldBlocks)
+        if (Config.get().villagersFollowEmeraldBlocks)
             this.goalSelector.add(6, new VillagerTemptGoal((VillagerEntity) (Object) this, 0.5, Ingredient.ofItems(Items.EMERALD_BLOCK), false));
     }
 }

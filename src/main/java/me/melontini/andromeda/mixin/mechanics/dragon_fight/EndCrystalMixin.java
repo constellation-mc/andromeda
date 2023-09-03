@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.mechanics.dragon_fight;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -29,7 +29,7 @@ public abstract class EndCrystalMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/decoration/EndCrystalEntity;remove(Lnet/minecraft/entity/Entity$RemovalReason;)V", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!Andromeda.CONFIG.dragonFight.fightTweaks || !Andromeda.CONFIG.dragonFight.respawnCrystals) return;
+        if (!Config.get().dragonFight.fightTweaks || !Config.get().dragonFight.respawnCrystals) return;
 
         if (world.getRegistryKey() == World.END && !((ServerWorld) world).getAliveEnderDragons().isEmpty() && shouldShowBottom()) {
             if (this.getPos().getY() > 71)

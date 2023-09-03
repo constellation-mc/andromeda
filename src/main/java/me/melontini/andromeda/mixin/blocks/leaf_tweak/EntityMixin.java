@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.leaf_tweak;
 
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -33,7 +34,7 @@ public abstract class EntityMixin extends Entity {
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (!Andromeda.CONFIG.leafSlowdown) return;
+        if (!Config.get().leafSlowdown) return;
 
         EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (!this.world.isClient) {

@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.blocks.bed.power;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +16,6 @@ public abstract class BedBlockMixin extends Block {
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/world/explosion/ExplosionBehavior;DDDFZLnet/minecraft/world/explosion/Explosion$DestructionType;)Lnet/minecraft/world/explosion/Explosion;"), index = 6, method = "onUse")
     public float andromeda$explosionRedirect(float power) {
-        return Andromeda.CONFIG.bedExplosionPower;
+        return Config.get().bedExplosionPower;
     }
 }

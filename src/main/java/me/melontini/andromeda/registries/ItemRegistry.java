@@ -1,6 +1,6 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.items.LockpickItem;
 import me.melontini.andromeda.items.RoseOfTheValley;
 import me.melontini.andromeda.items.boats.FurnaceBoatItem;
@@ -48,23 +48,23 @@ public class ItemRegistry {
 
     public static AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn).build();
+            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newMinecarts.isAnvilMinecartOn).build();
 
     public static NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn).build();
+            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newMinecarts.isNoteBlockMinecartOn).build();
 
     public static JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn).build();
+            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newMinecarts.isJukeboxMinecartOn).build();
 
     public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
-            .itemGroup(ItemGroup.COMBAT).registerCondition(Andromeda.CONFIG.totemSettings.enableInfiniteTotem).build();
+            .itemGroup(ItemGroup.COMBAT).registerCondition(Config.get().totemSettings.enableInfiniteTotem).build();
 
     public static Item LOCKPICK = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
-            .itemGroup(ItemGroup.TOOLS).registerCondition(Andromeda.CONFIG.lockpickEnabled).build();
+            .itemGroup(ItemGroup.TOOLS).registerCondition(Config.get().lockpickEnabled).build();
 
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
 
@@ -110,10 +110,10 @@ public class ItemRegistry {
 
     public static void register() {
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
-            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isFurnaceBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isJukeboxBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isTNTBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isHopperBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isFurnaceBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isJukeboxBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isTNTBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isHopperBoatOn).build();
         }
         AndromedaLog.info("ItemRegistry init complete!");
     }
@@ -137,11 +137,11 @@ public class ItemRegistry {
 
     private static ItemStack getAndSetIcon() {
         if (ITEM_GROUP_ICON == null) {
-            if (Andromeda.CONFIG.unknown && ROSE_OF_THE_VALLEY != null) {
+            if (Config.get().unknown && ROSE_OF_THE_VALLEY != null) {
                 ITEM_GROUP_ICON = new ItemStack(ROSE_OF_THE_VALLEY);
-            } else if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem && INFINITE_TOTEM != null) {
+            } else if (Config.get().totemSettings.enableInfiniteTotem && INFINITE_TOTEM != null) {
                 ITEM_GROUP_ICON = new ItemStack(INFINITE_TOTEM);
-            } else if (Andromeda.CONFIG.incubatorSettings.enableIncubator && INCUBATOR != null) {
+            } else if (Config.get().incubatorSettings.enableIncubator && INCUBATOR != null) {
                 ITEM_GROUP_ICON = new ItemStack(INCUBATOR);
             } else ITEM_GROUP_ICON = new ItemStack(Items.BEDROCK);
         }

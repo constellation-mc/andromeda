@@ -2,7 +2,7 @@ package me.melontini.andromeda.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.analytics.Analytics;
 import me.melontini.dark_matter.api.analytics.Prop;
@@ -23,7 +23,7 @@ public class AndromedaReporter {
 
     public static void handleUpload() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            if (Andromeda.CONFIG.sendOptionalData) {
+            if (Config.get().sendOptionalData) {
                 if (SharedConstants.MOD_UPDATED) {
                     HANDLER.send(messageBuilder -> {
                         JsonObject object = new JsonObject();
@@ -62,7 +62,7 @@ public class AndromedaReporter {
 
     public static void registerCrashHandler() {
         Crashlytics.addHandler("andromeda", (report, cause, latestLog, envType) -> {
-            if (!FabricLoader.getInstance().isDevelopmentEnvironment() && Andromeda.CONFIG.sendCrashReports) {
+            if (!FabricLoader.getInstance().isDevelopmentEnvironment() && Config.get().sendCrashReports) {
                 if (cause instanceof AndromedaException e) return e.shouldReport();
                 return findAndromedaInTrace(cause);
             } else return false;

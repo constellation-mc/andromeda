@@ -2,6 +2,7 @@ package me.melontini.andromeda.blocks.entities;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.blocks.IncubatorBlock;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -64,7 +65,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             if (!stack.isEmpty() && this.processingTime == -1) {
                 EggProcessingData data = Andromeda.get().EGG_DATA.get(stack.getItem());
                 if (data != null) {
-                    this.processingTime = Andromeda.CONFIG.incubatorSettings.incubatorRandomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
+                    this.processingTime = Config.get().incubatorSettings.incubatorRandomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     markDirty();
                 }

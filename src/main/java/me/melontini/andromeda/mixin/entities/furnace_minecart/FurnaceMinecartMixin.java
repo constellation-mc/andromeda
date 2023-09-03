@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.entities.furnace_minecart;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,14 +27,14 @@ public class FurnaceMinecartMixin {
 
     @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
     public void andromeda$interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (!Andromeda.CONFIG.betterFurnaceMinecart) return;
+        if (!Config.get().betterFurnaceMinecart) return;
         ItemStack stack = player.getStackInHand(hand);
         Item item = stack.getItem();
 
         FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
         if (FuelRegistry.INSTANCE.get(item) != null) {
             int itemFuel = FuelRegistry.INSTANCE.get(item);
-            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
+            if ((this.fuel + (itemFuel * 2.25)) <= Config.get().maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
                     ItemStack reminder = stack.getRecipeRemainder();
                     if (!reminder.isEmpty())
@@ -56,12 +56,12 @@ public class FurnaceMinecartMixin {
 
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")
     private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, /* short */ short value, Operation<Void> operation) {
-        if (Andromeda.CONFIG.betterFurnaceMinecart) nbt.putInt(key, this.fuel);
+        if (Config.get().betterFurnaceMinecart) nbt.putInt(key, this.fuel);
         else operation.call(nbt, key, value);
     }
 
     @Inject(at = @At(value = "TAIL"), method = "readCustomDataFromNbt")
     public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (Andromeda.CONFIG.betterFurnaceMinecart) this.fuel = nbt.getInt("Fuel");
+        if (Config.get().betterFurnaceMinecart) this.fuel = nbt.getInt("Fuel");
     }
 }

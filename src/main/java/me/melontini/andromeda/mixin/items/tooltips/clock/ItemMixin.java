@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.items.tooltips.clock;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -24,7 +24,7 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.tooltips.clock) return;
+        if (!Config.get().tooltips.clock) return;
 
         if (world != null && world.isClient) {
             if (stack.getItem() == Items.CLOCK) {

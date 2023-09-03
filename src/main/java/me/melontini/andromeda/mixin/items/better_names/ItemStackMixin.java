@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.items.better_names;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
@@ -40,7 +40,7 @@ public abstract class ItemStackMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip", locals = LocalCapture.CAPTURE_FAILSOFT)
     private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list, MutableText mutableText) {
-        if (!Andromeda.CONFIG.slightlyBetterItemNames) return;
+        if (!Config.get().slightlyBetterItemNames) return;
 
         if (!this.getItem().isDamageable()) {
             if (this.getCount() > 1)

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.networks;
 
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.particles.screen.DyeParticle;
 import me.melontini.andromeda.client.sound.PersistentMovingSoundInstance;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -36,7 +36,7 @@ public class ClientSideNetworking {
     public static Map<UUID, SoundInstance> soundInstanceMap = new ConcurrentHashMap<>();
 
     public static void register() {
-        if (Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn) {
+        if (Config.get().newMinecarts.isJukeboxMinecartOn) {
             ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.JUKEBOX_MINECART_START_PLAYING, (client, handler, buf, responseSender) -> {
                 UUID id = buf.readUuid();
                 ItemStack stack = buf.readItemStack();

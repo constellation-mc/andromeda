@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.mechanics.wandering_trader;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +29,7 @@ import java.util.Optional;
 public class GoatHornMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "use")
     private void andromeda$wanderingGoatHorn(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack, Optional<RegistryEntry<Instrument>> optional, Instrument instrument) {
-        if (!Andromeda.CONFIG.tradingGoatHorn) return;
+        if (!Config.get().tradingGoatHorn) return;
 
         NbtCompound nbtCompound = itemStack.getNbt();
         if (!world.isClient()) if (nbtCompound != null) {

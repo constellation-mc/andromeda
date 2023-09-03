@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.entities.zombie.throw_items;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.entity.FlyingItemEntity;
 import me.melontini.andromeda.entity.ai.goal.ItemThrowerMob;
@@ -35,8 +35,8 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
 
     @Inject(at = @At("HEAD"), method = "initCustomGoals")
     private void andromeda$initCustomGoals(CallbackInfo ci) {
-        if (Andromeda.CONFIG.newThrowableItems.enable && Andromeda.CONFIG.newThrowableItems.canZombiesThrowItems)
-            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Andromeda.CONFIG.newThrowableItems.zombieThrowInterval, 4, 16));
+        if (Config.get().newThrowableItems.enable && Config.get().newThrowableItems.canZombiesThrowItems)
+            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Config.get().newThrowableItems.zombieThrowInterval, 4, 16));
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
@@ -46,7 +46,7 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
 
     @Override
     public void am$throwItem(LivingEntity target, float pullProgress) {
-        if (!Andromeda.CONFIG.newThrowableItems.enable || !Andromeda.CONFIG.newThrowableItems.canZombiesThrowItems) return;
+        if (!Config.get().newThrowableItems.enable || !Config.get().newThrowableItems.canZombiesThrowItems) return;
 
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 

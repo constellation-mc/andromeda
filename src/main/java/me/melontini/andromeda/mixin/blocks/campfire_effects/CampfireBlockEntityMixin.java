@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.campfire_effects;
 
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.PotionUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.BlockState;
@@ -28,17 +28,17 @@ import java.util.List;
 public class CampfireBlockEntityMixin {
     @Inject(at = @At("HEAD"), method = "litServerTick")
     private static void andromeda$litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.campfireTweaks.campfireEffects) return;
+        if (!Config.get().campfireTweaks.campfireEffects) return;
 
         if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
                     List<LivingEntity> entities = new ArrayList<>();
-                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(Andromeda.CONFIG.campfireTweaks.campfireEffectsRange), entity -> {
-                        if ((entity instanceof PassiveEntity && Andromeda.CONFIG.campfireTweaks.campfireEffectsPassive) || entity instanceof PlayerEntity) {
+                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(Config.get().campfireTweaks.campfireEffectsRange), entity -> {
+                        if ((entity instanceof PassiveEntity && Config.get().campfireTweaks.campfireEffectsPassive) || entity instanceof PlayerEntity) {
                             entities.add((LivingEntity) entity);
                         }
                     });
-                    List<AndromedaConfig.CampfireTweaks.Effect> effects = Andromeda.CONFIG.campfireTweaks.effectList;
+                    List<AndromedaConfig.CampfireTweaks.Effect> effects = Config.get().campfireTweaks.effectList;
 
                     for (LivingEntity player : entities) {
                         for (AndromedaConfig.CampfireTweaks.Effect effect : effects) {

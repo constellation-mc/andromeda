@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.world.falling_beehives;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
@@ -47,7 +47,7 @@ public abstract class FallingBlockMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/world/World.getBlockEntity (Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/entity/BlockEntity;", shift = At.Shift.AFTER), method = "tick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (!Andromeda.CONFIG.canBeeNestsFall) return;
+        if (!Config.get().canBeeNestsFall) return;
 
         BlockPos blockPos = this.getBlockPos();
         BlockEntity blockEntity = this.world.getBlockEntity(blockPos);

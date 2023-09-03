@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.items.tooltips.compass;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -29,7 +29,7 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.tooltips.compass) return;
+        if (!Config.get().tooltips.compass) return;
 
         if (world != null) if (world.isClient) {
             if (stack.getItem() == Items.COMPASS && MinecraftClient.getInstance().player != null) {

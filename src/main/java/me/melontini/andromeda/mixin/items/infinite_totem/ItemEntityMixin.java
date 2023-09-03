@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.items.infinite_totem;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.WorldUtil;
@@ -76,7 +76,7 @@ public abstract class ItemEntityMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!Andromeda.CONFIG.totemSettings.enableTotemAscension || !Andromeda.CONFIG.totemSettings.enableInfiniteTotem)
+        if (!Config.get().totemSettings.enableTotemAscension || !Config.get().totemSettings.enableInfiniteTotem)
             return;
         if (!this.dataTracker.get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
 

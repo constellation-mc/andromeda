@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.gui.name_tooltips;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
@@ -43,7 +43,7 @@ public abstract class InGameHudMixin {
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
     private void andromeda$renderTooltip(MatrixStack matrices, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.tooltipNotName) return;
+        if (!Config.get().tooltipNotName) return;
 
         this.client.getProfiler().push("selectedItemName");
 

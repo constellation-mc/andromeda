@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.misc.unknown.wakeup;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
@@ -31,7 +31,7 @@ public abstract class PlayerEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
     private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.unknown) return;
+        if (!Config.get().unknown) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
 
         if (!player.world.isClient) if (Random.create().nextInt(100000) == 0) {

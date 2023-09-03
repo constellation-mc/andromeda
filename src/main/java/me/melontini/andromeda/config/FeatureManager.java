@@ -22,6 +22,7 @@ public class FeatureManager {
     private static final Map<Field, String> MODIFIED_FIELDS = new HashMap<>();
     private static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
     private static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
+    private static final Set<String> FAILED_MIXINS = new HashSet<>();
 
 
     public static void registerProcessor(String id, FeatureConfig.Processor processor) {
@@ -44,31 +45,37 @@ public class FeatureManager {
         return MOD_BLAME.get(FIELD_TO_STRING.get(feature)).stream().sorted(String::compareToIgnoreCase).toArray(String[]::new);
     }
 
-    public static void processFeatures(AndromedaConfig config) {
+    public static void processMixinError(String option) {
+        FAILED_MIXINS.add(option);
+    }
+
+    public static void processFeatures(boolean print) {
         MODIFIED_FIELDS.clear();
-        if (!config.enableFeatureManager) return;
+        if (!Config.get().enableFeatureManager) return;
 
         for (Map.Entry<String, FeatureConfig.Processor> entry : PROCESSORS.entrySet()) {
-            Map<String, Object> featureConfigEntry = entry.getValue().process(config);
+            Map<String, Object> featureConfigEntry = entry.getValue().process(Config.get());
             if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
 
-                LOGGER.info("Processor: {}", entry.getKey());
-                StringBuilder builder = new StringBuilder().append("Config: ");
-                featureConfigEntry.keySet().forEach(s -> builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; "));
-                LOGGER.info(builder.toString());
+                if (print) {
+                    LOGGER.info("Processor: {}", entry.getKey());
+                    StringBuilder builder = new StringBuilder().append("Config: ");
+                    featureConfigEntry.keySet().forEach(s -> builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; "));
+                    LOGGER.info(builder.toString());
+                }
 
-                configure(config, entry.getKey(), featureConfigEntry);
+                configure(entry.getKey(), featureConfigEntry);
             }
         }
     }
 
-    private static void configure(AndromedaConfig config, String processor, Map<String, Object> featureConfig) {
+    private static void configure(String processor, Map<String, Object> featureConfig) {
         Set<String> skipped = new HashSet<>();
         for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
             String configOption = configEntry.getKey();
             try {
-                Field f = ConfigHelper.setConfigOption(configOption, config, configEntry.getValue());
-                MODIFIED_FIELDS.put(f, processor);
+                Field f = ConfigHelper.setConfigOption(configOption, configEntry.getValue());
+                MODIFIED_FIELDS.putIfAbsent(f, processor);
                 FIELD_TO_STRING.putIfAbsent(f, configOption);
             } catch (NoSuchFieldException e) {
                 skipped.add(configOption);
@@ -90,6 +97,15 @@ public class FeatureManager {
                     .filter(mod -> mod.getMetadata().containsCustomValue("andromeda:features"))
                     .forEach(FeatureManager::parseMetadata);
             return MOD_JSON;
+        });
+        FeatureManager.registerProcessor("mixin_error", config -> {
+            if (FAILED_MIXINS.isEmpty()) return null;
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            for (String failedMixin : FAILED_MIXINS) {
+                map.put(failedMixin, false);
+            }
+            return map;
         });
         EntrypointRunner.runEntrypoint("andromeda:feature_manager", Runnable.class, Runnable::run);
     }

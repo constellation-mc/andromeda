@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.mechanics.extended_behavior;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.entity.FlyingItemEntity;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
@@ -52,7 +52,7 @@ public abstract class ItemStackMixin {
 
     @Unique
     private boolean andromeda$runBehaviors(World world, PlayerEntity user) {
-        if (!Andromeda.CONFIG.newThrowableItems.enable) return false;
+        if (!Config.get().newThrowableItems.enable) return false;
 
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {

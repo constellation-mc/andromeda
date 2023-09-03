@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +27,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V", shift = At.Shift.AFTER), method = "onStoppedUsing", locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     public void andromeda$setVelocity(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
-        if (!Andromeda.CONFIG.usefulFletching) return;
+        if (!Config.get().usefulFletching) return;
 
         NbtCompound stackNbt = stack.getNbt();
         int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);

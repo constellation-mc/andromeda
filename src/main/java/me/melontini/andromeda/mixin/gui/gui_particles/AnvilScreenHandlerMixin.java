@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.gui.gui_particles;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.block.BlockState;
@@ -32,7 +32,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V", ordinal = 0), method = "onTakeOutput")
     private void andromeda$particles(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.guiParticles.anvilScreenParticles) return;
+        if (!Config.get().guiParticles.anvilScreenParticles) return;
 
         try {
             if (MinecraftClient.getInstance().isOnThread() && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {

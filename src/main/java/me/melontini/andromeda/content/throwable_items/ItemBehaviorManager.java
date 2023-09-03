@@ -1,8 +1,8 @@
 package me.melontini.andromeda.content.throwable_items;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.api.ItemBehaviors;
+import me.melontini.andromeda.config.Config;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 
@@ -15,7 +15,7 @@ public class ItemBehaviorManager {
     private static final Set<Item> OVERRIDE_VANILLA = new HashSet<>();
 
     public static List<ItemBehaviors.Behavior> getBehaviors(Item item) {
-        if (Andromeda.CONFIG.newThrowableItems.blacklist.contains(Registry.ITEM.getId(item).toString()))
+        if (Config.get().newThrowableItems.blacklist.contains(Registry.ITEM.getId(item).toString()))
             return Collections.emptyList();
         Holder holder = ITEM_BEHAVIORS.get(item);
         if (holder == null) return Collections.emptyList();
@@ -39,7 +39,7 @@ public class ItemBehaviorManager {
     }
 
     public static boolean hasBehaviors(Item item) {
-        return ITEM_BEHAVIORS.containsKey(item) && !Andromeda.CONFIG.newThrowableItems.blacklist.contains(Registry.ITEM.getId(item).toString());
+        return ITEM_BEHAVIORS.containsKey(item) && !Config.get().newThrowableItems.blacklist.contains(Registry.ITEM.getId(item).toString());
     }
 
     public static void clear() {

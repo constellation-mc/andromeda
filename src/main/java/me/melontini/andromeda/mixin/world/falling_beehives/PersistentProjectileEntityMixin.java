@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.world.falling_beehives;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.AirBlock;
@@ -35,7 +35,7 @@ public abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
     @SuppressWarnings("ConstantConditions")
     @Inject(at = @At("TAIL"), method = "onBlockHit")
     private void andromeda$onBeeNestHit(BlockHitResult blockHitResult, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.canBeeNestsFall) return;
+        if (!Config.get().canBeeNestsFall) return;
 
         Entity entity = this;
         BlockPos pos = blockHitResult.getBlockPos();
