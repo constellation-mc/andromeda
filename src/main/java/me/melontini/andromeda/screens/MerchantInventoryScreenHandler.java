@@ -10,6 +10,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
 public class MerchantInventoryScreenHandler extends ScreenHandler {
+
     private final Inventory inventory;
 
     public MerchantInventoryScreenHandler(int syncId, PlayerInventory playerInventory) {

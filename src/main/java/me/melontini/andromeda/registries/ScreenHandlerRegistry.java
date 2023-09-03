@@ -1,11 +1,10 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.screens.MerchantInventoryScreenHandler;
 import me.melontini.andromeda.util.AndromedaLog;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
@@ -13,16 +12,14 @@ import net.minecraft.util.Identifier;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class ScreenHandlerRegistry {
+
     public static ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER;
     public static ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER;
-    public static void register() {
-        if (Andromeda.CONFIG.usefulFletching) {
-            FLETCHING_SCREEN_HANDLER = new ScreenHandlerType<>(FletchingScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-            Registry.register(Registries.SCREEN_HANDLER, new Identifier(MODID, "fletching"), FLETCHING_SCREEN_HANDLER);
-        }
 
-        MERCHANT_INVENTORY_SCREEN_HANDLER = new ScreenHandlerType<>(MerchantInventoryScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-        Registry.register(Registries.SCREEN_HANDLER, new Identifier(MODID, "merchant_inventory"), MERCHANT_INVENTORY_SCREEN_HANDLER);
+    public static void register() {
+        FLETCHING_SCREEN_HANDLER = RegistryUtil.createScreenHandler(Config.get().usefulFletching, new Identifier(MODID, "fletching"), () -> FletchingScreenHandler::new);
+
+        MERCHANT_INVENTORY_SCREEN_HANDLER = RegistryUtil.createScreenHandler(new Identifier(MODID, "merchant_inventory"), () -> MerchantInventoryScreenHandler::new);
 
         AndromedaLog.info("ScreenHandlerRegistry init complete!");
     }

@@ -1,7 +1,9 @@
 package me.melontini.andromeda.util.exceptions;
 
 public class AndromedaException extends RuntimeException {
+
     private boolean report = true;
+
     public AndromedaException() {
         super(buildMessage(""));
     }

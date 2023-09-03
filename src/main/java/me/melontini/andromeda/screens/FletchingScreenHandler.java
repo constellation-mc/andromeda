@@ -1,7 +1,7 @@
 package me.melontini.andromeda.screens;
 
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -62,7 +62,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
             if (i >= 32) return;
             ItemStack newStack = itemStack.copy();
 
-            newStack.setNbt(NbtBuilder.create(oldNbt).putInt("AM-Tightened", Math.min(i + Utilities.RANDOM.nextInt(1, 3), 32)).build());
+            newStack.setNbt(NbtBuilder.create(oldNbt).putInt("AM-Tightened", Math.min(i + MathStuff.threadRandom().nextInt(1, 3), 32)).build());
             getSlot(2).setStack(newStack);
         }
     }

@@ -32,5 +32,4 @@ public class MiscUtil {
     public static RegistryEntry.Reference<DamageType> getTypeReference(World world, RegistryKey<DamageType> type) {
         return world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).getEntry(type).orElseThrow();
     }
-
 }

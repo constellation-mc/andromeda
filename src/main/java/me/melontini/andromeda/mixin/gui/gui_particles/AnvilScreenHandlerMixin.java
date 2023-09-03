@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.gui.gui_particles;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.block.BlockState;
@@ -32,20 +32,20 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V", ordinal = 0), method = "onTakeOutput")
     private void andromeda$particles(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        if (Andromeda.CONFIG.guiParticles.anvilScreenParticles) {
-            try {
-                if (MinecraftClient.getInstance().isOnThread() && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {
-                    BlockState state = Blocks.ANVIL.getDefaultState();
-                    var slot = this.slots.get(2);
-                    boolean enchant = this.slots.get(1).getStack().isOf(Items.ENCHANTED_BOOK);
-                    ScreenParticleHelper.addScreenParticles(
-                            !enchant ? new BlockStateParticleEffect(ParticleTypes.BLOCK, state) : ParticleTypes.END_ROD,
-                            anvilScreen.x + slot.x + 8, anvilScreen.y + slot.y + 8,
-                            0.5, 0.5, !enchant ? 0.5 : 0.07, 5);
-                }
-            } catch (Exception e) {
-                //client-server handling 101
+        if (!Config.get().guiParticles.anvilScreenParticles) return;
+
+        try {
+            if (MinecraftClient.getInstance().isOnThread() && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {
+                BlockState state = Blocks.ANVIL.getDefaultState();
+                var slot = this.slots.get(2);
+                boolean enchant = this.slots.get(1).getStack().isOf(Items.ENCHANTED_BOOK);
+                ScreenParticleHelper.addScreenParticles(
+                        !enchant ? new BlockStateParticleEffect(ParticleTypes.BLOCK, state) : ParticleTypes.END_ROD,
+                        anvilScreen.x + slot.x + 8, anvilScreen.y + slot.y + 8,
+                        0.5, 0.5, !enchant ? 0.5 : 0.07, 5);
             }
+        } catch (Exception e) {
+            //client-server handling 101
         }
     }
 }

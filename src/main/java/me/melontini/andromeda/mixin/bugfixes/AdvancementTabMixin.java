@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.bugfixes;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
@@ -19,11 +19,11 @@ public class AdvancementTabMixin {
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 0), index = 0, method = "drawWidgetTooltip")
     private float andromeda$draw(float value) {
-        return Andromeda.CONFIG.frameIndependentAdvancementShadow ? this.alpha + (0.04F * client.getLastFrameDuration()) : value;
+        return Config.get().frameIndependentAdvancementShadow ? this.alpha + (0.04F * client.getLastFrameDuration()) : value;
     }
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 1), index = 0, method = "drawWidgetTooltip")
     private float andromeda$draw1(float value) {
-        return Andromeda.CONFIG.frameIndependentAdvancementShadow ? this.alpha - (0.06F * client.getLastFrameDuration()) : value;
+        return Config.get().frameIndependentAdvancementShadow ? this.alpha - (0.06F * client.getLastFrameDuration()) : value;
     }
 }

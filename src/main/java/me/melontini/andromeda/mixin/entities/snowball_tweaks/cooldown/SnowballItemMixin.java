@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.entities.snowball_tweaks.cooldown;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -24,8 +24,8 @@ public abstract class SnowballItemMixin extends Item {
 
     @Inject(at = @At("TAIL"), method = "use")
     private void andromeda$useCooldown(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (Andromeda.CONFIG.snowballs.enableCooldown) {
-            user.getItemCooldownManager().set(this, Andromeda.CONFIG.snowballs.cooldown);
-        }
+        if (!Config.get().snowballs.enableCooldown) return;
+
+        user.getItemCooldownManager().set(this, Config.get().snowballs.cooldown);
     }
 }

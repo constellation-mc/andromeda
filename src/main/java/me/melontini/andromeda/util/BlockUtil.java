@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class BlockUtil {
+
     public static final IntProperty WATER_LEVEL_3 = IntProperty.of("water_level", 1, 3);
 
     public static int getLevelFromBlocks(World world, BlockPos pos, List<Block> allowedBlocks) {

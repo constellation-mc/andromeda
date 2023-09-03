@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.items.cart_copy;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.block.BlockState;
@@ -50,7 +50,7 @@ public class ItemDispenserBehaviorMixin {
             AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE);
             FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) abstractMinecartEntity;
 
-            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, Andromeda.CONFIG.maxFurnaceMinecartFuel);
+            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, Config.get().maxFurnaceMinecartFuel);
             furnaceMinecart.pushX = furnaceMinecart.getX() - blockPos.getX();
             furnaceMinecart.pushZ = furnaceMinecart.getZ() - blockPos.getZ();
             if (stack.hasCustomName()) furnaceMinecart.setCustomName(stack.getName());

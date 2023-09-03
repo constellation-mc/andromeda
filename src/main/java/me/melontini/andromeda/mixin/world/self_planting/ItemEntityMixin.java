@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.world.self_planting;
 
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.Entity;
@@ -34,16 +34,18 @@ public abstract class ItemEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void andromeda$tryPlant(CallbackInfo ci) {
+        if (!Config.get().autoPlanting.enabled) return;
+
         Entity entity = (Entity) (Object) this;
         ItemStack stack = this.getStack();
         BlockPos pos = entity.getBlockPos();
         World world = entity.getWorld();
-        if (Andromeda.CONFIG.autoPlanting.enabled && !world.isClient()) {
+        if (!world.isClient()) {
             if (entity.age % andromeda$random.nextInt(20, 101) == 0) {
                 if (stack.getItem() instanceof BlockItem) {
                     if (((BlockItem) stack.getItem()).getBlock() instanceof PlantBlock) {
                         if (world.getFluidState(pos).isEmpty()) {
-                            if (Andromeda.CONFIG.autoPlanting.blacklistMode == Andromeda.CONFIG.autoPlanting.idList.contains(Registries.ITEM.getId(stack.getItem()).toString())) return;
+                            if (Config.get().autoPlanting.blacklistMode == Config.get().autoPlanting.idList.contains(Registries.ITEM.getId(stack.getItem()).toString())) return;
 
                             ((BlockItem) stack.getItem()).place(new ItemPlacementContext(world, null, null, stack, world.raycast(
                                     new RaycastContext(

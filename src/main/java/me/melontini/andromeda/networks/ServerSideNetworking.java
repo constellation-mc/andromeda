@@ -1,6 +1,6 @@
 package me.melontini.andromeda.networks;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -9,8 +9,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ServerSideNetworking {
+
     public static void register() {
-        if (Andromeda.CONFIG.newBoats.isTNTBoatOn)
+        if (Config.get().newBoats.isTNTBoatOn)
             ServerPlayNetworking.registerGlobalReceiver(AndromedaPackets.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {
                 UUID id = buf.readUuid();
                 server.execute(() -> {

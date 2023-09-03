@@ -14,6 +14,8 @@ New Tweaks:
 
 ***
 
+* Added a fallback in case of mixin failures. Only works if a mixin is part of a feature.
+* Multiple processors can now be blamed for setting a feature.
 * Added `fabric:load_conditions` support to mod's resources.
 * Tried to improve JSON parsing. It should be faster* and have better error messages.
 * Moved `FeatureConfig` and `ItemBehaviors` to `api`. You still need to use their entrypoints.

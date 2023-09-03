@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.world.falling_beehives;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.AirBlock;
@@ -35,17 +35,17 @@ public abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
     @Inject(at = @At("HEAD"), method = "serverTick")
     private static void andromeda$fallingHive(@NotNull World world, BlockPos pos, BlockState state, BeehiveBlockEntity beehiveBlockEntity, CallbackInfo ci) {
-        if (Andromeda.CONFIG.canBeeNestsFall) {
-            if (world.getBlockState(pos).getBlock() == Blocks.BEE_NEST) {
-                if (world.random.nextInt(32000) == 0) {
-                    if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {
-                        BlockState up = world.getBlockState(pos.offset(Direction.UP));
-                        if (up.isIn(BlockTags.LOGS) || up.isIn(BlockTags.LEAVES)) {
-                            for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {
-                                if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
-                                    trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
-                                    break;
-                                }
+        if (!Config.get().canBeeNestsFall) return;
+
+        if (world.getBlockState(pos).getBlock() == Blocks.BEE_NEST) {
+            if (world.random.nextInt(32000) == 0) {
+                if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {
+                    BlockState up = world.getBlockState(pos.offset(Direction.UP));
+                    if (up.isIn(BlockTags.LOGS) || up.isIn(BlockTags.LEAVES)) {
+                        for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {
+                            if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
+                                trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
+                                break;
                             }
                         }
                     }

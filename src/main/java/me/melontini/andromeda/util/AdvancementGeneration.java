@@ -3,7 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementManager;
@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 public class AdvancementGeneration {
+
     public static final Hash.Strategy<ItemStack> STRATEGY = new Hash.Strategy<>() {//Vanilla ItemStackSet is good, but it uses canCombine() and not areEqual(). It also doesn't exist on 1.18.2-1.19.2
         @Override
         public int hashCode(ItemStack itemStack) {
@@ -89,11 +90,11 @@ public class AdvancementGeneration {
         for (List<Recipe<?>> list : lists) {
             futures.add(CompletableFuture.runAsync(() -> {
                 for (Recipe<?> recipe : list) {
-                    if (Andromeda.CONFIG.autogenRecipeAdvancements.blacklistedRecipeNamespaces.contains(recipe.getId().getNamespace()))
+                    if (Config.get().autogenRecipeAdvancements.blacklistedRecipeNamespaces.contains(recipe.getId().getNamespace()))
                         continue;
-                    if (Andromeda.CONFIG.autogenRecipeAdvancements.blacklistedRecipeIds.contains(recipe.getId().toString()))
+                    if (Config.get().autogenRecipeAdvancements.blacklistedRecipeIds.contains(recipe.getId().toString()))
                         continue;
-                    if (recipe.isIgnoredInRecipeBook() && Andromeda.CONFIG.autogenRecipeAdvancements.ignoreRecipesHiddenInTheRecipeBook)
+                    if (recipe.isIgnoredInRecipeBook() && Config.get().autogenRecipeAdvancements.ignoreRecipesHiddenInTheRecipeBook)
                         continue;
 
                     if (RECIPE_TYPE_HANDLERS.get(recipe.getType()) != null) {
@@ -166,7 +167,7 @@ public class AdvancementGeneration {
         builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.create(), id));
 
         String[][] reqs;
-        if (Andromeda.CONFIG.autogenRecipeAdvancements.requireAllItems) {
+        if (Config.get().autogenRecipeAdvancements.requireAllItems) {
             reqs = new String[names.size()][2];
             for (int i = 0; i < names.size(); i++) {
                 String s = names.get(i);

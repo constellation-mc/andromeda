@@ -1,7 +1,7 @@
 package me.melontini.andromeda;
 
-import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.FeatureManager;
+import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.registries.*;
@@ -12,9 +12,6 @@ import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.Utilities;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -30,7 +27,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -42,17 +39,6 @@ import java.util.UUID;
 public class Andromeda {
 
     private static Andromeda INSTANCE;
-
-    public static AndromedaConfig CONFIG = Utilities.supply(() -> {
-        AutoConfig.register(AndromedaConfig.class, GsonConfigSerializer::new);
-
-        AutoConfig.getConfigHolder(AndromedaConfig.class).registerSaveListener((configHolder, config) -> {
-            FeatureManager.processFeatures(config);
-            return ActionResult.SUCCESS;
-        });
-
-        return AutoConfig.getConfigHolder(AndromedaConfig.class).getConfig();
-    });
 
     public Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
     public Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
@@ -77,7 +63,7 @@ public class Andromeda {
         ItemRegistry.register();
         EntityTypeRegistry.register();
         ServerSideNetworking.register();
-        ResourceConditionRegistry.register();
+        ResourceRegistry.register();
         ScreenHandlerRegistry.register();
         TagRegistry.register();
 
@@ -87,17 +73,17 @@ public class Andromeda {
         Registry.register(Registries.PARTICLE_TYPE, new Identifier(SharedConstants.MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
 
         ServerWorldEvents.LOAD.register((server, world) -> {
-            if (CONFIG.tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD)
+            if (Config.get().tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD)
                 WorldUtil.getTraderManager(world);
 
-            if (CONFIG.dragonFight.fightTweaks) if (world.getRegistryKey() == World.END)
+            if (Config.get().dragonFight.fightTweaks) if (world.getRegistryKey() == World.END)
                 WorldUtil.getEnderDragonManager(world);
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             Andromeda.get().PLANT_DATA.clear();
             Andromeda.get().EGG_DATA.clear();
-            if (CONFIG.tradingGoatHorn) {
+            if (Config.get().tradingGoatHorn) {
                 ServerWorld world = server.getWorld(World.OVERWORLD);
                 if (world != null) {
                     var manager = world.getPersistentStateManager();
@@ -112,13 +98,13 @@ public class Andromeda {
         });
 
         ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (CONFIG.tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD) {
+            if (Config.get().tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD) {
                 var manager = world.getPersistentStateManager();
                 if (manager.loadedStates.containsKey("andromeda_trader_statemanager"))
                     WorldUtil.getTraderManager(world).tick();
             }
 
-            if (CONFIG.dragonFight.fightTweaks) if (world.getRegistryKey() == World.END) {
+            if (Config.get().dragonFight.fightTweaks) if (world.getRegistryKey() == World.END) {
                 var manager = world.getPersistentStateManager();
                 if (manager.loadedStates.containsKey("andromeda_ender_dragon_fight"))
                     WorldUtil.getEnderDragonManager(world).tick();
@@ -126,11 +112,13 @@ public class Andromeda {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            if (CONFIG.autogenRecipeAdvancements.autogenRecipeAdvancements) {
+            if (Config.get().autogenRecipeAdvancements.autogenRecipeAdvancements) {
                 AdvancementGeneration.generateRecipeAdvancements(server);
                 server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
             }
         });
+
+        ConfigHelper.writeConfigToFile(true);
 
         EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
     }

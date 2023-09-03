@@ -1,10 +1,10 @@
 package me.melontini.andromeda.mixin.entities.furnace_minecart;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import net.fabricmc.fabric.impl.content.registry.FuelRegistryImpl;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
@@ -31,7 +31,9 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!this.world.isClient() && Andromeda.CONFIG.betterFurnaceMinecart && Andromeda.CONFIG.furnaceMinecartTakeFuelWhenLow && this.fuel < 100) {
+        if (!Config.get().betterFurnaceMinecart || !Config.get().furnaceMinecartTakeFuelWhenLow) return;
+
+        if (!this.world.isClient() && this.fuel < 100) {
             if (world.getTime() % 20 == 0) {
                 if (SharedConstants.FABRICATION_LOADED) {
                     try {
@@ -48,14 +50,15 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
                 if (entity instanceof Inventory inventory) {
                     for (int i = 0; i < inventory.size(); ++i) {
                         ItemStack stack = inventory.getStack(i);
-                        if (FuelRegistryImpl.INSTANCE.get(stack.getItem()) != null) {
-                            int itemFuel = FuelRegistryImpl.INSTANCE.get(stack.getItem());
-                            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
-                                if (stack.getItem().getRecipeRemainder() != null)
-                                    ItemStackUtil.spawn(entity.getPos(), stack.getItem().getRecipeRemainder().getDefaultStack(), world);
+                        if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
+                            int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
+                            if ((this.fuel + (itemFuel * 2.25)) <= Config.get().maxFurnaceMinecartFuel) {
+                                ItemStack reminder = stack.getRecipeRemainder();
+                                if (!reminder.isEmpty())
+                                    ItemStackUtil.spawn(entity.getPos(), stack.getRecipeRemainder(), world);
                                 stack.decrement(1);
 
-                                this.fuel += (itemFuel * 2.25);
+                                this.fuel += (int) (itemFuel * 2.25);
                             }
                             break;
                         }

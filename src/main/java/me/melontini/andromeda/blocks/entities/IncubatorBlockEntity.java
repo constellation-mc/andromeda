@@ -2,9 +2,10 @@ package me.melontini.andromeda.blocks.entities;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.blocks.IncubatorBlock;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.data.EggProcessingData;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -29,6 +30,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
+
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     public int processingTime = -1;
 
@@ -50,8 +52,8 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
                 if (state.get(CampfireBlock.LIT)) {
                     if (!world.isClient) this.processingTime--;
                     if (world.random.nextInt(4) == 0 && world.isClient) {
-                        double i = Utilities.RANDOM.nextDouble(0.6) - 0.3;
-                        double j = Utilities.RANDOM.nextDouble(0.6) - 0.3;
+                        double i = MathStuff.threadRandom().nextDouble(0.6) - 0.3;
+                        double j = MathStuff.threadRandom().nextDouble(0.6) - 0.3;
                         world.addParticle(ParticleTypes.SMOKE, (pos.getX() + 0.5) + i, pos.getY() + 0.5, (pos.getZ() + 0.5) + j, 0F, 0.07F, 0F);
                     }
                 }
@@ -63,7 +65,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             if (!stack.isEmpty() && this.processingTime == -1) {
                 EggProcessingData data = Andromeda.get().EGG_DATA.get(stack.getItem());
                 if (data != null) {
-                    this.processingTime = Andromeda.CONFIG.incubatorSettings.incubatorRandomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
+                    this.processingTime = Config.get().incubatorSettings.incubatorRandomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     markDirty();
                 }

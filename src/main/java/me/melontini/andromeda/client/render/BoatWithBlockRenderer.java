@@ -18,6 +18,7 @@ import net.minecraft.util.math.RotationAxis;
 import org.joml.Quaternionf;
 
 public class BoatWithBlockRenderer extends BoatEntityRenderer {
+
     private final BlockState blockState;
 
     public BoatWithBlockRenderer(EntityRendererFactory.Context context, BlockState blockState) {

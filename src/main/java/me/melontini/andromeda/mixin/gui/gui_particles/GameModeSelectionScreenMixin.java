@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.gui.gui_particles;
 
 import com.google.common.collect.Lists;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -54,7 +54,7 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendCommand(Ljava/lang/String;)Z", shift = At.Shift.BEFORE), method = "apply(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;)V")
     private static void andromeda$gmSwitchParticles(MinecraftClient client, GameModeSelectionScreen.GameModeSelection gameMode, CallbackInfo ci) {
-        if (!Andromeda.CONFIG.guiParticles.gameModeSwitcherParticles) return;
+        if (!Config.get().guiParticles.gameModeSwitcherParticles) return;
 
         if (client.currentScreen instanceof GameModeSelectionScreen gameModeSelectionScreen) {
             List<GameModeSelectionScreen.ButtonWidget> buttonWidgets = new ArrayList<>(gameModeSelectionScreen.gameModeButtons);
@@ -69,8 +69,7 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
                 if (ANDROMEDA$GAME_MODE_STACKS.containsKey(gameMode)) {
                     ScreenParticleHelper.addParticles(() -> new ItemStackParticle(
                             x, y,
-                            MathStuff.nextDouble(Utilities.RANDOM, -2, 2),
-                            MathStuff.nextDouble(Utilities.RANDOM, -2, 2),
+                            MathStuff.nextDouble(-2, 2), MathStuff.nextDouble(-2, 2),
                             ANDROMEDA$GAME_MODE_STACKS.get(gameMode).get()), 5);
                 } else {
                     ScreenParticleHelper.addParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 10);

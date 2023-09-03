@@ -1,8 +1,10 @@
 package me.melontini.andromeda.client.config;
 
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.config.ConfigSerializer;
 import me.melontini.andromeda.config.FeatureManager;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -12,31 +14,41 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class AutoConfigTransformers {
 
     public static void register() {
+        AndromedaLog.info("Loading ClothConfig support!");
+
+        AutoConfig.register(AndromedaConfig.class, (config, aClass) -> new ConfigSerializer());
+
         GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
 
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
                 list.stream().peek(gui -> {
-                    gui.setRequirement(() -> !FeatureManager.isModified(field));
+                    gui.setRequirement(() -> false);
                     if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                        if ("mod_json".equals(FeatureManager.blameProcessor(field))) {
-                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(FeatureManager.blameMod(field)))};
-                            tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
-                        } else {
-                            Text[] manager = new Text[]{TextUtil.translatable("andromeda.config.tooltip.manager." + FeatureManager.blameProcessor(field))};
-                            tooltipGui.setTooltipSupplier(() -> Optional.of(manager));
+                        Set<String> fieldSet = FeatureManager.blameProcessors(field);
+                        Set<Text> texts = new HashSet<>();
+                        for (String string : fieldSet) {
+                            if ("mod_json".equals(string)) {
+                                texts.add(TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(FeatureManager.blameMod(field))));
+                            } else {
+                                texts.add(TextUtil.translatable("andromeda.config.tooltip.manager." + string));
+                            }
                         }
+                        Text[] texts1 = texts.toArray(Text[]::new);
+                        tooltipGui.setTooltipSupplier(() -> Optional.of(texts1));
                     }
                 }).toList(), FeatureManager::isModified);
 
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> gui.setRequiresRestart(true));
             return list;
-        }, field -> Andromeda.CONFIG.compatMode);
+        }, field -> Config.get().compatMode);
 
         registry.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
