@@ -34,7 +34,7 @@ public class ErrorHandler implements IMixinErrorHandler {
             if (annotationNode != null) {
                 Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
                 List<String> configOptions = (List<String>) values.get("value");
-                AndromedaLog.warn("Andromeda Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
+                AndromedaLog.warn("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
                 FeatureManager.processMixinError(configOptions.get(configOptions.size() - 1)); //We assume that the last option is the only relevant one.
                 return ErrorAction.WARN;
             }
