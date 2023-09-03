@@ -48,23 +48,23 @@ public class ItemRegistry {
 
     public static AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newMinecarts.isAnvilMinecartOn).build();
+            .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newMinecarts.isAnvilMinecartOn).build();
 
     public static NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newMinecarts.isNoteBlockMinecartOn).build();
+            .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newMinecarts.isNoteBlockMinecartOn).build();
 
     public static JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newMinecarts.isJukeboxMinecartOn).build();
+            .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newMinecarts.isJukeboxMinecartOn).build();
 
     public static Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
-            .itemGroup(ItemGroup.COMBAT).registerCondition(Config.get().totemSettings.enableInfiniteTotem).build();
+            .itemGroup(ItemGroup.COMBAT).register(Config.get().totemSettings.enableInfiniteTotem).build();
 
     public static Item LOCKPICK = ContentBuilder.ItemBuilder
             .create(new Identifier(MODID, "lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
-            .itemGroup(ItemGroup.TOOLS).registerCondition(Config.get().lockpickEnabled).build();
+            .itemGroup(ItemGroup.TOOLS).register(Config.get().lockpickEnabled).build();
 
     public static BlockItem INCUBATOR = asItem(BlockRegistry.INCUBATOR_BLOCK);
 
@@ -110,10 +110,10 @@ public class ItemRegistry {
 
     public static void register() {
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
-            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isFurnaceBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isJukeboxBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isTNTBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Config.get().newBoats.isHopperBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isFurnaceBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isJukeboxBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isTNTBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isHopperBoatOn).build();
         }
         AndromedaLog.info("ItemRegistry init complete!");
     }
