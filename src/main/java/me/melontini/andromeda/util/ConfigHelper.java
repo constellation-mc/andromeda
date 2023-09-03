@@ -63,14 +63,12 @@ public class ConfigHelper {
             try {
                 Config.set(gson.fromJson(Files.readString(configPath), AndromedaConfig.class));
                 FeatureManager.processFeatures(print);
+                return;
             } catch (Exception e) {
                 AndromedaLog.error("Failed to load config file, resetting to default!", e);
-                Config.set(new AndromedaConfig());
-                writeConfigToFile(print);
             }
-        } else {
-            Config.set(new AndromedaConfig());
-            writeConfigToFile(print);
         }
+        Config.set(new AndromedaConfig());
+        writeConfigToFile(print);
     }
 }
