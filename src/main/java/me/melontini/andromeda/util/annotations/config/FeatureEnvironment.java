@@ -7,5 +7,4 @@ import java.lang.annotation.RetentionPolicy;
 public @interface FeatureEnvironment {
 
     Environment value() default Environment.BOTH;
-
 }

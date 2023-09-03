@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
@@ -51,7 +52,7 @@ public abstract class LivingEntityMixin extends Entity {
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;sendEntityStatus(Lnet/minecraft/entity/Entity;B)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "tryUseTotem", cancellable = true)
     private void andromeda$useInfiniteTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir, ItemStack itemStack) {
-        if (Andromeda.CONFIG.totemSettings.enableInfiniteTotem) {
+        if (Config.get().totemSettings.enableInfiniteTotem) {
             if (itemStack.isOf(ItemRegistry.INFINITE_TOTEM)) {
                 if (!world.isClient()) {
                     PacketByteBuf buf = PacketByteBufs.create()

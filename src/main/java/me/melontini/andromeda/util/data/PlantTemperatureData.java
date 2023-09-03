@@ -14,5 +14,4 @@ public record PlantTemperatureData(Block block, float min, float max, float aMin
                 ", aMax=" + aMax +
                 '}';
     }
-
 }

@@ -2,7 +2,7 @@ package me.melontini.andromeda.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.analytics.Analytics;
 import me.melontini.dark_matter.api.analytics.Prop;
@@ -17,20 +17,24 @@ import java.nio.file.Path;
 import java.util.Base64;
 
 public class AndromedaReporter {
-    public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
-    private static final MixpanelHandler HANDLER = MixpanelAnalytics.init(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
 
+    public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
+    public static final Analytics ANALYTICS = Analytics.get(SharedConstants.MOD_CONTAINER);
+    private static final MixpanelHandler HANDLER = MixpanelAnalytics.init(ANALYTICS, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
+
+    @SuppressWarnings("deprecation")
     public static void handleUpload() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            if (Andromeda.CONFIG.sendOptionalData) {
+            Analytics.oldUUID().ifPresent(uuid -> HANDLER.send((mixpanel, analytics) -> mixpanel.delete(uuid.toString())));
+            if (Config.get().sendOptionalData) {
                 if (SharedConstants.MOD_UPDATED) {
-                    HANDLER.send(messageBuilder -> {
+                    HANDLER.send((mixpanel, analytics) -> {
                         JsonObject object = new JsonObject();
                         object.addProperty("mod_version", SharedConstants.MOD_VERSION.split("-")[0]);
                         object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
                         object.addProperty("modloader", StringUtils.capitalize(SharedConstants.PLATFORM.name().toLowerCase()));
                         AndromedaLog.info("Uploading optional data.: " + object);
-                        messageBuilder.set(Analytics.getUUIDString(), object);
+                        mixpanel.set(analytics.getUUIDString(), object);
                     });
                 } else AndromedaLog.info("Skipped optional data upload.");
 
@@ -41,7 +45,7 @@ public class AndromedaReporter {
                     AndromedaLog.warn("Failed to delete config_copy.json", e);
                 }
             } else {
-                HANDLER.send(messageBuilder -> messageBuilder.delete(Analytics.getUUIDString()));
+                HANDLER.send((mixpanel, analytics) -> mixpanel.delete(analytics.getUUIDString()));
             }
         }
     }
@@ -60,12 +64,11 @@ public class AndromedaReporter {
     }
 
     public static void registerCrashHandler() {
-        Crashlytics.addHandler("andromeda", (report, cause, latestLog, envType) -> {
-            if (!FabricLoader.getInstance().isDevelopmentEnvironment() && Andromeda.CONFIG.sendCrashReports) {
-                if (cause instanceof AndromedaException e) return e.shouldReport();
-                return findAndromedaInTrace(cause);
-            } else return false;
-        }, (report, cause, latestLog, envType) -> HANDLER.send(messageBuilder -> {
+        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> HANDLER.send((mixpanel, analytics) -> {
+            if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
+            if (cause instanceof AndromedaException e && !e.shouldReport()) return;
+            if (!findAndromedaInTrace(cause)) return;
+
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
             JsonObject object = new JsonObject();
 
@@ -84,7 +87,7 @@ public class AndromedaReporter {
             }
             object.add("mods", mods);
 
-            messageBuilder.trackEvent(CRASH_UUID, "Crash", object);
+            mixpanel.trackEvent(CRASH_UUID, "Crash", object);
         }, true));
     }
 }

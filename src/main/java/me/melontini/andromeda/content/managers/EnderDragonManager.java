@@ -1,6 +1,6 @@
 package me.melontini.andromeda.content.managers;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.MiscUtil;
 import net.minecraft.entity.EntityType;
@@ -65,7 +65,7 @@ public class EnderDragonManager extends PersistentState {
                 }
             }
             markDirty();
-            if (Andromeda.CONFIG.dragonFight.scaleHealthByMaxPlayers) {
+            if (Config.get().dragonFight.scaleHealthByMaxPlayers) {
                 for (EnderDragonEntity dragon : dragons) {
                     EntityAttributeInstance inst = dragon.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
                     inst.setBaseValue(Math.floor((Math.sqrt(500 * i)) * 10));

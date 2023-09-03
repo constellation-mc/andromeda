@@ -2,6 +2,7 @@ package me.melontini.andromeda.blocks;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.blocks.entities.IncubatorBlockEntity;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.AndromedaTexts;
 import net.minecraft.block.*;
@@ -30,6 +31,7 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class IncubatorBlock extends BlockWithEntity {
+
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     private final VoxelShape BASE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
     private final VoxelShape GLASS_SHAPE = Block.createCuboidShape(3.0, 11.0, 3.0, 13.0, 18.0, 13.0);
@@ -60,7 +62,7 @@ public class IncubatorBlock extends BlockWithEntity {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        if (Andromeda.CONFIG.unknown)
+        if (Config.get().unknown)
             tooltip.add(AndromedaTexts.INCUBATOR_SECRET);
     }
 

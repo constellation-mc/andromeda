@@ -1,36 +1,32 @@
 package me.melontini.andromeda.util;
 
+import me.melontini.andromeda.config.Config;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import org.apache.logging.log4j.LogManager;
 
 public class AndromedaLog {
-    private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("Andromeda"), logger -> {
+
+    private static final PrependingLogger LOGGER = PrependingLogger.get("Andromeda", logger -> {
         StackWalker.StackFrame frame = Utilities.STACK_WALKER.walk(s -> s.skip(3).findFirst().orElse(null));
         String[] split = frame.getClassName().split("\\.");
         String caller = split[split.length - 1];
         if (frame.getClassName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
-        return ((!Utilities.IS_DEV && SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) ?
+        return ((!Utilities.isDev() && SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) ?
                 "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
     });
-    private static boolean debug;
-
-    public static void setDebug(boolean debug) {
-        AndromedaLog.debug = debug;
-    }
 
     public static void devInfo(String msg) {
-        if (debug) {
+        if (Config.get().debugMessages) {
             LOGGER.info(msg);
         }
     }
     public static void devInfo(Object object) {
-        if (debug) {
+        if (Config.get().debugMessages) {
             LOGGER.info(object);
         }
     }
     public static void devInfo(String msg, Object... params) {
-        if (debug) {
+        if (Config.get().debugMessages) {
             LOGGER.info(msg, params);
         }
     }

@@ -18,5 +18,4 @@ public final class FeatureConfig {
     public interface Processor {
         @Nullable Map<String, Object> process(AndromedaConfig config);
     }
-
 }

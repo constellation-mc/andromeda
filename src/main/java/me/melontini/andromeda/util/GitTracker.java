@@ -93,5 +93,4 @@ public class GitTracker {
             AndromedaLog.warn("Couldn't update git info", e);
         }
     }
-
 }

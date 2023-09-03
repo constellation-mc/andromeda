@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.items.mending_fix;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ExperienceOrbMixin {
     @Inject(at = @At("HEAD"), method = "repairPlayerGears", cancellable = true)
     private void andromeda$repair(PlayerEntity player, int amount, CallbackInfoReturnable<Integer> cir) {
-        if (Andromeda.CONFIG.balancedMending) cir.setReturnValue(amount);
+        if (Config.get().balancedMending) cir.setReturnValue(amount);
     }
 }

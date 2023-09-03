@@ -2,6 +2,7 @@ package me.melontini.andromeda.entity.vehicle.boats;
 
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
+import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -22,7 +23,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -81,7 +81,8 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
         ItemStack stackInHand = player.getStackInHand(hand);
         if (!world.isClient())
             if (!this.record.isEmpty() && player.isSneaking()) {
-                ItemStackUtil.spawnWithRVelocity(new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()), this.record, this.world, 0.2);
+                ItemStackUtil.spawnVelocity(new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()), this.record, this.world,
+                        -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
                 this.stopPlaying();
                 this.clear();
                 return ActionResult.SUCCESS;
@@ -118,7 +119,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
 
     @Override
     public Item asItem() {
-        return Registries.ITEM.get(Identifier.tryParse("andromeda:" + this.getVariant().getName().replace(":", "_") + "_boat_with_jukebox"));
+        return Registries.ITEM.get(ItemRegistry.boatId(this.getVariant(), "jukebox"));
     }
 
     @Override

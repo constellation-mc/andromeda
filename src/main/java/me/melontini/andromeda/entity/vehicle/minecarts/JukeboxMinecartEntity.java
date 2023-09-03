@@ -3,8 +3,8 @@ package me.melontini.andromeda.entity.vehicle.minecarts;
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ItemRegistry;
-import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
@@ -49,8 +49,9 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     @Override
     public void onActivatorRail(int x, int y, int z, boolean powered) {
         if (powered && !this.record.isEmpty()) {
-            ItemStackUtil.spawnWithRVelocity(
-                    new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()), this.record, this.world, 0.2);
+            ItemStackUtil.spawnVelocity(
+                    new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()), this.record, this.world,
+                    -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
             this.clear();
             this.stopPlaying();
         }
@@ -102,8 +103,9 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
         ItemStack stackInHand = player.getStackInHand(hand);
         if (!world.isClient())
             if (!this.record.isEmpty()) {
-                ItemStackUtil.spawnWithRVelocity(
-                        new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()), this.record, this.world, 0.2);
+                ItemStackUtil.spawnVelocity(
+                        new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()), this.record, this.world,
+                        -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
                 this.stopPlaying();
                 this.clear();
             } else if (stackInHand.getItem() instanceof MusicDiscItem) {

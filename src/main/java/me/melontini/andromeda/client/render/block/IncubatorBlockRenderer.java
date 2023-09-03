@@ -2,7 +2,8 @@ package me.melontini.andromeda.client.render.block;
 
 import me.melontini.andromeda.blocks.IncubatorBlock;
 import me.melontini.andromeda.blocks.entities.IncubatorBlockEntity;
-import me.melontini.andromeda.registries.BlockRegistry;
+import me.melontini.dark_matter.api.base.util.MakeSure;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -11,10 +12,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
-
-import java.util.Objects;
+import net.minecraft.world.World;
 
 public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBlockEntity> {
+
     public IncubatorBlockRenderer(BlockEntityRendererFactory.Context context) {
     }
 
@@ -27,8 +28,10 @@ public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBloc
     private void renderItem(IncubatorBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         matrices.translate(0.5, 0.7, 0.5);
-        if (Objects.requireNonNull(entity.getWorld()).getBlockState(entity.getPos()).isOf(BlockRegistry.INCUBATOR_BLOCK)) {
-            switch (entity.getWorld().getBlockState(entity.getPos()).get(IncubatorBlock.FACING)) {
+        World world = MakeSure.notNull(entity.getWorld());
+        BlockState state = world.getBlockState(entity.getPos());
+        if (state.getBlock() instanceof IncubatorBlock) {
+            switch (state.get(IncubatorBlock.FACING)) {
                 case NORTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
                 case WEST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
                 case EAST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));

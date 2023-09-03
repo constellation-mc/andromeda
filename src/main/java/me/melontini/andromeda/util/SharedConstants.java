@@ -1,5 +1,6 @@
 package me.melontini.andromeda.util;
 
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
@@ -24,6 +25,7 @@ public class SharedConstants {
     public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
 
     public static final Platform PLATFORM;
+    public static final EnvType ENVIRONMENT = FabricLoader.getInstance().getEnvironmentType();
 
 
     static {

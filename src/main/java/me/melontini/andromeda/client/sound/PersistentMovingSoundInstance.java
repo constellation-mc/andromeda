@@ -10,6 +10,7 @@ import net.minecraft.util.math.random.Random;
 import java.util.UUID;
 
 public class PersistentMovingSoundInstance extends MovingSoundInstance {
+
     private final ClientWorld world;
     private final UUID entityId;
 
