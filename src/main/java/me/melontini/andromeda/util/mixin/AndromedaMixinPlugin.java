@@ -1,6 +1,9 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.util.mixin;
 
-import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ConfigHelper;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
@@ -11,6 +14,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.util.Annotations;
 
@@ -25,7 +29,6 @@ import java.util.Set;
 public class AndromedaMixinPlugin extends ExtendablePlugin {
 
     private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaMixinPlugin"), PrependingLogger.LOGGER_NAME);
-    private static AndromedaConfig CONFIG;
     private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
 
     static {
@@ -40,6 +43,8 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     @Override
     public void onPluginLoad(String mixinPackage) {
         LOGGER.info("Platform: " + SharedConstants.PLATFORM);
+        Mixins.registerErrorHandlerClass("me.melontini.andromeda.util.mixin.ErrorHandler");
+
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
         if (Files.exists(mtConfig)) {
             try {
@@ -48,11 +53,10 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
         }
-        CONFIG = ConfigHelper.loadConfigFromFile();
-        boolean log = CONFIG.debugMessages || this.isDev();
-        AndromedaLog.setDebug(log);
+        ConfigHelper.loadConfigFromFile(true);
+        ConfigHelper.writeConfigToFile(false);
 
-        if (CONFIG.compatMode) {
+        if (Config.get().compatMode) {
             LOGGER.warn("Compat mode is on!");
         }
         if (this.isDev()) LOGGER.warn("Will be verifying config annotations!");
@@ -61,7 +65,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName, ClassNode mixinNode, List<AnnotationNode> nodes) {
         boolean load = true;
-        if (CONFIG.compatMode) {
+        if (Config.get().compatMode) {
             AnnotationNode annotationNode = Annotations.getVisible(mixinNode, MixinRelatedConfigOption.class);
             //"inspired" by https://github.com/unascribed/Fabrication/blob/3.0/1.18/src/main/java/com/unascribed/fabrication/support/MixinConfigPlugin.java
             if (annotationNode != null) {
@@ -69,7 +73,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 List<String> configOptions = (List<String>) values.get("value");
                 for (String configOption : configOptions) {
                     try {
-                        load = (boolean) ConfigHelper.getConfigOption(configOption, CONFIG);
+                        load = (boolean) ConfigHelper.getConfigOption(configOption);
                     } catch (Exception e) {
                         LOGGER.warn("Couldn't check @MixinRelatedConfigOption(%s) from %s This is no fault of yours.".formatted(configOption, mixinClassName), e);
                     }
@@ -91,7 +95,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             boolean dummy = true;
             for (String configOption : configOptions) {
                 try {
-                    dummy = (boolean) ConfigHelper.getConfigOption(configOption, CONFIG);
+                    dummy = (boolean) ConfigHelper.getConfigOption(configOption);
                 } catch (NoSuchFieldException e) {
                     throw new AndromedaException("Invalid config option in @MixinRelatedConfigOption(%s) from %s".formatted(configOption, mixinClassName));
                 } catch (ClassCastException e) {

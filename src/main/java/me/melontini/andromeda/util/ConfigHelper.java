@@ -3,6 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.melontini.andromeda.config.AndromedaConfig;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.FeatureManager;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -13,10 +14,12 @@ import java.nio.file.Path;
 
 public class ConfigHelper {
 
-    public static Field setConfigOption(String configOption, Object config, Object value) throws NoSuchFieldException, IllegalAccessException {
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    public static Field setConfigOption(String configOption, Object value) throws NoSuchFieldException, IllegalAccessException {
         if (configOption.contains(".")) {
             String[] fields = configOption.split("\\.");
-            Object obj = config.getClass().getField(fields[0]).get(config);
+            Object obj = Config.get().getClass().getField(fields[0]).get(Config.get());
             for (int i = 1; i < fields.length - 1; i++) {
                 obj = FieldUtils.readField(obj, fields[i], true);
             }
@@ -24,49 +27,50 @@ public class ConfigHelper {
             FieldUtils.writeField(field, obj, value);
             return field;
         } else {
-            Field field = config.getClass().getField(configOption);
-            FieldUtils.writeField(field, config, value);
+            Field field = Config.get().getClass().getField(configOption);
+            FieldUtils.writeField(field, Config.get(), value);
             return field;
         }
     }
 
 
-    public static Object getConfigOption(String configOption, Object config) throws NoSuchFieldException, IllegalAccessException {
+    public static Object getConfigOption(String configOption) throws NoSuchFieldException, IllegalAccessException {
         if (configOption.contains(".")) {
             String[] fields = configOption.split("\\.");
-            Object obj = config.getClass().getField(fields[0]).get(config);
+            Object obj = Config.get().getClass().getField(fields[0]).get(Config.get());
             for (int i = 1; i < fields.length - 1; i++) {
                 obj = FieldUtils.readField(obj, fields[i], true);
             }
             return FieldUtils.readField(obj, fields[fields.length - 1], true);
         } else {
-            return config.getClass().getField(configOption).get(config);
+            return Config.get().getClass().getField(configOption).get(Config.get());
         }
     }
 
-    public static AndromedaConfig loadConfigFromFile() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public static void writeConfigToFile(boolean print) {
         Path configPath = SharedConstants.CONFIG_PATH;
-        AndromedaConfig config;
+        try {
+            FeatureManager.processFeatures(print);
+            Files.write(configPath, gson.toJson(Config.get()).getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void loadConfigFromFile(boolean print) {
+        Path configPath = SharedConstants.CONFIG_PATH;
         if (Files.exists(configPath)) {
             try {
-                config = gson.fromJson(Files.readString(configPath), AndromedaConfig.class);
-                FeatureManager.processFeatures(config);
-                Files.write(configPath, gson.toJson(config).getBytes());
-                return config;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                Config.set(gson.fromJson(Files.readString(configPath), AndromedaConfig.class));
+                FeatureManager.processFeatures(print);
+            } catch (Exception e) {
+                AndromedaLog.error("Failed to load config file, resetting to default!", e);
+                Config.set(new AndromedaConfig());
+                writeConfigToFile(print);
             }
         } else {
-            config = new AndromedaConfig();
-            FeatureManager.processFeatures(config);
-            try {
-                Files.createFile(configPath);
-                Files.write(configPath, gson.toJson(config).getBytes());
-                return config;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Config.set(new AndromedaConfig());
+            writeConfigToFile(print);
         }
     }
 }
