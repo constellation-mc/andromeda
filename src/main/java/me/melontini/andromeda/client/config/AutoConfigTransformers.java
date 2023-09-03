@@ -25,8 +25,6 @@ public class AutoConfigTransformers {
 
         AutoConfig.register(AndromedaConfig.class, (config, aClass) -> new ConfigSerializer());
 
-        AutoConfig.getConfigHolder(AndromedaConfig.class).setConfig(Config.get());//ugh
-
         GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
 
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
