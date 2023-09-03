@@ -1,7 +1,6 @@
 package me.melontini.andromeda.config;
 
 import me.melontini.andromeda.api.FeatureConfig;
-import me.melontini.andromeda.util.SharedConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
@@ -13,17 +12,6 @@ import java.util.Optional;
 public class DefaultProcessors implements Runnable {
     @Override
     public void run() {
-        FeatureConfig.registerProcessor("connector_mod", config -> {
-            if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
-                return Map.of(
-                        "compatMode", true,
-                        "totemSettings.enableInfiniteTotem", false,
-                        "totemSettings.enableTotemAscension", false,
-                        "quickFire", false
-                );
-            }
-            return null;
-        });
 
         FeatureConfig.registerProcessor("safe_beds_conflict", config -> {
             if (config.safeBeds) {
