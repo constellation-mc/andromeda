@@ -6,14 +6,12 @@ import me.melontini.andromeda.config.ConfigSerializer;
 import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -28,11 +26,6 @@ public class AutoConfigTransformers {
         AutoConfig.register(AndromedaConfig.class, (config, aClass) -> new ConfigSerializer());
 
         AutoConfig.getConfigHolder(AndromedaConfig.class).setConfig(Config.get());//ugh
-
-        AutoConfig.getConfigHolder(AndromedaConfig.class).registerSaveListener((configHolder, config) -> {
-            FeatureManager.processFeatures(Utilities.isDev());
-            return ActionResult.SUCCESS;
-        });
 
         GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
 
