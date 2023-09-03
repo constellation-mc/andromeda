@@ -87,10 +87,10 @@ public class ItemRegistry {
 
                 List<ItemStack> boats = new ArrayList<>();
                 for (BoatEntity.Type value : BoatEntity.Type.values()) {
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "furnace"))));
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "hopper"))));
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "tnt"))));
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "jukebox"))));
+                    boats.add(getStackOrEmpty(Registries.ITEM.get(boatId(value, "furnace"))));
+                    boats.add(getStackOrEmpty(Registries.ITEM.get(boatId(value, "hopper"))));
+                    boats.add(getStackOrEmpty(Registries.ITEM.get(boatId(value, "tnt"))));
+                    boats.add(getStackOrEmpty(Registries.ITEM.get(boatId(value, "jukebox"))));
                 }
                 appendStacks(entries, boats, false);
             }).icon(ItemRegistry::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> {
