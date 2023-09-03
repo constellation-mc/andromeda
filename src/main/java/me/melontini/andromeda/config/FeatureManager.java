@@ -143,6 +143,19 @@ public class FeatureManager {
         }
     }
 
+    static boolean testModVersion(String modId, String predicate) {
+        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
+        if (mod.isPresent()) {
+            try {
+                VersionPredicate version = VersionPredicate.parse(predicate);
+                return version.test(mod.get().getMetadata().getVersion());
+            } catch (VersionParsingException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     private static boolean testModVersion(CustomValue.CvObject featureObject, String modId, String modBlame) {
         if (featureObject.containsKey(modId)) {
             try {
