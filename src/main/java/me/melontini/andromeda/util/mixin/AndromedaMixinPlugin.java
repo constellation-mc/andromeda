@@ -54,7 +54,6 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             }
         }
         ConfigHelper.loadConfigFromFile(true);
-        ConfigHelper.writeConfigToFile(false);
 
         if (Config.get().compatMode) {
             LOGGER.warn("Compat mode is on!");

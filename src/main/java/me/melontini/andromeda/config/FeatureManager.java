@@ -47,6 +47,7 @@ public class FeatureManager {
 
     public static void processMixinError(String option) {
         FAILED_MIXINS.add(option);
+        configure("mixin_error", Collections.singletonMap(option, false));
     }
 
     public static void processFeatures(boolean print) {
