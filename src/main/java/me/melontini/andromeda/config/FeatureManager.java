@@ -19,7 +19,7 @@ public class FeatureManager {
     static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("FeatureManager"), PrependingLogger.LOGGER_NAME);
     private static final Map<String, FeatureConfig.Processor> PROCESSORS = new LinkedHashMap<>(5);
     private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
-    private static final Map<Field, String> MODIFIED_FIELDS = new HashMap<>();
+    private static final Map<Field, Set<String>> MODIFIED_FIELDS = new HashMap<>();
     private static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
     private static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
     private static final Set<String> FAILED_MIXINS = new HashSet<>();
@@ -37,7 +37,7 @@ public class FeatureManager {
         return MODIFIED_FIELDS.containsKey(field);
     }
 
-    public static String blameProcessor(Field field) {
+    public static Set<String> blameProcessors(Field field) {
         return MODIFIED_FIELDS.get(field);
     }
 
@@ -76,7 +76,7 @@ public class FeatureManager {
             String configOption = configEntry.getKey();
             try {
                 Field f = ConfigHelper.setConfigOption(configOption, configEntry.getValue());
-                MODIFIED_FIELDS.putIfAbsent(f, processor);
+                MODIFIED_FIELDS.computeIfAbsent(f, k -> new HashSet<>()).add(processor);
                 FIELD_TO_STRING.putIfAbsent(f, configOption);
             } catch (NoSuchFieldException e) {
                 skipped.add(configOption);
