@@ -10,7 +10,6 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -22,7 +21,6 @@ import java.util.Set;
 public class AutoConfigTransformers {
 
     public static void register() {
-        if (!FabricLoader.getInstance().isModLoaded("cloth-config")) return;
         AndromedaLog.info("Loading ClothConfig support!");
 
         AutoConfig.register(AndromedaConfig.class, (config, aClass) -> new ConfigSerializer());
