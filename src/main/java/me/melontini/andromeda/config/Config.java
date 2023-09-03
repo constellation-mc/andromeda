@@ -4,8 +4,8 @@ public class Config {
 
     private static AndromedaConfig CONFIG;
 
-    public static AndromedaConfig set(AndromedaConfig config) {
-        return CONFIG = config;
+    static void set(AndromedaConfig config) {
+        CONFIG = config;
     }
 
     public static AndromedaConfig get() {

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.util.mixin;
 
 import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.ConfigHelper;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;

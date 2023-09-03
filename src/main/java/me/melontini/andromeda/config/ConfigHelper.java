@@ -1,10 +1,9 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.FeatureManager;
+import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.SharedConstants;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.IOException;
