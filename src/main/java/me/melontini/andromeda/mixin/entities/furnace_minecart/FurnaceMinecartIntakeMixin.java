@@ -29,7 +29,7 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
         super(entityType, world);
     }
 
-    @Inject(at = @At("HEAD"), method = "ticks")
+    @Inject(at = @At("HEAD"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
         if (!Config.get().betterFurnaceMinecart || !Config.get().furnaceMinecartTakeFuelWhenLow) return;
 
