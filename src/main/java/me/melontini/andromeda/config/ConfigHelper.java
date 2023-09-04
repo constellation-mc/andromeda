@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.concurrent.Callable;
 
 public class ConfigHelper {
 
@@ -69,5 +71,24 @@ public class ConfigHelper {
         }
         Config.set(new AndromedaConfig());
         writeConfigToFile(print);
+    }
+
+    public static void run(Runnable runnable, String... optionsToDisable) {
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(optionsToDisable)), e);
+            FeatureManager.processUnknownException(optionsToDisable);
+        }
+    }
+
+    public static <T> T run(Callable<T> callable, String... optionsToDisable) {
+        try {
+            return callable.call();
+        } catch (Throwable e) {
+            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(optionsToDisable)), e);
+            FeatureManager.processUnknownException(optionsToDisable);
+            return null;
+        }
     }
 }
