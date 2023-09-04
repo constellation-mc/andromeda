@@ -9,9 +9,14 @@ import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
+import me.melontini.dark_matter.api.base.util.Utilities;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -19,8 +24,12 @@ import java.util.Base64;
 public class AndromedaReporter {
 
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
-    public static final Analytics ANALYTICS = Analytics.get(SharedConstants.MOD_CONTAINER);
-    private static final MixpanelHandler HANDLER = MixpanelAnalytics.init(ANALYTICS, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
+    private static final Analytics ANALYTICS = Analytics.get(SharedConstants.MOD_CONTAINER);
+    private static final MixpanelHandler HANDLER = Utilities.supply(() -> {
+        final Analytics analytics = Analytics.get(SharedConstants.MOD_CONTAINER);
+        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> handleCrash(cause, report.getMessage(), envType));
+        return MixpanelAnalytics.init(analytics, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
+    });
 
     @SuppressWarnings("deprecation")
     public static void handleUpload() {
@@ -63,18 +72,18 @@ public class AndromedaReporter {
         return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
     }
 
-    public static void registerCrashHandler() {
-        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> HANDLER.send((mixpanel, analytics) -> {
-            if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
-            if (cause instanceof AndromedaException e && !e.shouldReport()) return;
-            if (!findAndromedaInTrace(cause)) return;
+    public static void handleCrash(Throwable cause, String message, EnvType envType) {
+        if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
+        if (cause instanceof AndromedaException e && !e.shouldReport()) return;
+        if (!findAndromedaInTrace(cause)) return;
 
+        HANDLER.send((mixpanel, analytics) -> {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
             JsonObject object = new JsonObject();
 
             //fill trace.
             JsonArray stackTrace = new JsonArray();
-            for (String string : report.getCauseAsString().lines().toList()) stackTrace.add(string);
+            for (String string : getCauseAsString(cause, message).lines().toList()) stackTrace.add(string);
             object.add("stackTrace", stackTrace);
 
             object.addProperty("environment", envType.toString().toLowerCase());
@@ -88,6 +97,36 @@ public class AndromedaReporter {
             object.add("mods", mods);
 
             mixpanel.trackEvent(CRASH_UUID, "Crash", object);
-        }, true));
+        });
+    }
+
+    private static String getCauseAsString(Throwable cause, String message) {
+        Throwable throwable = getThrowable(cause, message);
+
+        try(var stringWriter = new StringWriter(); var printWriter = new PrintWriter(stringWriter)) {
+            throwable.printStackTrace(printWriter);
+            return stringWriter.toString();
+        } catch (IOException e) {
+            return "Failed to get cause: " + e.getMessage();
+        }
+    }
+
+    private static Throwable getThrowable(Throwable cause, String message) {
+        Throwable throwable = cause;
+        if (throwable.getMessage() == null) {
+            if (throwable instanceof NullPointerException) {
+                throwable = new NullPointerException(message);
+            } else if (throwable instanceof StackOverflowError) {
+                throwable = new StackOverflowError(message);
+            } else if (throwable instanceof OutOfMemoryError) {
+                throwable = new OutOfMemoryError(message);
+            }
+
+            throwable.setStackTrace(cause.getStackTrace());
+        }
+        return throwable;
+    }
+
+    public static void init() {
     }
 }

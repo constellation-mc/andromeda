@@ -65,7 +65,7 @@ public class Andromeda {
     private void onInitialize() {
         EntrypointRunner.runEntrypoint("andromeda:pre-main", ModInitializer.class, ModInitializer::onInitialize);
 
-        AndromedaReporter.registerCrashHandler();
+        AndromedaReporter.init();
         BlockRegistry.register();
         ItemRegistry.register();
         EntityTypeRegistry.register();
