@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.misc;
 
 import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -22,6 +23,6 @@ public class PlayerManagerMixin {
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;", ordinal = 0, shift = At.Shift.BEFORE), method = "onDataPacksReloaded")
     private void andromeda$reload(CallbackInfo ci) {
         //we don't sync until our advancements have been generated
-        if (Config.get().autogenRecipeAdvancements.autogenRecipeAdvancements) generateRecipeAdvancements(server);
+        if (Config.get().autogenRecipeAdvancements.autogenRecipeAdvancements) ConfigHelper.run(() -> generateRecipeAdvancements(server), "autogenRecipeAdvancements.autogenRecipeAdvancements");
     }
 }
