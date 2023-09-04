@@ -34,12 +34,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.registries.Common.id;
 
 public class ResourceRegistry {
 
     public static void register() {
-        ResourceConditions.register(new Identifier(MODID, "config_option"), object -> {
+        ResourceConditions.register(id("config_option"), object -> {
             JsonArray array = JsonHelper.getArray(object, "values");
             boolean load = true;
 
@@ -61,7 +61,7 @@ public class ResourceRegistry {
 
             return load;
         });
-        ResourceConditions.register(new Identifier(MODID, "items_registered"), object -> {
+        ResourceConditions.register(id("items_registered"), object -> {
             JsonArray array = JsonHelper.getArray(object, "values");
 
             for (JsonElement element : array) {
@@ -76,7 +76,7 @@ public class ResourceRegistry {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return new Identifier(MODID, "crop_temperatures");
+                return id("crop_temperatures");
             }
 
             @Override
@@ -107,7 +107,7 @@ public class ResourceRegistry {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return new Identifier(MODID, "egg_processing");
+                return id("egg_processing");
             }
 
             @Override
@@ -139,7 +139,7 @@ public class ResourceRegistry {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return new Identifier(MODID, "am_item_throw_behavior");
+                return id("am_item_throw_behavior");
             }
 
             @Override

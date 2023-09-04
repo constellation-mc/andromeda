@@ -35,8 +35,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import static me.melontini.andromeda.registries.Common.id;
 import static me.melontini.andromeda.util.ItemStackUtil.getStackOrEmpty;
-import static me.melontini.andromeda.util.SharedConstants.MODID;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
 public class ItemRegistry {
@@ -46,34 +46,34 @@ public class ItemRegistry {
     public RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.get().ROSE_OF_THE_VALLEY);
 
     public SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder
-            .create(new Identifier(MODID, "spawner_minecart"), () -> new SpawnerMinecartItem(AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings().maxCount(1)))
+            .create(id("spawner_minecart"), () -> new SpawnerMinecartItem(AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION).build();
 
     public AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
-            .create(new Identifier(MODID, "anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
+            .create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newMinecarts.isAnvilMinecartOn).build();
 
     public NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder
-            .create(new Identifier(MODID, "note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
+            .create(id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newMinecarts.isNoteBlockMinecartOn).build();
 
     public JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
-            .create(new Identifier(MODID, "jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
+            .create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newMinecarts.isJukeboxMinecartOn).build();
 
     public Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
-            .create(new Identifier(MODID, "infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
+            .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
             .itemGroup(ItemGroup.COMBAT).register(Config.get().totemSettings.enableInfiniteTotem).build();
 
     public Item LOCKPICK = ContentBuilder.ItemBuilder
-            .create(new Identifier(MODID, "lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
+            .create(id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
             .itemGroup(ItemGroup.TOOLS).register(Config.get().lockpickEnabled).build();
 
     public BlockItem INCUBATOR = asItem(BlockRegistry.get().INCUBATOR_BLOCK);
 
     private ItemStack ITEM_GROUP_ICON;
 
-    public ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(new Identifier(MODID, "group"))
+    public ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
                 misc.add(getStackOrEmpty(this.INCUBATOR));
@@ -127,7 +127,7 @@ public class ItemRegistry {
     }
 
     public static Identifier boatId(BoatEntity.Type type, String boat) {
-        return new Identifier(MODID, type.getName().replace(":", "_") + "_boat_with_" + boat);
+        return id(type.getName().replace(":", "_") + "_boat_with_" + boat);
     }
 
     private static void appendStacks(DarkMatterEntries entries, Collection<ItemStack> list, boolean lineBreak) {
