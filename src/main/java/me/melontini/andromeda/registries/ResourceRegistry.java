@@ -199,7 +199,7 @@ public class ResourceRegistry {
             }
         });
 
-        AndromedaLog.info("ResourceConditionRegistry init complete!");
+        AndromedaLog.info("ResourceRegistry init complete!");
     }
 
     private static <T> T parseFromId(String id, Registry<T> registry) {
