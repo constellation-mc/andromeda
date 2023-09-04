@@ -14,6 +14,7 @@ import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -128,7 +129,7 @@ public class Andromeda {
             if (Config.get().damageBackport) DamageCommand.register(dispatcher);
         });
 
-        ConfigHelper.writeConfigToFile(true);
+        if (SharedConstants.ENVIRONMENT != EnvType.CLIENT) ConfigHelper.writeConfigToFile(true);
 
         EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
     }
