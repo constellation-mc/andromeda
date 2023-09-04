@@ -98,6 +98,11 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip
     @FeatureEnvironment(Environment.SERVER)
+    public boolean enableBedExplosionPower = false;
+
+    @ConfigEntry.Category("blocks")
+    @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
     public float bedExplosionPower = 5.0F;
 
     @ConfigEntry.Category("blocks")

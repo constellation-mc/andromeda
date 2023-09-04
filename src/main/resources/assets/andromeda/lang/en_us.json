@@ -142,6 +142,8 @@
   "text.autoconfig.andromeda.option.bedsExplodeEverywhere": "Beds Explode Everywhere",
   "text.autoconfig.andromeda.option.bedsExplodeEverywhere.@Tooltip[0]": "Makes beds explode in every dimension.",
   "text.autoconfig.andromeda.option.bedsExplodeEverywhere.@Tooltip[1]": "Conflicts with Safe Beds!",
+  "text.autoconfig.andromeda.option.enableBedExplosionPower": "Modify Bed Explosion Power",
+  "text.autoconfig.andromeda.option.enableBedExplosionPower.@Tooltip": "Enables the setting below.",
   "text.autoconfig.andromeda.option.bedExplosionPower": "Bed Explosion Power",
   "text.autoconfig.andromeda.option.bedExplosionPower.@Tooltip": "Configurable bed explosion power. Default is 5.0",
   "text.autoconfig.andromeda.option.safeBeds": "Safe Beds",
