@@ -35,7 +35,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     public int processingTime = -1;
 
     public IncubatorBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockRegistry.INCUBATOR_BLOCK_ENTITY, pos, state);
+        super(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY, pos, state);
     }
 
     @SuppressWarnings("unused")

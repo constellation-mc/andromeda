@@ -41,23 +41,23 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean andromeda$infiniteFallback(boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
-        return original || itemStack.isOf(ItemRegistry.INFINITE_TOTEM);
+        return original || itemStack.isOf(ItemRegistry.get().INFINITE_TOTEM);
     }
 
     @WrapWithCondition(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
     private boolean andromeda$infiniteFallback(ItemStack instance, int i) {
-        return !instance.isOf(ItemRegistry.INFINITE_TOTEM);
+        return !instance.isOf(ItemRegistry.get().INFINITE_TOTEM);
     }
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;sendEntityStatus(Lnet/minecraft/entity/Entity;B)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "tryUseTotem", cancellable = true)
     private void andromeda$useInfiniteTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir, ItemStack itemStack) {
         if (Config.get().totemSettings.enableInfiniteTotem) {
-            if (itemStack.isOf(ItemRegistry.INFINITE_TOTEM)) {
+            if (itemStack.isOf(ItemRegistry.get().INFINITE_TOTEM)) {
                 if (!world.isClient()) {
                     PacketByteBuf buf = PacketByteBufs.create()
                             .writeUuid(this.getUuid())
-                            .writeItemStack(new ItemStack(ItemRegistry.INFINITE_TOTEM));
+                            .writeItemStack(new ItemStack(ItemRegistry.get().INFINITE_TOTEM));
                     buf.writeRegistryValue(Registry.PARTICLE_TYPE, Andromeda.get().KNOCKOFF_TOTEM_PARTICLE);
 
                     for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {

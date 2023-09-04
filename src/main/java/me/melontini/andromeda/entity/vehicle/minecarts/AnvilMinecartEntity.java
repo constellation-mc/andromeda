@@ -26,7 +26,7 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
     }
 
     public AnvilMinecartEntity(World world, double x, double y, double z) {
-        super(EntityTypeRegistry.ANVIL_MINECART_ENTITY, world, x, y, z);
+        super(EntityTypeRegistry.get().ANVIL_MINECART_ENTITY, world, x, y, z);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
 
     @Override
     public Item getItem() {
-        return ItemRegistry.ANVIL_MINECART;
+        return ItemRegistry.get().ANVIL_MINECART;
     }
 
     @Override
@@ -71,6 +71,6 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
 
     @Override
     public ItemStack getPickBlockStack() {
-        return new ItemStack(ItemRegistry.ANVIL_MINECART);
+        return new ItemStack(ItemRegistry.get().ANVIL_MINECART);
     }
 }
