@@ -73,7 +73,7 @@ public class ConfigHelper {
         writeConfigToFile(print);
     }
 
-    public static void run(Runnable runnable, String... optionsToDisable) {
+    public static void run(ThrowingRunnable runnable, String... optionsToDisable) {
         try {
             runnable.run();
         } catch (Throwable e) {
@@ -90,5 +90,9 @@ public class ConfigHelper {
             FeatureManager.processUnknownException(optionsToDisable);
             return null;
         }
+    }
+
+    public interface ThrowingRunnable {
+        void run() throws Exception;
     }
 }
