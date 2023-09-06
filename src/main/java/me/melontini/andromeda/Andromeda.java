@@ -75,9 +75,7 @@ public class Andromeda {
         TagRegistry.register();
 
         LEAF_SLOWNESS = new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE);
-        KNOCKOFF_TOTEM_PARTICLE = FabricParticleTypes.simple();
-
-        Registry.register(Registry.PARTICLE_TYPE, new Identifier(SharedConstants.MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
+        KNOCKOFF_TOTEM_PARTICLE = Registry.register(Registry.PARTICLE_TYPE, new Identifier(SharedConstants.MODID, "knockoff_totem_particles"), FabricParticleTypes.simple());
 
         ServerWorldEvents.LOAD.register((server, world) -> {
             if (Config.get().tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD)
