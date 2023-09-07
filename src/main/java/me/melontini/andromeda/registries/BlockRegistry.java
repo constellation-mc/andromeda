@@ -22,6 +22,7 @@ import net.minecraft.util.Rarity;
 
 import java.util.Objects;
 
+import static me.melontini.andromeda.registries.Common.call;
 import static me.melontini.andromeda.registries.Common.id;
 
 public class BlockRegistry {
@@ -33,7 +34,7 @@ public class BlockRegistry {
             .register(Config.get().unknown).build();
 
     public IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
-            .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(ItemGroup.REDSTONE))
+            .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(call(() -> ItemGroup.REDSTONE)))
             .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder.create(id, IncubatorBlockEntity::new, block))
             .register(Config.get().incubatorSettings.enableIncubator).build();
 

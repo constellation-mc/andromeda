@@ -2,6 +2,7 @@ package me.melontini.andromeda.registries;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.networks.ServerSideNetworking;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -9,6 +10,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.Identifier;
 
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import static me.melontini.andromeda.config.ConfigHelper.run;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
@@ -17,6 +19,15 @@ public class Common {
 
     static Identifier id(String path) {
         return new Identifier(MODID, path);
+    }
+
+    static <T> T call(Callable<T> callable) {
+        try {
+            return callable.call();
+        } catch (Throwable e) {
+            AndromedaLog.error("Error while registering content: {}", e.getLocalizedMessage());
+            return null;
+        }
     }
 
     public static void bootstrap() {
