@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
+import static me.melontini.andromeda.config.ConfigHelper.run;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class Common {
@@ -27,8 +28,8 @@ public class Common {
         ScreenHandlerRegistry.register();
         TagRegistry.register();
 
-        Andromeda.get().AGONY = new DamageSource("andromeda_agony");
-        Andromeda.get().LEAF_SLOWNESS = new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE);
+        Andromeda.get().AGONY = run(() -> new DamageSource("andromeda_agony"), "minorInconvenience");
+        Andromeda.get().LEAF_SLOWNESS = run(() -> new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE), "leafSlowdown");
         Andromeda.get().KNOCKOFF_TOTEM_PARTICLE = RegistryUtil.create(id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple);
     }
 }
