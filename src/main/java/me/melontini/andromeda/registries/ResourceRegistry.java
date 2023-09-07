@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
@@ -66,7 +67,11 @@ public class ResourceRegistry {
 
             for (JsonElement element : array) {
                 if (element.isJsonPrimitive()) {
-                    if (!Registry.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
+                    try {
+                        if (!Registry.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
+                    } catch (Throwable t) {
+                        return false;
+                    }
                 }
             }
 
@@ -82,6 +87,8 @@ public class ResourceRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 Andromeda.get().PLANT_DATA.clear();
+                if (!Config.get().temperatureBasedCropGrowthSpeed) return;
+
                 var map = manager.findResources("am_crop_temperatures", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try (InputStream stream = entry.getValue().getInputStream(); Reader reader = new InputStreamReader(stream)) {
@@ -113,6 +120,8 @@ public class ResourceRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 Andromeda.get().EGG_DATA.clear();
+                if (!Config.get().incubatorSettings.enableIncubator) return;
+
                 //well...
                 for (Item item : Registry.ITEM) {
                     if (item instanceof SpawnEggItem spawnEggItem) {
@@ -145,6 +154,8 @@ public class ResourceRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
+                if (!Config.get().newThrowableItems.enable) return;
+
                 EntrypointRunner.runEntrypoint("andromeda:collect_behaviors", Runnable.class, Runnable::run);
 
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));

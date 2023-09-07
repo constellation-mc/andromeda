@@ -121,10 +121,14 @@ public class ItemRegistry {
 
         INSTANCE = new ItemRegistry();
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
-            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isFurnaceBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isJukeboxBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isTNTBoatOn).build();
-            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isHopperBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1)))
+                    .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newBoats.isFurnaceBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1)))
+                    .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newBoats.isJukeboxBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "tnt"), () -> new TNTBoatItem(value, new FabricItemSettings().maxCount(1)))
+                    .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newBoats.isTNTBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1)))
+                    .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newBoats.isHopperBoatOn).build();
         }
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
