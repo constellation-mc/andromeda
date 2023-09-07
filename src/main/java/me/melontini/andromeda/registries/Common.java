@@ -25,7 +25,7 @@ public class Common {
         try {
             return callable.call();
         } catch (Throwable e) {
-            AndromedaLog.error("Error while registering content: {}", e.getLocalizedMessage());
+            AndromedaLog.error("Error while registering content: {}: {}", e.getClass().getName(), e.getLocalizedMessage());
             return null;
         }
     }
