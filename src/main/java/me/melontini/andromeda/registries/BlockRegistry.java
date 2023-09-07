@@ -44,6 +44,8 @@ public class BlockRegistry {
     }
 
     public static void register() {
+        if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
+
         INSTANCE = new BlockRegistry();
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }

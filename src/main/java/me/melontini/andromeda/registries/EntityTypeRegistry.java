@@ -61,6 +61,8 @@ public class EntityTypeRegistry {
     }
 
     public static void register() {
+        if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
+
         INSTANCE = new EntityTypeRegistry();
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }

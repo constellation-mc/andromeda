@@ -116,6 +116,8 @@ public class ItemRegistry {
     }
 
     public static void register() {
+        if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
+
         INSTANCE = new ItemRegistry();
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
             ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isFurnaceBoatOn).build();
