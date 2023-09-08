@@ -91,13 +91,13 @@ public class ItemRegistry {
 
                 List<ItemStack> boats = new ArrayList<>();
                 for (BoatEntity.Type value : BoatEntity.Type.values()) {
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "furnace"))));
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "hopper"))));
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "tnt"))));
-                    boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "jukebox"))));
+                    boats.add(call(() -> getStackOrEmpty(Registry.ITEM.get(boatId(value, "furnace")))));
+                    boats.add(call(() -> getStackOrEmpty(Registry.ITEM.get(boatId(value, "hopper")))));
+                    boats.add(call(() -> getStackOrEmpty(Registry.ITEM.get(boatId(value, "tnt")))));
+                    boats.add(call(() -> getStackOrEmpty(Registry.ITEM.get(boatId(value, "jukebox")))));
                 }
                 appendStacks(entries, boats, false);
-            }).icon(this::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> {
+            }).icon(this::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> call(() -> {
                 MinecraftClient client = MinecraftClient.getInstance();
 
                 float angle = Util.getMeasuringTimeMs() * 0.09f;
@@ -110,7 +110,7 @@ public class ItemRegistry {
                 BakedModel model = client.getItemRenderer().getModel(getAndSetIcon(), null, null, 0);
                 DrawUtil.renderGuiItemModelCustomMatrixNoTransform(matrixStack, getAndSetIcon(), model);
                 matrixStack.pop();
-            }).displayName(AndromedaTexts.ITEM_GROUP_NAME).build());
+            })).displayName(AndromedaTexts.ITEM_GROUP_NAME).build());
 
     public static ItemRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));

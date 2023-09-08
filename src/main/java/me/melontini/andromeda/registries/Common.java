@@ -3,6 +3,7 @@ package me.melontini.andromeda.registries;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ThrowingRunnable;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -27,6 +28,14 @@ public class Common {
         } catch (Throwable e) {
             AndromedaLog.error("Error while registering content: {}: {}", e.getClass().getName(), e.getLocalizedMessage());
             return null;
+        }
+    }
+
+    static void call(ThrowingRunnable runnable) {
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            AndromedaLog.error("Error while registering content: {}: {}", e.getClass().getName(), e.getLocalizedMessage());
         }
     }
 
