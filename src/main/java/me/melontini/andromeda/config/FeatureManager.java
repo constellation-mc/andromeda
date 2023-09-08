@@ -8,14 +8,13 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
-import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class FeatureManager {
 
-    static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("FeatureManager"), PrependingLogger.LOGGER_NAME);
+    static final PrependingLogger LOGGER = PrependingLogger.get("FeatureManager");
     private static final Map<String, FeatureConfig.Processor> PROCESSORS = new LinkedHashMap<>(5);
     private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
     private static final Map<Field, Set<String>> MODIFIED_FIELDS = new HashMap<>();
