@@ -64,24 +64,24 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip(count = 3)
     @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.BOTH)
-    public IncubatorSettings incubatorSettings = new IncubatorSettings();
+    public IncubatorSettings incubator = new IncubatorSettings();
 
     public static class IncubatorSettings {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
-        public boolean enableIncubator = false;
+        public boolean enable = false;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
-        public boolean incubatorRandomness = true;
+        public boolean randomness = true;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
-        public boolean incubatorRecipe = true; //Used in JSON
+        public boolean recipe = true; //Used in JSON
     }
 
     @ConfigEntry.Category("blocks")

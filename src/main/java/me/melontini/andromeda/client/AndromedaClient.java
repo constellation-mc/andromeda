@@ -186,7 +186,7 @@ public class AndromedaClient {
         if (Config.get().unknown)
             BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().ROSE_OF_THE_VALLEY);
 
-        if (Config.get().incubatorSettings.enableIncubator) {
+        if (Config.get().incubator.enable) {
             BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().INCUBATOR_BLOCK);
             BlockEntityRendererFactories.register(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY, IncubatorBlockRenderer::new);
         }

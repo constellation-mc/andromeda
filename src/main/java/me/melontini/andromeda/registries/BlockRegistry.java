@@ -36,7 +36,7 @@ public class BlockRegistry {
     public IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(call(() -> ItemGroup.REDSTONE)))
             .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder.create(id, IncubatorBlockEntity::new, block))
-            .register(Config.get().incubatorSettings.enableIncubator).build();
+            .register(Config.get().incubator.enable).build();
 
     public BlockEntityType<IncubatorBlockEntity> INCUBATOR_BLOCK_ENTITY = INCUBATOR_BLOCK == null ? null : RegistryUtil.getBlockEntityFromBlock(INCUBATOR_BLOCK);
 

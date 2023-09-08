@@ -120,7 +120,7 @@ public class ResourceRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 Andromeda.get().EGG_DATA.clear();
-                if (!Config.get().incubatorSettings.enableIncubator) return;
+                if (!Config.get().incubator.enable) return;
 
                 //well...
                 for (Item item : Registry.ITEM) {

@@ -163,7 +163,7 @@ public class ItemRegistry {
                 ITEM_GROUP_ICON = new ItemStack(ROSE_OF_THE_VALLEY);
             } else if (Config.get().totemSettings.enableInfiniteTotem && INFINITE_TOTEM != null) {
                 ITEM_GROUP_ICON = new ItemStack(INFINITE_TOTEM);
-            } else if (Config.get().incubatorSettings.enableIncubator && INCUBATOR != null) {
+            } else if (Config.get().incubator.enable && INCUBATOR != null) {
                 ITEM_GROUP_ICON = new ItemStack(INCUBATOR);
             } else ITEM_GROUP_ICON = new ItemStack(Items.BEDROCK);
         }

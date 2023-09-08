@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -17,6 +18,8 @@ class Fixup {
     private static final Map<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> FIXUPS = new HashMap<>();
 
     static JsonObject fixup(JsonObject object) {
+        MakeSure.notNull(object);
+
         for (Map.Entry<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> entry : FIXUPS.entrySet()) {
             if (object.has(entry.getKey())) {
                 entry.getValue().forEach(function -> {
@@ -51,6 +54,22 @@ class Fixup {
 
                 JsonObject throwableItems = object.get("throwableItems").getAsJsonObject();
                 throwableItems.add("blacklist", array);
+                return true;
+            }
+            return false;
+        });
+        addFixup("incubatorSettings", (object, element) -> {
+            if (element instanceof JsonObject o) {
+                object.remove("incubatorSettings");
+
+                JsonObject incubatorSettings = new JsonObject();
+                if (o.has("enableIncubator"))
+                    incubatorSettings.addProperty("enable", o.get("enableIncubator").getAsBoolean());
+                if (o.has("incubatorRandomness"))
+                    incubatorSettings.addProperty("randomness", o.get("incubatorRandomness").getAsBoolean());
+                if (o.has("incubatorRecipe"))
+                    incubatorSettings.addProperty("recipe", o.get("incubatorRecipe").getAsBoolean());
+                object.add("incubator", incubatorSettings);
                 return true;
             }
             return false;
