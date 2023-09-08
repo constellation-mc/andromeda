@@ -1,12 +1,13 @@
 package me.melontini.andromeda.config;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.melontini.andromeda.util.AndromedaLog;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -28,7 +29,7 @@ class Fixup {
     }
 
     static void addFixup(final String key, final BiFunction<JsonObject, JsonElement, Boolean> fixup) {
-        FIXUPS.computeIfAbsent(key, k -> new HashSet<>()).add(fixup);
+        FIXUPS.computeIfAbsent(key, k -> new LinkedHashSet<>()).add(fixup);
     }
 
     static {
@@ -40,6 +41,16 @@ class Fixup {
                 JsonObject throwableItems = new JsonObject();
                 throwableItems.addProperty("enable", value);
                 object.add("throwableItems", throwableItems);
+                return true;
+            }
+            return false;
+        });
+        addFixup("throwableItemsBlacklist", (object, element) -> {
+            if (element instanceof JsonArray array) {
+                object.remove("throwableItemsBlacklist");
+
+                JsonObject throwableItems = object.get("throwableItems").getAsJsonObject();
+                throwableItems.add("blacklist", array);
                 return true;
             }
             return false;
