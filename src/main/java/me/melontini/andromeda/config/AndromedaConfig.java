@@ -502,13 +502,13 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.SERVER)
-    public AutoGenRecipes autogenRecipeAdvancements = new AutoGenRecipes();
+    public AutoGenRecipes recipeAdvancementsGeneration = new AutoGenRecipes();
 
     public static class AutoGenRecipes {
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
-        public boolean autogenRecipeAdvancements = true;
+        public boolean enable = true;
 
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
@@ -520,11 +520,11 @@ public class AndromedaConfig implements ConfigData {
 
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
-        public List<String> blacklistedRecipeNamespaces = Arrays.asList("minecraft", "andromeda", "extshape");
+        public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");
 
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
-        public List<String> blacklistedRecipeIds = Arrays.asList();
+        public List<String> recipeBlacklist = Arrays.asList();
     }
 
     @ConfigEntry.Category("misc")

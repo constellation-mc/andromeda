@@ -101,7 +101,7 @@ public class Andromeda {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            if (Config.get().autogenRecipeAdvancements.autogenRecipeAdvancements) {
+            if (Config.get().recipeAdvancementsGeneration.enable) {
                 ConfigHelper.run(() -> AdvancementGeneration.generateRecipeAdvancements(server), "autogenRecipeAdvancements.autogenRecipeAdvancements");
                 server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
             }

@@ -48,6 +48,7 @@ class Fixup {
             }
             return false;
         });
+
         addFixup("throwableItemsBlacklist", (object, element) -> {
             if (element instanceof JsonArray array) {
                 object.remove("throwableItemsBlacklist");
@@ -58,21 +59,40 @@ class Fixup {
             }
             return false;
         });
+
         addFixup("incubatorSettings", (object, element) -> {
             if (element instanceof JsonObject o) {
                 object.remove("incubatorSettings");
 
-                JsonObject incubatorSettings = new JsonObject();
-                if (o.has("enableIncubator"))
-                    incubatorSettings.addProperty("enable", o.get("enableIncubator").getAsBoolean());
-                if (o.has("incubatorRandomness"))
-                    incubatorSettings.addProperty("randomness", o.get("incubatorRandomness").getAsBoolean());
-                if (o.has("incubatorRecipe"))
-                    incubatorSettings.addProperty("recipe", o.get("incubatorRecipe").getAsBoolean());
-                object.add("incubator", incubatorSettings);
+                surgery(o, o, "enableIncubator", "enable");
+                surgery(o, o, "incubatorRandomness", "randomness");
+                surgery(o, o, "incubatorRecipe", "recipe");
+
+                object.add("incubator", o);
                 return true;
             }
             return false;
         });
+
+        addFixup("autogenRecipeAdvancements", (object, element) -> {
+            if (element instanceof JsonObject o) {
+                object.remove("autogenRecipeAdvancements");
+
+                surgery(o, o, "autogenRecipeAdvancements", "enable");
+                surgery(o, o, "blacklistedRecipeNamespaces", "namespaceBlacklist");
+                surgery(o, o, "blacklistedRecipeIds", "recipeBlacklist");
+
+                object.add("recipeAdvancementsGeneration", o);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private static void surgery(JsonObject donor, JsonObject patient, String oldKey, String newKey) {
+        if (donor.has(oldKey)) {
+            patient.add(newKey, donor.get(oldKey));
+            donor.remove(oldKey);
+        }
     }
 }
