@@ -28,7 +28,7 @@ public abstract class ZombieEntityMixin extends HostileEntity {
         if (Config.get().zombiesPreventUselessItems)
             return original && (stack.getItem() instanceof ToolItem || stack.getItem() instanceof ArmorItem ||
                     stack.isIn(TagRegistry.ZOMBIES_PICKUP) ||
-                    (Config.get().newThrowableItems.canZombiesThrowItems && ItemBehaviorManager.hasBehaviors(stack.getItem())));
+                    (Config.get().throwableItems.canZombiesThrowItems && ItemBehaviorManager.hasBehaviors(stack.getItem())));
         else
             return original;
     }

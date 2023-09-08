@@ -15,7 +15,7 @@ public class ItemBehaviorManager {
     private static final Set<Item> OVERRIDE_VANILLA = new HashSet<>();
 
     public static List<ItemBehaviors.Behavior> getBehaviors(Item item) {
-        if (Config.get().newThrowableItems.blacklist.contains(Registries.ITEM.getId(item).toString()))
+        if (Config.get().throwableItems.blacklist.contains(Registries.ITEM.getId(item).toString()))
             return Collections.emptyList();
         Holder holder = ITEM_BEHAVIORS.get(item);
         if (holder == null) return Collections.emptyList();
@@ -39,7 +39,7 @@ public class ItemBehaviorManager {
     }
 
     public static boolean hasBehaviors(Item item) {
-        return ITEM_BEHAVIORS.containsKey(item) && !Config.get().newThrowableItems.blacklist.contains(Registries.ITEM.getId(item).toString());
+        return ITEM_BEHAVIORS.containsKey(item) && !Config.get().throwableItems.blacklist.contains(Registries.ITEM.getId(item).toString());
     }
 
     public static void clear() {

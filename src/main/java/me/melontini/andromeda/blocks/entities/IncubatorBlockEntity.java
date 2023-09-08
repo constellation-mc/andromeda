@@ -35,7 +35,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     public int processingTime = -1;
 
     public IncubatorBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockRegistry.INCUBATOR_BLOCK_ENTITY, pos, state);
+        super(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY, pos, state);
     }
 
     @SuppressWarnings("unused")
@@ -65,7 +65,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             if (!stack.isEmpty() && this.processingTime == -1) {
                 EggProcessingData data = Andromeda.get().EGG_DATA.get(stack.getItem());
                 if (data != null) {
-                    this.processingTime = Config.get().incubatorSettings.incubatorRandomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
+                    this.processingTime = Config.get().incubator.randomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     markDirty();
                 }

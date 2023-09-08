@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ZombieEntity.class)
-@MixinRelatedConfigOption({"newThrowableItems.enable", "newThrowableItems.canZombiesThrowItems"})
+@MixinRelatedConfigOption({"throwableItems.enable", "throwableItems.canZombiesThrowItems"})
 public abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
 
     @Unique
@@ -35,8 +35,8 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
 
     @Inject(at = @At("HEAD"), method = "initCustomGoals")
     private void andromeda$initCustomGoals(CallbackInfo ci) {
-        if (Config.get().newThrowableItems.enable && Config.get().newThrowableItems.canZombiesThrowItems)
-            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Config.get().newThrowableItems.zombieThrowInterval, 4, 16));
+        if (Config.get().throwableItems.enable && Config.get().throwableItems.canZombiesThrowItems)
+            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Config.get().throwableItems.zombieThrowInterval, 4, 16));
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
@@ -46,7 +46,7 @@ public abstract class ZombieEntityMixin extends HostileEntity implements ItemThr
 
     @Override
     public void am$throwItem(LivingEntity target, float pullProgress) {
-        if (!Config.get().newThrowableItems.enable || !Config.get().newThrowableItems.canZombiesThrowItems) return;
+        if (!Config.get().throwableItems.enable || !Config.get().throwableItems.canZombiesThrowItems) return;
 
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 

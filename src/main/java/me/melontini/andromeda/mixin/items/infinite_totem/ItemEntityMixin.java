@@ -140,7 +140,7 @@ public abstract class ItemEntityMixin extends Entity {
 
                             ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
 
-                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(ItemRegistry.INFINITE_TOTEM));
+                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(ItemRegistry.get().INFINITE_TOTEM));
                             this.discard();
                             andromeda$itemEntity.discard();
                             world.spawnEntity(entity);

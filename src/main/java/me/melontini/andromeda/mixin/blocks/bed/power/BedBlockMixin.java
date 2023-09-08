@@ -1,21 +1,23 @@
 package me.melontini.andromeda.mixin.blocks.bed.power;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(BedBlock.class)
+@MixinRelatedConfigOption("enableBedExplosionPower")
 public abstract class BedBlockMixin extends Block {
 
     public BedBlockMixin(Settings settings) {
         super(settings);
     }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/world/explosion/ExplosionBehavior;Lnet/minecraft/util/math/Vec3d;FZLnet/minecraft/world/World$ExplosionSourceType;)Lnet/minecraft/world/explosion/Explosion;"), index = 4, method = "onUse")
+    @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=5.0F"), method = "onUse")
     public float andromeda$explosionRedirect(float power) {
-        return Config.get().bedExplosionPower;
+        return Config.get().enableBedExplosionPower ? Config.get().bedExplosionPower : power;
     }
 }
