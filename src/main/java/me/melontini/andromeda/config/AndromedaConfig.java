@@ -426,7 +426,7 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.BOTH)
-    public ThrowableItems newThrowableItems = new ThrowableItems();
+    public ThrowableItems throwableItems = new ThrowableItems();
 
     public static class ThrowableItems {
 

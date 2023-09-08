@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
-@MixinRelatedConfigOption("newThrowableItems.enable")
+@MixinRelatedConfigOption("throwableItems.enable")
 public abstract class ItemStackMixin {
     @Shadow
     public abstract Item getItem();
@@ -52,7 +52,7 @@ public abstract class ItemStackMixin {
 
     @Unique
     private boolean andromeda$runBehaviors(World world, PlayerEntity user) {
-        if (!Config.get().newThrowableItems.enable) return false;
+        if (!Config.get().throwableItems.enable) return false;
 
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {

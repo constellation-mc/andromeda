@@ -154,7 +154,7 @@ public class ResourceRegistry {
             @Override
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
-                if (!Config.get().newThrowableItems.enable) return;
+                if (!Config.get().throwableItems.enable) return;
 
                 EntrypointRunner.runEntrypoint("andromeda:collect_behaviors", Runnable.class, Runnable::run);
 
