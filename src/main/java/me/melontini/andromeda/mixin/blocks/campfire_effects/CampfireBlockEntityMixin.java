@@ -24,17 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(CampfireBlockEntity.class)
-@MixinRelatedConfigOption("campfireTweaks.campfireEffects")
+@MixinRelatedConfigOption("campfireTweaks.effects")
 public class CampfireBlockEntityMixin {
     @Inject(at = @At("HEAD"), method = "litServerTick")
     private static void andromeda$litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
-        if (!Config.get().campfireTweaks.campfireEffects) return;
+        if (!Config.get().campfireTweaks.effects) return;
 
         if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
                     List<LivingEntity> entities = new ArrayList<>();
-                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(Config.get().campfireTweaks.campfireEffectsRange), entity -> {
-                        if ((entity instanceof PassiveEntity && Config.get().campfireTweaks.campfireEffectsPassive) || entity instanceof PlayerEntity) {
+                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(Config.get().campfireTweaks.effectsRange), entity -> {
+                        if ((entity instanceof PassiveEntity && Config.get().campfireTweaks.affectsPassive) || entity instanceof PlayerEntity) {
                             entities.add((LivingEntity) entity);
                         }
                     });

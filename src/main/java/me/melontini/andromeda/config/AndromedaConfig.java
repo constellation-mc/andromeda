@@ -64,24 +64,24 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip(count = 3)
     @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.BOTH)
-    public IncubatorSettings incubatorSettings = new IncubatorSettings();
+    public IncubatorSettings incubator = new IncubatorSettings();
 
     public static class IncubatorSettings {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
-        public boolean enableIncubator = false;
+        public boolean enable = false;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
-        public boolean incubatorRandomness = true;
+        public boolean randomness = true;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
-        public boolean incubatorRecipe = true; //Used in JSON
+        public boolean recipe = true; //Used in JSON
     }
 
     @ConfigEntry.Category("blocks")
@@ -94,6 +94,11 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip(count = 2)
     @FeatureEnvironment(Environment.SERVER)
     public boolean bedsExplodeEverywhere = false;
+
+    @ConfigEntry.Category("blocks")
+    @ConfigEntry.Gui.Tooltip
+    @FeatureEnvironment(Environment.SERVER)
+    public boolean enableBedExplosionPower = false;
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip
@@ -118,15 +123,15 @@ public class AndromedaConfig implements ConfigData {
     public static class CampfireTweaks {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
-        public boolean campfireEffects = true;
+        public boolean effects = true;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
-        public boolean campfireEffectsPassive = true;
+        public boolean affectsPassive = true;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
-        public int campfireEffectsRange = 10;
+        public int effectsRange = 10;
 
         @ConfigEntry.Category("blocks")
         public List<Effect> effectList = Arrays.asList(new Effect());
@@ -421,7 +426,7 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.BOTH)
-    public ThrowableItems newThrowableItems = new ThrowableItems();
+    public ThrowableItems throwableItems = new ThrowableItems();
 
     public static class ThrowableItems {
 
@@ -497,13 +502,13 @@ public class AndromedaConfig implements ConfigData {
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.CollapsibleObject
     @FeatureEnvironment(Environment.SERVER)
-    public AutoGenRecipes autogenRecipeAdvancements = new AutoGenRecipes();
+    public AutoGenRecipes recipeAdvancementsGeneration = new AutoGenRecipes();
 
     public static class AutoGenRecipes {
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
-        public boolean autogenRecipeAdvancements = true;
+        public boolean enable = true;
 
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
@@ -515,11 +520,11 @@ public class AndromedaConfig implements ConfigData {
 
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
-        public List<String> blacklistedRecipeNamespaces = Arrays.asList("minecraft", "andromeda", "extshape");
+        public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");
 
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
-        public List<String> blacklistedRecipeIds = Arrays.asList();
+        public List<String> recipeBlacklist = Arrays.asList();
     }
 
     @ConfigEntry.Category("misc")

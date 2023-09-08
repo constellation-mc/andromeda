@@ -8,20 +8,20 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
-import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class FeatureManager {
 
-    static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("FeatureManager"), PrependingLogger.LOGGER_NAME);
+    static final PrependingLogger LOGGER = PrependingLogger.get("FeatureManager");
     private static final Map<String, FeatureConfig.Processor> PROCESSORS = new LinkedHashMap<>(5);
     private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
     private static final Map<Field, Set<String>> MODIFIED_FIELDS = new HashMap<>();
     private static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
     private static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
-    private static final Set<String> FAILED_MIXINS = new HashSet<>();
+    private static final Map<String, Object> FAILED_MIXINS = new HashMap<>();
+    private static final Map<String, Object> UNKNOWN_EXCEPTIONS = new HashMap<>();
 
 
     public static void registerProcessor(String id, FeatureConfig.Processor processor) {
@@ -45,8 +45,17 @@ public class FeatureManager {
     }
 
     public static void processMixinError(String option) {
-        FAILED_MIXINS.add(option);
+        FAILED_MIXINS.put(option, false);
         configure("mixin_error", Collections.singletonMap(option, false));
+        ConfigHelper.writeConfigToFile(false);
+    }
+
+    public static void processUnknownException(String... option) {
+        for (String s : option) {
+            UNKNOWN_EXCEPTIONS.put(s, false);
+            configure("unknown_exception", Collections.singletonMap(s, false));
+        }
+        ConfigHelper.writeConfigToFile(false);
     }
 
     public static void processFeatures(boolean print) {
@@ -98,15 +107,8 @@ public class FeatureManager {
                     .forEach(FeatureManager::parseMetadata);
             return MOD_JSON;
         });
-        FeatureManager.registerProcessor("mixin_error", config -> {
-            if (FAILED_MIXINS.isEmpty()) return null;
-
-            Map<String, Object> map = new LinkedHashMap<>();
-            for (String failedMixin : FAILED_MIXINS) {
-                map.put(failedMixin, false);
-            }
-            return map;
-        });
+        FeatureManager.registerProcessor("mixin_error", config -> FAILED_MIXINS);
+        FeatureManager.registerProcessor("unknown_exception", config -> UNKNOWN_EXCEPTIONS);
         EntrypointRunner.runEntrypoint("andromeda:feature_manager", Runnable.class, Runnable::run);
     }
 

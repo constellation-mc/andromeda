@@ -4,11 +4,9 @@ import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
-import me.melontini.andromeda.networks.ServerSideNetworking;
-import me.melontini.andromeda.registries.*;
+import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.AdvancementGeneration;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
@@ -19,7 +17,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -27,18 +24,14 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 public class Andromeda {
 
@@ -51,7 +44,7 @@ public class Andromeda {
 
     public EntityAttributeModifier LEAF_SLOWNESS;
 
-    public final DamageSource AGONY = new DamageSource("andromeda_agony");
+    public DamageSource AGONY;
 
     public static DamageSource bricked(@Nullable Entity attacker) {
         return new BrickedDamageSource(attacker);
@@ -65,19 +58,8 @@ public class Andromeda {
     private void onInitialize() {
         EntrypointRunner.runEntrypoint("andromeda:pre-main", ModInitializer.class, ModInitializer::onInitialize);
 
-        AndromedaReporter.registerCrashHandler();
-        BlockRegistry.register();
-        ItemRegistry.register();
-        EntityTypeRegistry.register();
-        ServerSideNetworking.register();
-        ResourceRegistry.register();
-        ScreenHandlerRegistry.register();
-        TagRegistry.register();
-
-        LEAF_SLOWNESS = new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE);
-        KNOCKOFF_TOTEM_PARTICLE = FabricParticleTypes.simple();
-
-        Registry.register(Registries.PARTICLE_TYPE, new Identifier(SharedConstants.MODID, "knockoff_totem_particles"), KNOCKOFF_TOTEM_PARTICLE);
+        AndromedaReporter.init();
+        Common.bootstrap();
 
         ServerWorldEvents.LOAD.register((server, world) -> {
             if (Config.get().tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD)
@@ -119,8 +101,8 @@ public class Andromeda {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            if (Config.get().autogenRecipeAdvancements.autogenRecipeAdvancements) {
-                AdvancementGeneration.generateRecipeAdvancements(server);
+            if (Config.get().recipeAdvancementsGeneration.enable) {
+                ConfigHelper.run(() -> AdvancementGeneration.generateRecipeAdvancements(server), "autogenRecipeAdvancements.autogenRecipeAdvancements");
                 server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
             }
         });
@@ -128,8 +110,6 @@ public class Andromeda {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             if (Config.get().damageBackport) DamageCommand.register(dispatcher);
         });
-
-        ConfigHelper.writeConfigToFile(true);
 
         EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
     }

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
@@ -35,12 +36,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.registries.Common.id;
 
 public class ResourceRegistry {
 
     public static void register() {
-        ResourceConditions.register(new Identifier(MODID, "config_option"), object -> {
+        ResourceConditions.register(id("config_option"), object -> {
             JsonArray array = JsonHelper.getArray(object, "values");
             boolean load = true;
 
@@ -49,7 +50,7 @@ public class ResourceRegistry {
                     try {
                         String configOption = element.getAsString();
                         try {
-                            load = (boolean) ConfigHelper.getConfigOption(configOption);
+                            load = ConfigHelper.getConfigOption(configOption);
                         } catch (NoSuchFieldException e) {
                             throw new AndromedaException("Invalid config option: " + configOption);
                         }
@@ -62,12 +63,16 @@ public class ResourceRegistry {
 
             return load;
         });
-        ResourceConditions.register(new Identifier(MODID, "items_registered"), object -> {
+        ResourceConditions.register(id("items_registered"), object -> {
             JsonArray array = JsonHelper.getArray(object, "values");
 
             for (JsonElement element : array) {
                 if (element.isJsonPrimitive()) {
-                    if (!Registries.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
+                    try {
+                        if (!Registries.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
+                    } catch (Throwable t) {
+                        return false;
+                    }
                 }
             }
 
@@ -77,12 +82,14 @@ public class ResourceRegistry {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return new Identifier(MODID, "crop_temperatures");
+                return id("crop_temperatures");
             }
 
             @Override
             public void reload(ResourceManager manager) {
                 Andromeda.get().PLANT_DATA.clear();
+                if (!Config.get().temperatureBasedCropGrowthSpeed) return;
+
                 var map = manager.findResources("am_crop_temperatures", identifier -> identifier.getPath().endsWith(".json"));
                 for (Map.Entry<Identifier, Resource> entry : map.entrySet()) {
                     try (InputStream stream = entry.getValue().getInputStream(); Reader reader = new InputStreamReader(stream)) {
@@ -108,12 +115,14 @@ public class ResourceRegistry {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return new Identifier(MODID, "egg_processing");
+                return id("egg_processing");
             }
 
             @Override
             public void reload(ResourceManager manager) {
                 Andromeda.get().EGG_DATA.clear();
+                if (!Config.get().incubator.enable) return;
+
                 //well...
                 for (Item item : Registries.ITEM) {
                     if (item instanceof SpawnEggItem spawnEggItem) {
@@ -140,12 +149,14 @@ public class ResourceRegistry {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return new Identifier(MODID, "am_item_throw_behavior");
+                return id("am_item_throw_behavior");
             }
 
             @Override
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
+                if (!Config.get().throwableItems.enable) return;
+
                 EntrypointRunner.runEntrypoint("andromeda:collect_behaviors", Runnable.class, Runnable::run);
 
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));
@@ -200,7 +211,7 @@ public class ResourceRegistry {
             }
         });
 
-        AndromedaLog.info("ResourceConditionRegistry init complete!");
+        AndromedaLog.info("ResourceRegistry init complete!");
     }
 
     private static <T> T parseFromId(String id, Registry<T> registry) {

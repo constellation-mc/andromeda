@@ -11,7 +11,6 @@ import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import net.fabricmc.loader.api.FabricLoader;
-import org.apache.logging.log4j.LogManager;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.Mixins;
@@ -25,10 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static me.melontini.dark_matter.api.base.util.Utilities.cast;
+
 @SuppressWarnings("UnstableApiUsage")
 public class AndromedaMixinPlugin extends ExtendablePlugin {
 
-    private static final PrependingLogger LOGGER = new PrependingLogger(LogManager.getLogger("AndromedaMixinPlugin"), PrependingLogger.LOGGER_NAME);
+    private static final PrependingLogger LOGGER = PrependingLogger.get("AndromedaMixinPlugin");
     private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
 
     static {
@@ -43,7 +44,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     @Override
     public void onPluginLoad(String mixinPackage) {
         LOGGER.info("Platform: " + SharedConstants.PLATFORM);
-        Mixins.registerErrorHandlerClass("me.melontini.andromeda.util.mixin.ErrorHandler");
+        Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
 
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
         if (Files.exists(mtConfig)) {
@@ -69,10 +70,10 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             //"inspired" by https://github.com/unascribed/Fabrication/blob/3.0/1.18/src/main/java/com/unascribed/fabrication/support/MixinConfigPlugin.java
             if (annotationNode != null) {
                 Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
-                List<String> configOptions = (List<String>) values.get("value");
+                List<String> configOptions = cast(values.get("value"));
                 for (String configOption : configOptions) {
                     try {
-                        load = (boolean) ConfigHelper.getConfigOption(configOption);
+                        load = ConfigHelper.getConfigOption(configOption);
                     } catch (Exception e) {
                         LOGGER.warn("Couldn't check @MixinRelatedConfigOption(%s) from %s This is no fault of yours.".formatted(configOption, mixinClassName), e);
                     }
@@ -90,11 +91,11 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
         AnnotationNode annotationNode = Annotations.getVisible(mixinNode, MixinRelatedConfigOption.class);
         if (annotationNode != null) {
             Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
-            List<String> configOptions = (List<String>) values.get("value");
+            List<String> configOptions = cast(values.get("value"));
             boolean dummy = true;
             for (String configOption : configOptions) {
                 try {
-                    dummy = (boolean) ConfigHelper.getConfigOption(configOption);
+                    dummy = ConfigHelper.getConfigOption(configOption);
                 } catch (NoSuchFieldException e) {
                     throw new AndromedaException("Invalid config option in @MixinRelatedConfigOption(%s) from %s".formatted(configOption, mixinClassName));
                 } catch (ClassCastException e) {

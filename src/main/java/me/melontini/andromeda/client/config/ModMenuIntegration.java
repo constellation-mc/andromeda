@@ -1,8 +1,9 @@
-package me.melontini.andromeda.config;
+package me.melontini.andromeda.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import me.melontini.andromeda.client.AndromedaClient;
+import me.melontini.andromeda.config.AndromedaConfig;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
