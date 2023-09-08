@@ -7,13 +7,11 @@ import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.AdvancementGeneration;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -112,8 +110,6 @@ public class Andromeda {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             if (Config.get().damageBackport) DamageCommand.register(dispatcher);
         });
-
-        if (SharedConstants.ENVIRONMENT != EnvType.CLIENT) ConfigHelper.writeConfigToFile(true);
 
         EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
     }
