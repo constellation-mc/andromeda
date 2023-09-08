@@ -7,7 +7,8 @@ import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 import java.util.UUID;
@@ -48,7 +49,8 @@ public class Common {
         ScreenHandlerRegistry.register();
         TagRegistry.register();
 
-        Andromeda.get().AGONY = run(() -> new DamageSource("andromeda_agony"), "minorInconvenience");
+        Andromeda.get().AGONY = run(() -> RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("agony")), "minorInconvenience");
+        Andromeda.get().BRICKED = run(() -> RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked")));
         Andromeda.get().LEAF_SLOWNESS = run(() -> new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE), "leafSlowdown");
         Andromeda.get().KNOCKOFF_TOTEM_PARTICLE = RegistryUtil.create(id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple);
     }

@@ -20,9 +20,7 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -40,8 +38,8 @@ public class Andromeda {
 
     public EntityAttributeModifier LEAF_SLOWNESS;
 
-    public final RegistryKey<DamageType> AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SharedConstants.MODID, "agony"));
-    public final RegistryKey<DamageType> BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SharedConstants.MODID, "bricked"));
+    public RegistryKey<DamageType> AGONY;
+    public RegistryKey<DamageType> BRICKED;
 
     public static void init() {
         INSTANCE = new Andromeda();
