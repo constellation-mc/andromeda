@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.ThrowingRunnable;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.IOException;
@@ -14,14 +15,32 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class ConfigHelper {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Map<String, String> REDIRECTS = Utilities.consume(new HashMap<>(), map -> {
+        map.put("throwableItems", "throwableItems.enable");//Since throwableItems is now an object, we can assume that whatever this is wants a boolean.
+        map.put("throwableItemsBlacklist", "throwableItems.blacklist");
 
-    public static Field setConfigOption(String configOption, Object value) throws NoSuchFieldException, IllegalAccessException {
-        if (configOption.contains(".")) {
+        map.put("incubatorSettings.enableIncubator", "incubator.enable");
+        map.put("incubatorSettings.incubatorRandomness", "incubator.randomness");
+        map.put("incubatorSettings.incubatorRecipe", "incubator.recipe");
+
+        map.put("autogenRecipeAdvancements.autogenRecipeAdvancements", "recipeAdvancementsGeneration.enable");
+        map.put("autogenRecipeAdvancements.blacklistedRecipeNamespaces", "recipeAdvancementsGeneration.namespaceBlacklist");
+        map.put("autogenRecipeAdvancements.blacklistedRecipeIds", "recipeAdvancementsGeneration.recipeBlacklist");
+    });
+
+    public static String redirect(String s) {
+        return REDIRECTS.getOrDefault(s, s);
+    }
+
+    public static Field setConfigOption(String configOption, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        if ((configOption = redirect(configOption)).contains(".")) {
             String[] fields = configOption.split("\\.");
             Object obj = Config.get().getClass().getField(fields[0]).get(Config.get());
             for (int i = 1; i < fields.length - 1; i++) {
@@ -39,7 +58,7 @@ public class ConfigHelper {
 
 
     public static Object getConfigOption(String configOption) throws NoSuchFieldException, IllegalAccessException {
-        if (configOption.contains(".")) {
+        if ((configOption = redirect(configOption)).contains(".")) {
             String[] fields = configOption.split("\\.");
             Object obj = Config.get().getClass().getField(fields[0]).get(Config.get());
             for (int i = 1; i < fields.length - 1; i++) {
