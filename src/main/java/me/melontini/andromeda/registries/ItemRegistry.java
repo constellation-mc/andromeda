@@ -74,6 +74,7 @@ public class ItemRegistry {
 
     private ItemStack ITEM_GROUP_ICON;
 
+    private boolean animate = true;
     public ItemGroup GROUP = call(() -> ContentBuilder.ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
@@ -97,20 +98,25 @@ public class ItemRegistry {
                     boats.add(call(() -> getStackOrEmpty(Registry.ITEM.get(boatId(value, "jukebox")))));
                 }
                 appendStacks(entries, boats, false);
-            }).icon(this::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> call(() -> {
-                MinecraftClient client = MinecraftClient.getInstance();
+            }).icon(this::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> {
+                try {
+                    if (!animate) return;
+                    MinecraftClient client = MinecraftClient.getInstance();
 
-                float angle = Util.getMeasuringTimeMs() * 0.09f;
-                matrixStack.push();
-                matrixStack.translate(itemX, itemY, 100.0F + client.getItemRenderer().zOffset);
-                matrixStack.translate(8.0, 8.0, 0.0);
-                matrixStack.scale(1.0F, -1.0F, 1.0F);
-                matrixStack.scale(16.0F, 16.0F, 16.0F);
-                matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(angle));
-                BakedModel model = client.getItemRenderer().getModel(getAndSetIcon(), null, null, 0);
-                DrawUtil.renderGuiItemModelCustomMatrixNoTransform(matrixStack, getAndSetIcon(), model);
-                matrixStack.pop();
-            })).displayName(AndromedaTexts.ITEM_GROUP_NAME).build());
+                    float angle = Util.getMeasuringTimeMs() * 0.09f;
+                    matrixStack.push();
+                    matrixStack.translate(itemX, itemY, 100.0F + client.getItemRenderer().zOffset);
+                    matrixStack.translate(8.0, 8.0, 0.0);
+                    matrixStack.scale(1.0F, -1.0F, 1.0F);
+                    matrixStack.scale(16.0F, 16.0F, 16.0F);
+                    matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(angle));
+                    BakedModel model = client.getItemRenderer().getModel(getAndSetIcon(), null, null, 0);
+                    DrawUtil.renderGuiItemModelCustomMatrixNoTransform(matrixStack, getAndSetIcon(), model);
+                    matrixStack.pop();
+                } catch (Throwable t) {
+                    animate = false;
+                }
+            }).displayName(AndromedaTexts.ITEM_GROUP_NAME).build());
 
     public static ItemRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
