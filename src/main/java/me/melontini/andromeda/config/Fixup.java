@@ -90,21 +90,24 @@ class Fixup {
 
         addFixup("campfireTweaks", (object, element) -> {
             if (element instanceof JsonObject o) {
+                boolean mod = false;
 
-                surgery(o, o, "campfireEffects", "effects");
-                surgery(o, o, "campfireEffectsPassive", "affectsPassive");
-                surgery(o, o, "campfireEffectsRange", "effectsRange");
+                mod |= surgery(o, o, "campfireEffects", "effects");
+                mod |= surgery(o, o, "campfireEffectsPassive", "affectsPassive");
+                mod |= surgery(o, o, "campfireEffectsRange", "effectsRange");
 
-                return true;
+                return mod;
             }
             return false;
         });
     }
 
-    private static void surgery(JsonObject donor, JsonObject patient, String oldKey, String newKey) {
+    private static boolean surgery(JsonObject donor, JsonObject patient, String oldKey, String newKey) {
         if (donor.has(oldKey)) {
             patient.add(newKey, donor.get(oldKey));
             donor.remove(oldKey);
+            return true;
         }
+        return false;
     }
 }
