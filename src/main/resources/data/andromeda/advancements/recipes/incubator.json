@@ -3,7 +3,7 @@
     {
       "condition": "andromeda:config_option",
       "values": [
-        "incubatorSettings.incubatorRecipe"
+        "incubator.recipe"
       ]
     }
   ],
