@@ -27,23 +27,25 @@ public class AutoConfigTransformers {
 
         GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
 
-        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) ->
-                list.stream().peek(gui -> {
-                    gui.setRequirement(() -> false);
-                    if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                        Set<String> fieldSet = FeatureManager.blameProcessors(field);
-                        Set<Text> texts = new HashSet<>();
-                        for (String string : fieldSet) {
-                            if ("mod_json".equals(string)) {
-                                texts.add(TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(FeatureManager.blameMod(field))));
-                            } else {
-                                texts.add(TextUtil.translatable("andromeda.config.tooltip.manager." + string));
-                            }
+        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+            list.forEach(gui -> {
+                gui.setEditable(false);
+                if (gui instanceof TooltipListEntry<?> tooltipGui) {
+                    Set<String> fieldSet = FeatureManager.blameProcessors(field);
+                    Set<Text> texts = new HashSet<>();
+                    for (String string : fieldSet) {
+                        if ("mod_json".equals(string)) {
+                            texts.add(TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(FeatureManager.blameMod(field))));
+                        } else {
+                            texts.add(TextUtil.translatable("andromeda.config.tooltip.manager." + string));
                         }
-                        Text[] texts1 = texts.toArray(Text[]::new);
-                        tooltipGui.setTooltipSupplier(() -> Optional.of(texts1));
                     }
-                }).toList(), FeatureManager::isModified);
+                    Text[] texts1 = texts.toArray(Text[]::new);
+                    tooltipGui.setTooltipSupplier(() -> Optional.of(texts1));
+                }
+            });
+            return list;
+        }, FeatureManager::isModified);
 
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> gui.setRequiresRestart(true));
