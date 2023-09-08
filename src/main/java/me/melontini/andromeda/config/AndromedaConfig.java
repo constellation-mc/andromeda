@@ -123,15 +123,15 @@ public class AndromedaConfig implements ConfigData {
     public static class CampfireTweaks {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
-        public boolean campfireEffects = true;
+        public boolean effects = true;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
-        public boolean campfireEffectsPassive = true;
+        public boolean affectsPassive = true;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
-        public int campfireEffectsRange = 10;
+        public int effectsRange = 10;
 
         @ConfigEntry.Category("blocks")
         public List<Effect> effectList = Arrays.asList(new Effect());

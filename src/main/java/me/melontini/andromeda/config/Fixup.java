@@ -87,6 +87,18 @@ class Fixup {
             }
             return false;
         });
+
+        addFixup("campfireTweaks", (object, element) -> {
+            if (element instanceof JsonObject o) {
+
+                surgery(o, o, "campfireEffects", "effects");
+                surgery(o, o, "campfireEffectsPassive", "affectsPassive");
+                surgery(o, o, "campfireEffectsRange", "effectsRange");
+
+                return true;
+            }
+            return false;
+        });
     }
 
     private static void surgery(JsonObject donor, JsonObject patient, String oldKey, String newKey) {

@@ -35,6 +35,10 @@ public class ConfigHelper {
         map.put("autogenRecipeAdvancements.autogenRecipeAdvancements", "recipeAdvancementsGeneration.enable");
         map.put("autogenRecipeAdvancements.blacklistedRecipeNamespaces", "recipeAdvancementsGeneration.namespaceBlacklist");
         map.put("autogenRecipeAdvancements.blacklistedRecipeIds", "recipeAdvancementsGeneration.recipeBlacklist");
+
+        map.put("campfireTweaks.campfireEffects", "campfireTweaks.effects");
+        map.put("campfireTweaks.campfireEffectsPassive", "campfireTweaks.affectsPassive");
+        map.put("campfireTweaks.campfireEffectsRange", "campfireTweaks.effectsRange");
     });
 
     public static String redirect(String s) {
