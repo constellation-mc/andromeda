@@ -2,6 +2,8 @@ package me.melontini.andromeda.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.ThrowingRunnable;
@@ -62,9 +64,11 @@ public class ConfigHelper {
     public static void loadConfigFromFile(boolean print) {
         Path configPath = SharedConstants.CONFIG_PATH;
         if (Files.exists(configPath)) {
-            try {
-                Config.set(gson.fromJson(Files.readString(configPath), AndromedaConfig.class));
-                FeatureManager.processFeatures(print);
+            try(var reader = Files.newBufferedReader(configPath)) {
+                JsonObject object = Fixup.fixup(JsonParser.parseReader(reader).getAsJsonObject());
+
+                Config.set(gson.fromJson(object, AndromedaConfig.class));
+                writeConfigToFile(print);
                 return;
             } catch (Exception e) {
                 AndromedaLog.error("Failed to load config file, resetting to default!", e);
