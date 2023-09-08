@@ -47,6 +47,7 @@ public class FeatureManager {
     public static void processMixinError(String option) {
         FAILED_MIXINS.put(option, false);
         configure("mixin_error", Collections.singletonMap(option, false));
+        ConfigHelper.writeConfigToFile(false);
     }
 
     public static void processUnknownException(String... option) {
@@ -54,6 +55,7 @@ public class FeatureManager {
             UNKNOWN_EXCEPTIONS.put(s, false);
             configure("unknown_exception", Collections.singletonMap(s, false));
         }
+        ConfigHelper.writeConfigToFile(false);
     }
 
     public static void processFeatures(boolean print) {
