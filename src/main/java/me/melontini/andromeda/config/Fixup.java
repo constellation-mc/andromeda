@@ -1,6 +1,5 @@
 package me.melontini.andromeda.config;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -38,23 +37,12 @@ class Fixup {
     static {
         addFixup("throwableItems", (object, element) -> {
             if (element instanceof JsonPrimitive primitive && primitive.isBoolean()) {
-                boolean value = primitive.getAsBoolean();
                 object.remove("throwableItems");
 
                 JsonObject throwableItems = new JsonObject();
-                throwableItems.addProperty("enable", value);
+                throwableItems.addProperty("enable", primitive.getAsBoolean());
+                surgery(object, throwableItems, "throwableItemsBlacklist", "blacklist");
                 object.add("throwableItems", throwableItems);
-                return true;
-            }
-            return false;
-        });
-
-        addFixup("throwableItemsBlacklist", (object, element) -> {
-            if (element instanceof JsonArray array) {
-                object.remove("throwableItemsBlacklist");
-
-                JsonObject throwableItems = object.get("throwableItems").getAsJsonObject();
-                throwableItems.add("blacklist", array);
                 return true;
             }
             return false;
