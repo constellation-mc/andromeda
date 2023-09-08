@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import static me.melontini.dark_matter.api.base.util.Utilities.cast;
+
 public class ConfigHelper {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -57,16 +59,16 @@ public class ConfigHelper {
     }
 
 
-    public static Object getConfigOption(String configOption) throws NoSuchFieldException, IllegalAccessException {
+    public static <T> T getConfigOption(String configOption) throws NoSuchFieldException, IllegalAccessException {
         if ((configOption = redirect(configOption)).contains(".")) {
             String[] fields = configOption.split("\\.");
             Object obj = Config.get().getClass().getField(fields[0]).get(Config.get());
             for (int i = 1; i < fields.length - 1; i++) {
                 obj = FieldUtils.readField(obj, fields[i], true);
             }
-            return FieldUtils.readField(obj, fields[fields.length - 1], true);
+            return cast(FieldUtils.readField(obj, fields[fields.length - 1], true));
         } else {
-            return Config.get().getClass().getField(configOption).get(Config.get());
+            return cast(Config.get().getClass().getField(configOption).get(Config.get()));
         }
     }
 

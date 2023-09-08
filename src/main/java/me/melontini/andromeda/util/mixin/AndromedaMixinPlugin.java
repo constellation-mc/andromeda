@@ -73,7 +73,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 List<String> configOptions = cast(values.get("value"));
                 for (String configOption : configOptions) {
                     try {
-                        load = (boolean) ConfigHelper.getConfigOption(configOption);
+                        load = ConfigHelper.getConfigOption(configOption);
                     } catch (Exception e) {
                         LOGGER.warn("Couldn't check @MixinRelatedConfigOption(%s) from %s This is no fault of yours.".formatted(configOption, mixinClassName), e);
                     }
@@ -95,7 +95,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             boolean dummy = true;
             for (String configOption : configOptions) {
                 try {
-                    dummy = (boolean) ConfigHelper.getConfigOption(configOption);
+                    dummy = ConfigHelper.getConfigOption(configOption);
                 } catch (NoSuchFieldException e) {
                     throw new AndromedaException("Invalid config option in @MixinRelatedConfigOption(%s) from %s".formatted(configOption, mixinClassName));
                 } catch (ClassCastException e) {
