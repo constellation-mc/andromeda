@@ -17,6 +17,8 @@ import org.spongepowered.asm.util.Annotations;
 import java.util.List;
 import java.util.Map;
 
+import static me.melontini.dark_matter.api.base.util.Utilities.cast;
+
 public class ErrorHandler implements IMixinErrorHandler {
 
     @Override
@@ -35,7 +37,7 @@ public class ErrorHandler implements IMixinErrorHandler {
             AnnotationNode annotationNode = Annotations.getVisible(node, MixinRelatedConfigOption.class);
             if (annotationNode != null) {
                 Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
-                List<String> configOptions = (List<String>) values.get("value");
+                List<String> configOptions = cast(values.get("value"));
                 AndromedaLog.warn("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
                 FeatureManager.processMixinError(configOptions.get(configOptions.size() - 1)); //We assume that the last option is the only relevant one.
                 AndromedaReporter.handleCrash(th, "Mixin failed during " + phase, FabricLoader.getInstance().getEnvironmentType());
