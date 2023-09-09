@@ -6,7 +6,7 @@ import com.google.gson.JsonPrimitive;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 
 class Fixup {
 
-    private static final Map<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> FIXUPS = new HashMap<>();
+    private static final Map<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> FIXUPS = new LinkedHashMap<>();
 
     static JsonObject fixup(JsonObject object) {
         MakeSure.notNull(object);
