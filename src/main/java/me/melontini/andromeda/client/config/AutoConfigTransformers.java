@@ -48,9 +48,9 @@ public class AutoConfigTransformers {
         }, FeatureManager::isModified);
 
         registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
-            list.forEach(gui -> gui.setRequiresRestart(true));
+            list.forEach(gui -> gui.setRequiresRestart(Config.get().compatMode));
             return list;
-        }, field -> Config.get().compatMode);
+        }, field -> field.getType() == boolean.class || field.getType() == Boolean.class);
 
         registry.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
