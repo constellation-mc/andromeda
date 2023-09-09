@@ -16,6 +16,7 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -210,6 +211,11 @@ public class AndromedaClient {
             EntityRendererRegistry.register(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY, (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
 
         EntityRendererRegistry.register(EntityTypeRegistry.get().FLYING_ITEM, FlyingItemEntityRenderer::new);
+    }
+
+    @Override
+    public String toString() {
+        return "AndromedaClient{version=" + SharedConstants.MOD_VERSION + "}";
     }
 
     public static AndromedaClient get() {
