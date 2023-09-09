@@ -37,11 +37,11 @@ class Fixup {
 
     static {
         addFixup("throwableItems", (object, element, key) -> {
-            if (element instanceof JsonPrimitive primitive && primitive.isBoolean()) {
+            if (element instanceof JsonPrimitive p && p.isBoolean()) {
                 object.remove(key);
 
                 JsonObject throwableItems = new JsonObject();
-                throwableItems.addProperty("enable", primitive.getAsBoolean());
+                throwableItems.addProperty("enable", p.getAsBoolean());
                 surgery(object, throwableItems, "throwableItemsBlacklist", "blacklist");
                 object.add(key, throwableItems);
                 return true;
@@ -96,8 +96,8 @@ class Fixup {
                     if (o.has("effectList")) o.remove("effectList"); //This shouldn't happen tbh.
 
                     JsonArray effectList = new JsonArray();
-                    JsonArray oldEffectList = o.get("campfireEffectsList").getAsJsonArray();
-                    JsonArray oldAmplifierList = o.get("campfireEffectsAmplifierList").getAsJsonArray();
+                    JsonArray oldEffectList = o.getAsJsonArray("campfireEffectsList");
+                    JsonArray oldAmplifierList = o.getAsJsonArray("campfireEffectsAmplifierList");
 
                     for (int i = 0; i < oldEffectList.size(); i++) {
                         JsonObject effect = new JsonObject();
@@ -112,6 +112,16 @@ class Fixup {
                     return true;
                 }
                 return false;
+            }
+            return false;
+        });
+
+        addFixup("selfPlanting", (object, element, s) -> {
+            if (element instanceof JsonPrimitive p && p.isBoolean()) {
+                JsonObject autoPlanting = object.has("autoPlanting") ? object.getAsJsonObject("autoPlanting") : new JsonObject();
+                autoPlanting.addProperty("enabled", p.getAsBoolean());
+                if (!object.has("autoPlanting")) object.add("autoPlanting", autoPlanting);
+                return true;
             }
             return false;
         });
