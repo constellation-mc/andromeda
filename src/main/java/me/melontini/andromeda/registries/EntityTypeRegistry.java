@@ -19,6 +19,7 @@ import net.minecraft.entity.SpawnGroup;
 import java.util.Objects;
 
 import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.share;
 
 public class EntityTypeRegistry {
 
@@ -64,6 +65,7 @@ public class EntityTypeRegistry {
         if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
         INSTANCE = new EntityTypeRegistry();
+        share("andromeda:entity_type_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }

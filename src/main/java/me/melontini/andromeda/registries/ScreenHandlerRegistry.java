@@ -10,6 +10,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import java.util.Objects;
 
 import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.share;
 
 public class ScreenHandlerRegistry {
 
@@ -26,6 +27,7 @@ public class ScreenHandlerRegistry {
         if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
         INSTANCE = new ScreenHandlerRegistry();
+        share("andromeda:screen_handler_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }

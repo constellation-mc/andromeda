@@ -35,8 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static me.melontini.andromeda.registries.Common.call;
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.*;
 import static me.melontini.andromeda.util.ItemStackUtil.getStackOrEmpty;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
@@ -136,6 +135,7 @@ public class ItemRegistry {
             ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1)))
                     .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newBoats.isHopperBoatOn).build();
         }
+        share("andromeda:item_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 

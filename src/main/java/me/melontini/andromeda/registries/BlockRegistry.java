@@ -22,8 +22,7 @@ import net.minecraft.util.Rarity;
 
 import java.util.Objects;
 
-import static me.melontini.andromeda.registries.Common.call;
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.*;
 
 public class BlockRegistry {
 
@@ -48,6 +47,7 @@ public class BlockRegistry {
         if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
         INSTANCE = new BlockRegistry();
+        share("andromeda:block_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }
