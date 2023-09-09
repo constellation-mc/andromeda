@@ -14,12 +14,14 @@ New Tweaks:
 
 ***
 
-* Added a fallback in case of mixin failures. Only works if a mixin is part of a feature.
+* Added config fix-ups. Makes updating to new versions even easier, by renaming/converting old key and values!
+* Added a fallback in case of mixin failures. Only works if a mixin is part of a feature. Currently, handicapped by the mixin framework itself.
 * Multiple processors can now be blamed for setting a feature.
 * Added `fabric:load_conditions` support to mod's resources.
 * Tried to improve JSON parsing. It should be faster* and have better error messages.
 * Moved `FeatureConfig` and `ItemBehaviors` to `api`. You still need to use their entrypoints.
 * Added `andromeda:pre/post-main` and `andromeda:pre/post-client` entrypoints.
 * Removed BoatEntityMixin in favor of AWs and an `@Override` in FurnaceBoatEntity.
+* A billion of other internal changes.
 * Updated Chinese translation. Courtesy of [Rad233](https://github.com/Rad233).
 * Updated Dark Matter.
