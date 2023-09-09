@@ -1,28 +1,29 @@
 package me.melontini.andromeda.config;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.classes.TriFunction;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 class Fixup {
 
-    private static final Map<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> FIXUPS = new LinkedHashMap<>();
+    private static final Map<String, Set<TriFunction<JsonObject, JsonElement, String, Boolean>>> FIXUPS = new LinkedHashMap<>();
 
     static JsonObject fixup(JsonObject object) {
         MakeSure.notNull(object);
 
-        for (Map.Entry<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> entry : FIXUPS.entrySet()) {
+        for (Map.Entry<String, Set<TriFunction<JsonObject, JsonElement, String, Boolean>>> entry : FIXUPS.entrySet()) {
             if (object.has(entry.getKey())) {
                 entry.getValue().forEach(function -> {
-                    if (function.apply(object, object.get(entry.getKey())))
+                    if (function.apply(object, object.get(entry.getKey()), entry.getKey()))
                         AndromedaLog.info("Fixed-up config entry: " + entry.getKey());
                 });
             }
@@ -30,27 +31,27 @@ class Fixup {
         return object;
     }
 
-    static void addFixup(final String key, final BiFunction<JsonObject, JsonElement, Boolean> fixup) {
+    static void addFixup(final String key, final TriFunction<JsonObject, JsonElement, String, Boolean> fixup) {
         FIXUPS.computeIfAbsent(key, k -> new LinkedHashSet<>()).add(fixup);
     }
 
     static {
-        addFixup("throwableItems", (object, element) -> {
+        addFixup("throwableItems", (object, element, key) -> {
             if (element instanceof JsonPrimitive primitive && primitive.isBoolean()) {
-                object.remove("throwableItems");
+                object.remove(key);
 
                 JsonObject throwableItems = new JsonObject();
                 throwableItems.addProperty("enable", primitive.getAsBoolean());
                 surgery(object, throwableItems, "throwableItemsBlacklist", "blacklist");
-                object.add("throwableItems", throwableItems);
+                object.add(key, throwableItems);
                 return true;
             }
             return false;
         });
 
-        addFixup("incubatorSettings", (object, element) -> {
+        addFixup("incubatorSettings", (object, element, key) -> {
             if (element instanceof JsonObject o) {
-                object.remove("incubatorSettings");
+                object.remove(key);
 
                 surgery(o, o, "enableIncubator", "enable");
                 surgery(o, o, "incubatorRandomness", "randomness");
@@ -62,9 +63,9 @@ class Fixup {
             return false;
         });
 
-        addFixup("autogenRecipeAdvancements", (object, element) -> {
+        addFixup("autogenRecipeAdvancements", (object, element, key) -> {
             if (element instanceof JsonObject o) {
-                object.remove("autogenRecipeAdvancements");
+                object.remove(key);
 
                 surgery(o, o, "autogenRecipeAdvancements", "enable");
                 surgery(o, o, "blacklistedRecipeNamespaces", "namespaceBlacklist");
@@ -76,7 +77,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("campfireTweaks", (object, element) -> {
+        addFixup("campfireTweaks", (object, element, key) -> {
             if (element instanceof JsonObject o) {
                 boolean mod = false;
 
@@ -85,6 +86,32 @@ class Fixup {
                 mod |= surgery(o, o, "campfireEffectsRange", "effectsRange");
 
                 return mod;
+            }
+            return false;
+        });
+
+        addFixup("campfireTweaks", (object, element, key) -> {
+            if (element instanceof JsonObject o) {
+                if (o.has("campfireEffectsList") && o.has("campfireEffectsAmplifierList")) {
+                    if (o.has("effectList")) o.remove("effectList"); //This shouldn't happen tbh.
+
+                    JsonArray effectList = new JsonArray();
+                    JsonArray oldEffectList = o.get("campfireEffectsList").getAsJsonArray();
+                    JsonArray oldAmplifierList = o.get("campfireEffectsAmplifierList").getAsJsonArray();
+
+                    for (int i = 0; i < oldEffectList.size(); i++) {
+                        JsonObject effect = new JsonObject();
+                        effect.addProperty("identifier", oldEffectList.get(i).getAsString());
+                        effect.addProperty("amplifier", oldAmplifierList.get(i).getAsInt());
+                        effectList.add(effect);
+                    }
+
+                    o.add("effectList", effectList);
+                    o.remove("campfireEffectsList");
+                    o.remove("campfireEffectsAmplifierList");
+                    return true;
+                }
+                return false;
             }
             return false;
         });
