@@ -22,8 +22,6 @@ public class SharedConstants {
     public static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
     public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
 
-    public static final boolean FABRICATION_LOADED = FabricLoader.getInstance().isModLoaded("fabrication");
-
     public static final Platform PLATFORM;
     public static final EnvType ENVIRONMENT = FabricLoader.getInstance().getEnvironmentType();
 
