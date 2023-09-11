@@ -14,6 +14,7 @@ import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -96,9 +97,8 @@ public class Andromeda {
             }
 
             if (Config.get().dragonFight.fightTweaks) if (world.getRegistryKey() == World.END) {
-                var manager = world.getPersistentStateManager();
-                if (manager.loadedStates.containsKey("andromeda_ender_dragon_fight"))
-                    EnderDragonManager.get(world).tick();
+                PersistentStateHelper.consumeIfLoaded(world, EnderDragonManager.ID,
+                        (world1, s) -> EnderDragonManager.get(world1), EnderDragonManager::tick);
             }
         });
 
