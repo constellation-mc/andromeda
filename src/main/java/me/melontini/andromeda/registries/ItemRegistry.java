@@ -74,7 +74,7 @@ public class ItemRegistry {
     private ItemStack ITEM_GROUP_ICON;
 
     private boolean animate = true;
-    public final ItemGroup GROUP = call(() -> ContentBuilder.ItemGroupBuilder.create(id("group"))
+    public final ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
                 misc.add(getStackOrEmpty(this.INCUBATOR));
@@ -115,7 +115,7 @@ public class ItemRegistry {
                 } catch (Throwable t) {
                     animate = false;
                 }
-            }).displayName(AndromedaTexts.ITEM_GROUP_NAME).build());
+            }).displayName(AndromedaTexts.ITEM_GROUP_NAME).buildOrEmpty().orElse(null);
 
     public static ItemRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
