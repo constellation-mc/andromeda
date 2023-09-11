@@ -34,6 +34,14 @@ public class EnderDragonManager extends PersistentState {
         this.world = world;
     }
 
+    public static EnderDragonManager get(ServerWorld world) {
+        return world.getPersistentStateManager().getOrCreate(nbtCompound -> {
+            EnderDragonManager manager = new EnderDragonManager(world);
+            manager.readNbt(nbtCompound);
+            return manager;
+        }, () -> new EnderDragonManager(world), "andromeda_ender_dragon_fight");
+    }
+
     public ServerWorld getWorld() {
         return world;
     }

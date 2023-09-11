@@ -4,12 +4,12 @@ import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.managers.CustomTraderManager;
+import me.melontini.andromeda.content.managers.EnderDragonManager;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.AdvancementGeneration;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.SharedConstants;
-import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
@@ -68,7 +68,7 @@ public class Andromeda {
                 CustomTraderManager.get(world);
 
             if (Config.get().dragonFight.fightTweaks) if (world.getRegistryKey() == World.END)
-                WorldUtil.getEnderDragonManager(world);
+                EnderDragonManager.get(world);
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
@@ -98,7 +98,7 @@ public class Andromeda {
             if (Config.get().dragonFight.fightTweaks) if (world.getRegistryKey() == World.END) {
                 var manager = world.getPersistentStateManager();
                 if (manager.loadedStates.containsKey("andromeda_ender_dragon_fight"))
-                    WorldUtil.getEnderDragonManager(world).tick();
+                    EnderDragonManager.get(world).tick();
             }
         });
 
