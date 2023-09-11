@@ -3,6 +3,7 @@ package me.melontini.andromeda;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.commands.DamageCommand;
+import me.melontini.andromeda.content.managers.CustomTraderManager;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.AdvancementGeneration;
@@ -64,7 +65,7 @@ public class Andromeda {
 
         ServerWorldEvents.LOAD.register((server, world) -> {
             if (Config.get().tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD)
-                WorldUtil.getTraderManager(world);
+                CustomTraderManager.get(world);
 
             if (Config.get().dragonFight.fightTweaks) if (world.getRegistryKey() == World.END)
                 WorldUtil.getEnderDragonManager(world);
@@ -78,7 +79,7 @@ public class Andromeda {
                 if (world != null) {
                     var manager = world.getPersistentStateManager();
                     if (manager.loadedStates.containsKey("andromeda_trader_statemanager"))
-                        WorldUtil.getTraderManager(world).markDirty();
+                        CustomTraderManager.get(world).markDirty();
                 }
             }
         });
@@ -91,7 +92,7 @@ public class Andromeda {
             if (Config.get().tradingGoatHorn) if (world.getRegistryKey() == World.OVERWORLD) {
                 var manager = world.getPersistentStateManager();
                 if (manager.loadedStates.containsKey("andromeda_trader_statemanager"))
-                    WorldUtil.getTraderManager(world).tick();
+                    CustomTraderManager.get(world).tick();
             }
 
             if (Config.get().dragonFight.fightTweaks) if (world.getRegistryKey() == World.END) {

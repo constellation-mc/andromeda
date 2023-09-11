@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.mechanics.wandering_trader;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.WorldUtil;
+import me.melontini.andromeda.content.managers.CustomTraderManager;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GoatHornItem;
@@ -39,7 +39,7 @@ public class GoatHornMixin {
                     MinecraftServer server = world.getServer();
                     if (server != null) {
                         if (world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING))
-                            WorldUtil.getTraderManager((ServerWorld) world).trySpawn((ServerWorld) world, server.getSaveProperties().getMainWorldProperties(), user);
+                            CustomTraderManager.get((ServerWorld) world).trySpawn((ServerWorld) world, server.getSaveProperties().getMainWorldProperties(), user);
                     }
                 }
             }

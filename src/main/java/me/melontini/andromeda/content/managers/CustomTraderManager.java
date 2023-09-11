@@ -24,6 +24,14 @@ import java.util.Optional;
 public class CustomTraderManager extends PersistentState {
     public int cooldown;
 
+    public static CustomTraderManager get(@NotNull ServerWorld world) {
+        return world.getPersistentStateManager().getOrCreate(nbtCompound -> {
+            CustomTraderManager manager = new CustomTraderManager();
+            manager.readNbt(nbtCompound);
+            return manager;
+        }, CustomTraderManager::new, "andromeda_trader_statemanager");
+    }
+
     public void readNbt(@NotNull NbtCompound nbt) {
         MakeSure.notNull(nbt);
         this.cooldown = nbt.getInt("andromeda-trader-cooldown");

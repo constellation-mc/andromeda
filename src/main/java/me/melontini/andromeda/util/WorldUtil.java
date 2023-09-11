@@ -1,6 +1,5 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.andromeda.content.managers.CustomTraderManager;
 import me.melontini.andromeda.content.managers.EnderDragonManager;
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -43,14 +42,6 @@ public class WorldUtil {
     public static final Identifier BEE_LOOT_ID = new Identifier(MODID, "bee_nest/bee_nest_broken");
 
     public static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
-
-    public static CustomTraderManager getTraderManager(@NotNull ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(nbtCompound -> {
-            CustomTraderManager manager = new CustomTraderManager();
-            manager.readNbt(nbtCompound);
-            return manager;
-        }, CustomTraderManager::new, "andromeda_trader_statemanager");
-    }
 
     public static EnderDragonManager getEnderDragonManager(ServerWorld world) {
         return world.getPersistentStateManager().getOrCreate(nbtCompound -> {
