@@ -14,8 +14,11 @@ New Tweaks:
 
 ***
 
-* Added config fix-ups. Makes updating to new versions even easier, by renaming/converting old key and values!
-* Added a fallback in case of mixin failures. Only works if a mixin is part of a feature. Currently, handicapped by the mixin framework itself.
+* Cloth Config is no longer required. You'll have no config screen without it, though.
+* Added config fix-ups. Makes updating to new versions even easier, by renaming/converting old keys and values!
+* Updated a few config keys.
+* Added a switch for Bed Explosion Power.
+* Added a fallback in case of some mixin and general failures.
 * Multiple processors can now be blamed for setting a feature.
 * Added `fabric:load_conditions` support to mod's resources.
 * Tried to improve JSON parsing. It should be faster* and have better error messages.
@@ -23,5 +26,6 @@ New Tweaks:
 * Added `andromeda:pre/post-main` and `andromeda:pre/post-client` entrypoints.
 * Removed BoatEntityMixin in favor of AWs and an `@Override` in FurnaceBoatEntity.
 * A billion of other internal changes.
+* Registries are now shared over ObjectShare.
 * Updated Chinese translation. Courtesy of [Rad233](https://github.com/Rad233).
 * Updated Dark Matter.
