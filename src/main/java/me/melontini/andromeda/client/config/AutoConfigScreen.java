@@ -2,32 +2,37 @@ package me.melontini.andromeda.client.config;
 
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigSerializer;
+import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
+import me.shedaniel.autoconfig.gui.DefaultGuiTransformers;
+import me.shedaniel.autoconfig.gui.registry.ComposedGuiRegistryAccess;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
+import me.shedaniel.autoconfig.gui.registry.api.GuiRegistryAccess;
+import me.shedaniel.clothconfig2.api.ConfigBuilder;
+import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class AutoConfigTransformers {
+public class AutoConfigScreen {
 
     public static void register() {
         AndromedaLog.info("Loading ClothConfig support!");
 
-        AutoConfig.register(AndromedaConfig.class, (config, aClass) -> new ConfigSerializer());
-
-        GuiRegistry registry = AutoConfig.getGuiRegistry(AndromedaConfig.class);
-
-        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+        Holder.OURS.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
@@ -47,13 +52,13 @@ public class AutoConfigTransformers {
             return list;
         }, FeatureManager::isModified);
 
-        registry.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+        Holder.OURS.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             if (field.getType() == boolean.class || field.getType() == Boolean.class)
                 list.forEach(gui -> gui.setRequiresRestart(true));
             return list;
         }, field -> Config.get().compatMode);
 
-        registry.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
+        Holder.OURS.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
                     FeatureEnvironment environment = field.getAnnotation(FeatureEnvironment.class);
@@ -70,7 +75,38 @@ public class AutoConfigTransformers {
             });
             return list;
         }, FeatureEnvironment.class);
-
     }
 
+    public static Optional<Screen> get(Screen screen) {
+        return Utilities.ifLoaded("cloth-config", () -> {
+            ConfigBuilder builder = ConfigBuilder.create()
+                    .setParentScreen(screen)
+                    .setTitle(TextUtil.translatable("config.andromeda.title", SharedConstants.MOD_VERSION.split("-")[0]))
+                    .setSavingRunnable(() -> ConfigHelper.writeConfigToFile(true))
+                    .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
+
+            Arrays.stream(AndromedaConfig.class.getDeclaredFields())
+                    .collect(Collectors.groupingBy(
+                            field -> getOrCreateCategoryForField(field, builder), LinkedHashMap::new, Collectors.toList()
+                    )).forEach((category, fields) -> fields.forEach(field -> {
+                        String opt = "text.autoconfig.andromeda.option." + field.getName();
+                        Holder.COMPOSED.getAndTransform(opt, field, Config.get(), Config.getDefault(), Holder.COMPOSED).forEach(category::addEntry);
+                    }));
+
+            return builder.build();
+        });
+    }
+
+    private static ConfigCategory getOrCreateCategoryForField(Field field, ConfigBuilder screenBuilder) {
+        String name = Optional.ofNullable(field.getAnnotation(ConfigEntry.Category.class)).map(ConfigEntry.Category::value).orElse("default");
+
+        Text key = TextUtil.translatable("text.autoconfig.andromeda.category.%s".formatted(name));
+        return screenBuilder.getOrCreateCategory(key);
+    }
+
+    private static class Holder {
+        static final GuiRegistry OURS = new GuiRegistry();
+        static final GuiRegistry DEFAULT_REGISTRY = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
+        static final GuiRegistryAccess COMPOSED = new ComposedGuiRegistryAccess(DEFAULT_REGISTRY, OURS);
+    }
 }
