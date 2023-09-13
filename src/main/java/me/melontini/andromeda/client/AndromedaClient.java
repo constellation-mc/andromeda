@@ -2,7 +2,7 @@ package me.melontini.andromeda.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.client.config.AutoConfigTransformers;
+import me.melontini.andromeda.client.config.AutoConfigScreen;
 import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
 import me.melontini.andromeda.client.render.BoatWithBlockRenderer;
 import me.melontini.andromeda.client.render.FlyingItemEntityRenderer;
@@ -16,6 +16,7 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -87,7 +88,8 @@ public class AndromedaClient {
     public void onInitializeClient() {
         EntrypointRunner.runEntrypoint("andromeda:pre-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
 
-        AutoConfigTransformers.register();
+        //noinspection Convert2MethodRef
+        Utilities.ifLoaded("cloth-config", () -> AutoConfigScreen.register());
         if (Config.get().autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
         registerEntityRenderers();
@@ -213,6 +215,11 @@ public class AndromedaClient {
             EntityRendererRegistry.register(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY, (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
 
         EntityRendererRegistry.register(EntityTypeRegistry.get().FLYING_ITEM, FlyingItemEntityRenderer::new);
+    }
+
+    @Override
+    public String toString() {
+        return "AndromedaClient{version=" + SharedConstants.MOD_VERSION + "}";
     }
 
     public static AndromedaClient get() {

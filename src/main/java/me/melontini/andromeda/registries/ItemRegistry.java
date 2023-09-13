@@ -36,8 +36,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static me.melontini.andromeda.registries.Common.call;
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.*;
 import static me.melontini.andromeda.util.ItemStackUtil.getStackOrEmpty;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
@@ -45,38 +44,38 @@ public class ItemRegistry {
 
     private static ItemRegistry INSTANCE;
 
-    public RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.get().ROSE_OF_THE_VALLEY);
+    public final RoseOfTheValley ROSE_OF_THE_VALLEY = asItem(BlockRegistry.get().ROSE_OF_THE_VALLEY);
 
-    public SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder
+    public final SpawnerMinecartItem SPAWNER_MINECART = ContentBuilder.ItemBuilder
             .create(id("spawner_minecart"), () -> new SpawnerMinecartItem(AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.REDSTONE))).build();
 
-    public AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
+    public final AnvilMinecartItem ANVIL_MINECART = ContentBuilder.ItemBuilder
             .create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.REDSTONE))).register(Config.get().newMinecarts.isAnvilMinecartOn).build();
 
-    public NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder
+    public final NoteBlockMinecartItem NOTE_BLOCK_MINECART = ContentBuilder.ItemBuilder
             .create(id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.REDSTONE))).register(Config.get().newMinecarts.isNoteBlockMinecartOn).build();
 
-    public JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
+    public final JukeBoxMinecartItem JUKEBOX_MINECART = ContentBuilder.ItemBuilder
             .create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.REDSTONE))).register(Config.get().newMinecarts.isJukeboxMinecartOn).build();
 
-    public Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
+    public final Item INFINITE_TOTEM = ContentBuilder.ItemBuilder
             .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
             .itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.COMBAT))).register(Config.get().totemSettings.enableInfiniteTotem).build();
 
-    public Item LOCKPICK = ContentBuilder.ItemBuilder
+    public final Item LOCKPICK = ContentBuilder.ItemBuilder
             .create(id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
             .itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.TOOLS))).register(Config.get().lockpickEnabled).build();
 
-    public BlockItem INCUBATOR = asItem(BlockRegistry.get().INCUBATOR_BLOCK);
+    public final BlockItem INCUBATOR = asItem(BlockRegistry.get().INCUBATOR_BLOCK);
 
     private ItemStack ITEM_GROUP_ICON;
 
     private boolean animate = true;
-    public ItemGroup GROUP = call(() -> ContentBuilder.ItemGroupBuilder.create(id("group"))
+    public final ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
                 misc.add(getStackOrEmpty(this.INCUBATOR));
@@ -118,7 +117,7 @@ public class ItemRegistry {
                 } catch (Throwable t) {
                     animate = false;
                 }
-            }).displayName(AndromedaTexts.ITEM_GROUP_NAME).build());
+            }).displayName(AndromedaTexts.ITEM_GROUP_NAME).buildOrEmpty().orElse(null);
 
     public static ItemRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
@@ -138,6 +137,7 @@ public class ItemRegistry {
             ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1)))
                     .itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.TOOLS))).register(Config.get().newBoats.isHopperBoatOn).build();
         }
+        share("andromeda:item_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 

@@ -23,23 +23,22 @@ import net.minecraft.util.Rarity;
 
 import java.util.Objects;
 
-import static me.melontini.andromeda.registries.Common.call;
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.*;
 
 public class BlockRegistry {
 
     private static BlockRegistry INSTANCE;
 
-    public FlowerBlock ROSE_OF_THE_VALLEY = ContentBuilder.BlockBuilder.create(id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
+    public final FlowerBlock ROSE_OF_THE_VALLEY = ContentBuilder.BlockBuilder.create(id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON))))
             .register(Config.get().unknown).build();
 
-    public IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
+    public final IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(call(() -> Registries.ITEM_GROUP.get(ItemGroups.REDSTONE))))
             .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder.create(id, IncubatorBlockEntity::new, block))
             .register(Config.get().incubator.enable).build();
 
-    public BlockEntityType<IncubatorBlockEntity> INCUBATOR_BLOCK_ENTITY = INCUBATOR_BLOCK == null ? null : RegistryUtil.getBlockEntityFromBlock(INCUBATOR_BLOCK);
+    public final BlockEntityType<IncubatorBlockEntity> INCUBATOR_BLOCK_ENTITY = INCUBATOR_BLOCK == null ? null : RegistryUtil.asBlockEntity(INCUBATOR_BLOCK);
 
     public static BlockRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
@@ -49,6 +48,7 @@ public class BlockRegistry {
         if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
         INSTANCE = new BlockRegistry();
+        share("andromeda:block_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }

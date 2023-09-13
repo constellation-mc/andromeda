@@ -1,5 +1,6 @@
 package me.melontini.andromeda.util;
 
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.config.Config;
@@ -20,6 +21,7 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.Set;
 
 public class AndromedaReporter {
 
@@ -90,10 +92,13 @@ public class AndromedaReporter {
             object.addProperty("platform", SharedConstants.PLATFORM.toString().toLowerCase());
 
             JsonArray mods = new JsonArray();
-            String[] importantMods = new String[]{"andromeda", "minecraft", "modmenu", "dark-matter-base", "fabric-api", "fabricloader", "cloth-config", "cloth_config", "connectormod", "forge", "iceberg"};
+            Set<String> importantMods = Sets.newHashSet("andromeda", "minecraft", "modmenu", "dark-matter-base", "fabric-api", "fabricloader", "cloth-config", "cloth_config", "connectormod", "forge", "iceberg");
+            CauseFinder.findCause(cause).ifPresent(importantMods::add);
+
             for (String importantMod : importantMods) {
                 FabricLoader.getInstance().getModContainer(importantMod).ifPresent(mod -> mods.add(importantMod + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")"));
             }
+
             object.add("mods", mods);
 
             mixpanel.trackEvent(CRASH_UUID, "Crash", object);

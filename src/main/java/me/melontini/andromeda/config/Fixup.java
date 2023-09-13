@@ -6,24 +6,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.classes.TriFunction;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 class Fixup {
 
-    private static final Map<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> FIXUPS = new HashMap<>();
+    private static final Map<String, Set<TriFunction<JsonObject, JsonElement, String, Boolean>>> FIXUPS = new LinkedHashMap<>();
 
     static JsonObject fixup(JsonObject object) {
         MakeSure.notNull(object);
 
-        for (Map.Entry<String, Set<BiFunction<JsonObject, JsonElement, Boolean>>> entry : FIXUPS.entrySet()) {
+        for (Map.Entry<String, Set<TriFunction<JsonObject, JsonElement, String, Boolean>>> entry : FIXUPS.entrySet()) {
             if (object.has(entry.getKey())) {
                 entry.getValue().forEach(function -> {
-                    if (function.apply(object, object.get(entry.getKey())))
+                    if (function.apply(object, object.get(entry.getKey()), entry.getKey()))
                         AndromedaLog.info("Fixed-up config entry: " + entry.getKey());
                 });
             }
@@ -31,38 +31,27 @@ class Fixup {
         return object;
     }
 
-    static void addFixup(final String key, final BiFunction<JsonObject, JsonElement, Boolean> fixup) {
+    static void addFixup(final String key, final TriFunction<JsonObject, JsonElement, String, Boolean> fixup) {
         FIXUPS.computeIfAbsent(key, k -> new LinkedHashSet<>()).add(fixup);
     }
 
     static {
-        addFixup("throwableItems", (object, element) -> {
-            if (element instanceof JsonPrimitive primitive && primitive.isBoolean()) {
-                boolean value = primitive.getAsBoolean();
-                object.remove("throwableItems");
+        addFixup("throwableItems", (object, element, key) -> {
+            if (element instanceof JsonPrimitive p && p.isBoolean()) {
+                object.remove(key);
 
                 JsonObject throwableItems = new JsonObject();
-                throwableItems.addProperty("enable", value);
-                object.add("throwableItems", throwableItems);
+                throwableItems.addProperty("enable", p.getAsBoolean());
+                surgery(object, throwableItems, "throwableItemsBlacklist", "blacklist");
+                object.add(key, throwableItems);
                 return true;
             }
             return false;
         });
 
-        addFixup("throwableItemsBlacklist", (object, element) -> {
-            if (element instanceof JsonArray array) {
-                object.remove("throwableItemsBlacklist");
-
-                JsonObject throwableItems = object.get("throwableItems").getAsJsonObject();
-                throwableItems.add("blacklist", array);
-                return true;
-            }
-            return false;
-        });
-
-        addFixup("incubatorSettings", (object, element) -> {
+        addFixup("incubatorSettings", (object, element, key) -> {
             if (element instanceof JsonObject o) {
-                object.remove("incubatorSettings");
+                object.remove(key);
 
                 surgery(o, o, "enableIncubator", "enable");
                 surgery(o, o, "incubatorRandomness", "randomness");
@@ -74,9 +63,9 @@ class Fixup {
             return false;
         });
 
-        addFixup("autogenRecipeAdvancements", (object, element) -> {
+        addFixup("autogenRecipeAdvancements", (object, element, key) -> {
             if (element instanceof JsonObject o) {
-                object.remove("autogenRecipeAdvancements");
+                object.remove(key);
 
                 surgery(o, o, "autogenRecipeAdvancements", "enable");
                 surgery(o, o, "blacklistedRecipeNamespaces", "namespaceBlacklist");
@@ -88,7 +77,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("campfireTweaks", (object, element) -> {
+        addFixup("campfireTweaks", (object, element, key) -> {
             if (element instanceof JsonObject o) {
                 boolean mod = false;
 
@@ -97,6 +86,52 @@ class Fixup {
                 mod |= surgery(o, o, "campfireEffectsRange", "effectsRange");
 
                 return mod;
+            }
+            return false;
+        });
+
+        addFixup("campfireTweaks", (object, element, key) -> {
+            if (element instanceof JsonObject o) {
+                if (o.has("campfireEffectsList") && o.has("campfireEffectsAmplifierList")) {
+                    if (o.has("effectList")) o.remove("effectList"); //This shouldn't happen tbh.
+
+                    JsonArray effectList = new JsonArray();
+                    JsonArray oldEffectList = o.getAsJsonArray("campfireEffectsList");
+                    JsonArray oldAmplifierList = o.getAsJsonArray("campfireEffectsAmplifierList");
+
+                    for (int i = 0; i < oldEffectList.size(); i++) {
+                        JsonObject effect = new JsonObject();
+                        effect.addProperty("identifier", oldEffectList.get(i).getAsString());
+                        effect.addProperty("amplifier", oldAmplifierList.get(i).getAsInt());
+                        effectList.add(effect);
+                    }
+
+                    o.add("effectList", effectList);
+                    o.remove("campfireEffectsList");
+                    o.remove("campfireEffectsAmplifierList");
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        });
+
+        addFixup("selfPlanting", (object, element, s) -> {
+            if (element instanceof JsonPrimitive p && p.isBoolean()) {
+                JsonObject autoPlanting = object.has("autoPlanting") ? object.getAsJsonObject("autoPlanting") : new JsonObject();
+                autoPlanting.addProperty("enabled", p.getAsBoolean());
+                if (!object.has("autoPlanting")) object.add("autoPlanting", autoPlanting);
+                return true;
+            }
+            return false;
+        });
+
+        addFixup("bedExplosionPower", (object, element, s) -> {
+            if (!object.has("enableBedExplosionPower") && element instanceof JsonPrimitive p) {
+                if (p.getAsFloat() != 5.0F) {
+                    object.addProperty("enableBedExplosionPower", true);
+                    return true;
+                }
             }
             return false;
         });

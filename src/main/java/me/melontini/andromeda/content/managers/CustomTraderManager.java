@@ -2,6 +2,9 @@ package me.melontini.andromeda.content.managers;
 
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
+import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;
+import me.melontini.dark_matter.api.minecraft.world.interfaces.TickableState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
@@ -21,8 +24,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class CustomTraderManager extends PersistentState {
+public class CustomTraderManager extends PersistentState implements DeserializableState, TickableState {
+
+    public static final String ID = "andromeda_trader_statemanager";
+
     public int cooldown;
+
+    public static CustomTraderManager get(@NotNull ServerWorld world) {
+        return PersistentStateHelper.getOrCreate(world, CustomTraderManager::new, ID);
+    }
 
     public void readNbt(@NotNull NbtCompound nbt) {
         MakeSure.notNull(nbt);

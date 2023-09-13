@@ -3,17 +3,13 @@ package me.melontini.andromeda.config;
 import com.google.common.collect.Lists;
 import me.melontini.andromeda.util.annotations.config.Environment;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument"})
-@Config(name = "andromeda")
-@Config.Gui.Background("minecraft:textures/block/amethyst_block.png")
-public class AndromedaConfig implements ConfigData {
+public class AndromedaConfig {
 
     @ConfigEntry.Category("world")
     @ConfigEntry.Gui.Tooltip(count = 2)

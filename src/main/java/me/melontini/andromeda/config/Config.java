@@ -11,4 +11,13 @@ public class Config {
     public static AndromedaConfig get() {
         return CONFIG;
     }
+
+    public static AndromedaConfig getDefault() {
+        return Default.DEFAULT;
+    }
+
+    private static class Default {
+
+        static final AndromedaConfig DEFAULT = new AndromedaConfig();
+    }
 }

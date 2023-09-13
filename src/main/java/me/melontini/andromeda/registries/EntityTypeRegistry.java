@@ -19,40 +19,41 @@ import net.minecraft.entity.SpawnGroup;
 import java.util.Objects;
 
 import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.share;
 
 public class EntityTypeRegistry {
 
     private static EntityTypeRegistry INSTANCE;
 
-    public EntityType<AnvilMinecartEntity> ANVIL_MINECART_ENTITY = RegistryUtil.createEntityType(Config.get().newMinecarts.isAnvilMinecartOn, id("anvil_minecart"),
+    public final EntityType<AnvilMinecartEntity> ANVIL_MINECART_ENTITY = RegistryUtil.createEntityType(Config.get().newMinecarts.isAnvilMinecartOn, id("anvil_minecart"),
             FabricEntityTypeBuilder.<AnvilMinecartEntity>create(SpawnGroup.MISC, AnvilMinecartEntity::new)
                     .dimensions(new EntityDimensions(0.98F, 0.7F, true)));
 
-    public EntityType<NoteBlockMinecartEntity> NOTEBLOCK_MINECART_ENTITY = RegistryUtil.createEntityType(Config.get().newMinecarts.isNoteBlockMinecartOn, id("note_block_minecart"),
+    public final EntityType<NoteBlockMinecartEntity> NOTEBLOCK_MINECART_ENTITY = RegistryUtil.createEntityType(Config.get().newMinecarts.isNoteBlockMinecartOn, id("note_block_minecart"),
             FabricEntityTypeBuilder.<NoteBlockMinecartEntity>create(SpawnGroup.MISC, NoteBlockMinecartEntity::new)
                     .dimensions(new EntityDimensions(0.98F, 0.7F, true)));
 
-    public EntityType<JukeboxMinecartEntity> JUKEBOX_MINECART_ENTITY = RegistryUtil.createEntityType(Config.get().newMinecarts.isJukeboxMinecartOn, id("jukebox_minecart"),
+    public final EntityType<JukeboxMinecartEntity> JUKEBOX_MINECART_ENTITY = RegistryUtil.createEntityType(Config.get().newMinecarts.isJukeboxMinecartOn, id("jukebox_minecart"),
             FabricEntityTypeBuilder.<JukeboxMinecartEntity>create(SpawnGroup.MISC, JukeboxMinecartEntity::new)
                     .dimensions(new EntityDimensions(0.98F, 0.7F, true)));
 
-    public EntityType<TNTBoatEntity> BOAT_WITH_TNT = RegistryUtil.createEntityType(Config.get().newBoats.isTNTBoatOn, id("tnt_boat"),
+    public final EntityType<TNTBoatEntity> BOAT_WITH_TNT = RegistryUtil.createEntityType(Config.get().newBoats.isTNTBoatOn, id("tnt_boat"),
             FabricEntityTypeBuilder.<TNTBoatEntity>create(SpawnGroup.MISC, TNTBoatEntity::new)
                     .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
 
-    public EntityType<FurnaceBoatEntity> BOAT_WITH_FURNACE = RegistryUtil.createEntityType(Config.get().newBoats.isFurnaceBoatOn, id("furnace_boat"),
+    public final EntityType<FurnaceBoatEntity> BOAT_WITH_FURNACE = RegistryUtil.createEntityType(Config.get().newBoats.isFurnaceBoatOn, id("furnace_boat"),
             FabricEntityTypeBuilder.<FurnaceBoatEntity>create(SpawnGroup.MISC, FurnaceBoatEntity::new)
                     .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
 
-    public EntityType<JukeboxBoatEntity> BOAT_WITH_JUKEBOX = RegistryUtil.createEntityType(Config.get().newBoats.isJukeboxBoatOn, id("jukebox_boat"),
+    public final EntityType<JukeboxBoatEntity> BOAT_WITH_JUKEBOX = RegistryUtil.createEntityType(Config.get().newBoats.isJukeboxBoatOn, id("jukebox_boat"),
             FabricEntityTypeBuilder.<JukeboxBoatEntity>create(SpawnGroup.MISC, JukeboxBoatEntity::new)
                     .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
 
-    public EntityType<HopperBoatEntity> BOAT_WITH_HOPPER = RegistryUtil.createEntityType(Config.get().newBoats.isHopperBoatOn, id("hopper_boat"),
+    public final EntityType<HopperBoatEntity> BOAT_WITH_HOPPER = RegistryUtil.createEntityType(Config.get().newBoats.isHopperBoatOn, id("hopper_boat"),
             FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new)
                     .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
 
-    public EntityType<FlyingItemEntity> FLYING_ITEM = RegistryUtil.createEntityType(id("flying_item"),
+    public final EntityType<FlyingItemEntity> FLYING_ITEM = RegistryUtil.createEntityType(id("flying_item"),
             FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                     .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10));
 
@@ -64,6 +65,7 @@ public class EntityTypeRegistry {
         if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
         INSTANCE = new EntityTypeRegistry();
+        share("andromeda:entity_type_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }

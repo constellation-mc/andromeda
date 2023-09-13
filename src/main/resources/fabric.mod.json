@@ -42,10 +42,10 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "cloth-config": "*",
     "minecraft": ">=${minecraft_version}"
   },
   "recommends": {
+    "cloth-config": "*",
     "modmenu": "*"
   },
   "custom": {
