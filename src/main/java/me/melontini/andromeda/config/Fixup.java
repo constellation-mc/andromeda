@@ -128,8 +128,10 @@ class Fixup {
 
         addFixup("bedExplosionPower", (object, element, s) -> {
             if (!object.has("enableBedExplosionPower") && element instanceof JsonPrimitive p) {
-                object.addProperty("enableBedExplosionPower", p.getAsFloat() != 5.0F);
-                return true;
+                if (p.getAsFloat() != 5.0F) {
+                    object.addProperty("enableBedExplosionPower", true);
+                    return true;
+                }
             }
             return false;
         });
