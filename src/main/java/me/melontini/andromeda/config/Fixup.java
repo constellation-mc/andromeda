@@ -125,6 +125,14 @@ class Fixup {
             }
             return false;
         });
+
+        addFixup("bedExplosionPower", (object, element, s) -> {
+            if (!object.has("enableBedExplosionPower") && element instanceof JsonPrimitive p) {
+                object.addProperty("enableBedExplosionPower", p.getAsFloat() != 5.0F);
+                return true;
+            }
+            return false;
+        });
     }
 
     private static boolean surgery(JsonObject donor, JsonObject patient, String oldKey, String newKey) {
