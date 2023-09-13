@@ -3,6 +3,7 @@ package me.melontini.andromeda.client.config;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import me.melontini.andromeda.client.AndromedaClient;
+import me.melontini.dark_matter.api.minecraft.client.util.UvTexturedButtonWidget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -10,7 +11,6 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuIntegration implements ModMenuApi {
@@ -19,7 +19,7 @@ public class ModMenuIntegration implements ModMenuApi {
         return parent -> AutoConfigScreen.get(parent).map(screen1 -> {
             ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
                 if (screen == screen1) {
-                    addDrawableChild(screen, new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, AndromedaClient.get().WIKI_BUTTON_TEXTURE, 32, 64, button -> screen.handleTextClick(AndromedaClient.get().WIKI_LINK)));
+                    addDrawableChild(screen, new UvTexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, AndromedaClient.get().WIKI_BUTTON_TEXTURE, 32, 64, button -> screen.handleTextClick(AndromedaClient.get().WIKI_LINK)));
                 }
             });
             return screen1;

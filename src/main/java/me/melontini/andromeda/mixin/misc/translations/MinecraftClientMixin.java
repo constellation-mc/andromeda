@@ -19,8 +19,8 @@ import java.util.concurrent.CompletableFuture;
 public class MinecraftClientMixin {
     @Shadow @Final public GameOptions options;
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourcePackManager;scanPacks()V", shift = At.Shift.BEFORE), method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;")
-    private void andromeda$downloadLangFiles(boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourcePackManager;scanPacks()V", shift = At.Shift.BEFORE), method = "reloadResources(ZLnet/minecraft/client/MinecraftClient$LoadingContext;)Ljava/util/concurrent/CompletableFuture;")
+    private void andromeda$downloadLangFiles(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
         if (!Config.get().autoUpdateTranslations) return;
         TranslationUpdater.onResourceReload(this.options.language);
     }

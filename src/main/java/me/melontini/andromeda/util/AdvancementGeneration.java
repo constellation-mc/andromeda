@@ -5,19 +5,16 @@ import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
 import me.melontini.andromeda.config.Config;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementManager;
-import net.minecraft.advancement.AdvancementPositioner;
-import net.minecraft.advancement.AdvancementRewards;
+import me.melontini.dark_matter.api.base.util.classes.TriConsumer;
+import net.minecraft.advancement.*;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.registry.tag.TagKey;
@@ -52,7 +49,7 @@ public class AdvancementGeneration {
                     || itemStack != null && itemStack2 != null && itemStack.isEmpty() == itemStack2.isEmpty() && ItemStack.areEqual(itemStack, itemStack2);
         }
     };
-    private static final Map<RecipeType<?>, BiConsumer<Map<Identifier, Advancement.Builder>, Recipe<?>>> RECIPE_TYPE_HANDLERS = new HashMap<>();
+    private static final Map<RecipeType<?>, TriConsumer<MinecraftServer, Map<Identifier, Advancement.Builder>, RecipeEntry<?>>> RECIPE_TYPE_HANDLERS = new HashMap<>();
 
     static {
         addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting"));
@@ -60,50 +57,62 @@ public class AdvancementGeneration {
         addRecipeTypeHandler(RecipeType.SMELTING, basicConsumer("smelting"));
         addRecipeTypeHandler(RecipeType.CAMPFIRE_COOKING, basicConsumer("campfire_cooking"));
         addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting"));
-        addRecipeTypeHandler(RecipeType.CRAFTING, (map, recipe) -> {
-            if (!(recipe instanceof SpecialCraftingRecipe)) {
-                if (!recipe.getIngredients().isEmpty()) {
-                    map.put(idFromRecipe(recipe, "crafting"), createAdvBuilder(recipe.getId(), recipe.getIngredients().toArray(Ingredient[]::new)));
+        addRecipeTypeHandler(RecipeType.CRAFTING, (server, map, recipe) -> {
+            if (!(recipe.value() instanceof SpecialCraftingRecipe)) {
+                if (!recipe.value().getIngredients().isEmpty()) {
+                    map.put(idFromRecipe(recipe, "crafting"), createAdvBuilder(server, recipe.id(), recipe.value().getIngredients().toArray(Ingredient[]::new)));
                 }
             }
         });
     }
 
-    public static BiConsumer<Map<Identifier, Advancement.Builder>, Recipe<?>> basicConsumer(String typeName) {
-        return (map, recipe) -> map.put(idFromRecipe(recipe, typeName), createAdvBuilder(recipe.getId(), recipe.getIngredients().get(0)));
+    public static TriConsumer<MinecraftServer, Map<Identifier, Advancement.Builder>, RecipeEntry<?>> basicConsumer(String typeName) {
+        return (server, map, recipe) -> map.put(idFromRecipe(recipe, typeName), createAdvBuilder(server, recipe.id(), recipe.value().getIngredients().get(0)));
     }
 
-    private static Identifier idFromRecipe(Recipe<?> recipe, String typeName) {
-        return new Identifier(recipe.getId().getNamespace(), "recipes/gen/" + typeName + "/" + recipe.getId().toString().replace(":", "_"));
+    private static Identifier idFromRecipe(RecipeEntry<?> recipe, String typeName) {
+        return new Identifier(recipe.id().getNamespace(), "recipes/gen/" + typeName + "/" + recipe.id().toString().replace(":", "_"));
     }
 
-    public static void addRecipeTypeHandler(RecipeType<?> type, BiConsumer<Map<Identifier, Advancement.Builder>, Recipe<?>> consumer) {
+    public static void addRecipeTypeHandler(RecipeType<?> type, BiConsumer<Map<Identifier, Advancement.Builder>, RecipeEntry<?>> consumer) {
+        RECIPE_TYPE_HANDLERS.putIfAbsent(type, (server, identifierBuilderMap, recipeEntry) -> consumer.accept(identifierBuilderMap, recipeEntry));
+    }
+
+    public static void addRecipeTypeHandler(RecipeType<?> type, TriConsumer<MinecraftServer, Map<Identifier, Advancement.Builder>, RecipeEntry<?>> consumer) {
         RECIPE_TYPE_HANDLERS.putIfAbsent(type, consumer);
     }
+
+    private static final ThreadLocal<MinecraftServer> SERVER = ThreadLocal.withInitial(() -> null);
 
     public static void generateRecipeAdvancements(MinecraftServer server) {
         Map<Identifier, Advancement.Builder> advancementBuilders = new ConcurrentHashMap<>();
         AtomicInteger count = new AtomicInteger();
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
-        List<List<Recipe<?>>> lists = Lists.partition(server.getRecipeManager().values().stream().toList(), 800);
-        for (List<Recipe<?>> list : lists) {
+        List<List<RecipeEntry<?>>> lists = Lists.partition(server.getRecipeManager().values().stream().toList(), 800);
+        for (List<RecipeEntry<?>> list : lists) {
             futures.add(CompletableFuture.runAsync(() -> {
-                for (Recipe<?> recipe : list) {
-                    if (Config.get().recipeAdvancementsGeneration.namespaceBlacklist.contains(recipe.getId().getNamespace()))
+                for (RecipeEntry<?> recipe : list) {
+                    if (Config.get().recipeAdvancementsGeneration.namespaceBlacklist.contains(recipe.id().getNamespace()))
                         continue;
-                    if (Config.get().recipeAdvancementsGeneration.recipeBlacklist.contains(recipe.getId().toString()))
+                    if (Config.get().recipeAdvancementsGeneration.recipeBlacklist.contains(recipe.id().toString()))
                         continue;
-                    if (recipe.isIgnoredInRecipeBook() && Config.get().recipeAdvancementsGeneration.ignoreRecipesHiddenInTheRecipeBook)
+                    if (recipe.value().isIgnoredInRecipeBook() && Config.get().recipeAdvancementsGeneration.ignoreRecipesHiddenInTheRecipeBook)
                         continue;
 
-                    if (RECIPE_TYPE_HANDLERS.get(recipe.getType()) != null) {
-                        count.getAndIncrement();
-                        RECIPE_TYPE_HANDLERS.get(recipe.getType()).accept(advancementBuilders, recipe);
-                    } else {
-                        if (!recipe.getIngredients().isEmpty()) {
+
+                    if (RECIPE_TYPE_HANDLERS.get(recipe.value().getType()) != null) {
+                        try {
+                            SERVER.set(server);
                             count.getAndIncrement();
-                            advancementBuilders.put(new Identifier(recipe.getId().getNamespace(), "recipes/gen/generic/" + recipe.getId().toString().replace(":", "_")), createAdvBuilder(recipe.getId(), recipe.getIngredients().toArray(Ingredient[]::new)));
+                            RECIPE_TYPE_HANDLERS.get(recipe.value().getType()).accept(server, advancementBuilders, recipe);
+                        } finally {
+                            SERVER.remove();
+                        }
+                    } else {
+                        if (!recipe.value().getIngredients().isEmpty()) {
+                            count.getAndIncrement();
+                            advancementBuilders.put(new Identifier(recipe.id().getNamespace(), "recipes/gen/generic/" + recipe.id().toString().replace(":", "_")), createAdvBuilder(server, recipe.id(), recipe.value().getIngredients().toArray(Ingredient[]::new)));
                         }
                     }
                 }
@@ -116,10 +125,12 @@ public class AdvancementGeneration {
         server.runTasks(future::isDone);
 
         AdvancementManager advancementManager = server.getAdvancementLoader().manager;
-        advancementManager.load(advancementBuilders);
+        Set<AdvancementEntry> entries = new HashSet<>(advancementBuilders.size());
+        advancementBuilders.forEach((identifier, builder) -> builder.build(identifier));
+        advancementManager.addAll(entries);
 
-        for (Advancement advancement : advancementManager.getRoots()) {
-            if (advancement.getDisplay() != null) {
+        for (PlacedAdvancement advancement : advancementManager.getRoots()) {
+            if (advancement.getAdvancement().display().isPresent()) {
                 AdvancementPositioner.arrangeForTree(advancement);
             }
         }
@@ -129,9 +140,16 @@ public class AdvancementGeneration {
     }
 
     public static @NotNull Advancement.Builder createAdvBuilder(Identifier id, Ingredient... ingredients) {
+        if (SERVER.get() == null) {
+            throw new IllegalStateException();
+        }
+        return createAdvBuilder(SERVER.get(), id, ingredients);
+    }
+
+    public static @NotNull Advancement.Builder createAdvBuilder(MinecraftServer server, Identifier id, Ingredient... ingredients) {
         MakeSure.notEmpty(ingredients);// shouldn't really happen
         var builder = Advancement.Builder.create();
-        builder.parent(Identifier.tryParse("minecraft:recipes/root"));
+        builder.parent(server.getAdvancementLoader().get(Identifier.tryParse("minecraft:recipes/root")));
 
         List<String> names = new ArrayList<>();
         Set<TagKey<Item>> tags = new HashSet<>();
@@ -164,7 +182,7 @@ public class AdvancementGeneration {
             }
             builder.criterion(String.valueOf(i), InventoryChangedCriterion.Conditions.items(predicates.toArray(ItemPredicate[]::new)));
         }
-        builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.create(), id));
+        builder.criterion("has_recipe", RecipeUnlockedCriterion.create(id));
 
         String[][] reqs;
         if (Config.get().recipeAdvancementsGeneration.requireAllItems) {
@@ -182,7 +200,7 @@ public class AdvancementGeneration {
             }
             reqs[0][names.size()] = "has_recipe";
         }
-        builder.requirements(reqs);
+        builder.requirements(new AdvancementRequirements(reqs));
         names.clear();
         tags.clear();
         stacks.clear();
