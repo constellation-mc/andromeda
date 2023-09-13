@@ -6,6 +6,8 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ObjectShare;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.Identifier;
@@ -37,6 +39,14 @@ public class Common {
         } catch (Throwable e) {
             AndromedaLog.error("Error while registering content: {}: {}", e.getClass().getName(), e.getLocalizedMessage());
         }
+    }
+
+    static ObjectShare objectShare() {
+        return FabricLoader.getInstance().getObjectShare();
+    }
+
+    static void share(String id, Object object) {
+        objectShare().put(id, object);
     }
 
     public static void bootstrap() {

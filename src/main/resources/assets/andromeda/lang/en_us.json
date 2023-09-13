@@ -322,7 +322,7 @@
   "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[0]": "Data sent at startup:",
   "text.autoconfig.andromeda.option.sendOptionalData.@Tooltip[1]": "Mod version, Minecraft version, Modloader.",
   "text.autoconfig.andromeda.option.sendCrashReports": "Send Crash Reports",
-  "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[0]": "Data sent at client crash:",
+  "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[0]": "Data sent at crash:",
   "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[1]": "Stacktrace, Loaded mods, Environment (server/client)",
   "text.autoconfig.andromeda.option.sendCrashReports.@Tooltip[2]": "Unlike optional data, crash reports don't have a unique profile attached.",
   "text.autoconfig.andromeda.option.recipeAdvancementsGeneration": "Auto-generate Recipe Advancements",

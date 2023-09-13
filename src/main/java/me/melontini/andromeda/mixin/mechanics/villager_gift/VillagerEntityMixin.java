@@ -41,22 +41,22 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
         ItemStack gift = stack.copy();
         gift.setCount(1);
 
-        if (stack.isIn(TagRegistry.VillagerGifts.MAJOR_POSITIVE)) {
+        if (stack.isIn(TagRegistry.get().getGifts().MAJOR_POSITIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_POSITIVE)) {
                 this.world.sendEntityStatus(this, (byte)14);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.VillagerGifts.MAJOR_NEGATIVE)) {
+        } else if (stack.isIn(TagRegistry.get().getGifts().MAJOR_NEGATIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_NEGATIVE)) {
                 this.world.sendEntityStatus(this, (byte)13);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.VillagerGifts.MINOR_POSITIVE)) {
+        } else if (stack.isIn(TagRegistry.get().getGifts().MINOR_POSITIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_POSITIVE)) {
                 this.world.sendEntityStatus(this, (byte)14);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.VillagerGifts.MINOR_NEGATIVE)) {
+        } else if (stack.isIn(TagRegistry.get().getGifts().MINOR_NEGATIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_NEGATIVE)) {
                 this.world.sendEntityStatus(this, (byte)13);
                 if (!player.isCreative()) stack.decrement(1);

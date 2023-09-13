@@ -10,13 +10,14 @@ import net.minecraft.screen.ScreenHandlerType;
 import java.util.Objects;
 
 import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.share;
 
 public class ScreenHandlerRegistry {
 
     private static ScreenHandlerRegistry INSTANCE;
 
-    public ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER = RegistryUtil.createScreenHandler(Config.get().usefulFletching, id("fletching"), () -> FletchingScreenHandler::new);
-    public ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER = RegistryUtil.createScreenHandler(id("merchant_inventory"), () -> MerchantInventoryScreenHandler::new);
+    public final ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER = RegistryUtil.createScreenHandler(Config.get().usefulFletching, id("fletching"), () -> FletchingScreenHandler::new);
+    public final ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER = RegistryUtil.createScreenHandler(id("merchant_inventory"), () -> MerchantInventoryScreenHandler::new);
 
     public static ScreenHandlerRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
@@ -26,6 +27,7 @@ public class ScreenHandlerRegistry {
         if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
         INSTANCE = new ScreenHandlerRegistry();
+        share("andromeda:screen_handler_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }
