@@ -2,7 +2,7 @@ package me.melontini.andromeda.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.client.config.AutoConfigTransformers;
+import me.melontini.andromeda.client.config.AutoConfigScreen;
 import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
 import me.melontini.andromeda.client.render.BoatWithBlockRenderer;
 import me.melontini.andromeda.client.render.FlyingItemEntityRenderer;
@@ -86,7 +86,8 @@ public class AndromedaClient {
     public void onInitializeClient() {
         EntrypointRunner.runEntrypoint("andromeda:pre-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
 
-        AutoConfigTransformers.register();
+        //noinspection Convert2MethodRef
+        Utilities.ifLoaded("cloth-config", () -> AutoConfigScreen.register());
         if (Config.get().autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
         registerEntityRenderers();

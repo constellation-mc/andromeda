@@ -97,6 +97,7 @@
   "action.andromeda.safebeds": "You can't sleep here!",
 
   "text.autoconfig.andromeda.title": "Andromeda config",
+  "config.andromeda.title": "Andromeda (%s)",
 
   "text.autoconfig.andromeda.option.Effect": "Effect",
   "text.autoconfig.andromeda.option.Effect.identifier": "Identifier",
