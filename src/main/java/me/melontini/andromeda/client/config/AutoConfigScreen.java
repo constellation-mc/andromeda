@@ -1,5 +1,6 @@
 package me.melontini.andromeda.client.config;
 
+import me.melontini.andromeda.api.FeatureConfig;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
@@ -8,6 +9,7 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
@@ -36,13 +38,15 @@ public class AutoConfigScreen {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    Set<String> fieldSet = FeatureManager.blameProcessors(field);
+                    Set<Tuple<FeatureManager.ProcessorEntry, String>> fieldSet = FeatureManager.blameProcessors(field);
                     Set<Text> texts = new HashSet<>();
-                    for (String string : fieldSet) {
-                        if ("mod_json".equals(string)) {
-                            texts.add(TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(FeatureManager.blameMod(field))));
+                    for (Tuple<FeatureManager.ProcessorEntry, String> entry : fieldSet) {
+                        FeatureConfig.TranslatedEntry translatedEntry = entry.left().reasonSupplier().getReason(entry.right());
+
+                        if (translatedEntry.args().length == 0) {
+                            texts.add(TextUtil.translatable(translatedEntry.key()));
                         } else {
-                            texts.add(TextUtil.translatable("andromeda.config.tooltip.manager." + string));
+                            texts.add(TextUtil.translatable(translatedEntry.key(), translatedEntry.args()));
                         }
                     }
                     Text[] texts1 = texts.toArray(Text[]::new);

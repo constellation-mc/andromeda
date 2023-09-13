@@ -108,7 +108,7 @@ public class ConfigHelper {
             runnable.run();
         } catch (Throwable e) {
             AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(optionsToDisable)), e);
-            FeatureManager.processUnknownException(optionsToDisable);
+            FeatureManager.processUnknownException(e, optionsToDisable);
         }
     }
 
@@ -117,7 +117,7 @@ public class ConfigHelper {
             return callable.call();
         } catch (Throwable e) {
             AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(optionsToDisable)), e);
-            FeatureManager.processUnknownException(optionsToDisable);
+            FeatureManager.processUnknownException(e, optionsToDisable);
             return null;
         }
     }

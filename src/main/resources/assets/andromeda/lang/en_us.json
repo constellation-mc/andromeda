@@ -17,8 +17,9 @@
   "andromeda.config.tooltip.manager.safe_beds_conflict": "Conflicting feature enabled!",
   "andromeda.config.tooltip.manager.iceberg": "Conflicts with Iceberg versions <1.1.13.",
   "andromeda.config.tooltip.manager.mod_json": "Set by: %s",
-  "andromeda.config.tooltip.manager.mixin_error": "Required mixin failed to apply!",
-  "andromeda.config.tooltip.manager.unknown_exception": "Option crashed with an unknown exception!",
+  "andromeda.config.tooltip.manager.mixin_error": "Required mixin failed to apply: %s",
+  "andromeda.config.tooltip.manager.unknown_exception[0]": "Option crashed due to %s",
+  "andromeda.config.tooltip.manager.unknown_exception[1]": "Option crashed due to %s: %s",
 
   "andromeda.config.tooltip.environment.client": "Client-only feature",
   "andromeda.config.tooltip.environment.server": "Server-only feature.",

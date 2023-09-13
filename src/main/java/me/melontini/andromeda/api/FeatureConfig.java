@@ -17,6 +17,10 @@ public final class FeatureConfig {
         FeatureManager.registerProcessor(id, processor);
     }
 
+    public static void registerProcessor(String id, Processor processor, ReasonSupplier reasonSupplier) {
+        FeatureManager.registerProcessor(id, processor, reasonSupplier);
+    }
+
     public static Field setOption(String option, Object value) throws NoSuchFieldException, IllegalAccessException {
         return ConfigHelper.setConfigOption(option, value);
     }
@@ -27,5 +31,16 @@ public final class FeatureConfig {
 
     public interface Processor {
         @Nullable Map<String, Object> process(AndromedaConfig config);
+    }
+
+    public interface ReasonSupplier {
+        TranslatedEntry getReason(String option);
+    }
+
+    public record TranslatedEntry(String key, Object... args) {
+
+        public static TranslatedEntry of(String key, Object... args) {
+            return new TranslatedEntry(key, args);
+        }
     }
 }
