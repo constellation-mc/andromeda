@@ -24,7 +24,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.text.Text;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
