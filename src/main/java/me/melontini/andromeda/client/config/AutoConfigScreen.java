@@ -1,6 +1,6 @@
 package me.melontini.andromeda.client.config;
 
-import me.melontini.andromeda.api.FeatureConfig;
+import me.melontini.andromeda.api.config.TranslatedEntry;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
@@ -41,7 +41,7 @@ public class AutoConfigScreen {
                     Set<Tuple<FeatureManager.ProcessorEntry, String>> fieldSet = FeatureManager.blameProcessors(field);
                     Set<Text> texts = new HashSet<>();
                     for (Tuple<FeatureManager.ProcessorEntry, String> entry : fieldSet) {
-                        FeatureConfig.TranslatedEntry translatedEntry = entry.left().reasonSupplier().getReason(entry.right());
+                        TranslatedEntry translatedEntry = entry.left().reason().apply(entry.right());
 
                         if (translatedEntry.args().length == 0) {
                             texts.add(TextUtil.translatable(translatedEntry.key()));

@@ -13,9 +13,9 @@
   "death.attack.andromeda_agony": "%s死于痛苦",
   "death.attack.andromeda_bricked": "%1$s被%2$s用砖块砸晕了",
 
-  "andromeda.config.tooltip.manager.connector_mod": "强制修复与Connector模组的冲突",
-  "andromeda.config.tooltip.manager.safe_beds_conflict": "已启用冲突的特性！",
-  "andromeda.config.tooltip.manager.iceberg": "与低于1.1.13版本的Iceberg前置冲突。",
+  "andromeda.config.tooltip.manager.andromeda.connector_mod": "强制修复与Connector模组的冲突",
+  "andromeda.config.tooltip.manager.andromeda.safe_beds_conflict": "已启用冲突的特性！",
+  "andromeda.config.tooltip.manager.andromeda.iceberg": "与低于1.1.13版本的Iceberg前置冲突。",
   "andromeda.config.tooltip.manager.mod_json": "由%s设定",
 
   "andromeda.config.tooltip.environment.client": "仅客户端特性",

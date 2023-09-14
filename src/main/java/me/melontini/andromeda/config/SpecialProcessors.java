@@ -1,10 +1,13 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.api.FeatureConfig;
+import me.melontini.andromeda.api.config.ProcessorRegistry;
+import me.melontini.andromeda.api.config.TranslatedEntry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.CustomValue;
+import net.fabricmc.loader.api.metadata.CustomValue.CvObject;
+import net.fabricmc.loader.api.metadata.CustomValue.CvType;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
 import java.util.Arrays;
@@ -16,74 +19,74 @@ import static me.melontini.andromeda.config.FeatureManager.*;
 
 class SpecialProcessors {
 
-    static void init() {
-        FeatureManager.registerProcessor("mod_json", config -> {
+    static void init(ProcessorRegistry registry) {
+        registry.register(MOD_JSON_ID, config -> {
             if (MOD_JSON.isEmpty()) FabricLoader.getInstance().getAllMods().stream()
-                    .filter(mod -> mod.getMetadata().containsCustomValue("andromeda:features"))
+                    .filter(mod -> mod.getMetadata().containsCustomValue(FEATURES_KEY))
                     .forEach(SpecialProcessors::parseMetadata);
             return MOD_JSON;
-        }, option -> FeatureConfig.TranslatedEntry.of("andromeda.config.tooltip.manager.mod_json", Arrays.toString(MOD_BLAME.get(option).toArray())));
+        }, feature -> TranslatedEntry.withPrefix("mod_json", Arrays.toString(MOD_BLAME.get(feature).toArray())));
 
-        FeatureManager.registerProcessor("mixin_error", config -> {
+        registry.register(MIXIN_ERROR_ID, config -> {
             Map<String, Object> map = new LinkedHashMap<>();
             FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
             return map;
-        }, option -> {
-            FeatureManager.MixinErrorEntry entry = FAILED_MIXINS.get(option);
+        }, feature -> {
+            FeatureManager.MixinErrorEntry entry = FAILED_MIXINS.get(feature);
             String[] split = entry.className().split("\\.");
-            return FeatureConfig.TranslatedEntry.of("andromeda.config.tooltip.manager.mixin_error", split[split.length - 1]);
+            return TranslatedEntry.withPrefix("mixin_error", split[split.length - 1]);
         });
 
-        FeatureManager.registerProcessor("unknown_exception", config -> {
+        registry.register(UNKNOWN_EXCEPTION_ID, config -> {
             Map<String, Object> map = new LinkedHashMap<>();
             UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
             return map;
-        }, option -> {
-            FeatureManager.ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(option);
+        }, feature -> {
+            FeatureManager.ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(feature);
             if (entry.cause().getLocalizedMessage() != null) {
-                return FeatureConfig.TranslatedEntry.of("andromeda.config.tooltip.manager.unknown_exception[1]", entry.cause().getClass().getSimpleName(), entry.cause().getLocalizedMessage());
+                return TranslatedEntry.withPrefix("unknown_exception[1]", entry.cause().getClass().getSimpleName(), entry.cause().getLocalizedMessage());
             }
-            return FeatureConfig.TranslatedEntry.of("andromeda.config.tooltip.manager.unknown_exception[0]", entry.cause().getClass().getSimpleName());
+            return TranslatedEntry.withPrefix("unknown_exception[0]", entry.cause().getClass().getSimpleName());
         });
     }
 
     private static void parseMetadata(ModContainer mod) {
-        CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
-        if (customValue.getType() != CustomValue.CvType.OBJECT)
-            LOGGER.error("andromeda:features must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
+        CustomValue customValue = mod.getMetadata().getCustomValue(FEATURES_KEY);
+        if (customValue.getType() != CvType.OBJECT)
+            LOGGER.error("{} must be an object. Mod: {} Type: {}", FEATURES_KEY, mod.getMetadata().getId(), customValue.getType());
         else {
-            CustomValue.CvObject object = customValue.getAsObject();
+            CvObject object = customValue.getAsObject();
             for (Map.Entry<String, CustomValue> feature : object) {
                 switch (feature.getValue().getType()) {
                     case BOOLEAN -> addModJson(mod, feature.getKey(), feature.getValue().getAsBoolean());
                     case OBJECT -> parseFeatureObject(feature.getValue().getAsObject(), mod, feature.getKey());
                     default ->
-                            LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
+                            LOGGER.error("Unsupported {} type. Mod: {}, Type: {}", FEATURES_KEY, mod.getMetadata().getId(), feature.getValue().getType());
                 }
             }
         }
     }
 
-    private static void parseFeatureObject(CustomValue.CvObject featureObject, ModContainer mod, String option) {
+    private static void parseFeatureObject(CvObject featureObject, ModContainer mod, String feature) {
         if (!featureObject.containsKey("value")) {
-            LOGGER.error("Missing \"value\" field in andromeda:features. Mod: " + mod.getMetadata().getId());
+            LOGGER.error("Missing \"value\" field in {}. Mod: {}", FEATURES_KEY, mod.getMetadata().getId());
             return;
         }
-        if (!testModVersion(featureObject, "minecraft", option)) return;
-        if (!testModVersion(featureObject, "andromeda", option)) return;
+        if (!testModVersion(featureObject, "minecraft", feature)) return;
+        if (!testModVersion(featureObject, "andromeda", feature)) return;
 
-        if (featureObject.get("value").getType() == CustomValue.CvType.BOOLEAN) {
-            addModJson(mod, option, featureObject.get("value").getAsBoolean());
+        if (featureObject.get("value").getType() == CvType.BOOLEAN) {
+            addModJson(mod, feature, featureObject.get("value").getAsBoolean());
         } else
-            LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + featureObject.get("value").getType());
+            LOGGER.error("Unsupported {} type. Mod: {}, Type: {}", FEATURES_KEY, mod.getMetadata().getId(), featureObject.get("value").getType());
     }
 
-    private static void addModJson(ModContainer mod, String option, Object value) {
-        MOD_JSON.put(option, value);
-        MOD_BLAME.computeIfAbsent(option, k -> new LinkedHashSet<>()).add(mod.getMetadata().getName());
+    private static void addModJson(ModContainer mod, String feature, Object value) {
+        MOD_JSON.put(feature, value);
+        MOD_BLAME.computeIfAbsent(feature, k -> new LinkedHashSet<>()).add(mod.getMetadata().getName());
     }
 
-    static boolean testModVersion(CustomValue.CvObject featureObject, String modId, String modBlame) {
+    static boolean testModVersion(CvObject featureObject, String modId, String modBlame) {
         if (featureObject.containsKey(modId)) {
             try {
                 VersionPredicate predicate = VersionPredicate.parse(featureObject.get(modId).getAsString());

@@ -49,7 +49,7 @@ public class ResourceRegistry {
                     try {
                         String configOption = element.getAsString();
                         try {
-                            load = ConfigHelper.getConfigOption(configOption);
+                            load = ConfigHelper.get(configOption);
                         } catch (NoSuchFieldException e) {
                             throw new AndromedaException("Invalid config option: " + configOption);
                         }

@@ -1,20 +1,23 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.api.FeatureConfig.Processor;
-import me.melontini.andromeda.api.FeatureConfig.ReasonSupplier;
-import me.melontini.andromeda.api.FeatureConfig.TranslatedEntry;
+import me.melontini.andromeda.api.config.ProcessorCollector;
+import me.melontini.andromeda.api.config.ProcessorRegistry;
+import me.melontini.andromeda.api.config.TranslatedEntry;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.VersionParsingException;
-import net.fabricmc.loader.api.metadata.version.VersionPredicate;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Function;
 
 public class FeatureManager {
+
+    public static final String FEATURES_KEY = "andromeda:features";
+    public static final String MIXIN_ERROR_ID = "andromeda:mixin_error";
+    public static final String UNKNOWN_EXCEPTION_ID = "andromeda:unknown_exception";
+    public static final String MOD_JSON_ID = "andromeda:mod_json";
 
     static final PrependingLogger LOGGER = PrependingLogger.get("FeatureManager");
     private static final Map<String, ProcessorEntry> PROCESSORS = new LinkedHashMap<>(5);
@@ -24,16 +27,8 @@ public class FeatureManager {
     static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
 
     static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
-    static final Map<String, FeatureManager.MixinErrorEntry> FAILED_MIXINS = new HashMap<>();
-    static final Map<String, FeatureManager.ExceptionEntry> UNKNOWN_EXCEPTIONS = new HashMap<>();
-
-    public static void registerProcessor(String id, Processor processor) {
-        PROCESSORS.putIfAbsent(id, new ProcessorEntry(id, processor));
-    }
-
-    public static void registerProcessor(String id, Processor processor, ReasonSupplier reasonSupplier) {
-        PROCESSORS.putIfAbsent(id, new ProcessorEntry(id, processor, reasonSupplier));
-    }
+    static final Map<String, MixinErrorEntry> FAILED_MIXINS = new HashMap<>();
+    static final Map<String, ExceptionEntry> UNKNOWN_EXCEPTIONS = new HashMap<>();
 
     public static boolean isModified(Field field) {
         return MODIFIED_FIELDS.containsKey(field);
@@ -47,16 +42,16 @@ public class FeatureManager {
         return processors;
     }
 
-    public static void processMixinError(String option, String className) {
-        FAILED_MIXINS.put(option, new MixinErrorEntry(option, false, className));
-        configure("mixin_error", Collections.singletonMap(option, false));
+    public static void processMixinError(String feature, String className) {
+        FAILED_MIXINS.put(feature, new MixinErrorEntry(feature, false, className));
+        configure(MIXIN_ERROR_ID, Collections.singletonMap(feature, false));
         ConfigHelper.writeConfigToFile(false);
     }
 
-    public static void processUnknownException(Throwable t, String... option) {
-        for (String s : option) {
-            UNKNOWN_EXCEPTIONS.put(s, new ExceptionEntry(s, false, t));
-            configure("unknown_exception", Collections.singletonMap(s, false));
+    public static void processUnknownException(Throwable t, String... features) {
+        for (String feature : features) {
+            UNKNOWN_EXCEPTIONS.put(feature, new ExceptionEntry(feature, false, t));
+            configure(UNKNOWN_EXCEPTION_ID, Collections.singletonMap(feature, false));
         }
         ConfigHelper.writeConfigToFile(false);
     }
@@ -65,36 +60,36 @@ public class FeatureManager {
         MODIFIED_FIELDS.clear();
         if (!Config.get().enableFeatureManager) return;
 
-        for (Map.Entry<String, ProcessorEntry> entry : PROCESSORS.entrySet()) {
-            Map<String, Object> featureConfigEntry = entry.getValue().processor().process(Config.get());
-            if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
-
+        PROCESSORS.forEach((key, entry) -> {
+            var config = entry.processor().apply(Config.get());
+            if (config != null && !config.isEmpty()) {
                 if (print) {
-                    LOGGER.info("Processor: {}", entry.getKey());
+                    LOGGER.info("Processor: {}", key);
                     StringBuilder builder = new StringBuilder().append("Config: ");
-                    featureConfigEntry.keySet().forEach(s -> builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; "));
+                    config.keySet().forEach(s -> builder.append(s).append("=").append(config.get(s)).append("; "));
                     LOGGER.info(builder.toString());
                 }
 
-                configure(entry.getKey(), featureConfigEntry);
+                configure(key, config);
             }
-        }
+        });
     }
 
     private static void configure(String processor, Map<String, Object> featureConfig) {
+        validateId(processor);
+
         Set<String> skipped = new HashSet<>();
-        for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
-            String configOption = configEntry.getKey();
+        featureConfig.forEach((feature, value) -> {
             try {
-                Field f = ConfigHelper.setConfigOption(configOption, configEntry.getValue());
+                Field f = ConfigHelper.set(feature, value);
                 MODIFIED_FIELDS.computeIfAbsent(f, k -> new HashSet<>()).add(processor);
-                FIELD_TO_STRING.putIfAbsent(f, configOption);
+                FIELD_TO_STRING.putIfAbsent(f, feature);
             } catch (NoSuchFieldException e) {
-                skipped.add(configOption);
+                skipped.add(feature);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
+        });
         if (!skipped.isEmpty()) {
             StringBuilder builder = new StringBuilder().append("Skipped: ");
             skipped.forEach(s -> builder.append(s).append("; "));
@@ -103,32 +98,63 @@ public class FeatureManager {
     }
 
     static {
-        SpecialProcessors.init();
+        ProcessorRegistry registry = new ProcessorRegistry() {
+            @Override
+            public void register(String id, Function<AndromedaConfig, Map<String, Object>> processor) {
+                validateId(id);
+                var last = PROCESSORS.put(id, ProcessorEntry.of(id, processor));
+                if (last != null) throw new IllegalArgumentException("Duplicate processor: " + id);
+            }
 
+            @Override
+            public void register(String id, Function<AndromedaConfig, Map<String, Object>> processor, Function<String, TranslatedEntry> reason) {
+                validateId(id);
+                var last = PROCESSORS.put(id, ProcessorEntry.of(id, processor, reason));
+                if (last != null) throw new IllegalArgumentException("Duplicate processor: " + id);
+            }
+
+            @Override
+            public <T> @Nullable T getOption(String feature) {
+                try {
+                    return ConfigHelper.get(feature);
+                } catch (NoSuchFieldException e) {
+                    return null;
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        SpecialProcessors.init(registry);
+
+        EntrypointRunner.runEntrypoint(FEATURES_KEY, ProcessorCollector.class, collector -> collector.collect(registry));
         EntrypointRunner.runEntrypoint("andromeda:feature_manager", Runnable.class, Runnable::run);
     }
 
-    static boolean testModVersion(String modId, String predicate) {
-        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
-        if (mod.isPresent()) {
-            try {
-                VersionPredicate version = VersionPredicate.parse(predicate);
-                return version.test(mod.get().getMetadata().getVersion());
-            } catch (VersionParsingException e) {
-                return false;
-            }
-        }
-        return false;
+    static void validateId(String id) {
+        String[] split = id.split(":");
+        if (split.length != 2) throw new IllegalArgumentException("Invalid id: " + id);
     }
 
-    record MixinErrorEntry(String option, Object value, String className) { }
+    static void legacyRegister(String id, Function<AndromedaConfig, Map<String, Object>> processor) {
+        String newId = id.split(":").length == 2 ? id : "legacy:" + id;
+        PROCESSORS.putIfAbsent(newId, ProcessorEntry.of(newId, processor, feature -> TranslatedEntry.withPrefix(id)));
+    }
 
-    record ExceptionEntry(String option, Object value, Throwable cause) { }
+    record MixinErrorEntry(String feature, Object value, String className) {
+    }
 
-    public record ProcessorEntry(String id, Processor processor, ReasonSupplier reasonSupplier) {
+    record ExceptionEntry(String feature, Object value, Throwable cause) {
+    }
 
-        public ProcessorEntry(String id, Processor processor) {
-            this(id, processor, config -> TranslatedEntry.of("andromeda.config.tooltip.manager." + id));
+    public record ProcessorEntry(String id, Function<AndromedaConfig, Map<String, Object>> processor, Function<String, TranslatedEntry> reason) {
+
+        public static ProcessorEntry of(String id, Function<AndromedaConfig, Map<String, Object>> processor) {
+            return new ProcessorEntry(id, processor, feature -> TranslatedEntry.withPrefix(id.replace(":", ".")));
+        }
+
+        public static ProcessorEntry of(String id, Function<AndromedaConfig, Map<String, Object>> processor, Function<String, TranslatedEntry> reason) {
+            return new ProcessorEntry(id, processor, reason);
         }
     }
 }

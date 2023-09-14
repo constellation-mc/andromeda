@@ -45,9 +45,9 @@ public class ConfigHelper {
         return REDIRECTS.getOrDefault(s, s);
     }
 
-    public static Field setConfigOption(String configOption, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        if ((configOption = redirect(configOption)).contains(".")) {
-            String[] fields = configOption.split("\\.");
+    public static Field set(String feature, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        if ((feature = redirect(feature)).contains(".")) {
+            String[] fields = feature.split("\\.");
             Object obj = Config.get().getClass().getField(fields[0]).get(Config.get());
             for (int i = 1; i < fields.length - 1; i++) {
                 obj = FieldUtils.readField(obj, fields[i], true);
@@ -56,23 +56,23 @@ public class ConfigHelper {
             FieldUtils.writeField(field, obj, value);
             return field;
         } else {
-            Field field = Config.get().getClass().getField(configOption);
+            Field field = Config.get().getClass().getField(feature);
             FieldUtils.writeField(field, Config.get(), value);
             return field;
         }
     }
 
 
-    public static <T> T getConfigOption(String configOption) throws NoSuchFieldException, IllegalAccessException {
-        if ((configOption = redirect(configOption)).contains(".")) {
-            String[] fields = configOption.split("\\.");
+    public static <T> T get(String feature) throws NoSuchFieldException, IllegalAccessException {
+        if ((feature = redirect(feature)).contains(".")) {
+            String[] fields = feature.split("\\.");
             Object obj = Config.get().getClass().getField(fields[0]).get(Config.get());
             for (int i = 1; i < fields.length - 1; i++) {
                 obj = FieldUtils.readField(obj, fields[i], true);
             }
             return cast(FieldUtils.readField(obj, fields[fields.length - 1], true));
         } else {
-            return cast(Config.get().getClass().getField(configOption).get(Config.get()));
+            return cast(Config.get().getClass().getField(feature).get(Config.get()));
         }
     }
 
@@ -89,7 +89,7 @@ public class ConfigHelper {
     public static void loadConfigFromFile(boolean print) {
         Path configPath = SharedConstants.CONFIG_PATH;
         if (Files.exists(configPath)) {
-            try(var reader = Files.newBufferedReader(configPath)) {
+            try (var reader = Files.newBufferedReader(configPath)) {
                 JsonObject object = Fixup.fixup(JsonParser.parseReader(reader).getAsJsonObject());
 
                 Config.set(gson.fromJson(object, AndromedaConfig.class));
@@ -103,23 +103,22 @@ public class ConfigHelper {
         writeConfigToFile(print);
     }
 
-    public static void run(ThrowingRunnable runnable, String... optionsToDisable) {
+    public static void run(ThrowingRunnable runnable, String... features) {
         try {
             runnable.run();
         } catch (Throwable e) {
-            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(optionsToDisable)), e);
-            FeatureManager.processUnknownException(e, optionsToDisable);
+            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
+            FeatureManager.processUnknownException(e, features);
         }
     }
 
-    public static <T> T run(Callable<T> callable, String... optionsToDisable) {
+    public static <T> T run(Callable<T> callable, String... features) {
         try {
             return callable.call();
         } catch (Throwable e) {
-            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(optionsToDisable)), e);
-            FeatureManager.processUnknownException(e, optionsToDisable);
+            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
+            FeatureManager.processUnknownException(e, features);
             return null;
         }
     }
-
 }
