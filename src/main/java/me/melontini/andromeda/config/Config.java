@@ -90,7 +90,7 @@ public class Config {
     private static String check(String feature) throws NoSuchFieldException {
         feature = ConfigHelper.redirect(feature);
         if (!FILTERED.containsKey(feature)) {
-            throw new NoSuchFieldException("Feature " + feature + " does not exist or is blocked");
+            throw new NoSuchFieldException("Feature [" + feature + "] does not exist or is blocked");
         }
         return feature;
     }
