@@ -2,6 +2,7 @@ package me.melontini.andromeda.config;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
 import me.melontini.andromeda.util.annotations.config.Environment;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument"})
 @Getter
+@Setter
 public class AndromedaConfig {
 
     @ConfigEntry.Category("world")
@@ -20,6 +22,7 @@ public class AndromedaConfig {
     public SelfPlanting autoPlanting = new SelfPlanting();
 
     @Getter
+    @Setter
     public static class SelfPlanting {
         @ConfigEntry.Category("world")
         public boolean enabled = true;
@@ -66,6 +69,7 @@ public class AndromedaConfig {
     public IncubatorSettings incubator = new IncubatorSettings();
 
     @Getter
+    @Setter
     public static class IncubatorSettings {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
@@ -121,6 +125,7 @@ public class AndromedaConfig {
     public CampfireTweaks campfireTweaks = new CampfireTweaks();
 
     @Getter
+    @Setter
     public static class CampfireTweaks {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
@@ -170,6 +175,7 @@ public class AndromedaConfig {
     public Snowballs snowballs = new Snowballs();
 
     @Getter
+    @Setter
     public static class Snowballs {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -201,6 +207,7 @@ public class AndromedaConfig {
     public Slimes slimes = new Slimes();
 
     @Getter
+    @Setter
     public static class Slimes {
 
         @ConfigEntry.Category("entities")
@@ -257,6 +264,7 @@ public class AndromedaConfig {
     public NewMinecarts newMinecarts = new NewMinecarts();
 
     @Getter
+    @Setter
     public static class NewMinecarts {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -283,6 +291,7 @@ public class AndromedaConfig {
     public NewBoats newBoats = new NewBoats();
 
     @Getter
+    @Setter
     public static class NewBoats {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -315,6 +324,7 @@ public class AndromedaConfig {
     public Tooltips tooltips = new Tooltips();
 
     @Getter
+    @Setter
     public static class Tooltips {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -343,6 +353,7 @@ public class AndromedaConfig {
     public Lockpick lockpick = new Lockpick();
 
     @Getter
+    @Setter
     public static class Lockpick {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -368,6 +379,7 @@ public class AndromedaConfig {
     public TotemSettings totemSettings = new TotemSettings();
 
     @Getter
+    @Setter
     public static class TotemSettings {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -414,6 +426,7 @@ public class AndromedaConfig {
     public DragonFight dragonFight = new DragonFight();
 
     @Getter
+    @Setter
     public static class DragonFight {
         @ConfigEntry.Category("mechanics")
         public boolean fightTweaks = true;
@@ -438,6 +451,7 @@ public class AndromedaConfig {
     public ThrowableItems throwableItems = new ThrowableItems();
 
     @Getter
+    @Setter
     public static class ThrowableItems {
 
         @ConfigEntry.Category("mechanics")
@@ -480,6 +494,7 @@ public class AndromedaConfig {
     public GuiParticles guiParticles = new GuiParticles();
 
     @Getter
+    @Setter
     public static class GuiParticles {
         @ConfigEntry.Category("gui")
         public boolean anvilScreenParticles = true;
@@ -516,6 +531,7 @@ public class AndromedaConfig {
     public AutoGenRecipes recipeAdvancementsGeneration = new AutoGenRecipes();
 
     @Getter
+    @Setter
     public static class AutoGenRecipes {
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
