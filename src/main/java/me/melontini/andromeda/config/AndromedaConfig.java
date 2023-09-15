@@ -1,6 +1,7 @@
 package me.melontini.andromeda.config;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import me.melontini.andromeda.util.annotations.config.Environment;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument"})
+@Getter
 public class AndromedaConfig {
 
     @ConfigEntry.Category("world")
@@ -17,6 +19,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public SelfPlanting autoPlanting = new SelfPlanting();
 
+    @Getter
     public static class SelfPlanting {
         @ConfigEntry.Category("world")
         public boolean enabled = true;
@@ -62,6 +65,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.BOTH)
     public IncubatorSettings incubator = new IncubatorSettings();
 
+    @Getter
     public static class IncubatorSettings {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
@@ -116,6 +120,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public CampfireTweaks campfireTweaks = new CampfireTweaks();
 
+    @Getter
     public static class CampfireTweaks {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
@@ -164,6 +169,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public Snowballs snowballs = new Snowballs();
 
+    @Getter
     public static class Snowballs {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -194,6 +200,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public Slimes slimes = new Slimes();
 
+    @Getter
     public static class Slimes {
 
         @ConfigEntry.Category("entities")
@@ -249,6 +256,7 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public NewMinecarts newMinecarts = new NewMinecarts();
 
+    @Getter
     public static class NewMinecarts {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -274,6 +282,7 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public NewBoats newBoats = new NewBoats();
 
+    @Getter
     public static class NewBoats {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -305,6 +314,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.CLIENT)
     public Tooltips tooltips = new Tooltips();
 
+    @Getter
     public static class Tooltips {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -332,6 +342,7 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public Lockpick lockpick = new Lockpick();
 
+    @Getter
     public static class Lockpick {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -356,6 +367,7 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public TotemSettings totemSettings = new TotemSettings();
 
+    @Getter
     public static class TotemSettings {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -401,6 +413,7 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public DragonFight dragonFight = new DragonFight();
 
+    @Getter
     public static class DragonFight {
         @ConfigEntry.Category("mechanics")
         public boolean fightTweaks = true;
@@ -424,6 +437,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.BOTH)
     public ThrowableItems throwableItems = new ThrowableItems();
 
+    @Getter
     public static class ThrowableItems {
 
         @ConfigEntry.Category("mechanics")
@@ -465,6 +479,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.CLIENT)
     public GuiParticles guiParticles = new GuiParticles();
 
+    @Getter
     public static class GuiParticles {
         @ConfigEntry.Category("gui")
         public boolean anvilScreenParticles = true;
@@ -500,6 +515,7 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public AutoGenRecipes recipeAdvancementsGeneration = new AutoGenRecipes();
 
+    @Getter
     public static class AutoGenRecipes {
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
