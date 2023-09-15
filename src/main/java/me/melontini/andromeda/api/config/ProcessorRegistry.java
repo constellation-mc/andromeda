@@ -12,5 +12,5 @@ public interface ProcessorRegistry {
 
     void register(String id, Function<AndromedaConfig, Map<String, Object>> processor, Function<String, TranslatedEntry> reason);
 
-    <T> @Nullable T getOption(String feature);
+    <T> @Nullable T get(String feature);
 }

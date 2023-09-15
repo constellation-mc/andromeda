@@ -114,7 +114,7 @@ public class FeatureManager {
             }
 
             @Override
-            public <T> @Nullable T getOption(String feature) {
+            public <T> @Nullable T get(String feature) {
                 try {
                     return Config.get(feature);
                 } catch (NoSuchFieldException e) {
