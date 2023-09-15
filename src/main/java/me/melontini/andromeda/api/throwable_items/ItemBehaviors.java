@@ -22,5 +22,4 @@ public final class ItemBehaviors {
     public static void addBehaviors(ItemBehavior behavior, Item... items) {
         for (Item item : items) addBehavior(item, behavior);
     }
-
 }
