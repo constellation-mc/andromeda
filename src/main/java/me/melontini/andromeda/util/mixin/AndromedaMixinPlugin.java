@@ -43,7 +43,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
 
     @Override
     public void onPluginLoad(String mixinPackage) {
-        LOGGER.info("Platform: " + SharedConstants.PLATFORM);
+        LOGGER.info("Andromeda({}) on {}", SharedConstants.MOD_VERSION, SharedConstants.PLATFORM);
         Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
 
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
@@ -73,7 +73,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 List<String> configOptions = cast(values.get("value"));
                 for (String configOption : configOptions) {
                     try {
-                        load = ConfigHelper.get(configOption);
+                        load = Config.get(configOption);
                     } catch (Exception e) {
                         LOGGER.warn("Couldn't check @MixinRelatedConfigOption(%s) from %s This is no fault of yours.".formatted(configOption, mixinClassName), e);
                     }

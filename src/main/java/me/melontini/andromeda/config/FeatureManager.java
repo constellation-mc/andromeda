@@ -81,12 +81,12 @@ public class FeatureManager {
         Set<String> skipped = new HashSet<>();
         featureConfig.forEach((feature, value) -> {
             try {
-                Field f = ConfigHelper.set(feature, value);
+                Field f = Config.set(feature, value);
                 MODIFIED_FIELDS.computeIfAbsent(f, k -> new HashSet<>()).add(processor);
                 FIELD_TO_STRING.putIfAbsent(f, feature);
             } catch (NoSuchFieldException e) {
                 skipped.add(feature);
-            } catch (IllegalAccessException e) {
+            } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         });
@@ -116,10 +116,10 @@ public class FeatureManager {
             @Override
             public <T> @Nullable T getOption(String feature) {
                 try {
-                    return ConfigHelper.get(feature);
+                    return Config.get(feature);
                 } catch (NoSuchFieldException e) {
                     return null;
-                } catch (IllegalAccessException e) {
+                } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             }

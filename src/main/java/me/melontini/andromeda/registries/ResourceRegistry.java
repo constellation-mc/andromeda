@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorAdder;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
@@ -46,17 +45,13 @@ public class ResourceRegistry {
 
             for (JsonElement element : array) {
                 if (element.isJsonPrimitive()) {
+                    String configOption = element.getAsString();
                     try {
-                        String configOption = element.getAsString();
-                        try {
-                            load = ConfigHelper.get(configOption);
-                        } catch (NoSuchFieldException e) {
-                            throw new AndromedaException("Invalid config option: " + configOption);
-                        }
-                        if (!load) break;
-                    } catch (IllegalAccessException e) {
-                        throw new AndromedaException("Exception while evaluating andromeda:config_option", e);
+                        load = Config.get(configOption);
+                    } catch (NoSuchFieldException e) {
+                        throw new AndromedaException("Invalid config option: " + configOption);
                     }
+                    if (!load) break;
                 }
             }
 
