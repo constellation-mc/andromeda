@@ -1,12 +1,12 @@
 package me.melontini.andromeda.util.mixin;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
@@ -27,9 +27,9 @@ import java.util.Set;
 import static me.melontini.dark_matter.api.base.util.Utilities.cast;
 
 @SuppressWarnings("UnstableApiUsage")
+@CustomLog
 public class AndromedaMixinPlugin extends ExtendablePlugin {
 
-    private static final PrependingLogger LOGGER = PrependingLogger.get("AndromedaMixinPlugin");
     private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
 
     static {

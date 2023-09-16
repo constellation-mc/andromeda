@@ -1,10 +1,10 @@
 package me.melontini.andromeda.config;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.api.config.ProcessorCollector;
 import me.melontini.andromeda.api.config.ProcessorRegistry;
 import me.melontini.andromeda.api.config.TranslatedEntry;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
 
+@CustomLog
 public class FeatureManager {
 
     public static final String FEATURES_KEY = "andromeda:features";
@@ -19,7 +20,6 @@ public class FeatureManager {
     public static final String UNKNOWN_EXCEPTION_ID = "andromeda:unknown_exception";
     public static final String MOD_JSON_ID = "andromeda:mod_json";
 
-    static final PrependingLogger LOGGER = PrependingLogger.get("FeatureManager");
     private static final Map<String, ProcessorEntry> PROCESSORS = new LinkedHashMap<>(5);
 
     static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();

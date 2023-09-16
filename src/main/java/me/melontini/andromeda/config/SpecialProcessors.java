@@ -1,5 +1,6 @@
 package me.melontini.andromeda.config;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.api.config.ProcessorRegistry;
 import me.melontini.andromeda.api.config.TranslatedEntry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -17,6 +18,8 @@ import java.util.Map;
 
 import static me.melontini.andromeda.config.FeatureManager.*;
 
+
+@CustomLog
 class SpecialProcessors {
 
     static void init(ProcessorRegistry registry) {
