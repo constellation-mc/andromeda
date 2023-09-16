@@ -277,7 +277,7 @@
   "text.autoconfig.andromeda.option.dragonFight": "末地龙战调整",
   "text.autoconfig.andromeda.option.dragonFight.fightTweaks": "启用末地龙战调整",
   "text.autoconfig.andromeda.option.dragonFight.respawnCrystals": "末影水晶再生成",
-  "text.autoconfig.andromeda.option.dragonFight.respawnCrystals.@Tooltip": "让末影水晶在爆炸后再次生成（每个3-6分钟）",
+  "text.autoconfig.andromeda.option.dragonFight.respawnCrystals.@Tooltip": "让末影水晶在爆炸后再次生成（每隔3-6分钟）",
   "text.autoconfig.andromeda.option.dragonFight.scaleHealthByMaxPlayers": "集群强化",
   "text.autoconfig.andromeda.option.dragonFight.scaleHealthByMaxPlayers.@Tooltip[0]": "根据最大在末地的玩家数量提升末影龙生命值。",
   "text.autoconfig.andromeda.option.dragonFight.scaleHealthByMaxPlayers.@Tooltip[1]": "计算公式：floor((sqrt(500 * i)) * 10)，i为最大玩家数量。",
