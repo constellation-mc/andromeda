@@ -1,6 +1,7 @@
 package me.melontini.andromeda.content.throwable_items;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.Getter;
 import me.melontini.andromeda.api.throwable_items.ItemBehavior;
 import me.melontini.andromeda.config.Config;
 import net.minecraft.item.Item;
@@ -67,6 +68,7 @@ public class ItemBehaviorManager {
 
     private static class Holder {
         final List<ItemBehavior> behaviors = new ArrayList<>();
+        @Getter
         private final Item item;
         private boolean locked;
 
@@ -80,10 +82,6 @@ public class ItemBehaviorManager {
                 this.behaviors.add(behavior);
                 if (!complement) this.locked = true;
             }
-        }
-
-        public Item getItem() {
-            return item;
         }
     }
 }
