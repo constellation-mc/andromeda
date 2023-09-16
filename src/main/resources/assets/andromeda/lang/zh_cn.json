@@ -98,7 +98,7 @@
   "action.andromeda.safebeds": "你不能在这儿休息！",
 
   "text.autoconfig.andromeda.title": "群星模组配置",
-  "config.andromeda.title": "Andromeda（%s）",
+  "config.andromeda.title": "群星（%s）",
 
   "text.autoconfig.andromeda.option.Effect": "状态效果",
   "text.autoconfig.andromeda.option.Effect.identifier": "名称",
