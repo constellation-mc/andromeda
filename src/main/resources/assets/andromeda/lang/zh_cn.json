@@ -246,7 +246,7 @@
   "text.autoconfig.andromeda.option.lockpick.villagerInventory": "村民物品栏",
   "text.autoconfig.andromeda.option.lockpick.villagerInventory.@Tooltip": "能够打开村民的物品栏。",
   "text.autoconfig.andromeda.option.slightlyBetterItemNames": "更好的物品名显示",
-  "text.autoconfig.andromeda.option.slightlyBetterItemNames.@Tooltip": "只在物品耐久未满时显示其耐久度百分比，只在物品数量大于一时显示其数量",
+  "text.autoconfig.andromeda.option.slightlyBetterItemNames.@Tooltip": "在物品耐久未满时显示其耐久度百分比，在物品数量大于一时显示其数量",
   "text.autoconfig.andromeda.option.totemSettings": "创生图腾",
   "text.autoconfig.andromeda.option.totemSettings.@Tooltip": "有关于创生图腾的设置选项。请在本模组维基页面查阅更详尽的简介",
   "text.autoconfig.andromeda.option.totemSettings.enableInfiniteTotem": "启用创生图腾",
