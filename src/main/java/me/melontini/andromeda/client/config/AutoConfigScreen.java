@@ -1,9 +1,8 @@
 package me.melontini.andromeda.client.config;
 
-import me.melontini.andromeda.api.config.TranslatedEntry;
+import me.melontini.andromeda.api.config.TextEntry;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
@@ -29,6 +28,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("UnstableApiUsage")
 public class AutoConfigScreen {
 
     public static void register() {
@@ -38,15 +38,15 @@ public class AutoConfigScreen {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    Set<Tuple<FeatureManager.ProcessorEntry, String>> fieldSet = FeatureManager.blameProcessors(field);
+                    Tuple<String, Set<String>> tuple = Config.getManager().getOptionManager().blameProcessors(field);
                     Set<Text> texts = new HashSet<>();
-                    for (Tuple<FeatureManager.ProcessorEntry, String> entry : fieldSet) {
-                        TranslatedEntry translatedEntry = entry.left().reason().apply(entry.right());
+                    for (String processor : tuple.right()) {
+                        TextEntry textEntry = FeatureManager.ENTRIES.getOrDefault(processor, FeatureManager.DEFAULT).apply(tuple.left(), processor);
 
-                        if (translatedEntry.args().length == 0) {
-                            texts.add(TextUtil.translatable(translatedEntry.key()));
+                        if (textEntry.isTranslatable()) {
+                            texts.add(TextUtil.translatable(textEntry.text(), textEntry.args()));
                         } else {
-                            texts.add(TextUtil.translatable(translatedEntry.key(), translatedEntry.args()));
+                            texts.add(TextUtil.literal(textEntry.text()));
                         }
                     }
                     Text[] texts1 = texts.toArray(Text[]::new);
@@ -54,7 +54,7 @@ public class AutoConfigScreen {
                 }
             });
             return list;
-        }, FeatureManager::isModified);
+        }, field -> Config.getManager().getOptionManager().isModified(field));
 
         Holder.OURS.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             if (field.getType() == boolean.class || field.getType() == Boolean.class)
@@ -86,7 +86,7 @@ public class AutoConfigScreen {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(screen)
                     .setTitle(TextUtil.translatable("config.andromeda.title", SharedConstants.MOD_VERSION.split("-")[0]))
-                    .setSavingRunnable(() -> ConfigHelper.writeConfigToFile(true))
+                    .setSavingRunnable(() -> Config.getManager().save())
                     .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 
             Arrays.stream(AndromedaConfig.class.getDeclaredFields())

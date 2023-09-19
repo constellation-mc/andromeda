@@ -2,7 +2,6 @@ package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
@@ -54,7 +53,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
         }
-        ConfigHelper.loadConfigFromFile(true);
+        Config.get();
 
         if (Config.get().compatMode) {
             LOGGER.warn("Compat mode is on!");
@@ -95,7 +94,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             boolean dummy = true;
             for (String configOption : configOptions) {
                 try {
-                    dummy = ConfigHelper.get(configOption);
+                    dummy = Config.get(configOption);
                 } catch (NoSuchFieldException e) {
                     throw new AndromedaException("Invalid config option in @MixinRelatedConfigOption(%s) from %s".formatted(configOption, mixinClassName));
                 } catch (ClassCastException e) {

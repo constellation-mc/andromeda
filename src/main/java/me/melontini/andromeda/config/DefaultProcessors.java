@@ -1,8 +1,7 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.api.config.ProcessorCollector;
-import me.melontini.andromeda.api.config.ProcessorRegistry;
 import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
@@ -11,10 +10,10 @@ import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import java.util.Map;
 import java.util.Optional;
 
-public class DefaultProcessors implements ProcessorCollector {
+@SuppressWarnings("UnstableApiUsage")
+public class DefaultProcessors {
 
-    @Override
-    public void collect(ProcessorRegistry registry) {
+    static void collect(OptionProcessorRegistry<AndromedaConfig> registry) {
         registry.register("andromeda:connector_mod", config -> {
             if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
                 return Map.of(
@@ -27,11 +26,11 @@ public class DefaultProcessors implements ProcessorCollector {
             return null;
         });
 
-        registry.register("andromeda:safe_beds_conflict", config -> {
-            if (config.safeBeds) {
+        registry.register("andromeda:safe_beds_conflict", manager -> {
+            if (manager.getConfig().safeBeds) {
                 return Map.of("bedsExplodeEverywhere", false);
             }
-            if (config.bedsExplodeEverywhere) {
+            if (manager.getConfig().bedsExplodeEverywhere) {
                 return Map.of("safeBeds", false);
             }
             return null;

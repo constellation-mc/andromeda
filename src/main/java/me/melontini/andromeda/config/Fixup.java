@@ -1,42 +1,15 @@
 package me.melontini.andromeda.config;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.classes.TriFunction;
+import me.melontini.dark_matter.api.config.FixupsBuilder;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
+@SuppressWarnings("UnstableApiUsage")
 class Fixup {
 
-    private static final Map<String, Set<TriFunction<JsonObject, JsonElement, String, Boolean>>> FIXUPS = new LinkedHashMap<>();
-
-    static JsonObject fixup(JsonObject object) {
-        MakeSure.notNull(object);
-
-        for (Map.Entry<String, Set<TriFunction<JsonObject, JsonElement, String, Boolean>>> entry : FIXUPS.entrySet()) {
-            if (object.has(entry.getKey())) {
-                entry.getValue().forEach(function -> {
-                    if (function.apply(object, object.get(entry.getKey()), entry.getKey()))
-                        AndromedaLog.info("Fixed-up config entry: " + entry.getKey());
-                });
-            }
-        }
-        return object;
-    }
-
-    static void addFixup(final String key, final TriFunction<JsonObject, JsonElement, String, Boolean> fixup) {
-        FIXUPS.computeIfAbsent(key, k -> new LinkedHashSet<>()).add(fixup);
-    }
-
-    static {
-        addFixup("throwableItems", (object, element, key) -> {
+    static void addFixups(FixupsBuilder builder) {
+        builder.add("throwableItems", (object, element, key) -> {
             if (element instanceof JsonPrimitive p && p.isBoolean()) {
                 object.remove(key);
 
@@ -49,7 +22,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("incubatorSettings", (object, element, key) -> {
+        builder.add("incubatorSettings", (object, element, key) -> {
             if (element instanceof JsonObject o) {
                 object.remove(key);
 
@@ -63,7 +36,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("autogenRecipeAdvancements", (object, element, key) -> {
+        builder.add("autogenRecipeAdvancements", (object, element, key) -> {
             if (element instanceof JsonObject o) {
                 object.remove(key);
 
@@ -77,7 +50,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("campfireTweaks", (object, element, key) -> {
+        builder.add("campfireTweaks", (object, element, key) -> {
             if (element instanceof JsonObject o) {
                 boolean mod = false;
 
@@ -90,7 +63,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("campfireTweaks", (object, element, key) -> {
+        builder.add("campfireTweaks", (object, element, key) -> {
             if (element instanceof JsonObject o) {
                 if (o.has("campfireEffectsList") && o.has("campfireEffectsAmplifierList")) {
                     if (o.has("effectList")) o.remove("effectList"); //This shouldn't happen tbh.
@@ -116,7 +89,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("selfPlanting", (object, element, s) -> {
+        builder.add("selfPlanting", (object, element, s) -> {
             if (element instanceof JsonPrimitive p && p.isBoolean()) {
                 JsonObject autoPlanting = object.has("autoPlanting") ? object.getAsJsonObject("autoPlanting") : new JsonObject();
                 autoPlanting.addProperty("enabled", p.getAsBoolean());
@@ -126,7 +99,7 @@ class Fixup {
             return false;
         });
 
-        addFixup("bedExplosionPower", (object, element, s) -> {
+        builder.add("bedExplosionPower", (object, element, s) -> {
             if (!object.has("enableBedExplosionPower") && element instanceof JsonPrimitive p) {
                 if (p.getAsFloat() != 5.0F) {
                     object.addProperty("enableBedExplosionPower", true);

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.config;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.api.config.ProcessorRegistry;
-import me.melontini.andromeda.api.config.TranslatedEntry;
+import me.melontini.andromeda.api.config.TextEntry;
+import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
@@ -11,45 +11,57 @@ import net.fabricmc.loader.api.metadata.CustomValue.CvObject;
 import net.fabricmc.loader.api.metadata.CustomValue.CvType;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.*;
 
 import static me.melontini.andromeda.config.FeatureManager.*;
 
 
+@SuppressWarnings("UnstableApiUsage")
 @CustomLog
 class SpecialProcessors {
 
-    static void init(ProcessorRegistry registry) {
-        registry.register(MOD_JSON_ID, config -> {
+    public static final String MIXIN_ERROR_ID = "andromeda:mixin_error";
+    public static final String UNKNOWN_EXCEPTION_ID = "andromeda:unknown_exception";
+    public static final String MOD_JSON_ID = "andromeda:mod_json";
+
+    static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
+    static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
+
+    static void collect(OptionProcessorRegistry<AndromedaConfig> registry) {
+        register(registry, MOD_JSON_ID, config -> {
             if (MOD_JSON.isEmpty()) FabricLoader.getInstance().getAllMods().stream()
                     .filter(mod -> mod.getMetadata().containsCustomValue(FEATURES_KEY))
                     .forEach(SpecialProcessors::parseMetadata);
             return MOD_JSON;
-        }, feature -> TranslatedEntry.withPrefix("mod_json", Arrays.toString(MOD_BLAME.get(feature).toArray())));
+        }, (feature, id) -> TextEntry.translatable(TextEntry.DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(feature).toArray())));
+        ENTRIES.put("andromeda:custom_values", (feature, id) -> {
+            try {
+                return TextEntry.translatable(TextEntry.DEFAULT_KEY + "mod_json", Arrays.toString(Config.getManager().getOptionManager().blameMods(feature).toArray()));
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        registry.register(MIXIN_ERROR_ID, config -> {
+        register(registry, MIXIN_ERROR_ID, config -> {
             Map<String, Object> map = new LinkedHashMap<>();
             FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
             return map;
-        }, feature -> {
+        }, (feature, id) -> {
             FeatureManager.MixinErrorEntry entry = FAILED_MIXINS.get(feature);
             String[] split = entry.className().split("\\.");
-            return TranslatedEntry.withPrefix("mixin_error", split[split.length - 1]);
+            return TextEntry.translatable(TextEntry.DEFAULT_KEY + "mixin_error", split[split.length - 1]);
         });
 
-        registry.register(UNKNOWN_EXCEPTION_ID, config -> {
+        register(registry, UNKNOWN_EXCEPTION_ID, config -> {
             Map<String, Object> map = new LinkedHashMap<>();
             UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
             return map;
-        }, feature -> {
+        }, (feature, id) -> {
             FeatureManager.ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(feature);
             if (entry.cause().getLocalizedMessage() != null) {
-                return TranslatedEntry.withPrefix("unknown_exception[1]", entry.cause().getClass().getSimpleName(), entry.cause().getLocalizedMessage());
+                return TextEntry.translatable(TextEntry.DEFAULT_KEY + "unknown_exception[1]", entry.cause().getClass().getSimpleName(), entry.cause().getLocalizedMessage());
             }
-            return TranslatedEntry.withPrefix("unknown_exception[0]", entry.cause().getClass().getSimpleName());
+            return TextEntry.translatable(TextEntry.DEFAULT_KEY + "unknown_exception[0]", entry.cause().getClass().getSimpleName());
         });
     }
 
