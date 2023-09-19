@@ -1,14 +1,13 @@
 package me.melontini.andromeda.client.config;
 
-import me.melontini.andromeda.api.config.TextEntry;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
+import me.melontini.dark_matter.api.config.interfaces.TextEntry;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
@@ -41,12 +40,12 @@ public class AutoConfigScreen {
                     Tuple<String, Set<String>> tuple = Config.getManager().getOptionManager().blameProcessors(field);
                     Set<Text> texts = new HashSet<>();
                     for (String processor : tuple.right()) {
-                        TextEntry textEntry = FeatureManager.ENTRIES.getOrDefault(processor, FeatureManager.DEFAULT).apply(tuple.left(), processor);
+                        TextEntry textEntry = Config.getManager().getOptionManager().getReason(processor, tuple.left());
 
                         if (textEntry.isTranslatable()) {
-                            texts.add(TextUtil.translatable(textEntry.text(), textEntry.args()));
+                            texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()));
                         } else {
-                            texts.add(TextUtil.literal(textEntry.text()));
+                            texts.add(TextUtil.literal(textEntry.get()));
                         }
                     }
                     Text[] texts1 = texts.toArray(Text[]::new);

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.config;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.api.config.TextEntry;
 import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
+import me.melontini.dark_matter.api.config.interfaces.TextEntry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
@@ -13,6 +13,7 @@ import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
 import java.util.*;
 
+import static me.melontini.andromeda.config.Config.DEFAULT_KEY;
 import static me.melontini.andromeda.config.FeatureManager.*;
 
 
@@ -28,40 +29,34 @@ class SpecialProcessors {
     static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
 
     static void collect(OptionProcessorRegistry<AndromedaConfig> registry) {
-        register(registry, MOD_JSON_ID, config -> {
+        registry.register(MOD_JSON_ID, config -> {
             if (MOD_JSON.isEmpty()) FabricLoader.getInstance().getAllMods().stream()
                     .filter(mod -> mod.getMetadata().containsCustomValue(FEATURES_KEY))
                     .forEach(SpecialProcessors::parseMetadata);
             return MOD_JSON;
-        }, (feature, id) -> TextEntry.translatable(TextEntry.DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(feature).toArray())));
-        ENTRIES.put("andromeda:custom_values", (feature, id) -> {
-            try {
-                return TextEntry.translatable(TextEntry.DEFAULT_KEY + "mod_json", Arrays.toString(Config.getManager().getOptionManager().blameMods(feature).toArray()));
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        }, (holder) -> TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(holder.option()).toArray())));
 
-        register(registry, MIXIN_ERROR_ID, config -> {
+        registry.register(MIXIN_ERROR_ID, config -> {
             Map<String, Object> map = new LinkedHashMap<>();
             FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
             return map;
-        }, (feature, id) -> {
-            FeatureManager.MixinErrorEntry entry = FAILED_MIXINS.get(feature);
+        }, (holder) -> {
+            FeatureManager.MixinErrorEntry entry = FAILED_MIXINS.get(holder.option());
             String[] split = entry.className().split("\\.");
-            return TextEntry.translatable(TextEntry.DEFAULT_KEY + "mixin_error", split[split.length - 1]);
+            return TextEntry.translatable(DEFAULT_KEY + "mixin_error", split[split.length - 1]);
         });
 
-        register(registry, UNKNOWN_EXCEPTION_ID, config -> {
+        registry.register(UNKNOWN_EXCEPTION_ID, config -> {
             Map<String, Object> map = new LinkedHashMap<>();
             UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
             return map;
-        }, (feature, id) -> {
-            FeatureManager.ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(feature);
-            if (entry.cause().getLocalizedMessage() != null) {
-                return TextEntry.translatable(TextEntry.DEFAULT_KEY + "unknown_exception[1]", entry.cause().getClass().getSimpleName(), entry.cause().getLocalizedMessage());
+        }, (holder) -> {
+            FeatureManager.ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(holder.option());
+            Throwable cause = entry.cause();
+            if (cause.getLocalizedMessage() != null) {
+                return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[1]", cause.getClass().getSimpleName(), cause.getLocalizedMessage());
             }
-            return TextEntry.translatable(TextEntry.DEFAULT_KEY + "unknown_exception[0]", entry.cause().getClass().getSimpleName());
+            return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[0]", cause.getClass().getSimpleName());
         });
     }
 

@@ -5,6 +5,7 @@ import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
+import me.melontini.dark_matter.api.config.interfaces.TextEntry;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -12,6 +13,8 @@ import java.util.concurrent.Callable;
 
 @SuppressWarnings("UnstableApiUsage")
 public class Config {
+
+    static final String DEFAULT_KEY = "andromeda.config.tooltip.manager.";
 
     private static final ConfigManager<AndromedaConfig> MANAGER = ConfigBuilder
             .create(AndromedaConfig.class, SharedConstants.MOD_CONTAINER, "andromeda")
@@ -32,6 +35,16 @@ public class Config {
                 SpecialProcessors.collect(registry);
                 DefaultProcessors.collect(registry);
                 FeatureManager.runLegacy(registry);
+            })
+            .defaultReason(holder -> {
+                if ("andromeda:custom_values".equals(holder.processor())) {
+                    try {
+                        return TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(Config.getManager().getOptionManager().blameMods(holder.option()).toArray()));
+                    } catch (NoSuchFieldException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                return TextEntry.translatable(DEFAULT_KEY + holder.processor().replace(":", "."));
             })
             .build();
     private static final AndromedaConfig CONFIG = MANAGER.getConfig();
