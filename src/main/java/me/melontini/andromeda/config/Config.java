@@ -38,11 +38,7 @@ public class Config {
             })
             .defaultReason(holder -> {
                 if ("andromeda:custom_values".equals(holder.processor())) {
-                    try {
-                        return TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(Config.getManager().getOptionManager().blameMods(holder.option()).toArray()));
-                    } catch (NoSuchFieldException e) {
-                        throw new RuntimeException(e);
-                    }
+                    return TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(Config.getManager().getOptionManager().blameModJson(holder.field()).right().toArray()));
                 }
                 return TextEntry.translatable(DEFAULT_KEY + holder.processor().replace(":", "."));
             })
