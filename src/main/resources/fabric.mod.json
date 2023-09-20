@@ -29,9 +29,6 @@
     "modmenu": [
       "me.melontini.andromeda.client.config.ModMenuIntegration"
     ],
-    "andromeda:features": [
-      "me.melontini.andromeda.config.DefaultProcessors"
-    ],
     "andromeda:collect_behaviors": [
       "me.melontini.andromeda.content.throwable_items.DefaultBehaviors"
     ]
