@@ -62,7 +62,7 @@ public class Andromeda {
     private void onInitialize() {
         EntrypointRunner.runEntrypoint("andromeda:pre-main", ModInitializer.class, ModInitializer::onInitialize);
 
-        AndromedaReporter.init();
+        AndromedaReporter.initCrashHandler();
         Common.bootstrap();
 
         ServerWorldEvents.LOAD.register((server, world) -> {

@@ -27,11 +27,7 @@ public class AndromedaReporter {
 
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
     private static final Analytics ANALYTICS = Analytics.get(SharedConstants.MOD_CONTAINER);
-    private static final MixpanelHandler HANDLER = Utilities.supply(() -> {
-        final Analytics analytics = Analytics.get(SharedConstants.MOD_CONTAINER);
-        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> handleCrash(cause, report.getMessage(), envType));
-        return MixpanelAnalytics.init(analytics, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
-    });
+    private static final MixpanelHandler HANDLER = Utilities.supply(() -> MixpanelAnalytics.init(ANALYTICS, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true));
 
     @SuppressWarnings("deprecation")
     public static void handleUpload() {
@@ -59,6 +55,10 @@ public class AndromedaReporter {
                 HANDLER.send((mixpanel, analytics) -> mixpanel.delete(analytics.getUUIDString()));
             }
         }
+    }
+
+    public static void initCrashHandler() {
+        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> handleCrash(cause, report.getMessage(), envType));
     }
 
     private static boolean findAndromedaInTrace(Throwable cause) {
@@ -130,8 +130,5 @@ public class AndromedaReporter {
             throwable.setStackTrace(cause.getStackTrace());
         }
         return throwable;
-    }
-
-    public static void init() {
     }
 }
