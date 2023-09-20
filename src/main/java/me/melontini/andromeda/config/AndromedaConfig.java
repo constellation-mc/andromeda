@@ -585,11 +585,6 @@ public class AndromedaConfig {
     public boolean debugMessages = false;
 
     @ConfigEntry.Category("misc")
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart
-    public boolean enableFeatureManager = true;
-
-    @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.RequiresRestart
     @FeatureEnvironment(Environment.BOTH)
     public boolean unknown = false;
