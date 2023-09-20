@@ -53,6 +53,23 @@ public class AndromedaConfig {
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip()
+    @ConfigEntry.Gui.CollapsibleObject
+    public GuardedLoot guardedLoot = new GuardedLoot();
+
+    @Getter
+    @Setter
+    public static class GuardedLoot {
+
+        @ConfigEntry.Category("blocks")
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean enabled = true;
+
+        @ConfigEntry.Category("blocks")
+        public int range = 4;
+    }
+
+    @ConfigEntry.Category("blocks")
+    @ConfigEntry.Gui.Tooltip()
     @FeatureEnvironment(Environment.SERVER)
     public boolean fallingPropagule = true;
 

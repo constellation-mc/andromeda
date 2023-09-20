@@ -12,6 +12,7 @@
   "tooltip.andromeda.frameitem": "Item inside the frame",
   "death.attack.andromeda_agony": "%s died from agony",
   "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
+  "andromeda.container.guarded": "Can't open! The container is guarded!",
 
   "andromeda.config.tooltip.manager.andromeda.connector_mod": "State forced to fix issues with Connector.",
   "andromeda.config.tooltip.manager.andromeda.safe_beds_conflict": "Conflicting feature enabled!",
@@ -125,6 +126,10 @@
   "text.autoconfig.andromeda.option.quickFire.@Tooltip": "Makes fire spread a lot faster and wider.",
 
   "text.autoconfig.andromeda.category.blocks": "Blocks",
+  "text.autoconfig.andromeda.option.guardedLoot": "Guarded Loot",
+  "text.autoconfig.andromeda.option.guardedLoot.@Tooltip": "Block players from opening unlooted containers if there are any monsters nearby.",
+  "text.autoconfig.andromeda.option.guardedLoot.enabled": "Enabled",
+  "text.autoconfig.andromeda.option.guardedLoot.range": "Range",
   "text.autoconfig.andromeda.option.fallingPropagule": "Falling Propagule",
   "text.autoconfig.andromeda.option.fallingPropagule.@Tooltip": "Fully grown, hanging propagule will fall after some time.",
   "text.autoconfig.andromeda.option.cactusBottleFilling": "Cactus Bottle Filling",
