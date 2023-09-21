@@ -5,66 +5,59 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.melontini.dark_matter.api.config.FixupsBuilder;
 
+import java.util.Map;
+
 @SuppressWarnings("UnstableApiUsage")
-class Fixup {
+class Fixups {
 
     static void addFixups(FixupsBuilder builder) {
-        builder.add("throwableItems", (object, element, key) -> {
-            if (element instanceof JsonPrimitive p && p.isBoolean()) {
-                object.remove(key);
+        builder.add("throwableItems", (holder) -> {
+            if (holder.value() instanceof JsonPrimitive p && p.isBoolean()) {
+                holder.config().remove("throwableItems");
 
                 JsonObject throwableItems = new JsonObject();
                 throwableItems.addProperty("enable", p.getAsBoolean());
-                surgery(object, throwableItems, "throwableItemsBlacklist", "blacklist");
-                object.add(key, throwableItems);
+                surgery(holder.config(), throwableItems, "throwableItemsBlacklist", "blacklist");
+                holder.config().add("throwableItems", throwableItems);
                 return true;
             }
             return false;
         });
 
-        builder.add("incubatorSettings", (object, element, key) -> {
-            if (element instanceof JsonObject o) {
-                object.remove(key);
+        builder.add("incubatorSettings", (holder) -> {
+            if (holder.value() instanceof JsonObject o) {
+                holder.config().remove("incubatorSettings");
 
                 surgery(o, o, "enableIncubator", "enable");
                 surgery(o, o, "incubatorRandomness", "randomness");
                 surgery(o, o, "incubatorRecipe", "recipe");
 
-                object.add("incubator", o);
+                holder.config().add("incubator", o);
                 return true;
             }
             return false;
         });
 
-        builder.add("autogenRecipeAdvancements", (object, element, key) -> {
-            if (element instanceof JsonObject o) {
-                object.remove(key);
+        builder.add("autogenRecipeAdvancements", (holder) -> {
+            if (holder.value() instanceof JsonObject o) {
+                holder.config().remove("autogenRecipeAdvancements");
 
                 surgery(o, o, "autogenRecipeAdvancements", "enable");
                 surgery(o, o, "blacklistedRecipeNamespaces", "namespaceBlacklist");
                 surgery(o, o, "blacklistedRecipeIds", "recipeBlacklist");
 
-                object.add("recipeAdvancementsGeneration", o);
+                holder.config().add("recipeAdvancementsGeneration", o);
                 return true;
             }
             return false;
         });
 
-        builder.add("campfireTweaks", (object, element, key) -> {
-            if (element instanceof JsonObject o) {
-                boolean mod = false;
+        Map<String, String> ctMove = Map.of("campfireTweaks.campfireEffects", "effects", "campfireTweaks.campfireEffectsPassive", "affectsPassive", "campfireTweaks.campfireEffectsRange", "effectsRange");
+        ctMove.forEach((s, s2) -> builder.add(s, (holder) ->
+                holder.parent() != null && surgery(holder.parent(), holder.parent(), holder.key()[holder.key().length - 1], s2)));
 
-                mod |= surgery(o, o, "campfireEffects", "effects");
-                mod |= surgery(o, o, "campfireEffectsPassive", "affectsPassive");
-                mod |= surgery(o, o, "campfireEffectsRange", "effectsRange");
-
-                return mod;
-            }
-            return false;
-        });
-
-        builder.add("campfireTweaks", (object, element, key) -> {
-            if (element instanceof JsonObject o) {
+        builder.add("campfireTweaks", (holder) -> {
+            if (holder.value() instanceof JsonObject o) {
                 if (o.has("campfireEffectsList") && o.has("campfireEffectsAmplifierList")) {
                     if (o.has("effectList")) o.remove("effectList"); //This shouldn't happen tbh.
 
@@ -89,20 +82,20 @@ class Fixup {
             return false;
         });
 
-        builder.add("selfPlanting", (object, element, s) -> {
-            if (element instanceof JsonPrimitive p && p.isBoolean()) {
-                JsonObject autoPlanting = object.has("autoPlanting") ? object.getAsJsonObject("autoPlanting") : new JsonObject();
+        builder.add("selfPlanting", (holder) -> {
+            if (holder.value() instanceof JsonPrimitive p && p.isBoolean()) {
+                JsonObject autoPlanting = holder.config().has("autoPlanting") ? holder.config().getAsJsonObject("autoPlanting") : new JsonObject();
                 autoPlanting.addProperty("enabled", p.getAsBoolean());
-                if (!object.has("autoPlanting")) object.add("autoPlanting", autoPlanting);
+                if (!holder.config().has("autoPlanting")) holder.config().add("autoPlanting", autoPlanting);
                 return true;
             }
             return false;
         });
 
-        builder.add("bedExplosionPower", (object, element, s) -> {
-            if (!object.has("enableBedExplosionPower") && element instanceof JsonPrimitive p) {
+        builder.add("bedExplosionPower", (holder) -> {
+            if (!holder.config().has("enableBedExplosionPower") && holder.value() instanceof JsonPrimitive p) {
                 if (p.getAsFloat() != 5.0F) {
-                    object.addProperty("enableBedExplosionPower", true);
+                    holder.config().addProperty("enableBedExplosionPower", true);
                     return true;
                 }
             }

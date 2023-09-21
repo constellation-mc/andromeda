@@ -16,9 +16,11 @@ public class Config {
 
     static final String DEFAULT_KEY = "andromeda.config.tooltip.manager.";
 
-    private static final ConfigManager<AndromedaConfig> MANAGER = ConfigBuilder
-            .create(AndromedaConfig.class, SharedConstants.MOD_CONTAINER, "andromeda")
-            .fixups(Fixup::addFixups)
+    private static final ConfigManager<AndromedaConfig> MANAGER = LambdaAccessors
+            .attach(ConfigBuilder
+                    .create(AndromedaConfig.class, SharedConstants.MOD_CONTAINER, "andromeda"))
+            .constructor(AndromedaConfig::new)
+            .fixups(Fixups::addFixups)
             .redirects(builder -> builder
                     .add("throwableItems", "throwableItems.enable")
                     .add("throwableItemsBlacklist", "throwableItems.blacklist")
