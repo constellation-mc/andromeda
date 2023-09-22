@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.misc.translations;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import net.minecraft.resource.*;
@@ -30,7 +29,7 @@ public class ReloadableResourceManagerImplMixin {
         if (!Config.get().autoUpdateTranslations) return;
 
         packs.set(new ArrayList<>(packs.get()));
-        packs.get().add(ConfigHelper.run(() -> new DirectoryResourcePack("Andromeda Translations", TranslationUpdater.TRANSLATION_PACK, true) {
+        packs.get().add(Config.run(() -> new DirectoryResourcePack("Andromeda Translations", TranslationUpdater.TRANSLATION_PACK, true) {
             @Nullable
             @Override
             public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {

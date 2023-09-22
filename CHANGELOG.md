@@ -8,6 +8,8 @@ New Tweaks:
   * Prevents zombies from picking up garbage with no use.
 * All Zombies Can Pick up Items
   * Gives all zombies the ability to pickup items.
+* Guarded Loot!
+  * Block players from opening unlooted containers if there are any monsters nearby.
 * New Snowball Tweaks!
   * Melt When on Fire: Snowballs will melt if set on fire.
   * Build Up Layers: Snowballs will freeze water and build up snow layers on hit.

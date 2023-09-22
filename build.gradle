@@ -2,6 +2,7 @@ plugins {
     id 'fabric-loom' version '1.3-SNAPSHOT'
     id 'maven-publish'
     id 'io.github.juuxel.loom-vineflower' version '1.11.+'
+    id 'io.freefair.lombok' version '8.3'
 }
 
 version = project.mod_version
@@ -17,6 +18,7 @@ repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
     maven { url 'https://jitpack.io' }
+    mavenCentral()
 }
 
 dependencies {
@@ -29,7 +31,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    def dmModules = ["base", "minecraft", "analytics", "analytics-crashes", "analytics-mixpanel", "content", "mirage", "glitter"]
+    def dmModules = ["base", "minecraft", "analytics", "analytics-crashes", "analytics-mixpanel", "config", "content", "mirage", "glitter"]
     for (final def module in dmModules) {
         modApi include("me.melontini.dark-matter:dark-matter-${module}:${project.dark_matter}")
     }

@@ -15,6 +15,7 @@
     "blocks.cactus_filler.CactusBlockMixin",
     "blocks.campfire_effects.CampfireBlockEntityMixin",
     "blocks.falling_propagule.PropaguleBlockMixin",
+    "blocks.guarded_loot.LootableContainerBlockEntityMixin",
     "blocks.leaf_tweak.EntityMixin",
     "entities.baiting_villagers.VillagerEntityMixin",
     "entities.flower_duplication.BeeEntityMixin",
