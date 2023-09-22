@@ -14,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @MixinRelatedConfigOption("minecartBlockPicking")
 public class ItemDispenserBehaviorMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/vehicle/AbstractMinecartEntity;create(Lnet/minecraft/world/World;DDDLnet/minecraft/entity/vehicle/AbstractMinecartEntity$Type;)Lnet/minecraft/entity/vehicle/AbstractMinecartEntity;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "dispenseSilently", cancellable = true)
-    public void andromeda$dispenseSilently(BlockPointer pointer, ItemStack stack, CallbackInfoReturnable<ItemStack> cir, Direction direction, World world, double d, double e, double f, BlockPos blockPos, BlockState blockState, RailShape railShape, double g) {
+    public void andromeda$dispenseSilently(BlockPointer pointer, ItemStack stack, CallbackInfoReturnable<ItemStack> cir, Direction direction, World world, Vec3d vec3d, double d, double e, double f, BlockPos blockPos, BlockState blockState, RailShape railShape, double g) {
         if (stack.getItem() == Items.CHEST_MINECART) {
             AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.CHEST);
             ChestMinecartEntity chestMinecart = (ChestMinecartEntity) abstractMinecartEntity;

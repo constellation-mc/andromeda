@@ -16,6 +16,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
@@ -26,12 +27,13 @@ public class NoteBlockMinecartItem extends Item {
 
         @Override
         public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-            Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-            World world = pointer.getWorld();
-            double d = pointer.getX() + direction.getOffsetX() * 1.125;
-            double e = Math.floor(pointer.getY()) + direction.getOffsetY();
-            double f = pointer.getZ() + direction.getOffsetZ() * 1.125;
-            BlockPos blockPos = pointer.getPos().offset(direction);
+            Direction direction = pointer.state().get(DispenserBlock.FACING);
+            World world = pointer.world();
+            Vec3d pos = pointer.centerPos();
+            double d = pos.getX() + direction.getOffsetX() * 1.125;
+            double e = Math.floor(pos.getY()) + direction.getOffsetY();
+            double f = pos.getZ() + direction.getOffsetZ() * 1.125;
+            BlockPos blockPos = pointer.pos().offset(direction);
             BlockState blockState = world.getBlockState(blockPos);
             RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
                     ? blockState.get(((AbstractRailBlock) blockState.getBlock()).getShapeProperty())
@@ -77,7 +79,7 @@ public class NoteBlockMinecartItem extends Item {
 
         @Override
         protected void playSound(BlockPointer pointer) {
-            pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
+            pointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.pos(), 0);
         }
     };
 

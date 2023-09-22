@@ -25,6 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,12 +39,13 @@ public class SpawnerMinecartItem extends MinecartItem {
 
         @Override
         public ItemStack dispenseSilently(@NotNull BlockPointer pointer, ItemStack stack) {
-            Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-            World world = pointer.getWorld();
-            double d = pointer.getX() + direction.getOffsetX() * 1.125;
-            double e = Math.floor(pointer.getY()) + direction.getOffsetY();
-            double f = pointer.getZ() + direction.getOffsetZ() * 1.125;
-            BlockPos blockPos = pointer.getPos().offset(direction);
+            Direction direction = pointer.state().get(DispenserBlock.FACING);
+            World world = pointer.world();
+            Vec3d pos = pointer.centerPos();
+            double d = pos.getX() + direction.getOffsetX() * 1.125;
+            double e = Math.floor(pos.getY()) + direction.getOffsetY();
+            double f = pos.getZ() + direction.getOffsetZ() * 1.125;
+            BlockPos blockPos = pointer.pos().offset(direction);
             BlockState blockState = world.getBlockState(blockPos);
             RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock ? blockState.get(((AbstractRailBlock) blockState.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
             double k;
@@ -85,7 +87,7 @@ public class SpawnerMinecartItem extends MinecartItem {
 
         @Override
         public void playSound(@NotNull BlockPointer pointer) {
-            pointer.getWorld().syncWorldEvent(1000, pointer.getPos(), 0);
+            pointer.world().syncWorldEvent(1000, pointer.pos(), 0);
         }
     };
 
