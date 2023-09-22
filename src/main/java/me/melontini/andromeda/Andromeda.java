@@ -2,7 +2,6 @@ package me.melontini.andromeda;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.content.commands.DamageCommand;
-import me.melontini.andromeda.content.managers.CustomTraderManager;
 import me.melontini.andromeda.content.managers.EnderDragonManager;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.registries.Common;
@@ -12,7 +11,6 @@ import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
 import me.melontini.dark_matter.api.minecraft.world.interfaces.TickableState;
@@ -29,7 +27,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.text.Text;
-import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 

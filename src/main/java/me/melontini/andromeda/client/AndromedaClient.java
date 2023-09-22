@@ -195,7 +195,7 @@ public class AndromedaClient {
     }
 
     public void registerEntityRenderers() {
-        if (Andromeda.CONFIG.newBoats.isChestBoatOn)
+        if (Config.get().newBoats.isChestBoatOn)
             EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_CHEST, (ctx -> new BoatWithBlockRenderer(ctx, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.NORTH))));
         if (Config.get().newBoats.isFurnaceBoatOn)
             EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_FURNACE, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));

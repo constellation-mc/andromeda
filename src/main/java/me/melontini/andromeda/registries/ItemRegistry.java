@@ -123,7 +123,8 @@ public class ItemRegistry {
 
         INSTANCE = new ItemRegistry();
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
-            ContentBuilder.ItemBuilder.create(boatId(value, "chest"), () -> new ChestBoatItem(value, new FabricItemSettings().maxCount(1))).itemGroup(ItemGroup.TRANSPORTATION).registerCondition(Andromeda.CONFIG.newBoats.isChestBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "chest"), () -> new ChestBoatItem(value, new FabricItemSettings().maxCount(1)))
+                    .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newBoats.isChestBoatOn).build();
             ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1)))
                     .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newBoats.isFurnaceBoatOn).build();
             ContentBuilder.ItemBuilder.create(boatId(value, "jukebox"), () -> new JukeboxBoatItem(value, new FabricItemSettings().maxCount(1)))

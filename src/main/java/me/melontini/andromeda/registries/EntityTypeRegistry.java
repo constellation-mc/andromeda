@@ -46,7 +46,7 @@ public class EntityTypeRegistry {
             FabricEntityTypeBuilder.<JukeboxBoatEntity>create(SpawnGroup.MISC, JukeboxBoatEntity::new)
                     .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
 
-    public static EntityType<ChestBoatEntity> BOAT_WITH_CHEST = RegistryUtil.createEntityType(Andromeda.CONFIG.newBoats.isChestBoatOn, new Identifier(MODID, "chest_boat"),
+    public static EntityType<ChestBoatEntity> BOAT_WITH_CHEST = RegistryUtil.createEntityType(Config.get().newBoats.isChestBoatOn, id("chest_boat"),
             FabricEntityTypeBuilder.<ChestBoatEntity>create(SpawnGroup.MISC, ChestBoatEntity::new).dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
 
     public final EntityType<HopperBoatEntity> BOAT_WITH_HOPPER = RegistryUtil.createEntityType(Config.get().newBoats.isHopperBoatOn, id("hopper_boat"),
