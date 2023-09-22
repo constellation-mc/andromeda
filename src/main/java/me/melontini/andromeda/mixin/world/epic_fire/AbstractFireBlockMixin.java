@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.world.epic_fire;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
@@ -31,17 +31,17 @@ public abstract class AbstractFireBlockMixin extends AbstractFireBlock {
 
     @ModifyVariable(method = "trySpreadingFire", at = @At(value = "LOAD"), index = 3, argsOnly = true)
     public int andromeda$spreadFire0(int value) {
-        return !Andromeda.CONFIG.quickFire ? value : (int) (value * 0.8);
+        return !Config.get().quickFire ? value : (int) (value * 0.8);
     }
 
     @ModifyExpressionValue(method = "trySpreadingFire", at = @At(value = "CONSTANT", args = "intValue=10"))
     public int andromeda$spreadFire01(int value) {
-        return!Andromeda.CONFIG.quickFire ? value : (int) Math.ceil(value / 3d);
+        return !Config.get().quickFire ? value : (int) Math.ceil(value / 3d);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/block/FireBlock.trySpreadingFire (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILjava/util/Random;I)V", ordinal = 0, shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "scheduledTick")
     public void andromeda$trySpreadBlocks(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci, BlockState blockState, boolean bl, int i, int j, boolean bl2, int k) {
-        if (Andromeda.CONFIG.quickFire) {
+        if (Config.get().quickFire) {
             for (int x = -3; x < 3; x++) {
                 for (int y = -3; y < 3; y++) {
                     for (int z = -3; z < 3; z++) {

@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.entities.snowball_tweaks.layers;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.mixin.annotations.ConstructDummy;
 import net.minecraft.block.Block;
@@ -35,7 +35,7 @@ public abstract class SnowballEntityMixin extends ThrownItemEntity {
     @ConstructDummy(owner = "net.minecraft.class_1297", name = "method_5773", desc = "()V")
     @Inject(at = @At("TAIL"), method = "tick()V")
     public void andromeda$onBlockHit(CallbackInfo ci) {
-        if (!Andromeda.CONFIG.snowballs.layers || world.isClient()) return;
+        if (!Config.get().snowballs.layers || world.isClient()) return;
 
         Vec3d pos = this.getPos();
         Vec3d vec3d = pos.add(this.getVelocity());

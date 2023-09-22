@@ -15,6 +15,7 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
 public class FlyingItemEntityRenderer extends EntityRenderer<FlyingItemEntity> {
+
     private static final float MIN_DISTANCE = 12.25F;
     private final ItemRenderer itemRenderer;
     private final float scale;

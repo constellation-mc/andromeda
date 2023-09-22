@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.items.mending_fix;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -23,7 +23,7 @@ public abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler>
 
     @ModifyExpressionValue(method = "drawForeground", at = @At(value = "CONSTANT", args = "intValue=40"))
     private int andromeda$setRepairLimit(int constant) {
-        if (Andromeda.CONFIG.balancedMending)
+        if (Config.get().balancedMending)
             if (!this.handler.getSlot(1).getStack().isOf(Items.ENCHANTED_BOOK))
                 if (EnchantmentHelper.get(this.handler.getSlot(0).getStack()).containsKey(Enchantments.MENDING)) {
                     return Integer.MAX_VALUE;

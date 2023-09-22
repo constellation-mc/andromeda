@@ -1,8 +1,8 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.blocks.IncubatorBlock;
 import me.melontini.andromeda.blocks.entities.IncubatorBlockEntity;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.items.RoseOfTheValley;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.content.ContentBuilder;
@@ -18,24 +18,36 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import java.util.Objects;
+
+import static me.melontini.andromeda.registries.Common.*;
 
 public class BlockRegistry {
-    public static FlowerBlock ROSE_OF_THE_VALLEY = ContentBuilder.BlockBuilder.create(new Identifier(MODID, "rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
-            .item((block, identifier) -> ContentBuilder.ItemBuilder.create(identifier, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON))))
-            .registerCondition(Andromeda.CONFIG.unknown).build();
 
-    public static IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(new Identifier(MODID, "incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
-            .item((block, identifier) -> ContentBuilder.ItemBuilder.create(identifier, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(ItemGroup.REDSTONE))
-            .blockEntity((block, identifier) -> ContentBuilder.BlockEntityBuilder.create(identifier, IncubatorBlockEntity::new, block))
-            .registerCondition(Andromeda.CONFIG.incubatorSettings.enableIncubator).build();
+    private static BlockRegistry INSTANCE;
 
-    public static BlockEntityType<IncubatorBlockEntity> INCUBATOR_BLOCK_ENTITY = RegistryUtil.getBlockEntityFromBlock(INCUBATOR_BLOCK);
+    public final FlowerBlock ROSE_OF_THE_VALLEY = ContentBuilder.BlockBuilder.create(id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
+            .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON))))
+            .register(Config.get().unknown).build();
+
+    public final IncubatorBlock INCUBATOR_BLOCK = ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
+            .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(call(() -> ItemGroup.REDSTONE)))
+            .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder.create(id, IncubatorBlockEntity::new, block))
+            .register(Config.get().incubator.enable).build();
+
+    public final BlockEntityType<IncubatorBlockEntity> INCUBATOR_BLOCK_ENTITY = INCUBATOR_BLOCK == null ? null : RegistryUtil.asBlockEntity(INCUBATOR_BLOCK);
+
+    public static BlockRegistry get() {
+        return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
+    }
 
     public static void register() {
-        AndromedaLog.info("BlockRegistry init complete!");
+        if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
+
+        INSTANCE = new BlockRegistry();
+        share("andromeda:block_registry", INSTANCE);
+        AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }

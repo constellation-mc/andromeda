@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.misc.translations;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import net.minecraft.client.MinecraftClient;
@@ -21,7 +21,7 @@ public class MinecraftClientMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourcePackManager;scanPacks()V", shift = At.Shift.BEFORE), method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;")
     private void andromeda$downloadLangFiles(boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-        if (!Andromeda.CONFIG.autoUpdateTranslations) return;
+        if (!Config.get().autoUpdateTranslations) return;
         TranslationUpdater.onResourceReload(this.options.language);
     }
 }

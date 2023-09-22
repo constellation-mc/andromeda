@@ -17,5 +17,4 @@ public class ItemBehaviorData {
     public record CommandHolder(List<String> item_commands, List<String> user_commands, List<String> server_commands,
                                 List<String> hit_entity_commands, List<String> hit_block_commands) {
     }
-
 }

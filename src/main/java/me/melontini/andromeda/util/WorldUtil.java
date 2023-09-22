@@ -1,6 +1,5 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.andromeda.content.managers.EnderDragonManager;
 import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -43,14 +42,6 @@ public class WorldUtil {
     public static final Identifier BEE_LOOT_ID = new Identifier(MODID, "bee_nest/bee_nest_broken");
 
     public static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
-
-    public static EnderDragonManager getEnderDragonManager(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(nbtCompound -> {
-            EnderDragonManager manager = new EnderDragonManager(world);
-            manager.readNbt(nbtCompound);
-            return manager;
-        }, () -> new EnderDragonManager(world), "andromeda_ender_dragon_fight");
-    }
 
     public static void addParticle(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         if (!world.isClient) {

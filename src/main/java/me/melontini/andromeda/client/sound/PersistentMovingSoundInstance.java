@@ -9,6 +9,7 @@ import net.minecraft.sound.SoundEvent;
 import java.util.UUID;
 
 public class PersistentMovingSoundInstance extends MovingSoundInstance {
+
     private final ClientWorld world;
     private final UUID entityId;
 

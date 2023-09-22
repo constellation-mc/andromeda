@@ -2,18 +2,20 @@ package me.melontini.andromeda.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.client.config.AutoConfigTransformers;
+import me.melontini.andromeda.client.config.AutoConfigScreen;
 import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
 import me.melontini.andromeda.client.render.BoatWithBlockRenderer;
 import me.melontini.andromeda.client.render.FlyingItemEntityRenderer;
 import me.melontini.andromeda.client.render.block.IncubatorBlockRenderer;
 import me.melontini.andromeda.client.screens.FletchingScreen;
 import me.melontini.andromeda.client.screens.MerchantInventoryScreen;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -84,8 +86,9 @@ public class AndromedaClient {
     public void onInitializeClient() {
         EntrypointRunner.runEntrypoint("andromeda:pre-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
 
-        AutoConfigTransformers.register();
-        if (Andromeda.CONFIG.autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
+        //noinspection Convert2MethodRef
+        Utilities.ifLoaded("cloth-config", () -> AutoConfigScreen.register());
+        if (Config.get().autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
         registerEntityRenderers();
         registerBlockRenderers();
@@ -93,23 +96,23 @@ public class AndromedaClient {
         inGameTooltips();
 
         ScreenEvents.BEFORE_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
-            if (screen1 instanceof AbstractFurnaceScreen<?> abstractFurnaceScreen && Andromeda.CONFIG.guiParticles.furnaceScreenParticles) {
+            if (screen1 instanceof AbstractFurnaceScreen<?> abstractFurnaceScreen && Config.get().guiParticles.furnaceScreenParticles) {
                 ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
                     AbstractFurnaceScreen<?> furnaceScreen = (AbstractFurnaceScreen<?>) screen;
-                    if (furnaceScreen.getScreenHandler().isBurning() && Utilities.RANDOM.nextInt(10) == 0) {
+                    if (furnaceScreen.getScreenHandler().isBurning() && MathStuff.threadRandom().nextInt(10) == 0) {
                         ScreenParticleHelper.addScreenParticle(screen, ParticleTypes.FLAME,
-                                MathStuff.nextDouble(Utilities.RANDOM, furnaceScreen.x + 56, furnaceScreen.x + 56 + 14),
-                                furnaceScreen.y + 36 + 13, MathStuff.nextDouble(Utilities.RANDOM, -0.01, 0.01),
+                                MathStuff.nextDouble(furnaceScreen.x + 56, furnaceScreen.x + 56 + 14),
+                                furnaceScreen.y + 36 + 13, MathStuff.nextDouble(-0.01, 0.01),
                                 0.05);
                     }
                 });
             }
         });
 
-        if (Andromeda.CONFIG.usefulFletching)
-            HandledScreens.register(ScreenHandlerRegistry.FLETCHING_SCREEN_HANDLER, FletchingScreen::new);
+        if (Config.get().usefulFletching)
+            HandledScreens.register(ScreenHandlerRegistry.get().FLETCHING_SCREEN_HANDLER, FletchingScreen::new);
 
-        HandledScreens.register(ScreenHandlerRegistry.MERCHANT_INVENTORY_SCREEN_HANDLER, MerchantInventoryScreen::new);
+        HandledScreens.register(ScreenHandlerRegistry.get().MERCHANT_INVENTORY_SCREEN_HANDLER, MerchantInventoryScreen::new);
 
         ParticleFactoryRegistry.getInstance().register(Andromeda.get().KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
@@ -118,7 +121,7 @@ public class AndromedaClient {
         });
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            if (Andromeda.CONFIG.itemFrameTooltips) {
+            if (Config.get().itemFrameTooltips) {
                 var cast = client.crosshairTarget;
                 getCast(cast);
                 oldTooltipFlow = tooltipFlow;
@@ -128,14 +131,14 @@ public class AndromedaClient {
             }
         });
 
-        AndromedaReporter.handleUpload();
+        Config.run(AndromedaReporter::handleUpload, "sendOptionalData");
 
         EntrypointRunner.runEntrypoint("andromeda:post-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
     }
 
     private void inGameTooltips() {
         HudRenderCallback.EVENT.register((matrices, delta) -> {
-            if (Andromeda.CONFIG.itemFrameTooltips && MinecraftClient.getInstance().currentScreen == null) {
+            if (Config.get().itemFrameTooltips && MinecraftClient.getInstance().currentScreen == null) {
                 var client = MinecraftClient.getInstance();
 
                 if (!frameStack.isEmpty()) {
@@ -182,39 +185,43 @@ public class AndromedaClient {
     }
 
     public void registerBlockRenderers() {
-        if (Andromeda.CONFIG.unknown)
-            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.ROSE_OF_THE_VALLEY);
+        if (Config.get().unknown)
+            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().ROSE_OF_THE_VALLEY);
 
-        if (Andromeda.CONFIG.incubatorSettings.enableIncubator) {
-            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.INCUBATOR_BLOCK);
-            BlockEntityRendererFactories.register(BlockRegistry.INCUBATOR_BLOCK_ENTITY, IncubatorBlockRenderer::new);
+        if (Config.get().incubator.enable) {
+            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().INCUBATOR_BLOCK);
+            BlockEntityRendererFactories.register(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY, IncubatorBlockRenderer::new);
         }
     }
 
     public void registerEntityRenderers() {
         if (Andromeda.CONFIG.newBoats.isChestBoatOn)
             EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_CHEST, (ctx -> new BoatWithBlockRenderer(ctx, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.NORTH))));
-        if (Andromeda.CONFIG.newBoats.isFurnaceBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_FURNACE, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));
-        if (Andromeda.CONFIG.newBoats.isJukeboxBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_JUKEBOX, ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState()));
-        if (Andromeda.CONFIG.newBoats.isTNTBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_TNT, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState()));
-        if (Andromeda.CONFIG.newBoats.isHopperBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.BOAT_WITH_HOPPER, ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState()));
+        if (Config.get().newBoats.isFurnaceBoatOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_FURNACE, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));
+        if (Config.get().newBoats.isJukeboxBoatOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_JUKEBOX, ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState()));
+        if (Config.get().newBoats.isTNTBoatOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_TNT, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState()));
+        if (Config.get().newBoats.isHopperBoatOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_HOPPER, ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState()));
 
-        if (Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.ANVIL_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
-        if (Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.NOTEBLOCK_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
-        if (Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.JUKEBOX_MINECART_ENTITY, (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
+        if (Config.get().newMinecarts.isAnvilMinecartOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.get().ANVIL_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
+        if (Config.get().newMinecarts.isNoteBlockMinecartOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
+        if (Config.get().newMinecarts.isJukeboxMinecartOn)
+            EntityRendererRegistry.register(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY, (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
 
-        EntityRendererRegistry.register(EntityTypeRegistry.FLYING_ITEM, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(EntityTypeRegistry.get().FLYING_ITEM, FlyingItemEntityRenderer::new);
+    }
+
+    @Override
+    public String toString() {
+        return "AndromedaClient{version=" + SharedConstants.MOD_VERSION + "}";
     }
 
     public static AndromedaClient get() {
         return Objects.requireNonNull(INSTANCE, "AndromedaClient not initialized");
     }
-
 }

@@ -59,5 +59,4 @@ public class MiscUtil {
     public static String vec3dAsString(Vec3d vec3d) {
         return vec3d.getX() + ", " + vec3d.getY() + ", " + vec3d.getZ();
     }
-
 }

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.misc;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import org.spongepowered.asm.mixin.Final;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static me.melontini.andromeda.util.AdvancementGeneration.generateRecipeAdvancements;
 
 @Mixin(PlayerManager.class)
+@MixinRelatedConfigOption("recipeAdvancementsGeneration.enable")
 public class PlayerManagerMixin {
 
     @Shadow @Final private MinecraftServer server;
@@ -20,6 +22,6 @@ public class PlayerManagerMixin {
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;", ordinal = 0, shift = At.Shift.BEFORE), method = "onDataPacksReloaded")
     private void andromeda$reload(CallbackInfo ci) {
         //we don't sync until our advancements have been generated
-        if (Andromeda.CONFIG.autogenRecipeAdvancements.autogenRecipeAdvancements) generateRecipeAdvancements(server);
+        if (Config.get().recipeAdvancementsGeneration.enable) Config.run(() -> generateRecipeAdvancements(server), "autogenRecipeAdvancements.autogenRecipeAdvancements");
     }
 }

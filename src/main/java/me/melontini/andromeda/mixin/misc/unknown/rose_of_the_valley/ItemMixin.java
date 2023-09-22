@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.misc.unknown.rose_of_the_valley;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.items.RoseOfTheValley;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "onClicked", cancellable = true)
     private void andromeda$onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir) {
-        if (Andromeda.CONFIG.unknown)
+        if (Config.get().unknown)
             if (clickType == ClickType.RIGHT && stack.isOf(Items.LILY_OF_THE_VALLEY) && otherStack.isOf(Items.DIAMOND)) {
                 //I mean .....yeah
                 RoseOfTheValley.handleClick(stack, otherStack, player);

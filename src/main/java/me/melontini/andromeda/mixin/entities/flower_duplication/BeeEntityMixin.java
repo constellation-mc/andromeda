@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.entities.flower_duplication;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -36,13 +36,13 @@ public abstract class BeeEntityMixin extends AnimalEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;tick()V", shift = At.Shift.AFTER), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (Andromeda.CONFIG.beeFlowerDuplication) {
-            if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
+        if (!Config.get().beeFlowerDuplication) return;
 
-            if (this.pollinateGoal != null) {
-                if (this.pollinateGoal.isRunning() && this.pollinateGoal.completedPollination() && this.andromeda$canPlant()) {
-                    this.andromeda$growFlower();
-                }
+        if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
+
+        if (this.pollinateGoal != null) {
+            if (this.pollinateGoal.isRunning() && this.pollinateGoal.completedPollination() && this.andromeda$canPlant()) {
+                this.andromeda$growFlower();
             }
         }
     }
@@ -69,8 +69,8 @@ public abstract class BeeEntityMixin extends AnimalEntity {
                             BlockPos pos = new BlockPos(flowerPos.getX() + i, flowerPos.getY() + b, flowerPos.getZ() + c);
                             if (world.getBlockState(pos).getBlock() instanceof AirBlock && flowerBlock.canPlaceAt(flowerState, world, pos)) {
                                 if (world.random.nextInt(12) == 0) {
-                                    if (Andromeda.CONFIG.unknown && world.random.nextInt(100) == 0) {
-                                        world.setBlockState(pos, BlockRegistry.ROSE_OF_THE_VALLEY.getDefaultState());
+                                    if (Config.get().unknown && world.random.nextInt(100) == 0) {
+                                        world.setBlockState(pos, BlockRegistry.get().ROSE_OF_THE_VALLEY.getDefaultState());
                                     } else {
                                         world.setBlockState(pos, flowerState);
                                     }
@@ -79,7 +79,7 @@ public abstract class BeeEntityMixin extends AnimalEntity {
                         }
                     }
                 }
-            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && Andromeda.CONFIG.beeTallFlowerDuplication) {
+            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && Config.get().beeTallFlowerDuplication) {
                 andromeda$plantingCoolDown = MathStuff.nextInt(world.random, 3600, 8000);
                 for (int i = -1; i <= 1; i++) {
                     for (int b = -2; b <= 2; b++) {

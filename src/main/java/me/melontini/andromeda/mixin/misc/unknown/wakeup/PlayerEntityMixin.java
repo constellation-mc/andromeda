@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.misc.unknown.wakeup;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
@@ -31,21 +31,21 @@ public abstract class PlayerEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
     private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
+        if (!Config.get().unknown) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
-        if (Andromeda.CONFIG.unknown) {
-            if (!player.world.isClient) if (Utilities.RANDOM.nextInt(100000) == 0) {
-                Optional<BlockPos> optional = WorldUtil.pickRandomSpot(player.world, player.getBlockPos(), 10, Utilities.RANDOM);
-                if (optional.isPresent()) {
-                    BlockPos pos = optional.get();
-                    ArmorStandEntity stand = new ArmorStandEntity(player.world, pos.getX(), pos.getY(), pos.getZ());
-                    ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-                    stack.setNbt(NbtBuilder.create().putString("SkullOwner", player.getDisplayName().getString()).build());
+        if (!player.world.isClient) if (Utilities.RANDOM.nextInt(100000) == 0) {
+            Optional<BlockPos> optional = WorldUtil.pickRandomSpot(player.world, player.getBlockPos(), 10, Utilities.RANDOM);
+            if (optional.isPresent()) {
+                BlockPos pos = optional.get();
+                ArmorStandEntity stand = new ArmorStandEntity(player.world, pos.getX(), pos.getY(), pos.getZ());
+                ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-                    stand.equipStack(EquipmentSlot.HEAD, stack);
-                    player.world.spawnEntity(stand);
-                    playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
-                }
+                stack.setNbt(NbtBuilder.create().putString("SkullOwner", player.getDisplayName().getString()).build());
+
+                stand.equipStack(EquipmentSlot.HEAD, stack);
+                player.world.spawnEntity(stand);
+                playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
             }
         }
     }

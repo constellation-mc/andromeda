@@ -1,8 +1,9 @@
 package me.melontini.andromeda.entity.vehicle.boats;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
-import net.fabricmc.fabric.impl.content.registry.FuelRegistryImpl;
+import me.melontini.andromeda.registries.ItemRegistry;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -28,7 +28,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     }
 
     public FurnaceBoatEntity(World world, double x, double y, double z) {
-        this(EntityTypeRegistry.BOAT_WITH_FURNACE, world);
+        this(EntityTypeRegistry.get().BOAT_WITH_FURNACE, world);
         this.setPosition(x, y, z);
         this.prevX = x;
         this.prevY = y;
@@ -66,21 +66,22 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (FuelRegistryImpl.INSTANCE.get(itemStack.getItem()) != null) {
-            int itemFuel = FuelRegistryImpl.INSTANCE.get(itemStack.getItem());
-            if ((this.getFuel() + (itemFuel * 2.25)) <= Andromeda.CONFIG.maxFurnaceMinecartFuel) {
+        ItemStack stack = player.getStackInHand(hand);
+        if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
+            int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
+            if ((this.getFuel() + (itemFuel * 2.25)) <= Config.get().maxFurnaceMinecartFuel) {
                 if (!player.getAbilities().creativeMode) {
-                    if (itemStack.getItem().getRecipeRemainder() != null)
-                        player.getInventory().offerOrDrop(itemStack.getItem().getRecipeRemainder().getDefaultStack());
-                    itemStack.decrement(1);
+                    ItemStack reminder = stack.getRecipeRemainder();
+                    if (!reminder.isEmpty())
+                        player.getInventory().offerOrDrop(stack.getRecipeRemainder());
+                    stack.decrement(1);
                 }
 
-                this.setFuel((int) (getFuel() + (itemFuel * 2.25)));
+                this.setFuel((int) (this.getFuel() + (itemFuel * 2.25)));
+                return ActionResult.SUCCESS;
             }
         }
-        super.interact(player, hand);
-        return ActionResult.SUCCESS;
+        return super.interact(player, hand);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName().replace(":", "_") + "_boat_with_furnace"));
+        return Registry.ITEM.get(ItemRegistry.boatId(this.getBoatType(), "furnace"));
     }
 
     public int getFuel() {

@@ -1,27 +1,33 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.screens.MerchantInventoryScreenHandler;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import java.util.Objects;
+
+import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.share;
 
 public class ScreenHandlerRegistry {
-    public static ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER;
-    public static ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER;
+
+    private static ScreenHandlerRegistry INSTANCE;
+
+    public final ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER = RegistryUtil.createScreenHandler(Config.get().usefulFletching, id("fletching"), () -> FletchingScreenHandler::new);
+    public final ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER = RegistryUtil.createScreenHandler(id("merchant_inventory"), () -> MerchantInventoryScreenHandler::new);
+
+    public static ScreenHandlerRegistry get() {
+        return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
+    }
+
     public static void register() {
-        if (Andromeda.CONFIG.usefulFletching) {
-            FLETCHING_SCREEN_HANDLER = new ScreenHandlerType<>(FletchingScreenHandler::new);
-            Registry.register(Registry.SCREEN_HANDLER, new Identifier(MODID, "fletching"), FLETCHING_SCREEN_HANDLER);
-        }
+        if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
-        MERCHANT_INVENTORY_SCREEN_HANDLER = new ScreenHandlerType<>(MerchantInventoryScreenHandler::new);
-        Registry.register(Registry.SCREEN_HANDLER, new Identifier(MODID, "merchant_inventory"), MERCHANT_INVENTORY_SCREEN_HANDLER);
-
-        AndromedaLog.info("ScreenHandlerRegistry init complete!");
+        INSTANCE = new ScreenHandlerRegistry();
+        share("andromeda:screen_handler_registry", INSTANCE);
+        AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 }

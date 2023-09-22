@@ -1,7 +1,7 @@
 package me.melontini.andromeda.client.particles.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -12,7 +12,7 @@ public class CustomItemStackParticle extends ItemStackParticle {
     private final int seed;
     public CustomItemStackParticle(double x, double y, double velX, double velY, ItemStack stack) {
         super(x, y, velX, velY, stack);
-        this.seed = Utilities.RANDOM.nextInt();
+        this.seed = MathStuff.threadRandom().nextInt();
     }
 
     @Override

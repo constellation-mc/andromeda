@@ -1,6 +1,6 @@
 package me.melontini.andromeda.entity;
 
-import me.melontini.andromeda.api.ItemBehaviors;
+import me.melontini.andromeda.api.throwable_items.ItemBehavior;
 import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import net.minecraft.entity.Entity;
@@ -20,19 +20,19 @@ public class FlyingItemEntity extends ThrownItemEntity {
     }
 
     public FlyingItemEntity(ItemStack stack, double d, double e, double f, World world) {
-        super(EntityTypeRegistry.FLYING_ITEM, d, e, f, world);
+        super(EntityTypeRegistry.get().FLYING_ITEM, d, e, f, world);
         this.setItem(stack);
     }
 
     public FlyingItemEntity(ItemStack stack, Entity entity, World world) {
-        super(EntityTypeRegistry.FLYING_ITEM, world);
+        super(EntityTypeRegistry.get().FLYING_ITEM, world);
         this.setOwner(entity);
         this.setItem(stack);
     }
 
     @Override
     protected void onCollision(HitResult hitResult) {
-        for (ItemBehaviors.Behavior behavior : ItemBehaviorManager.getBehaviors(getItem().getItem())) {
+        for (ItemBehavior behavior : ItemBehaviorManager.getBehaviors(getItem().getItem())) {
             if (!this.isRemoved()) behavior.onCollision(getItem(), this, world, getOwner(), hitResult);
         }
         this.discard();

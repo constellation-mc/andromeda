@@ -12,7 +12,9 @@ import net.minecraft.util.Identifier;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class MerchantInventoryScreen extends HandledScreen<MerchantInventoryScreenHandler> {
+
     private static final Identifier TEXTURE = new Identifier(MODID, "textures/gui/merchant_inventory.png");
+
     public MerchantInventoryScreen(MerchantInventoryScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }

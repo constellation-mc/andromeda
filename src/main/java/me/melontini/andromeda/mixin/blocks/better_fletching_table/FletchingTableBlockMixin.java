@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.util.AndromedaTexts;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
@@ -30,7 +30,9 @@ public class FletchingTableBlockMixin extends CraftingTableBlock {
 
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
     private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (Andromeda.CONFIG.usefulFletching) if (state.isOf(Blocks.FLETCHING_TABLE)) {
+        if (!Config.get().usefulFletching) return;
+
+        if (state.isOf(Blocks.FLETCHING_TABLE)) {
             if (player.world.isClient)
                 cir.setReturnValue(ActionResult.SUCCESS);
 

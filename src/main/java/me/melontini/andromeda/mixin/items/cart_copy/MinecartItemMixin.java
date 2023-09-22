@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.items.cart_copy;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
@@ -99,7 +99,7 @@ public abstract class MinecartItemMixin extends Item {
                     AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, (double) pos.getX() + 0.5, (double) pos.getY() + 0.0625 + d, (double) pos.getZ() + 0.5, this.type);
                     FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) abstractMinecartEntity;
 
-                    furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, Andromeda.CONFIG.maxFurnaceMinecartFuel);
+                    furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, Config.get().maxFurnaceMinecartFuel);
                     furnaceMinecart.interact(player, player.getActiveHand());
                     if (stack.hasCustomName()) furnaceMinecart.setCustomName(stack.getName());
 
@@ -110,7 +110,7 @@ public abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient));
             }
         }
-        if (Andromeda.CONFIG.minecartBlockPicking) if (player.isSneaking()) {
+        if (Config.get().minecartBlockPicking) if (player.isSneaking()) {
             if (state.isOf(Blocks.CHEST) && stack.getItem() == Items.MINECART) {
                 if (!world.isClient) {
                     ChestBlockEntity chestBlockEntity = (ChestBlockEntity) world.getBlockEntity(pos);
@@ -127,11 +127,11 @@ public abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient));
             }
             if (state.isOf(Blocks.SPAWNER) && stack.getItem() == Items.MINECART) {
-                if (Andromeda.CONFIG.minecartSpawnerPicking) {
+                if (Config.get().minecartSpawnerPicking) {
                     if (!world.isClient) {
                         MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) world.getBlockEntity(pos);
                         if (!player.isCreative()) stack.decrement(1);
-                        ItemStack spawnerMinecart = new ItemStack(ItemRegistry.SPAWNER_MINECART, 1);
+                        ItemStack spawnerMinecart = new ItemStack(ItemRegistry.get().SPAWNER_MINECART, 1);
 
                         spawnerMinecart.setNbt(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build());
 
@@ -167,12 +167,12 @@ public abstract class MinecartItemMixin extends Item {
                 }
                 cir.setReturnValue(ActionResult.success(world.isClient));
             }
-            if (state.isOf(Blocks.NOTE_BLOCK) && stack.getItem() == Items.MINECART && Andromeda.CONFIG.newMinecarts.isNoteBlockMinecartOn) {
+            if (state.isOf(Blocks.NOTE_BLOCK) && stack.getItem() == Items.MINECART && Config.get().newMinecarts.isNoteBlockMinecartOn) {
                 NoteBlock noteBlock = (NoteBlock) state.getBlock();
                 if (!world.isClient()) {
                     if (!player.isCreative()) stack.decrement(1);
                     int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
-                    ItemStack noteBlockMinecart = new ItemStack(ItemRegistry.NOTE_BLOCK_MINECART);
+                    ItemStack noteBlockMinecart = new ItemStack(ItemRegistry.get().NOTE_BLOCK_MINECART);
 
                     noteBlockMinecart.setNbt(NbtBuilder.create().putInt("Note", noteProp).build());
 
@@ -181,13 +181,13 @@ public abstract class MinecartItemMixin extends Item {
                 }
                 cir.setReturnValue(ActionResult.SUCCESS);
             }
-            if (state.isOf(Blocks.JUKEBOX) && stack.getItem() == Items.MINECART && Andromeda.CONFIG.newMinecarts.isJukeboxMinecartOn) {
+            if (state.isOf(Blocks.JUKEBOX) && stack.getItem() == Items.MINECART && Config.get().newMinecarts.isJukeboxMinecartOn) {
                 if (!world.isClient()) {
                     if (!player.isCreative()) stack.decrement(1);
                     JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) world.getBlockEntity(pos);
                     assert jukeboxBlockEntity != null;
                     ItemStack record = jukeboxBlockEntity.getRecord();
-                    ItemStack jukeboxMinecart = new ItemStack(ItemRegistry.JUKEBOX_MINECART);
+                    ItemStack jukeboxMinecart = new ItemStack(ItemRegistry.get().JUKEBOX_MINECART);
 
                     if (!record.isEmpty()) {
                         world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
@@ -200,10 +200,10 @@ public abstract class MinecartItemMixin extends Item {
                 }
                 cir.setReturnValue(ActionResult.SUCCESS);
             }
-            if (state.isOf(Blocks.ANVIL) && stack.getItem() == Items.MINECART && Andromeda.CONFIG.newMinecarts.isAnvilMinecartOn) {
+            if (state.isOf(Blocks.ANVIL) && stack.getItem() == Items.MINECART && Config.get().newMinecarts.isAnvilMinecartOn) {
                 if (!world.isClient()) {
                     if (!player.isCreative()) stack.decrement(1);
-                    ItemStack anvilMinecart = new ItemStack(ItemRegistry.ANVIL_MINECART);
+                    ItemStack anvilMinecart = new ItemStack(ItemRegistry.get().ANVIL_MINECART);
                     player.getInventory().offerOrDrop(anvilMinecart);
                     world.breakBlock(pos, false);
                 }

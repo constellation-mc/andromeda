@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.entities.flower_duplication;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallFlowerBlock;
@@ -21,10 +21,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class BoneMealItemMixin {
     @Inject(at = @At("HEAD"), method = "useOnFertilizable", cancellable = true)
     private static void andromeda$useOnFertilizable(ItemStack stack, World world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+        if (!Config.get().beeTallFlowerDuplication) return;
+
         BlockState blockState = world.getBlockState(pos);
-        if (blockState.getBlock() instanceof TallFlowerBlock && Andromeda.CONFIG.beeTallFlowerDuplication) {
+        if (blockState.getBlock() instanceof TallFlowerBlock) {
             if (!world.isClient) {
-                if (Andromeda.CONFIG.unknown && world.random.nextInt(100) == 0) {
+                if (Config.get().unknown && world.random.nextInt(100) == 0) {
                     world.createExplosion(null, DamageSource.explosion((LivingEntity) null), null,
                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 3.0F,
                             false, Explosion.DestructionType.DESTROY);

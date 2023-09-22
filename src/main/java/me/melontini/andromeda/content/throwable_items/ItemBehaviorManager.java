@@ -1,8 +1,9 @@
 package me.melontini.andromeda.content.throwable_items;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.api.ItemBehaviors;
+import lombok.Getter;
+import me.melontini.andromeda.api.throwable_items.ItemBehavior;
+import me.melontini.andromeda.config.Config;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 
@@ -14,32 +15,32 @@ public class ItemBehaviorManager {
     private static final Object2IntOpenHashMap<Item> CUSTOM_COOLDOWNS = new Object2IntOpenHashMap<>();
     private static final Set<Item> OVERRIDE_VANILLA = new HashSet<>();
 
-    public static List<ItemBehaviors.Behavior> getBehaviors(Item item) {
-        if (Andromeda.CONFIG.newThrowableItems.blacklist.contains(Registry.ITEM.getId(item).toString()))
+    public static List<ItemBehavior> getBehaviors(Item item) {
+        if (Config.get().throwableItems.blacklist.contains(Registry.ITEM.getId(item).toString()))
             return Collections.emptyList();
         Holder holder = ITEM_BEHAVIORS.get(item);
         if (holder == null) return Collections.emptyList();
         return Collections.unmodifiableList(holder.behaviors);
     }
 
-    public static void addBehavior(Item item, ItemBehaviors.Behavior behavior, boolean complement) {
+    public static void addBehavior(Item item, ItemBehavior behavior, boolean complement) {
         Holder holder = ITEM_BEHAVIORS.computeIfAbsent(item, Holder::new);
         holder.addBehavior(behavior, complement);
     }
-    public static void addBehavior(Item item, ItemBehaviors.Behavior behavior) {
+    public static void addBehavior(Item item, ItemBehavior behavior) {
         addBehavior(item, behavior, true);
     }
 
-    public static void addBehaviors(ItemBehaviors.Behavior behavior, boolean complement, Item... items) {
+    public static void addBehaviors(ItemBehavior behavior, boolean complement, Item... items) {
         for (Item item : items) addBehavior(item, behavior, complement);
     }
 
-    public static void addBehaviors(ItemBehaviors.Behavior behavior, Item... items) {
+    public static void addBehaviors(ItemBehavior behavior, Item... items) {
         for (Item item : items) addBehavior(item, behavior);
     }
 
     public static boolean hasBehaviors(Item item) {
-        return ITEM_BEHAVIORS.containsKey(item) && !Andromeda.CONFIG.newThrowableItems.blacklist.contains(Registry.ITEM.getId(item).toString());
+        return ITEM_BEHAVIORS.containsKey(item) && !Config.get().throwableItems.blacklist.contains(Registry.ITEM.getId(item).toString());
     }
 
     public static void clear() {
@@ -66,7 +67,8 @@ public class ItemBehaviorManager {
     }
 
     private static class Holder {
-        final List<ItemBehaviors.Behavior> behaviors = new ArrayList<>();
+        final List<ItemBehavior> behaviors = new ArrayList<>();
+        @Getter
         private final Item item;
         private boolean locked;
 
@@ -74,16 +76,12 @@ public class ItemBehaviorManager {
             this.item = item;
         }
 
-        public void addBehavior(ItemBehaviors.Behavior behavior, boolean complement) {
+        public void addBehavior(ItemBehavior behavior, boolean complement) {
             if (!this.locked) {
                 if (!complement) this.behaviors.clear();
                 this.behaviors.add(behavior);
                 if (!complement) this.locked = true;
             }
-        }
-
-        public Item getItem() {
-            return item;
         }
     }
 }

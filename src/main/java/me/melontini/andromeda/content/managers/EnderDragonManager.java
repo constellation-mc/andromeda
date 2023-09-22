@@ -1,8 +1,11 @@
 package me.melontini.andromeda.content.managers;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.MiscUtil;
+import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
+import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;
+import me.melontini.dark_matter.api.minecraft.world.interfaces.TickableState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -25,13 +28,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EnderDragonManager extends PersistentState {
+public class EnderDragonManager extends PersistentState implements DeserializableState, TickableState {
+
+    public static final String ID = "andromeda_ender_dragon_fight";
+
     private final ServerWorld world;
     private final Set<Pair<MutableInt, Vec3d>> LIST = ConcurrentHashMap.newKeySet();
     private int maxPlayers = 1;
 
     public EnderDragonManager(ServerWorld world) {
         this.world = world;
+    }
+
+    public static EnderDragonManager get(ServerWorld world) {
+        return PersistentStateHelper.getOrCreate(world, () -> new EnderDragonManager(world), ID);
     }
 
     public ServerWorld getWorld() {
@@ -65,7 +75,7 @@ public class EnderDragonManager extends PersistentState {
                 }
             }
             markDirty();
-            if (Andromeda.CONFIG.dragonFight.scaleHealthByMaxPlayers) {
+            if (Config.get().dragonFight.scaleHealthByMaxPlayers) {
                 for (EnderDragonEntity dragon : dragons) {
                     EntityAttributeInstance inst = dragon.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
                     inst.setBaseValue(Math.floor((Math.sqrt(500 * i)) * 10));

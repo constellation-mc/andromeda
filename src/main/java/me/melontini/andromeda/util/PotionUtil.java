@@ -13,5 +13,4 @@ public class PotionUtil {
         MakeSure.notNull(effect, "(Andromeda) Couldn't get StatusEffect from identifier: " + id);
         return effect;
     }
-
 }

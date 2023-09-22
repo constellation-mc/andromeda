@@ -1,6 +1,6 @@
 package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 
-import me.melontini.andromeda.Andromeda;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -24,7 +24,9 @@ import java.util.List;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (Andromeda.CONFIG.usefulFletching) if (stack.getItem() instanceof BowItem) {
+        if (!Config.get().usefulFletching) return;
+
+        if (stack.getItem() instanceof BowItem) {
             int a = NbtUtil.getInt(stack.getNbt(), "AM-Tightened", 0);
             if (a > 0) {
                 tooltip.add(TextUtil.translatable("tooltip.andromeda.bow.tight", a).formatted(Formatting.GRAY));

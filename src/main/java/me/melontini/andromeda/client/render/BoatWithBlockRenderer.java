@@ -14,6 +14,7 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
 public class BoatWithBlockRenderer extends BoatEntityRenderer {
+
     private final BlockState blockState;
 
     public BoatWithBlockRenderer(EntityRendererFactory.Context context, BlockState blockState) {
