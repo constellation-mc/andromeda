@@ -1,7 +1,6 @@
 package me.melontini.andromeda;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.content.commands.DamageCommand;
 import me.melontini.andromeda.content.managers.CustomTraderManager;
 import me.melontini.andromeda.content.managers.EnderDragonManager;
@@ -63,7 +62,7 @@ public class Andromeda {
     private void onInitialize() {
         EntrypointRunner.runEntrypoint("andromeda:pre-main", ModInitializer.class, ModInitializer::onInitialize);
 
-        AndromedaReporter.init();
+        AndromedaReporter.initCrashHandler();
         Common.bootstrap();
 
         ServerWorldEvents.LOAD.register((server, world) -> {
@@ -101,7 +100,7 @@ public class Andromeda {
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             if (Config.get().recipeAdvancementsGeneration.enable) {
-                ConfigHelper.run(() -> {
+                Config.run(() -> {
                     AdvancementGeneration.generateRecipeAdvancements(server);
                     server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
                 }, "autogenRecipeAdvancements.autogenRecipeAdvancements");

@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import static me.melontini.andromeda.config.ConfigHelper.run;
+import static me.melontini.andromeda.config.Config.run;
 import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 public class Common {

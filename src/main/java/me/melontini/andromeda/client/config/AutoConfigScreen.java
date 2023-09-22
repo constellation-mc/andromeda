@@ -2,12 +2,11 @@ package me.melontini.andromeda.client.config;
 
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
-import me.melontini.andromeda.config.FeatureManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
@@ -27,6 +26,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("UnstableApiUsage")
 public class AutoConfigScreen {
 
     public static void register() {
@@ -36,21 +36,23 @@ public class AutoConfigScreen {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    Set<String> fieldSet = FeatureManager.blameProcessors(field);
+                    Tuple<String, Set<String>> tuple = Config.getManager().getOptionManager().blameProcessors(field);
                     Set<Text> texts = new HashSet<>();
-                    for (String string : fieldSet) {
-                        if ("mod_json".equals(string)) {
-                            texts.add(TextUtil.translatable("andromeda.config.tooltip.manager.mod_json", Arrays.toString(FeatureManager.blameMod(field))));
-                        } else {
-                            texts.add(TextUtil.translatable("andromeda.config.tooltip.manager." + string));
-                        }
+                    for (String processor : tuple.right()) {
+                        Config.getManager().getOptionManager().getReason(processor, tuple.left()).ifPresent(textEntry -> {
+                            if (textEntry.isTranslatable()) {
+                                texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()));
+                            } else {
+                                texts.add(TextUtil.literal(textEntry.get()));
+                            }
+                        });
                     }
                     Text[] texts1 = texts.toArray(Text[]::new);
                     tooltipGui.setTooltipSupplier(() -> Optional.of(texts1));
                 }
             });
             return list;
-        }, FeatureManager::isModified);
+        }, field -> Config.getManager().getOptionManager().isModified(field));
 
         Holder.OURS.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             if (field.getType() == boolean.class || field.getType() == Boolean.class)
@@ -82,7 +84,7 @@ public class AutoConfigScreen {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(screen)
                     .setTitle(TextUtil.translatable("config.andromeda.title", SharedConstants.MOD_VERSION.split("-")[0]))
-                    .setSavingRunnable(() -> ConfigHelper.writeConfigToFile(true))
+                    .setSavingRunnable(() -> Config.getManager().save())
                     .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 
             Arrays.stream(AndromedaConfig.class.getDeclaredFields())

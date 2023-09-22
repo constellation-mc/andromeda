@@ -1,173 +1,53 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.api.FeatureConfig;
+import lombok.CustomLog;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.PrependingLogger;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.VersionParsingException;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.version.VersionPredicate;
+import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
+@SuppressWarnings("UnstableApiUsage")
+@CustomLog
 public class FeatureManager {
 
-    static final PrependingLogger LOGGER = PrependingLogger.get("FeatureManager");
-    private static final Map<String, FeatureConfig.Processor> PROCESSORS = new LinkedHashMap<>(5);
-    private static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
-    private static final Map<Field, Set<String>> MODIFIED_FIELDS = new HashMap<>();
-    private static final Map<Field, String> FIELD_TO_STRING = new HashMap<>();
-    private static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
-    private static final Map<String, Object> FAILED_MIXINS = new HashMap<>();
-    private static final Map<String, Object> UNKNOWN_EXCEPTIONS = new HashMap<>();
+    public static final String FEATURES_KEY = "andromeda:features";
 
+    static final Map<String, MixinErrorEntry> FAILED_MIXINS = new HashMap<>();
+    static final Map<String, ExceptionEntry> UNKNOWN_EXCEPTIONS = new HashMap<>();
 
-    public static void registerProcessor(String id, FeatureConfig.Processor processor) {
-        PROCESSORS.putIfAbsent(id, processor);
+    public static void processMixinError(String feature, String className) {
+        FAILED_MIXINS.put(feature, new MixinErrorEntry(feature, false, className));
+        Config.getManager().save();
     }
 
-    public static void unregisterProcessor(String id) {
-        PROCESSORS.remove(id);
-    }
-
-    public static boolean isModified(Field field) {
-        return MODIFIED_FIELDS.containsKey(field);
-    }
-
-    public static Set<String> blameProcessors(Field field) {
-        return MODIFIED_FIELDS.get(field);
-    }
-
-    public static String[] blameMod(Field feature) {
-        return MOD_BLAME.get(FIELD_TO_STRING.get(feature)).stream().sorted(String::compareToIgnoreCase).toArray(String[]::new);
-    }
-
-    public static void processMixinError(String option) {
-        FAILED_MIXINS.put(option, false);
-        configure("mixin_error", Collections.singletonMap(option, false));
-        ConfigHelper.writeConfigToFile(false);
-    }
-
-    public static void processUnknownException(String... option) {
-        for (String s : option) {
-            UNKNOWN_EXCEPTIONS.put(s, false);
-            configure("unknown_exception", Collections.singletonMap(s, false));
+    public static void processUnknownException(Throwable t, String... features) {
+        for (String feature : features) {
+            UNKNOWN_EXCEPTIONS.put(feature, new ExceptionEntry(feature, false, t));
         }
-        ConfigHelper.writeConfigToFile(false);
+        Config.getManager().save();
     }
 
-    public static void processFeatures(boolean print) {
-        MODIFIED_FIELDS.clear();
-        if (!Config.get().enableFeatureManager) return;
+    final static ThreadLocal<OptionProcessorRegistry<AndromedaConfig>> REGISTRY = ThreadLocal.withInitial(() -> null);
 
-        for (Map.Entry<String, FeatureConfig.Processor> entry : PROCESSORS.entrySet()) {
-            Map<String, Object> featureConfigEntry = entry.getValue().process(Config.get());
-            if (featureConfigEntry != null && !featureConfigEntry.isEmpty()) {
-
-                if (print) {
-                    LOGGER.info("Processor: {}", entry.getKey());
-                    StringBuilder builder = new StringBuilder().append("Config: ");
-                    featureConfigEntry.keySet().forEach(s -> builder.append(s).append("=").append(featureConfigEntry.get(s)).append("; "));
-                    LOGGER.info(builder.toString());
-                }
-
-                configure(entry.getKey(), featureConfigEntry);
-            }
+    static void runLegacy(OptionProcessorRegistry<AndromedaConfig> registry) {
+        try {
+            REGISTRY.set(registry);
+            EntrypointRunner.runEntrypoint("andromeda:feature_manager", Runnable.class, Runnable::run);
+        } finally {
+            REGISTRY.remove();
         }
     }
 
-    private static void configure(String processor, Map<String, Object> featureConfig) {
-        Set<String> skipped = new HashSet<>();
-        for (Map.Entry<String, Object> configEntry : featureConfig.entrySet()) {
-            String configOption = configEntry.getKey();
-            try {
-                Field f = ConfigHelper.setConfigOption(configOption, configEntry.getValue());
-                MODIFIED_FIELDS.computeIfAbsent(f, k -> new HashSet<>()).add(processor);
-                FIELD_TO_STRING.putIfAbsent(f, configOption);
-            } catch (NoSuchFieldException e) {
-                skipped.add(configOption);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (!skipped.isEmpty()) {
-            StringBuilder builder = new StringBuilder().append("Skipped: ");
-            skipped.forEach(s -> builder.append(s).append("; "));
-            LOGGER.warn(builder);
-        }
+    static void legacyRegister(String id, Function<AndromedaConfig, Map<String, Object>> processor) {
+        String newId = id.split(":").length == 2 ? id : "legacy:" + id;
+        REGISTRY.get().register(newId, manager -> processor.apply(manager.getConfig()));
     }
 
-    static {
-        //This needs to be here to interact with private fields.
-        FeatureManager.registerProcessor("mod_json", config -> {
-            if (MOD_JSON.isEmpty()) FabricLoader.getInstance().getAllMods().stream()
-                    .filter(mod -> mod.getMetadata().containsCustomValue("andromeda:features"))
-                    .forEach(FeatureManager::parseMetadata);
-            return MOD_JSON;
-        });
-        FeatureManager.registerProcessor("mixin_error", config -> FAILED_MIXINS);
-        FeatureManager.registerProcessor("unknown_exception", config -> UNKNOWN_EXCEPTIONS);
-        EntrypointRunner.runEntrypoint("andromeda:feature_manager", Runnable.class, Runnable::run);
+    record MixinErrorEntry(String feature, Object value, String className) {
     }
 
-    private static void parseMetadata(ModContainer mod) {
-        CustomValue customValue = mod.getMetadata().getCustomValue("andromeda:features");
-        if (customValue.getType() != CustomValue.CvType.OBJECT)
-            LOGGER.error("andromeda:features must be an object. Mod: " + mod.getMetadata().getId() + " Type: " + customValue.getType());
-        else {
-            CustomValue.CvObject object = customValue.getAsObject();
-            for (Map.Entry<String, CustomValue> feature : object) {
-                switch (feature.getValue().getType()) {
-                    case BOOLEAN -> {
-                        MOD_JSON.put(feature.getKey(), feature.getValue().getAsBoolean());
-                        MOD_BLAME.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
-                    }
-                    case OBJECT -> {
-                        CustomValue.CvObject featureObject = feature.getValue().getAsObject();
-                        if (!featureObject.containsKey("value")) {
-                            LOGGER.error("Missing \"value\" field in andromeda:features. Mod: " + mod.getMetadata().getId());
-                            continue;
-                        }
-                        if (!testModVersion(featureObject, "minecraft", feature.getKey())) continue;
-                        if (!testModVersion(featureObject, "andromeda", feature.getKey())) continue;
-                        if (featureObject.get("value").getType() == CustomValue.CvType.BOOLEAN) {
-                            MOD_JSON.put(feature.getKey(), featureObject.get("value").getAsBoolean());
-                            MOD_BLAME.computeIfAbsent(feature.getKey(), k -> new HashSet<>()).add(mod.getMetadata().getName());
-                        } else
-                            LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
-                    }
-                    default ->
-                            LOGGER.error("Unsupported andromeda:features type. Mod: " + mod.getMetadata().getId() + " Type: " + feature.getValue().getType());
-                }
-            }
-        }
-    }
-
-    static boolean testModVersion(String modId, String predicate) {
-        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
-        if (mod.isPresent()) {
-            try {
-                VersionPredicate version = VersionPredicate.parse(predicate);
-                return version.test(mod.get().getMetadata().getVersion());
-            } catch (VersionParsingException e) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    private static boolean testModVersion(CustomValue.CvObject featureObject, String modId, String modBlame) {
-        if (featureObject.containsKey(modId)) {
-            try {
-                VersionPredicate predicate = VersionPredicate.parse(featureObject.get(modId).getAsString());
-                return predicate.test(FabricLoader.getInstance().getModContainer(modId).orElseThrow().getMetadata().getVersion());
-            } catch (VersionParsingException e) {
-                LOGGER.error("Couldn't parse version predicate for {} provided by {}", modId, modBlame);
-                return false;
-            }
-        }
-        return true;
+    record ExceptionEntry(String feature, Object value, Throwable cause) {
     }
 }

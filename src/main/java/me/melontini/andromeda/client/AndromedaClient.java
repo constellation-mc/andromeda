@@ -10,7 +10,6 @@ import me.melontini.andromeda.client.render.block.IncubatorBlockRenderer;
 import me.melontini.andromeda.client.screens.FletchingScreen;
 import me.melontini.andromeda.client.screens.MerchantInventoryScreen;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.networks.ClientSideNetworking;
 import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
@@ -131,7 +130,7 @@ public class AndromedaClient {
             }
         });
 
-        ConfigHelper.run(AndromedaReporter::handleUpload, "sendOptionalData");
+        Config.run(AndromedaReporter::handleUpload, "sendOptionalData");
 
         EntrypointRunner.runEntrypoint("andromeda:post-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
     }

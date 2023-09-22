@@ -1,12 +1,11 @@
 package me.melontini.andromeda.util.mixin;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.config.ConfigHelper;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
@@ -27,9 +26,9 @@ import java.util.Set;
 import static me.melontini.dark_matter.api.base.util.Utilities.cast;
 
 @SuppressWarnings("UnstableApiUsage")
+@CustomLog
 public class AndromedaMixinPlugin extends ExtendablePlugin {
 
-    private static final PrependingLogger LOGGER = PrependingLogger.get("AndromedaMixinPlugin");
     private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
 
     static {
@@ -43,7 +42,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
 
     @Override
     public void onPluginLoad(String mixinPackage) {
-        LOGGER.info("Platform: " + SharedConstants.PLATFORM);
+        LOGGER.info("Andromeda({}) on {}", SharedConstants.MOD_VERSION, SharedConstants.PLATFORM);
         Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
 
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
@@ -54,7 +53,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
         }
-        ConfigHelper.loadConfigFromFile(true);
+        Config.get();
 
         if (Config.get().compatMode) {
             LOGGER.warn("Compat mode is on!");
@@ -73,7 +72,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 List<String> configOptions = cast(values.get("value"));
                 for (String configOption : configOptions) {
                     try {
-                        load = ConfigHelper.getConfigOption(configOption);
+                        load = Config.get(configOption);
                     } catch (Exception e) {
                         LOGGER.warn("Couldn't check @MixinRelatedConfigOption(%s) from %s This is no fault of yours.".formatted(configOption, mixinClassName), e);
                     }
@@ -95,7 +94,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             boolean dummy = true;
             for (String configOption : configOptions) {
                 try {
-                    dummy = ConfigHelper.getConfigOption(configOption);
+                    dummy = Config.get(configOption);
                 } catch (NoSuchFieldException e) {
                     throw new AndromedaException("Invalid config option in @MixinRelatedConfigOption(%s) from %s".formatted(configOption, mixinClassName));
                 } catch (ClassCastException e) {

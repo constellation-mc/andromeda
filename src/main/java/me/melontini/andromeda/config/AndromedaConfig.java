@@ -1,6 +1,8 @@
 package me.melontini.andromeda.config;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
+import lombok.Setter;
 import me.melontini.andromeda.util.annotations.config.Environment;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -9,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument"})
+@Getter
+@Setter
 public class AndromedaConfig {
 
     @ConfigEntry.Category("world")
@@ -17,6 +21,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public SelfPlanting autoPlanting = new SelfPlanting();
 
+    @Getter
+    @Setter
     public static class SelfPlanting {
         @ConfigEntry.Category("world")
         public boolean enabled = true;
@@ -47,6 +53,23 @@ public class AndromedaConfig {
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip()
+    @ConfigEntry.Gui.CollapsibleObject
+    public GuardedLoot guardedLoot = new GuardedLoot();
+
+    @Getter
+    @Setter
+    public static class GuardedLoot {
+
+        @ConfigEntry.Category("blocks")
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean enabled = true;
+
+        @ConfigEntry.Category("blocks")
+        public int range = 4;
+    }
+
+    @ConfigEntry.Category("blocks")
+    @ConfigEntry.Gui.Tooltip()
     @FeatureEnvironment(Environment.SERVER)
     public boolean fallingPropagule = true;
 
@@ -62,6 +85,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.BOTH)
     public IncubatorSettings incubator = new IncubatorSettings();
 
+    @Getter
+    @Setter
     public static class IncubatorSettings {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
@@ -116,6 +141,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public CampfireTweaks campfireTweaks = new CampfireTweaks();
 
+    @Getter
+    @Setter
     public static class CampfireTweaks {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
@@ -164,6 +191,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public Snowballs snowballs = new Snowballs();
 
+    @Getter
+    @Setter
     public static class Snowballs {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -194,6 +223,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public Slimes slimes = new Slimes();
 
+    @Getter
+    @Setter
     public static class Slimes {
 
         @ConfigEntry.Category("entities")
@@ -249,6 +280,8 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public NewMinecarts newMinecarts = new NewMinecarts();
 
+    @Getter
+    @Setter
     public static class NewMinecarts {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -274,6 +307,8 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public NewBoats newBoats = new NewBoats();
 
+    @Getter
+    @Setter
     public static class NewBoats {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
@@ -305,6 +340,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.CLIENT)
     public Tooltips tooltips = new Tooltips();
 
+    @Getter
+    @Setter
     public static class Tooltips {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -332,6 +369,8 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public Lockpick lockpick = new Lockpick();
 
+    @Getter
+    @Setter
     public static class Lockpick {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -356,6 +395,8 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public TotemSettings totemSettings = new TotemSettings();
 
+    @Getter
+    @Setter
     public static class TotemSettings {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
@@ -401,6 +442,8 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.CollapsibleObject
     public DragonFight dragonFight = new DragonFight();
 
+    @Getter
+    @Setter
     public static class DragonFight {
         @ConfigEntry.Category("mechanics")
         public boolean fightTweaks = true;
@@ -424,6 +467,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.BOTH)
     public ThrowableItems throwableItems = new ThrowableItems();
 
+    @Getter
+    @Setter
     public static class ThrowableItems {
 
         @ConfigEntry.Category("mechanics")
@@ -465,6 +510,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.CLIENT)
     public GuiParticles guiParticles = new GuiParticles();
 
+    @Getter
+    @Setter
     public static class GuiParticles {
         @ConfigEntry.Category("gui")
         public boolean anvilScreenParticles = true;
@@ -500,6 +547,8 @@ public class AndromedaConfig {
     @FeatureEnvironment(Environment.SERVER)
     public AutoGenRecipes recipeAdvancementsGeneration = new AutoGenRecipes();
 
+    @Getter
+    @Setter
     public static class AutoGenRecipes {
         @ConfigEntry.Category("misc")
         @ConfigEntry.Gui.Tooltip
@@ -551,11 +600,6 @@ public class AndromedaConfig {
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip
     public boolean debugMessages = false;
-
-    @ConfigEntry.Category("misc")
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart
-    public boolean enableFeatureManager = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.RequiresRestart
