@@ -14,7 +14,6 @@ import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import java.util.*;
 
 import static me.melontini.andromeda.config.Config.DEFAULT_KEY;
-import static me.melontini.andromeda.config.FeatureManager.*;
 
 
 @SuppressWarnings("UnstableApiUsage")
@@ -24,9 +23,12 @@ class SpecialProcessors {
     public static final String MIXIN_ERROR_ID = "andromeda:mixin_error";
     public static final String UNKNOWN_EXCEPTION_ID = "andromeda:unknown_exception";
     public static final String MOD_JSON_ID = "andromeda:mod_json";
+    public static final String FEATURES_KEY = "andromeda:features";
 
     static final Map<String, Set<String>> MOD_BLAME = new HashMap<>();
     static final Map<String, Object> MOD_JSON = new LinkedHashMap<>();
+    static final Map<String, MixinErrorEntry> FAILED_MIXINS = new HashMap<>();
+    static final Map<String, ExceptionEntry> UNKNOWN_EXCEPTIONS = new HashMap<>();
 
     static void collect(OptionProcessorRegistry<AndromedaConfig> registry) {
         registry.register(MOD_JSON_ID, config -> {
@@ -41,7 +43,7 @@ class SpecialProcessors {
             FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
             return map;
         }, (holder) -> {
-            FeatureManager.MixinErrorEntry entry = FAILED_MIXINS.get(holder.option());
+            MixinErrorEntry entry = FAILED_MIXINS.get(holder.option());
             String[] split = entry.className().split("\\.");
             return TextEntry.translatable(DEFAULT_KEY + "mixin_error", split[split.length - 1]);
         });
@@ -51,7 +53,7 @@ class SpecialProcessors {
             UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
             return map;
         }, (holder) -> {
-            FeatureManager.ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(holder.option());
+            ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(holder.option());
             Throwable cause = entry.cause();
             if (cause.getLocalizedMessage() != null) {
                 return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[1]", cause.getClass().getSimpleName(), cause.getLocalizedMessage());
@@ -107,5 +109,11 @@ class SpecialProcessors {
             }
         }
         return true;
+    }
+
+    record MixinErrorEntry(String feature, Object value, String className) {
+    }
+
+    record ExceptionEntry(String feature, Object value, Throwable cause) {
     }
 }

@@ -19,6 +19,7 @@ import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
@@ -86,7 +87,7 @@ public class AndromedaClient {
         EntrypointRunner.runEntrypoint("andromeda:pre-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
 
         //noinspection Convert2MethodRef
-        Utilities.ifLoaded("cloth-config", () -> AutoConfigScreen.register());
+        Support.run("cloth-config", () -> () -> AutoConfigScreen.register());
         if (Config.get().autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
         registerEntityRenderers();
