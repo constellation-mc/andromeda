@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.entities.furnace_minecart;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -35,7 +35,8 @@ public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity 
 
         if (!this.world.isClient() && this.fuel < 100) {
             if (world.getTime() % 20 == 0) {
-                if (Utilities.ifLoadedWeak("fabrication", () -> getClass().getField("fabrication$pauseFuel").getInt(this) > 0).orElse(false)) return;
+                if (Support.getWeak("fabrication", () -> () ->
+                        getClass().getField("fabrication$pauseFuel").getInt(this) > 0).orElse(false)) return;
 
                 AbstractMinecartEntity entity = this.world
                         .getEntitiesByClass(AbstractMinecartEntity.class, this.getBoundingBox().expand(1.5, 0, 1.5), minecart -> minecart instanceof Inventory)

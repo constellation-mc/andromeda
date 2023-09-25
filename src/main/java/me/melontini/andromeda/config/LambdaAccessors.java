@@ -51,6 +51,8 @@ public class LambdaAccessors {
             }
         }).getter((configManager, option) -> {
             List<Function<Object, Object>> getters = GETTERS.get(option);
+            if (getters == null) throw new NoSuchFieldException(option);
+
             Object obj = configManager.getConfig();
             for (Function<Object, Object> getter : getters) {
                 obj = getter.apply(obj);
@@ -58,6 +60,8 @@ public class LambdaAccessors {
             return obj;
         }).setter((manager, option, value) -> {
             List<Function<Object, Object>> getters = GETTERS.get(option);
+            if (getters == null) throw new NoSuchFieldException(option);
+
             Object obj = manager.getConfig();
             for (int i = 0; i < getters.size() - 1; i++) {
                 obj = getters.get(i).apply(obj);

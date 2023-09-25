@@ -5,6 +5,7 @@ import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
+import me.melontini.dark_matter.api.config.OptionManager;
 import me.melontini.dark_matter.api.config.interfaces.TextEntry;
 
 import java.lang.reflect.Field;
@@ -36,11 +37,11 @@ public class Config {
             .processors(registry -> {
                 SpecialProcessors.collect(registry);
                 DefaultProcessors.collect(registry);
-                FeatureManager.runLegacy(registry);
+                AndromedaFeatureManager.runLegacy(registry);
             })
             .defaultReason(holder -> {
                 if ("andromeda:custom_values".equals(holder.processor())) {
-                    return TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(Config.getManager().getOptionManager().blameModJson(holder.field()).right().toArray()));
+                    return TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(Config.getOptionManager().blameModJson(holder.field()).right().toArray()));
                 }
                 return TextEntry.translatable(DEFAULT_KEY + holder.processor().replace(":", "."));
             })
@@ -64,8 +65,12 @@ public class Config {
         return MANAGER.getDefaultConfig();
     }
 
-    public static ConfigManager<AndromedaConfig> getManager() {
-        return MANAGER;
+    public static OptionManager<AndromedaConfig> getOptionManager() {
+        return MANAGER.getOptionManager();
+    }
+
+    public static void save() {
+        MANAGER.save();
     }
 
     public static void run(ThrowingRunnable runnable, String... features) {
@@ -73,7 +78,7 @@ public class Config {
             runnable.run();
         } catch (Throwable e) {
             AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
-            FeatureManager.processUnknownException(e, features);
+            processUnknownException(e, features);
         }
     }
 
@@ -82,8 +87,20 @@ public class Config {
             return callable.call();
         } catch (Throwable e) {
             AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
-            FeatureManager.processUnknownException(e, features);
+            processUnknownException(e, features);
             return null;
         }
+    }
+
+    public static void processMixinError(String feature, String className) {
+        SpecialProcessors.FAILED_MIXINS.put(feature, new SpecialProcessors.MixinErrorEntry(feature, false, className));
+        MANAGER.save();
+    }
+
+    public static void processUnknownException(Throwable t, String... features) {
+        for (String feature : features) {
+            SpecialProcessors.UNKNOWN_EXCEPTIONS.put(feature, new SpecialProcessors.ExceptionEntry(feature, false, t));
+        }
+        MANAGER.save();
     }
 }
