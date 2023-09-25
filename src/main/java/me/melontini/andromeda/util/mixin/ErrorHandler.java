@@ -1,6 +1,6 @@
 package me.melontini.andromeda.util.mixin;
 
-import me.melontini.andromeda.config.FeatureManager;
+import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
@@ -36,7 +36,7 @@ public class ErrorHandler implements IMixinErrorHandler {
                 if (annotationNode != null) {
                     List<String> configOptions = AsmUtil.getAnnotationValue(annotationNode, "value", null);
                     AndromedaLog.warn("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
-                    FeatureManager.processMixinError(configOptions.get(configOptions.size() - 1), mixin.getClassName()); //We assume that the last option is the only relevant one.
+                    Config.processMixinError(configOptions.get(configOptions.size() - 1), mixin.getClassName()); //We assume that the last option is the only relevant one.
                     AndromedaReporter.handleCrash(th, "Mixin failed during " + phase, FabricLoader.getInstance().getEnvironmentType());
                     return ErrorAction.WARN;
                 }
