@@ -12,6 +12,7 @@
   "tooltip.andromeda.frameitem": "展示框中的物品",
   "death.attack.andromeda_agony": "%s死于痛苦",
   "death.attack.andromeda_bricked": "%1$s被%2$s用砖块砸晕了",
+  "andromeda.container.guarded": "这个箱子被守护着，无法打开！",
 
   "andromeda.config.tooltip.manager.andromeda.connector_mod": "强制修复与Connector模组的冲突",
   "andromeda.config.tooltip.manager.andromeda.safe_beds_conflict": "已启用冲突的特性！",
@@ -125,6 +126,10 @@
   "text.autoconfig.andromeda.option.quickFire.@Tooltip": "使得火势能够蔓延得更快更广",
 
   "text.autoconfig.andromeda.category.blocks": "方块",
+  "text.autoconfig.andromeda.option.guardedLoot": "宝藏守卫",
+  "text.autoconfig.andromeda.option.guardedLoot.@Tooltip": "如果在设定距离内有怪物，阻止玩家打开未生成战利品的箱子。",
+  "text.autoconfig.andromeda.option.guardedLoot.enabled": "启用",
+  "text.autoconfig.andromeda.option.guardedLoot.range": "检测距离",
   "text.autoconfig.andromeda.option.fallingPropagule": "胎生苗掉落",
   "text.autoconfig.andromeda.option.fallingPropagule.@Tooltip": "成熟后，悬挂的红树胎生苗会掉下来。",
   "text.autoconfig.andromeda.option.cactusBottleFilling": "仙人掌取水",
