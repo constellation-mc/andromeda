@@ -15,6 +15,18 @@ public class AndromedaLog {
                 "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
     });
 
+    public static PrependingLogger factory() {
+        Class<?> cls = Utilities.getCallerClass(2);
+        String[] split = cls.getName().split("\\.");
+
+        String caller = split[split.length - 1];
+        caller = "Andromeda/" + caller;
+        if (cls.getName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
+
+        return PrependingLogger.get(caller, logger -> (!Utilities.isDev() && SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) ?
+                "(" + logger.getName() + ") " : "");
+    }
+
     public static void devInfo(String msg) {
         if (Config.get().debugMessages) {
             LOGGER.info(msg);
