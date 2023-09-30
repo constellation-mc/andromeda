@@ -108,7 +108,7 @@ public class Andromeda {
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            if (Config.get().damageBackport) DamageCommand.register(dispatcher);
+            if (Config.get().damageBackport) Config.run(() -> DamageCommand.register(dispatcher), "damageBackport");
         });
 
         EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);

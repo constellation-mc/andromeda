@@ -1,6 +1,5 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -14,18 +13,6 @@ import java.util.Optional;
 public class DefaultProcessors {
 
     static void collect(OptionProcessorRegistry<AndromedaConfig> registry) {
-        registry.register("andromeda:connector_mod", config -> {
-            if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
-                return Map.of(
-                        "compatMode", true,
-                        "totemSettings.enableInfiniteTotem", false,
-                        "totemSettings.enableTotemAscension", false,
-                        "quickFire", false
-                );
-            }
-            return null;
-        });
-
         registry.register("andromeda:safe_beds_conflict", manager -> {
             if (manager.getConfig().safeBeds) {
                 return Map.of("bedsExplodeEverywhere", false);

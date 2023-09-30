@@ -39,9 +39,12 @@ class SpecialProcessors {
         }, (holder) -> TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(holder.option()).toArray())));
 
         registry.register(MIXIN_ERROR_ID, config -> {
-            Map<String, Object> map = new LinkedHashMap<>();
-            FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
-            return map;
+            if (!FAILED_MIXINS.isEmpty()) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
+                return map;
+            }
+            return null;
         }, (holder) -> {
             MixinErrorEntry entry = FAILED_MIXINS.get(holder.option());
             String[] split = entry.className().split("\\.");
@@ -49,9 +52,12 @@ class SpecialProcessors {
         });
 
         registry.register(UNKNOWN_EXCEPTION_ID, config -> {
-            Map<String, Object> map = new LinkedHashMap<>();
-            UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
-            return map;
+            if (!UNKNOWN_EXCEPTIONS.isEmpty()) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
+                return map;
+            }
+            return null;
         }, (holder) -> {
             ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(holder.option());
             Throwable cause = entry.cause();

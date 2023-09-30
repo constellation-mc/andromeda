@@ -29,12 +29,13 @@ public class ReloadableResourceManagerImplMixin {
         if (!Config.get().autoUpdateTranslations) return;
 
         packs.set(new ArrayList<>(packs.get()));
-        packs.get().add(Config.run(() -> new DirectoryResourcePack("Andromeda Translations", TranslationUpdater.TRANSLATION_PACK, true) {
+        ResourcePack pack = Config.run(() -> new DirectoryResourcePack("Andromeda Translations", TranslationUpdater.TRANSLATION_PACK, true) {
             @Nullable
             @Override
             public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
                 return null;
             }
-        }, "autoUpdateTranslations"));
+        }, "autoUpdateTranslations");
+        if (pack != null) packs.get().add(pack);
     }
 }
