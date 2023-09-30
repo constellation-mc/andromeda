@@ -32,7 +32,11 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
 
     static {
-        LOGGER.info("Definitely up to a lot of good");
+        try {
+            FrameworkPatch.patch();
+        } catch (Throwable e) {
+            LOGGER.error("Failed to patch the mixin framework!", e);
+        }
     }
 
     @Override
