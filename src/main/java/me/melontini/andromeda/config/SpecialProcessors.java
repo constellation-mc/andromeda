@@ -42,6 +42,7 @@ class SpecialProcessors {
             if (!FAILED_MIXINS.isEmpty()) {
                 Map<String, Object> map = new LinkedHashMap<>();
                 FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
+                map.put("compatMode", true);
                 return map;
             }
             return null;
@@ -55,6 +56,7 @@ class SpecialProcessors {
             if (!UNKNOWN_EXCEPTIONS.isEmpty()) {
                 Map<String, Object> map = new LinkedHashMap<>();
                 UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
+                map.put("compatMode", true);
                 return map;
             }
             return null;
