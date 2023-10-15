@@ -15,7 +15,7 @@ import static me.melontini.andromeda.util.AdvancementGeneration.generateRecipeAd
 
 @Mixin(PlayerManager.class)
 @MixinRelatedConfigOption("recipeAdvancementsGeneration.enable")
-public class PlayerManagerMixin {
+class PlayerManagerMixin {
 
     @Shadow @Final private MinecraftServer server;
 

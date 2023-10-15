@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndCrystalEntity.class)
 @MixinRelatedConfigOption({"dragonFight.fightTweaks", "dragonFight.respawnCrystals"})
-public abstract class EndCrystalMixin extends Entity {
+abstract class EndCrystalMixin extends Entity {
     public EndCrystalMixin(EntityType<?> type, World world) {
         super(type, world);
     }

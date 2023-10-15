@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(FireBlock.class)
 @MixinRelatedConfigOption("quickFire")
-public abstract class AbstractFireBlockMixin extends AbstractFireBlock {
+abstract class AbstractFireBlockMixin extends AbstractFireBlock {
     public AbstractFireBlockMixin(Settings settings, float damage) {
         super(settings, damage);
     }

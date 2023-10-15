@@ -4,6 +4,7 @@ import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.ClassReader;
@@ -30,7 +31,7 @@ public class ErrorHandler implements IMixinErrorHandler {
     }
 
     private static ErrorAction handleMixinError(String phase, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        if (action == ErrorAction.ERROR) {
+        if (action == ErrorAction.ERROR && !(th instanceof MixinVerifyError)) {
             try {
                 ClassNode node = mixin.getClassNode(ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
                 AnnotationNode annotationNode = Annotations.getVisible(node, MixinRelatedConfigOption.class);

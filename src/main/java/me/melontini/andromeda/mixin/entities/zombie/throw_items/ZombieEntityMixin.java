@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ZombieEntity.class)
 @MixinRelatedConfigOption({"throwableItems.enable", "throwableItems.canZombiesThrowItems"})
-public abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
+abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
 
     @Unique
     private int andromeda$cooldown = 0;

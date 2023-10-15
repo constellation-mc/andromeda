@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BoneMealItem.class)
 @MixinRelatedConfigOption({"beeFlowerDuplication", "beeTallFlowerDuplication"})
-public class BoneMealItemMixin {
+class BoneMealItemMixin {
     @Inject(at = @At("HEAD"), method = "useOnFertilizable", cancellable = true)
     private static void andromeda$useOnFertilizable(ItemStack stack, World world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (!Config.get().beeTallFlowerDuplication) return;

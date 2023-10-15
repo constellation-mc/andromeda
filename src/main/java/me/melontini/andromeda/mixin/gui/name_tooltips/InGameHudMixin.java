@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Mixin(InGameHud.class)
 @MixinRelatedConfigOption("tooltipNotName")
-public abstract class InGameHudMixin {
+abstract class InGameHudMixin {
     @Shadow
     @Final
     private MinecraftClient client;

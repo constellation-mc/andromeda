@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 @Mixin(GameModeSelectionScreen.class)
 @MixinRelatedConfigOption("guiParticles.gameModeSwitcherParticles")
-public abstract class GameModeSelectionScreenMixin extends Screen {
+abstract class GameModeSelectionScreenMixin extends Screen {
 
     @Unique
     private static final List<ItemStack> ANDROMEDA$ADVENTURE = Lists.newArrayList(Items.COMPASS.getDefaultStack(), Items.MAP.getDefaultStack(), Items.FILLED_MAP.getDefaultStack());

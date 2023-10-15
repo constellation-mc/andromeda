@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Mixin(PlayerEntity.class)
 @MixinRelatedConfigOption("unknown")
-public abstract class PlayerEntityMixin {
+abstract class PlayerEntityMixin {
 
     @Shadow
     public abstract void playSound(SoundEvent event, SoundCategory category, float volume, float pitch);

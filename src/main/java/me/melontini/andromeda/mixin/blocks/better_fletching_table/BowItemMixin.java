@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(BowItem.class)
 @MixinRelatedConfigOption("usefulFletching")
-public abstract class BowItemMixin extends RangedWeaponItem {
+abstract class BowItemMixin extends RangedWeaponItem {
     public BowItemMixin(Settings settings) {
         super(settings);
     }

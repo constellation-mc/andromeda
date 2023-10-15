@@ -43,7 +43,7 @@ import java.util.Objects;
 
 @Mixin(MinecartItem.class)
 @MixinRelatedConfigOption("minecartBlockPicking")
-public abstract class MinecartItemMixin extends Item {
+abstract class MinecartItemMixin extends Item {
 
     @Shadow
     @Final

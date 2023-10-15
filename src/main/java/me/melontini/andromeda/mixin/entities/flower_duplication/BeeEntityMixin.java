@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BeeEntity.class)
 @MixinRelatedConfigOption("beeFlowerDuplication")
-public abstract class BeeEntityMixin extends AnimalEntity {
+abstract class BeeEntityMixin extends AnimalEntity {
 
     @Shadow
     @Nullable BlockPos flowerPos;

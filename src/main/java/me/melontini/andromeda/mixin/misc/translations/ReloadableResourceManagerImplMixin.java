@@ -20,7 +20,7 @@ import java.util.List;
 
 @Mixin(ReloadableResourceManagerImpl.class)
 @MixinRelatedConfigOption("autoUpdateTranslations")
-public class ReloadableResourceManagerImplMixin {
+class ReloadableResourceManagerImplMixin {
     @Shadow @Final private ResourceType type;
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/LifecycledResourceManager;close()V", shift = At.Shift.AFTER), method = "reload")

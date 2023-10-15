@@ -25,7 +25,7 @@ import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
 
 @Mixin(BeehiveBlockEntity.class)
 @MixinRelatedConfigOption("canBeeNestsFall")
-public abstract class BeehiveBlockEntityMixin extends BlockEntity {
+abstract class BeehiveBlockEntityMixin extends BlockEntity {
     @Unique
     private boolean andromeda$FromFallen;
 

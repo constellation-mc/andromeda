@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 @MixinRelatedConfigOption("leafSlowdown")
-public abstract class EntityMixin extends Entity {
+abstract class EntityMixin extends Entity {
 
     public EntityMixin(EntityType<?> type, World world) {
         super(type, world);

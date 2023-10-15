@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SlimeEntity.class)
 @MixinRelatedConfigOption("slimes.merge")
-public abstract class SlimeEntityMixin extends MobEntity {
+abstract class SlimeEntityMixin extends MobEntity {
 
     @Unique
     private int andromeda$mergeCD = MathStuff.nextInt(700, 2000);

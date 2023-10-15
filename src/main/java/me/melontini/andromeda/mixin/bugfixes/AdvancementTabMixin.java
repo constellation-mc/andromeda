@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(AdvancementTab.class)
 @MixinRelatedConfigOption("frameIndependentAdvancementShadow")
-public class AdvancementTabMixin {
+class AdvancementTabMixin {
     @Shadow private float alpha;
 
     @Shadow @Final private MinecraftClient client;

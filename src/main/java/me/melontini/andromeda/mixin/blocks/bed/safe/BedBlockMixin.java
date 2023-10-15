@@ -22,7 +22,7 @@ import static net.minecraft.block.BedBlock.isBedWorking;
 
 @Mixin(BedBlock.class)
 @MixinRelatedConfigOption("safeBeds")
-public abstract class BedBlockMixin extends Block {
+abstract class BedBlockMixin extends Block {
 
     public BedBlockMixin(Settings settings) {
         super(settings);

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EnchantmentScreen.class)
 @MixinRelatedConfigOption("guiParticles.enchantmentScreenParticles")
-public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentScreenHandler> {
+abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentScreenHandler> {
     public EnchantmentScreenMixin(EnchantmentScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }

@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
 @MixinRelatedConfigOption("throwableItems.enable")
-public abstract class ItemStackMixin {
+abstract class ItemStackMixin {
     @Shadow
     public abstract Item getItem();
 

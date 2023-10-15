@@ -22,7 +22,7 @@ import java.util.List;
 
 @Mixin(ItemStack.class)
 @MixinRelatedConfigOption("slightlyBetterItemNames")
-public abstract class ItemStackMixin {
+abstract class ItemStackMixin {
     @Shadow
     public abstract int getMaxDamage();
 

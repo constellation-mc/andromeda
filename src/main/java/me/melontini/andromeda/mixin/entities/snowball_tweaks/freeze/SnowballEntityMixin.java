@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SnowballEntity.class)
 @MixinRelatedConfigOption("snowballs.freeze")
-public class SnowballEntityMixin {
+class SnowballEntityMixin {
     @Inject(at = @At("TAIL"), method = "onEntityHit")
     private void andromeda$applyFreezing(EntityHitResult entityHitResult, CallbackInfo ci) {
         if (!Config.get().snowballs.freeze) return;

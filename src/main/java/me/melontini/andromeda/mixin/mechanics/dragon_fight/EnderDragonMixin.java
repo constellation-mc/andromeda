@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(EnderDragonEntity.class)
 @MixinRelatedConfigOption({"dragonFight.fightTweaks", "dragonFight.shorterCrystalTrackRange"})
-public class EnderDragonMixin {
+class EnderDragonMixin {
     @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "doubleValue=32"), method = "tickWithEndCrystals")
     private double andromeda$modConstant(double constant) {
         if (Config.get().dragonFight.fightTweaks && Config.get().dragonFight.shorterCrystalTrackRange) return 24.0;

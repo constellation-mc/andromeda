@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SnowballEntity.class)
 @MixinRelatedConfigOption("snowballs.extinguish")
-public class SnowballEntityMixin {
+class SnowballEntityMixin {
     @Inject(at = @At("TAIL"), method = "onEntityHit")
     private void andromeda$extinguish(EntityHitResult entityHitResult, CallbackInfo ci) {
         if (!Config.get().snowballs.extinguish) return;

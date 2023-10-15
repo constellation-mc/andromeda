@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VillagerEntity.class)
 @MixinRelatedConfigOption("villagerGifting")
-public abstract class VillagerEntityMixin extends MerchantEntity {
+abstract class VillagerEntityMixin extends MerchantEntity {
     @Shadow @Final private VillagerGossips gossip;
 
     @Shadow protected abstract void sayNo();

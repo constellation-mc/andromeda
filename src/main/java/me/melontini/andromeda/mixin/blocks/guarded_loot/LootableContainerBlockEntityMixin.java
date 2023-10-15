@@ -28,7 +28,7 @@ import java.util.List;
 
 @Mixin(LootableContainerBlockEntity.class)
 @MixinRelatedConfigOption("guardedLoot.enabled")
-public abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockEntity {
+abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockEntity {
 
     protected LootableContainerBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);

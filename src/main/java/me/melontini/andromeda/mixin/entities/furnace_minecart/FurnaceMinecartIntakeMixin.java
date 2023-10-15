@@ -21,7 +21,7 @@ import java.util.Comparator;
 
 @Mixin(FurnaceMinecartEntity.class)
 @MixinRelatedConfigOption({"betterFurnaceMinecart", "furnaceMinecartTakeFuelWhenLow"})
-public abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
+abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
     @Shadow
     public int fuel;
 

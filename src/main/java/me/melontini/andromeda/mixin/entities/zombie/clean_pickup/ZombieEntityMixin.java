@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ZombieEntity.class)
 @MixinRelatedConfigOption("zombiesPreventUselessItems")
-public abstract class ZombieEntityMixin extends HostileEntity {
+abstract class ZombieEntityMixin extends HostileEntity {
 
     protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);

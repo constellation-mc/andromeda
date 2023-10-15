@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(MobEntity.class)
 @MixinRelatedConfigOption("slimes.flee")
-public abstract class MobEntityMixin {
+abstract class MobEntityMixin {
 
     @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=90"), method = "lookAtEntity")
     private float andromeda$rotateSlime(float original, Entity targetEntity, float maxYawChange, float maxPitchChange) {

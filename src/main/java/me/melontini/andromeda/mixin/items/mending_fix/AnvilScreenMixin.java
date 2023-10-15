@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(AnvilScreen.class)
 @MixinRelatedConfigOption("balancedMending")
-public abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler> {
+abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler> {
     public AnvilScreenMixin(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }

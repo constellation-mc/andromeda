@@ -27,7 +27,7 @@ import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
 
 @Mixin(PersistentProjectileEntity.class)
 @MixinRelatedConfigOption("canBeeNestsFall")
-public abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
+abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
     public PersistentProjectileEntityMixin(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
     }

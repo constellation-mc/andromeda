@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SnowballItem.class)
 @MixinRelatedConfigOption("snowballs.enableCooldown")
-public abstract class SnowballItemMixin extends Item {
+abstract class SnowballItemMixin extends Item {
 
     public SnowballItemMixin(Settings settings) {
         super(settings);

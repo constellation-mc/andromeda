@@ -45,7 +45,7 @@ import static me.melontini.andromeda.util.SharedConstants.MODID;
 
 @Mixin(ItemEntity.class)
 @MixinRelatedConfigOption({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
-public abstract class ItemEntityMixin extends Entity {
+abstract class ItemEntityMixin extends Entity {
     @Unique
     private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
     @Unique

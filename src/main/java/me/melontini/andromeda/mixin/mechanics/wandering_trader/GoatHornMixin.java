@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @Mixin(GoatHornItem.class)
 @MixinRelatedConfigOption("tradingGoatHorn")
-public class GoatHornMixin {
+class GoatHornMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "use")
     private void andromeda$wanderingGoatHorn(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack, Optional<RegistryEntry<Instrument>> optional, Instrument instrument) {
         if (!Config.get().tradingGoatHorn) return;

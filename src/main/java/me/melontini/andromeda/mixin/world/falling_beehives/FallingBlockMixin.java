@@ -34,7 +34,7 @@ import java.util.Optional;
 
 @Mixin(FallingBlockEntity.class)
 @MixinRelatedConfigOption("canBeeNestsFall")
-public abstract class FallingBlockMixin extends Entity {
+abstract class FallingBlockMixin extends Entity {
     @Shadow
     @Nullable
     public NbtCompound blockEntityData;

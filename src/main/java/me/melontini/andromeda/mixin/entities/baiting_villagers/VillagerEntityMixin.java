@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VillagerEntity.class)
 @MixinRelatedConfigOption("villagersFollowEmeraldBlocks")
-public abstract class VillagerEntityMixin extends MerchantEntity {
+abstract class VillagerEntityMixin extends MerchantEntity {
 
     public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(BedBlock.class)
 @MixinRelatedConfigOption("enableBedExplosionPower")
-public abstract class BedBlockMixin extends Block {
+abstract class BedBlockMixin extends Block {
 
     public BedBlockMixin(Settings settings) {
         super(settings);

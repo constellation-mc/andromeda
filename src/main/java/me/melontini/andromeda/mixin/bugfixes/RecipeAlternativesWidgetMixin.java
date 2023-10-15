@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(RecipeAlternativesWidget.class)
 @MixinRelatedConfigOption("properlyAlignedRecipeAlternatives")
-public class RecipeAlternativesWidgetMixin {
+class RecipeAlternativesWidgetMixin {
     @Shadow
     private int buttonX;
 

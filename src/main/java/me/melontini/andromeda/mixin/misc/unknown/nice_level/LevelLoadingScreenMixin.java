@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Mixin(LevelLoadingScreen.class)
 @MixinRelatedConfigOption("unknown")
-public class LevelLoadingScreenMixin {
+class LevelLoadingScreenMixin {
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
     private String andromeda$getPercentage(String o) {

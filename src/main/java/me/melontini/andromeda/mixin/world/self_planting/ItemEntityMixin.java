@@ -25,7 +25,7 @@ import java.util.Random;
 
 @Mixin(ItemEntity.class)
 @MixinRelatedConfigOption("autoPlanting.enabled")
-public abstract class ItemEntityMixin {
+abstract class ItemEntityMixin {
     @Unique
     private final Random andromeda$random = new Random();
 

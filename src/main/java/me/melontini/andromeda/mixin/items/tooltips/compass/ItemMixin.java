@@ -26,7 +26,7 @@ import java.util.List;
 
 @Mixin(Item.class)
 @MixinRelatedConfigOption("tooltips.compass")
-public class ItemMixin {
+class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
         if (!Config.get().tooltips.compass) return;
