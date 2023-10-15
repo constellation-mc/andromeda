@@ -46,7 +46,6 @@ public class Config {
                 return TextEntry.translatable(DEFAULT_KEY + holder.processor().replace(":", "."));
             })
             .build();
-    private static final AndromedaConfig CONFIG = MANAGER.getConfig();
 
     public static <T> T get(String feature) throws NoSuchFieldException {
         return MANAGER.get(feature);
@@ -58,7 +57,7 @@ public class Config {
     }
 
     public static AndromedaConfig get() {
-        return CONFIG;
+        return MANAGER.getConfig();
     }
 
     public static AndromedaConfig getDefault() {
