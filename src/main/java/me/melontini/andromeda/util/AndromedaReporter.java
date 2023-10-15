@@ -58,7 +58,7 @@ public class AndromedaReporter {
     }
 
     public static void initCrashHandler() {
-        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> handleCrash(cause, report.getMessage(), envType));
+        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> handleCrash(false, cause, report.getMessage(), envType));
     }
 
     private static boolean findAndromedaInTrace(Throwable cause) {
@@ -74,10 +74,12 @@ public class AndromedaReporter {
         return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
     }
 
-    public static void handleCrash(Throwable cause, String message, EnvType envType) {
-        if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
-        if (cause instanceof AndromedaException e && !e.shouldReport()) return;
-        if (!findAndromedaInTrace(cause)) return;
+    public static void handleCrash(boolean force, Throwable cause, String message, EnvType envType) {
+        if (!force) {
+            if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
+            if (cause instanceof AndromedaException e && !e.shouldReport()) return;
+            if (!findAndromedaInTrace(cause)) return;
+        }
 
         HANDLER.send((mixpanel, analytics) -> {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");

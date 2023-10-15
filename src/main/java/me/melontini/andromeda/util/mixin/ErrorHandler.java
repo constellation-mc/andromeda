@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util.mixin;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.util.Annotations;
 
 import java.util.List;
 
+@CustomLog
 public class ErrorHandler implements IMixinErrorHandler {
 
     @Override
@@ -35,9 +36,10 @@ public class ErrorHandler implements IMixinErrorHandler {
                 AnnotationNode annotationNode = Annotations.getVisible(node, MixinRelatedConfigOption.class);
                 if (annotationNode != null) {
                     List<String> configOptions = AsmUtil.getAnnotationValue(annotationNode, "value", null);
-                    AndromedaLog.warn("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
+                    LOGGER.error("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
+
                     Config.processMixinError(configOptions.get(configOptions.size() - 1), mixin.getClassName()); //We assume that the last option is the only relevant one.
-                    AndromedaReporter.handleCrash(th, "Mixin failed during " + phase, FabricLoader.getInstance().getEnvironmentType());
+                    AndromedaReporter.handleCrash(true, th, "Mixin failed during " + phase, FabricLoader.getInstance().getEnvironmentType());
                     return ErrorAction.WARN;
                 }
             } catch (Throwable t) {
