@@ -75,8 +75,8 @@ public class AndromedaReporter {
     }
 
     public static void handleCrash(boolean force, Throwable cause, String message, EnvType envType) {
+        if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
         if (!force) {
-            if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
             if (cause instanceof AndromedaException e && !e.shouldReport()) return;
             if (!findAndromedaInTrace(cause)) return;
         }
