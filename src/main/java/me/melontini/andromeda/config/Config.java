@@ -20,7 +20,7 @@ public class Config {
 
     private static final ConfigManager<AndromedaConfig> MANAGER = ConfigBuilder
             .create(AndromedaConfig.class, SharedConstants.MOD_CONTAINER, "andromeda")
-            .attach(LambdaAccessors::attach)
+            .attach(AsmAccessors::attach)
             .constructor(AndromedaConfig::new)
             .serializer(manager -> GsonSerializers.create(manager, Fixups.addFixups()))
             .redirects(builder -> builder
