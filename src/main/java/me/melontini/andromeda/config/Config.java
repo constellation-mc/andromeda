@@ -7,6 +7,7 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import me.melontini.dark_matter.api.config.OptionManager;
 import me.melontini.dark_matter.api.config.interfaces.TextEntry;
+import me.melontini.dark_matter.api.config.serializers.gson.GsonSerializers;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -17,11 +18,11 @@ public class Config {
 
     static final String DEFAULT_KEY = "andromeda.config.tooltip.manager.";
 
-    private static final ConfigManager<AndromedaConfig> MANAGER = LambdaAccessors
-            .attach(ConfigBuilder
-                    .create(AndromedaConfig.class, SharedConstants.MOD_CONTAINER, "andromeda"))
+    private static final ConfigManager<AndromedaConfig> MANAGER = ConfigBuilder
+            .create(AndromedaConfig.class, SharedConstants.MOD_CONTAINER, "andromeda")
+            .attach(LambdaAccessors::attach)
             .constructor(AndromedaConfig::new)
-            .fixups(Fixups::addFixups)
+            .serializer(manager -> GsonSerializers.create(manager, Fixups.addFixups()))
             .redirects(builder -> builder
                     .add("throwableItems", "throwableItems.enable")
                     .add("throwableItemsBlacklist", "throwableItems.blacklist")
@@ -72,7 +73,7 @@ public class Config {
         MANAGER.save();
     }
 
-    public static void run(ThrowingRunnable runnable, String... features) {
+    public static void run(ThrowingRunnable<Throwable> runnable, String... features) {
         try {
             runnable.run();
         } catch (Throwable e) {
