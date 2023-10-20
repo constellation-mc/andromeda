@@ -34,16 +34,16 @@ public class Config {
                     .add("campfireTweaks.campfireEffects", "campfireTweaks.effects")
                     .add("campfireTweaks.campfireEffectsPassive", "campfireTweaks.affectsPassive")
                     .add("campfireTweaks.campfireEffectsRange", "campfireTweaks.effectsRange"))
-            .processors(registry -> {
+            .processors((registry, mod) -> {
                 SpecialProcessors.collect(registry);
                 DefaultProcessors.collect(registry);
                 AndromedaFeatureManager.runLegacy(registry);
             })
             .defaultReason(holder -> {
-                if ("andromeda:custom_values".equals(holder.processor())) {
+                if ("andromeda:custom_values".equals(holder.processor().id())) {
                     return TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(Config.getOptionManager().blameModJson(holder.field()).right().toArray()));
                 }
-                return TextEntry.translatable(DEFAULT_KEY + holder.processor().replace(":", "."));
+                return TextEntry.translatable(DEFAULT_KEY + holder.processor().id().replace(":", "."));
             })
             .build();
 

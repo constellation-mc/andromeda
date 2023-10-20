@@ -1,6 +1,7 @@
 package me.melontini.andromeda.config;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,7 @@ public class AndromedaFeatureManager {
 
     private static void legacyRegister(String id, Function<AndromedaConfig, Map<String, Object>> processor) {
         String newId = id.split(":").length == 2 ? id : "legacy:" + id;
-        REGISTRY.get().register(newId, manager -> processor.apply(manager.getConfig()));
+        REGISTRY.get().register(newId, manager -> processor.apply(manager.getConfig()), SharedConstants.MOD_CONTAINER);
     }
 
     public interface FeatureProcessor {
