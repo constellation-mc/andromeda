@@ -2,6 +2,7 @@ package me.melontini.andromeda.config;
 
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.dark_matter.api.analytics.MessageHandler;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
@@ -94,12 +95,14 @@ public class Config {
     public static void processMixinError(String feature, String className) {
         SpecialProcessors.FAILED_MIXINS.put(feature, new SpecialProcessors.MixinErrorEntry(feature, false, className));
         MANAGER.save();
+        MessageHandler.EXECUTOR.submit(SpecialProcessors::saveToJson);
     }
 
     public static void processUnknownException(Throwable t, String... features) {
         for (String feature : features) {
-            SpecialProcessors.UNKNOWN_EXCEPTIONS.put(feature, new SpecialProcessors.ExceptionEntry(feature, false, t));
+            SpecialProcessors.UNKNOWN_EXCEPTIONS.put(feature, new SpecialProcessors.ExceptionEntry(feature, false, t.getClass().getSimpleName(), t.getLocalizedMessage()));
         }
         MANAGER.save();
+        MessageHandler.EXECUTOR.submit(SpecialProcessors::saveToJson);
     }
 }
