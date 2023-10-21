@@ -186,32 +186,32 @@ public class AndromedaClient {
 
     public void registerBlockRenderers() {
         if (Config.get().unknown)
-            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().ROSE_OF_THE_VALLEY);
+            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().ROSE_OF_THE_VALLEY.get());
 
         if (Config.get().incubator.enable) {
-            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().INCUBATOR_BLOCK);
-            BlockEntityRendererFactories.register(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY, IncubatorBlockRenderer::new);
+            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().INCUBATOR_BLOCK.get());
+            BlockEntityRendererFactories.register(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY.get(), IncubatorBlockRenderer::new);
         }
     }
 
     public void registerEntityRenderers() {
         if (Config.get().newBoats.isFurnaceBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_FURNACE, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_FURNACE.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));
         if (Config.get().newBoats.isJukeboxBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_JUKEBOX, ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState()));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_JUKEBOX.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState()));
         if (Config.get().newBoats.isTNTBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_TNT, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState()));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_TNT.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState()));
         if (Config.get().newBoats.isHopperBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_HOPPER, ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState()));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_HOPPER.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState()));
 
         if (Config.get().newMinecarts.isAnvilMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().ANVIL_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().ANVIL_MINECART_ENTITY.get(), ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
         if (Config.get().newMinecarts.isNoteBlockMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY.get(), ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
         if (Config.get().newMinecarts.isJukeboxMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY, (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY.get(), (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
 
-        EntityRendererRegistry.register(EntityTypeRegistry.get().FLYING_ITEM, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(EntityTypeRegistry.get().FLYING_ITEM.get(), FlyingItemEntityRenderer::new);
     }
 
     @Override

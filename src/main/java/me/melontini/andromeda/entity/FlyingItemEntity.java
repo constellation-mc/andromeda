@@ -20,12 +20,12 @@ public class FlyingItemEntity extends ThrownItemEntity {
     }
 
     public FlyingItemEntity(ItemStack stack, double d, double e, double f, World world) {
-        super(EntityTypeRegistry.get().FLYING_ITEM, d, e, f, world);
+        super(EntityTypeRegistry.get().FLYING_ITEM.get(), d, e, f, world);
         this.setItem(stack);
     }
 
     public FlyingItemEntity(ItemStack stack, Entity entity, World world) {
-        super(EntityTypeRegistry.get().FLYING_ITEM, world);
+        super(EntityTypeRegistry.get().FLYING_ITEM.get(), world);
         this.setOwner(entity);
         this.setItem(stack);
     }

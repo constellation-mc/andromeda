@@ -37,7 +37,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
     }
 
     public JukeboxBoatEntity(World world, double x, double y, double z) {
-        this(EntityTypeRegistry.get().BOAT_WITH_JUKEBOX, world);
+        this(EntityTypeRegistry.get().BOAT_WITH_JUKEBOX.get(), world);
         this.setPosition(x, y, z);
         this.prevX = x;
         this.prevY = y;
