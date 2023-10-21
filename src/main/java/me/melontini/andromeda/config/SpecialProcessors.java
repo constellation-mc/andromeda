@@ -49,6 +49,8 @@ class SpecialProcessors {
             return null;
         }, CommonValues.mod(), (holder) -> {
             MixinErrorEntry entry = FAILED_MIXINS.get(holder.option());
+            if (entry == null) return null;
+
             String[] split = entry.className().split("\\.");
             return TextEntry.translatable(DEFAULT_KEY + "mixin_error", split[split.length - 1]);
         });
@@ -63,6 +65,8 @@ class SpecialProcessors {
             return null;
         }, CommonValues.mod(), (holder) -> {
             ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(holder.option());
+            if (entry == null) return null;
+
             Throwable cause = entry.cause();
             if (cause.getLocalizedMessage() != null) {
                 return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[1]", cause.getClass().getSimpleName(), cause.getLocalizedMessage());

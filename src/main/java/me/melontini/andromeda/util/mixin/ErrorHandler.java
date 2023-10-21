@@ -31,7 +31,7 @@ public class ErrorHandler implements IMixinErrorHandler {
     }
 
     private static ErrorAction handleMixinError(String phase, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        if (action == ErrorAction.ERROR && !(th instanceof MixinVerifyError)) {
+        if (action == ErrorAction.ERROR && mixin.getClassName().startsWith("me.melontini.andromeda.mixin") && !(th instanceof MixinVerifyError)) {
             try {
                 ClassNode node = mixin.getClassNode(ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
                 AnnotationNode annotationNode = Annotations.getVisible(node, MixinRelatedConfigOption.class);
