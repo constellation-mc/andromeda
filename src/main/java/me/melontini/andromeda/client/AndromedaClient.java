@@ -149,7 +149,7 @@ public class AndromedaClient {
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
-                    var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(frameStack);
+                    var list = DrawUtil.getFakeScreen().getTooltipFromItem(frameStack);
                     //list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
