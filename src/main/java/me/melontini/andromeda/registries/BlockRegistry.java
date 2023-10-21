@@ -6,7 +6,6 @@ import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.items.RoseOfTheValley;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -31,18 +30,18 @@ public class BlockRegistry {
     private static BlockRegistry INSTANCE;
 
     @Feature("unknown")
-    public final Lazy<FlowerBlock> ROSE_OF_THE_VALLEY = start(() -> ContentBuilder.BlockBuilder.create(id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
+    public final Keeper<FlowerBlock> ROSE_OF_THE_VALLEY = start(() -> ContentBuilder.BlockBuilder.create(id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON))))
             .register(Config.get().unknown));
 
     @Feature("incubator.enable")
-    public final Lazy<IncubatorBlock> INCUBATOR_BLOCK = start(() -> ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
+    public final Keeper<IncubatorBlock> INCUBATOR_BLOCK = start(() -> ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(call(() -> ItemGroup.REDSTONE)))
             .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder.create(id, IncubatorBlockEntity::new, block))
             .register(Config.get().incubator.enable));
 
     @Feature("incubator.enable")
-    public final Lazy<BlockEntityType<IncubatorBlockEntity>> INCUBATOR_BLOCK_ENTITY = Lazy.of(() -> () -> INCUBATOR_BLOCK.get() == null ? null : RegistryUtil.asBlockEntity(INCUBATOR_BLOCK.get()));
+    public final Keeper<BlockEntityType<IncubatorBlockEntity>> INCUBATOR_BLOCK_ENTITY = Keeper.of(() -> () -> INCUBATOR_BLOCK.get() == null ? null : RegistryUtil.asBlockEntity(INCUBATOR_BLOCK.get()));
 
     public static BlockRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));

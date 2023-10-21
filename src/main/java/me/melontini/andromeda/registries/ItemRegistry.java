@@ -15,7 +15,6 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.interfaces.DarkMatterEntries;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
@@ -46,39 +45,39 @@ public class ItemRegistry {
     private static ItemRegistry INSTANCE;
 
     @Feature("incubator.enable")
-    public final Lazy<RoseOfTheValley> ROSE_OF_THE_VALLEY = Lazy.of(() -> () -> asItem(BlockRegistry.get().ROSE_OF_THE_VALLEY.get()));
+    public final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.of(() -> () -> asItem(BlockRegistry.get().ROSE_OF_THE_VALLEY.get()));
 
-    public final Lazy<SpawnerMinecartItem> SPAWNER_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public final Keeper<SpawnerMinecartItem> SPAWNER_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("spawner_minecart"), () -> new SpawnerMinecartItem(AbstractMinecartEntity.Type.SPAWNER, new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> ItemGroup.TRANSPORTATION)));
 
     @Feature("newMinecarts.isAnvilMinecartOn")
-    public final Lazy<AnvilMinecartItem> ANVIL_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public final Keeper<AnvilMinecartItem> ANVIL_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newMinecarts.isAnvilMinecartOn));
 
     @Feature("newMinecarts.isNoteBlockMinecartOn")
-    public final Lazy<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newMinecarts.isNoteBlockMinecartOn));
 
     @Feature("newMinecarts.isJukeboxMinecartOn")
-    public final Lazy<JukeBoxMinecartItem> JUKEBOX_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public final Keeper<JukeBoxMinecartItem> JUKEBOX_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newMinecarts.isJukeboxMinecartOn));
 
     @Feature("totemSettings.enableInfiniteTotem")
-    public final Lazy<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
+    public final Keeper<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
             .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
             .itemGroup(call(() -> ItemGroup.COMBAT)).register(Config.get().totemSettings.enableInfiniteTotem));
 
     @Feature("lockpickEnabled")
-    public final Lazy<LockpickItem> LOCKPICK = start(() -> ContentBuilder.ItemBuilder
+    public final Keeper<LockpickItem> LOCKPICK = start(() -> ContentBuilder.ItemBuilder
             .create(id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
             .itemGroup(call(() -> ItemGroup.TOOLS)).register(Config.get().lockpickEnabled));
 
     @Feature("incubator.enable")
-    public final Lazy<BlockItem> INCUBATOR = Lazy.of(() -> () -> asItem(BlockRegistry.get().INCUBATOR_BLOCK.get()));
+    public final Keeper<BlockItem> INCUBATOR = Keeper.of(() -> () -> asItem(BlockRegistry.get().INCUBATOR_BLOCK.get()));
 
     private ItemStack ITEM_GROUP_ICON;
 

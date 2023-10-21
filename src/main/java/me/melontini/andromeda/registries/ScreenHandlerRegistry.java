@@ -17,9 +17,9 @@ public class ScreenHandlerRegistry {
     private static ScreenHandlerRegistry INSTANCE;
 
     @Feature("usefulFletching")
-    public final ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN_HANDLER = RegistryUtil.createScreenHandler(Config.get().usefulFletching, id("fletching"), () -> FletchingScreenHandler::new);
+    public final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.of(() -> () -> RegistryUtil.createScreenHandler(Config.get().usefulFletching, id("fletching"), () -> FletchingScreenHandler::new));
     @Feature("lockpick.villagerInventory")
-    public final ScreenHandlerType<MerchantInventoryScreenHandler> MERCHANT_INVENTORY_SCREEN_HANDLER = RegistryUtil.createScreenHandler(id("merchant_inventory"), () -> MerchantInventoryScreenHandler::new);
+    public final Keeper<ScreenHandlerType<MerchantInventoryScreenHandler>> MERCHANT_INVENTORY = Keeper.of(() -> () -> RegistryUtil.createScreenHandler(id("merchant_inventory"), () -> MerchantInventoryScreenHandler::new));
 
     public static ScreenHandlerRegistry get() {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));

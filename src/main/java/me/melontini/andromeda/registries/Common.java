@@ -6,7 +6,6 @@ import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
@@ -31,13 +30,13 @@ public class Common {
 
     static void bootstrap(@NotNull Object reg) {
         for (Field field : reg.getClass().getFields()) {
-            if (Modifier.isStatic(field.getModifiers()) || field.getType() != Lazy.class) continue;
+            if (Modifier.isStatic(field.getModifiers()) || field.getType() != Keeper.class) continue;
 
-            Lazy<?> lazy = (Lazy<?>) Utilities.supplyUnchecked(() -> field.get(reg));
-            if (lazy.isInitialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
+            Keeper<?> keeper = (Keeper<?>) Utilities.supplyUnchecked(() -> field.get(reg));
+            if (keeper.initialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
             Feature f = field.getAnnotation(Feature.class);
             try {
-               lazy.getExc();
+               keeper.initialize();
             } catch (Throwable t) {
                 AndromedaLog.error("Failed to bootstrap registry object %s!".formatted(field.getName()), t);
                 if (f != null) {
@@ -47,9 +46,9 @@ public class Common {
         }
     }
 
-    static <T, R extends ContentBuilder.CommonBuilder<T>> Lazy<T> start(Supplier<R> supplier) {
+    static <T, R extends ContentBuilder.CommonBuilder<T>> Keeper<T> start(Supplier<R> supplier) {
         R builder = supplier.get();
-        return new Lazy<>(() -> builder::build);
+        return new Keeper<>(() -> builder::build);
     }
 
     static Identifier id(String path) {

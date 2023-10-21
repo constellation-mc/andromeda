@@ -110,9 +110,9 @@ public class AndromedaClient {
         });
 
         if (Config.get().usefulFletching)
-            HandledScreens.register(ScreenHandlerRegistry.get().FLETCHING_SCREEN_HANDLER, FletchingScreen::new);
+            HandledScreens.register(ScreenHandlerRegistry.get().FLETCHING.get(), FletchingScreen::new);
 
-        HandledScreens.register(ScreenHandlerRegistry.get().MERCHANT_INVENTORY_SCREEN_HANDLER, MerchantInventoryScreen::new);
+        HandledScreens.register(ScreenHandlerRegistry.get().MERCHANT_INVENTORY.get(), MerchantInventoryScreen::new);
 
         ParticleFactoryRegistry.getInstance().register(Andromeda.get().KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
