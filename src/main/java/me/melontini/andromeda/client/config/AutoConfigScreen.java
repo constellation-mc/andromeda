@@ -3,7 +3,7 @@ package me.melontini.andromeda.client.config;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
@@ -84,7 +84,7 @@ public class AutoConfigScreen {
         return Support.get("cloth-config", () -> () -> {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(screen)
-                    .setTitle(TextUtil.translatable("config.andromeda.title", SharedConstants.MOD_VERSION.split("-")[0]))
+                    .setTitle(TextUtil.translatable("config.andromeda.title", CommonValues.version().split("-")[0]))
                     .setSavingRunnable(Config::save)
                     .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 

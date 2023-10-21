@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import static me.melontini.andromeda.config.Config.run;
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Common {
 

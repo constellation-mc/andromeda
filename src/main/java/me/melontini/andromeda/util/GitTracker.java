@@ -37,7 +37,7 @@ public class GitTracker {
     }
 
     static {
-        Path lastResponse = SharedConstants.HIDDEN_PATH.resolve("git-response.json");
+        Path lastResponse = CommonValues.hiddenPath().resolve("git-response.json");
 
         boolean shouldUpdate = true;
         if (Files.exists(lastResponse)) {
@@ -47,7 +47,7 @@ public class GitTracker {
             } catch (Exception ignored) {
             }
         }
-        if (!shouldUpdate) shouldUpdate = SharedConstants.MOD_UPDATED;
+        if (!shouldUpdate) shouldUpdate = CommonValues.updated();
 
         if (shouldUpdate) {
             tryUpdateGitInfo(lastResponse);

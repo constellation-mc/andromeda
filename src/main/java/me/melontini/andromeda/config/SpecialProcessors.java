@@ -1,7 +1,7 @@
 package me.melontini.andromeda.config;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import me.melontini.dark_matter.api.config.interfaces.TextEntry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -37,7 +37,7 @@ class SpecialProcessors {
                     .filter(mod -> mod.getMetadata().containsCustomValue(FEATURES_KEY))
                     .forEach(SpecialProcessors::parseMetadata);
             return MOD_JSON;
-        }, SharedConstants.MOD_CONTAINER, (holder) -> TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(holder.option()).toArray())));
+        }, CommonValues.mod(), (holder) -> TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(holder.option()).toArray())));
 
         registry.register(MIXIN_ERROR_ID, config -> {
             if (!FAILED_MIXINS.isEmpty()) {
@@ -47,7 +47,7 @@ class SpecialProcessors {
                 return map;
             }
             return null;
-        }, SharedConstants.MOD_CONTAINER, (holder) -> {
+        }, CommonValues.mod(), (holder) -> {
             MixinErrorEntry entry = FAILED_MIXINS.get(holder.option());
             String[] split = entry.className().split("\\.");
             return TextEntry.translatable(DEFAULT_KEY + "mixin_error", split[split.length - 1]);
@@ -61,7 +61,7 @@ class SpecialProcessors {
                 return map;
             }
             return null;
-        }, SharedConstants.MOD_CONTAINER, (holder) -> {
+        }, CommonValues.mod(), (holder) -> {
             ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(holder.option());
             Throwable cause = entry.cause();
             if (cause.getLocalizedMessage() != null) {

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.config;
 
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
@@ -19,7 +19,7 @@ public class Config {
     static final String DEFAULT_KEY = "andromeda.config.tooltip.manager.";
 
     private static final ConfigManager<AndromedaConfig> MANAGER = ConfigBuilder
-            .create(AndromedaConfig.class, SharedConstants.MOD_CONTAINER, "andromeda")
+            .create(AndromedaConfig.class, CommonValues.mod(), "andromeda")
             .constructor(AndromedaConfig::new)
             .serializer(manager -> GsonSerializers.create(manager, Fixups.addFixups()))
             .redirects(builder -> builder

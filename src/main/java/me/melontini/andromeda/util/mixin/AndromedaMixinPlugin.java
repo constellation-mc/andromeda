@@ -3,7 +3,7 @@ package me.melontini.andromeda.util.mixin;
 import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
@@ -47,13 +47,13 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
 
     @Override
     public void onPluginLoad(String mixinPackage) {
-        LOGGER.info("Andromeda({}) on {}", SharedConstants.MOD_VERSION, SharedConstants.PLATFORM);
+        LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
         Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
 
         Path mtConfig = FabricLoader.getInstance().getConfigDir().resolve("m-tweaks.json");
         if (Files.exists(mtConfig)) {
             try {
-                Files.move(mtConfig, SharedConstants.CONFIG_PATH);
+                Files.move(mtConfig, CommonValues.configPath());
             } catch (IOException e) {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }

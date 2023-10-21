@@ -15,7 +15,7 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Environment(EnvType.CLIENT)
 public class AndromedaClient {
@@ -216,7 +216,7 @@ public class AndromedaClient {
 
     @Override
     public String toString() {
-        return "AndromedaClient{version=" + SharedConstants.MOD_VERSION + "}";
+        return "AndromedaClient{version=" + CommonValues.version() + "}";
     }
 
     public static AndromedaClient get() {

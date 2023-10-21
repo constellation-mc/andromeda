@@ -2,7 +2,7 @@ package me.melontini.andromeda.networks;
 
 import net.minecraft.util.Identifier;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class AndromedaPackets {
 
