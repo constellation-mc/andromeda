@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.items.better_names;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 
 @Mixin(ItemStack.class)
-@MixinRelatedConfigOption("slightlyBetterItemNames")
+@Feature("slightlyBetterItemNames")
 abstract class ItemStackMixin {
     @Shadow
     public abstract int getMaxDamage();

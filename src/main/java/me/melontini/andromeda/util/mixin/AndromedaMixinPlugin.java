@@ -4,7 +4,7 @@ import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
@@ -30,7 +30,7 @@ import static me.melontini.dark_matter.api.base.util.Utilities.cast;
 @CustomLog
 public class AndromedaMixinPlugin extends ExtendablePlugin {
 
-    private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + MixinRelatedConfigOption.class.getName().replace(".", "/") + ";";
+    private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + Feature.class.getName().replace(".", "/") + ";";
 
     static {
         try {
@@ -70,7 +70,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName, ClassNode mixinNode, List<AnnotationNode> nodes) {
         boolean load = true;
         if (Config.get().compatMode) {
-            AnnotationNode annotationNode = Annotations.getVisible(mixinNode, MixinRelatedConfigOption.class);
+            AnnotationNode annotationNode = Annotations.getVisible(mixinNode, Feature.class);
             //"inspired" by https://github.com/unascribed/Fabrication/blob/3.0/1.18/src/main/java/com/unascribed/fabrication/support/MixinConfigPlugin.java
             if (annotationNode != null) {
                 Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
@@ -92,7 +92,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
 
     private static void verifyMixin(ClassNode mixinNode, String mixinClassName) {
         LOGGER.debug("Verifying @MixinRelatedConfigOption from " + mixinClassName);
-        AnnotationNode annotationNode = Annotations.getVisible(mixinNode, MixinRelatedConfigOption.class);
+        AnnotationNode annotationNode = Annotations.getVisible(mixinNode, Feature.class);
         if (annotationNode != null) {
             Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
             List<String> configOptions = cast(values.get("value"));

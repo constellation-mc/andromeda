@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.entities.slimes.merge;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.entity.Entity;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SlimeEntity.class)
-@MixinRelatedConfigOption("slimes.merge")
+@Feature("slimes.merge")
 abstract class SlimeEntityMixin extends MobEntity {
 
     @Unique

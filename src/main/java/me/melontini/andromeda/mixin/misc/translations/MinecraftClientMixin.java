@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.misc.translations;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(MinecraftClient.class)
-@MixinRelatedConfigOption("autoUpdateTranslations")
+@Feature("autoUpdateTranslations")
 class MinecraftClientMixin {
     @Shadow @Final public GameOptions options;
 

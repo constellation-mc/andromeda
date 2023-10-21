@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.entities.furnace_minecart;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.ItemStackUtil;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.EntityType;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Comparator;
 
 @Mixin(FurnaceMinecartEntity.class)
-@MixinRelatedConfigOption({"betterFurnaceMinecart", "furnaceMinecartTakeFuelWhenLow"})
+@Feature({"betterFurnaceMinecart", "furnaceMinecartTakeFuelWhenLow"})
 abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
     @Shadow
     public int fuel;

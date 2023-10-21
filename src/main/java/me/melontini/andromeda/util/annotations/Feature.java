@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MixinRelatedConfigOption {
+public @interface Feature {
 
     String[] value(); //The options need to be provided in a hierarchy. e.g. "betterFurnaceMinecart", "furnaceMinecartTakeFuelWhenLow"
 }

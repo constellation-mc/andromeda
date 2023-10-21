@@ -4,7 +4,7 @@ import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -44,7 +44,7 @@ import java.util.Set;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Mixin(ItemEntity.class)
-@MixinRelatedConfigOption({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
+@Feature({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
 abstract class ItemEntityMixin extends Entity {
     @Unique
     private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();

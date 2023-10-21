@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.gui.name_tooltips;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Mixin(InGameHud.class)
-@MixinRelatedConfigOption("tooltipNotName")
+@Feature("tooltipNotName")
 abstract class InGameHudMixin {
     @Shadow
     @Final

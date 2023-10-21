@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.items.cart_copy;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.block.AbstractRailBlock;
@@ -42,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 
 @Mixin(MinecartItem.class)
-@MixinRelatedConfigOption("minecartBlockPicking")
+@Feature("minecartBlockPicking")
 abstract class MinecartItemMixin extends Item {
 
     @Shadow

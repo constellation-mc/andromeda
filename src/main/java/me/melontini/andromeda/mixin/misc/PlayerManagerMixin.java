@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.misc;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import org.spongepowered.asm.mixin.Final;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static me.melontini.andromeda.util.AdvancementGeneration.generateRecipeAdvancements;
 
 @Mixin(PlayerManager.class)
-@MixinRelatedConfigOption("recipeAdvancementsGeneration.enable")
+@Feature("recipeAdvancementsGeneration.enable")
 class PlayerManagerMixin {
 
     @Shadow @Final private MinecraftServer server;

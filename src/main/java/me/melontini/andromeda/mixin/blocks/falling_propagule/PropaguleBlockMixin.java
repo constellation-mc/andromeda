@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.falling_propagule;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PropaguleBlock;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PropaguleBlock.class)
-@MixinRelatedConfigOption("fallingPropagule")
+@Feature("fallingPropagule")
 abstract class PropaguleBlockMixin {
     @Shadow
     private static boolean isFullyGrown(BlockState state) {

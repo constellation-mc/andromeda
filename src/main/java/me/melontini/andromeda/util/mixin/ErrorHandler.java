@@ -3,7 +3,7 @@ package me.melontini.andromeda.util.mixin;
 import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import net.fabricmc.loader.api.FabricLoader;
@@ -34,7 +34,7 @@ public class ErrorHandler implements IMixinErrorHandler {
         if (action == ErrorAction.ERROR && mixin.getClassName().startsWith("me.melontini.andromeda.mixin") && !(th instanceof MixinVerifyError)) {
             try {
                 ClassNode node = mixin.getClassNode(ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
-                AnnotationNode annotationNode = Annotations.getVisible(node, MixinRelatedConfigOption.class);
+                AnnotationNode annotationNode = Annotations.getVisible(node, Feature.class);
                 if (annotationNode != null) {
                     List<String> configOptions = AsmUtil.getAnnotationValue(annotationNode, "value", null);
                     LOGGER.error("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));

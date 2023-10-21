@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.entities.snowball_tweaks.melt;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.mixin.annotations.ConstructDummy;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SnowballEntity.class)
-@MixinRelatedConfigOption("snowballs.melt")
+@Feature("snowballs.melt")
 abstract class SnowballEntityMixin extends ThrownItemEntity {
 
     public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {

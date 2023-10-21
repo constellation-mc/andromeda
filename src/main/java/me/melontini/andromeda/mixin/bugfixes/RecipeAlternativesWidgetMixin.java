@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.bugfixes;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.client.gui.screen.recipebook.RecipeAlternativesWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(RecipeAlternativesWidget.class)
-@MixinRelatedConfigOption("properlyAlignedRecipeAlternatives")
+@Feature("properlyAlignedRecipeAlternatives")
 class RecipeAlternativesWidgetMixin {
     @Shadow
     private int buttonX;

@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.misc.unknown.wakeup;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 @Mixin(PlayerEntity.class)
-@MixinRelatedConfigOption("unknown")
+@Feature("unknown")
 abstract class PlayerEntityMixin {
 
     @Shadow

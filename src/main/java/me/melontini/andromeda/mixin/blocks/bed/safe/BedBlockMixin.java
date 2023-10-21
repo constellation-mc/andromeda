@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.blocks.bed.safe;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaTexts;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static net.minecraft.block.BedBlock.isBedWorking;
 
 @Mixin(BedBlock.class)
-@MixinRelatedConfigOption("safeBeds")
+@Feature("safeBeds")
 abstract class BedBlockMixin extends Block {
 
     public BedBlockMixin(Settings settings) {

@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.util.AndromedaTexts;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FletchingTableBlock.class)
-@MixinRelatedConfigOption("usefulFletching")
+@Feature("usefulFletching")
 class FletchingTableBlockMixin extends CraftingTableBlock {
     public FletchingTableBlockMixin(Settings settings) {
         super(settings);

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.entities.snowball_tweaks.cooldown;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SnowballItem.class)
-@MixinRelatedConfigOption("snowballs.enableCooldown")
+@Feature("snowballs.enableCooldown")
 abstract class SnowballItemMixin extends Item {
 
     public SnowballItemMixin(Settings settings) {

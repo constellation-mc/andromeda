@@ -2,14 +2,14 @@ package me.melontini.andromeda.mixin.blocks.bed.power;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(BedBlock.class)
-@MixinRelatedConfigOption("enableBedExplosionPower")
+@Feature("enableBedExplosionPower")
 abstract class BedBlockMixin extends Block {
 
     public BedBlockMixin(Settings settings) {

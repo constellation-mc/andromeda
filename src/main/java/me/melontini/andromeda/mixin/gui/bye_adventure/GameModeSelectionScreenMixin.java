@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.gui.bye_adventure;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GameModeSelectionScreen.class)
-@MixinRelatedConfigOption("noMoreAdventure")
+@Feature("noMoreAdventure")
 abstract class GameModeSelectionScreenMixin extends Screen {
     protected GameModeSelectionScreenMixin(Text title) {
         super(title);
