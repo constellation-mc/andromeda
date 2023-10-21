@@ -9,6 +9,7 @@ import org.spongepowered.asm.service.MixinService;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.HexFormat;
@@ -42,6 +43,12 @@ public class CommonValues {
     public static Path hiddenPath() {
         if (!Files.exists(HIDDEN_PATH)) {
             Utilities.runUnchecked(() -> Files.createDirectories(HIDDEN_PATH));
+            try {
+                if (HIDDEN_PATH.getFileSystem().supportedFileAttributeViews().contains("dos"))
+                    Files.setAttribute(HIDDEN_PATH, "dos:hidden", Boolean.TRUE, LinkOption.NOFOLLOW_LINKS);
+            } catch (IOException ignored) {
+                AndromedaLog.warn("Failed to hide the .andromeda folder");
+            }
         }
         return HIDDEN_PATH;
     }
@@ -59,7 +66,7 @@ public class CommonValues {
     static {
         PLATFORM = resolvePlatform();
         MOD_UPDATED = verifyHash();
-        Utilities.runUnchecked(() -> Files.deleteIfExists(HIDDEN_PATH.resolve("last_version.txt")));
+        Utilities.runUnchecked(() -> Files.deleteIfExists(hiddenPath().resolve("last_version.txt")));
     }
 
     private static boolean verifyHash() {
@@ -75,7 +82,7 @@ public class CommonValues {
             throw new RuntimeException(e);
         }
 
-        Path lh = HIDDEN_PATH.resolve("last_hash.txt");
+        Path lh = hiddenPath().resolve("last_hash.txt");
         if (Files.exists(lh)) {
             String lhHash = Utilities.supplyUnchecked(() -> Files.readString(lh));
             if (!lhHash.equals(s)) {
