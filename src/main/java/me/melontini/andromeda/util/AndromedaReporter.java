@@ -38,7 +38,7 @@ public class AndromedaReporter {
                         JsonObject object = new JsonObject();
                         object.addProperty("mod_version", CommonValues.version().split("-")[0]);
                         object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
-                        object.addProperty("modloader", CommonValues.platform().name());
+                        object.addProperty("modloader", CommonValues.platform().toString());
                         AndromedaLog.info("Uploading optional data.: " + object);
                         mixpanel.set(analytics.getUUIDString(), object);
                     });
