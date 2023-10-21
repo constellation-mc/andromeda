@@ -1,10 +1,8 @@
 package me.melontini.andromeda.mixin.blocks.cactus_filler;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.ItemStackUtil;
-import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -41,14 +39,12 @@ class AbstractBlockMixin {
                 BlockPos pos1 = pos;
                 while (true) {
                     BlockState state1 = world.getBlockState(pos1 = pos1.up());
-                    if (state1.getBlock() instanceof CactusBlock) {
+                    if (state.isOf(state1.getBlock())) {
                         state = state1;
                     } else {
                         break;
                     }
                 }
-
-                AndromedaLog.devInfo(state + " [" + MiscUtil.blockPosAsString(pos1.down()) + "]");
 
                 if (!world.isClient()) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));

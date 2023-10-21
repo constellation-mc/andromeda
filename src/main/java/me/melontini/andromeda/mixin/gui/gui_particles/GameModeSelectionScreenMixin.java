@@ -30,6 +30,8 @@ import java.util.function.Supplier;
 @Feature("guiParticles.gameModeSwitcherParticles")
 abstract class GameModeSelectionScreenMixin extends Screen {
 
+    @Shadow protected abstract void init();
+
     @Unique
     private static final List<ItemStack> ANDROMEDA$ADVENTURE = Lists.newArrayList(Items.COMPASS.getDefaultStack(), Items.MAP.getDefaultStack(), Items.FILLED_MAP.getDefaultStack());
     @Unique
@@ -44,9 +46,6 @@ abstract class GameModeSelectionScreenMixin extends Screen {
         map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));
         map.put(GameModeSelectionScreen.GameModeSelection.SPECTATOR, () -> Utilities.pickAtRandom(ANDROMEDA$SPECTATOR));
     });
-
-    @Shadow
-    protected abstract void init();
 
     protected GameModeSelectionScreenMixin(Text title) {
         super(title);

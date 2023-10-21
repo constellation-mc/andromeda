@@ -35,11 +35,9 @@ import java.util.Optional;
 @Mixin(FallingBlockEntity.class)
 @Feature("canBeeNestsFall")
 abstract class FallingBlockMixin extends Entity {
-    @Shadow
-    @Nullable
-    public NbtCompound blockEntityData;
-    @Shadow
-    private BlockState block;
+
+    @Shadow @Nullable public NbtCompound blockEntityData;
+    @Shadow private BlockState block;
 
     public FallingBlockMixin(EntityType<?> type, World world) {
         super(type, world);

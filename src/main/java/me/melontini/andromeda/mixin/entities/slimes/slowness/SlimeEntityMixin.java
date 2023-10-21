@@ -19,8 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Feature("slimes.slowness")
 abstract class SlimeEntityMixin extends MobEntity {
 
-    @Shadow
-    public abstract int getSize();
+    @Shadow public abstract int getSize();
 
     protected SlimeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);

@@ -20,12 +20,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EndCrystalEntity.class)
 @Feature({"dragonFight.fightTweaks", "dragonFight.respawnCrystals"})
 abstract class EndCrystalMixin extends Entity {
+
+    @Shadow public abstract boolean shouldShowBottom();
+
     public EndCrystalMixin(EntityType<?> type, World world) {
         super(type, world);
     }
-
-    @Shadow
-    public abstract boolean shouldShowBottom();
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/decoration/EndCrystalEntity;remove(Lnet/minecraft/entity/Entity$RemovalReason;)V", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {

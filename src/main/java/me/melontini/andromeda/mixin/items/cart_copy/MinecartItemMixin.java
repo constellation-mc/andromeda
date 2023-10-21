@@ -46,9 +46,7 @@ import java.util.Objects;
 @Feature("minecartBlockPicking")
 abstract class MinecartItemMixin extends Item {
 
-    @Shadow
-    @Final
-    public AbstractMinecartEntity.Type type;
+    @Shadow @Final public AbstractMinecartEntity.Type type;
 
     public MinecartItemMixin(Settings settings) {
         super(settings);

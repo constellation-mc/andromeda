@@ -22,10 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Feature("beeFlowerDuplication")
 abstract class BeeEntityMixin extends AnimalEntity {
 
-    @Shadow
-    @Nullable BlockPos flowerPos;
-    @Shadow
-    BeeEntity.PollinateGoal pollinateGoal;
+    @Shadow @Nullable BlockPos flowerPos;
+    @Shadow BeeEntity.PollinateGoal pollinateGoal;
+
     @Unique
     private int andromeda$plantingCoolDown;
 

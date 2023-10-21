@@ -25,11 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemStack.class)
 @Feature("throwableItems.enable")
 abstract class ItemStackMixin {
-    @Shadow
-    public abstract Item getItem();
 
-    @Shadow
-    public abstract void decrement(int amount);
+    @Shadow public abstract Item getItem();
+    @Shadow public abstract void decrement(int amount);
 
     @Inject(at = @At("HEAD"), method = "use", cancellable = true)
     private void andromeda$throwableBehaviour(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {

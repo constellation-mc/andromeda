@@ -26,8 +26,7 @@ import java.util.Optional;
 @Feature("unknown")
 abstract class PlayerEntityMixin {
 
-    @Shadow
-    public abstract void playSound(SoundEvent event, SoundCategory category, float volume, float pitch);
+    @Shadow public abstract void playSound(SoundEvent event, SoundCategory category, float volume, float pitch);
 
     @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
     private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {

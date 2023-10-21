@@ -12,11 +12,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(RecipeAlternativesWidget.class)
 @Feature("properlyAlignedRecipeAlternatives")
 class RecipeAlternativesWidgetMixin {
-    @Shadow
-    private int buttonX;
-
-    @Shadow
-    private int buttonY;
+    @Shadow private int buttonX;
+    @Shadow private int buttonY;
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/recipebook/RecipeAlternativesWidget;renderGrid(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"), index = 3, method = "render")
     private int andromeda$prepareGrid(int i) {

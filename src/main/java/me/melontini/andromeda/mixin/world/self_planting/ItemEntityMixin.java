@@ -26,11 +26,11 @@ import java.util.Random;
 @Mixin(ItemEntity.class)
 @Feature("autoPlanting.enabled")
 abstract class ItemEntityMixin {
+
+    @Shadow public abstract ItemStack getStack();
+
     @Unique
     private final Random andromeda$random = new Random();
-
-    @Shadow
-    public abstract ItemStack getStack();
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void andromeda$tryPlant(CallbackInfo ci) {

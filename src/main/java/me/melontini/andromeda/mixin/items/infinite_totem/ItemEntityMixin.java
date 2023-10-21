@@ -46,14 +46,15 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 @Mixin(ItemEntity.class)
 @Feature({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
 abstract class ItemEntityMixin extends Entity {
+
+    @Shadow public abstract void setPickupDelayInfinite();
+    @Shadow public abstract void setToDefaultPickupDelay();
+    @Shadow @Final private static TrackedData<ItemStack> STACK;
+
     @Unique
     private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
     @Unique
     private static final Tuple<BeaconBlockEntity, Integer> ANDROMEDA$NULL_BEACON = Tuple.of(null, 0);
-    @Shadow
-    @Final
-    private static TrackedData<ItemStack> STACK;
-
     @Unique
     private final List<Block> beaconBlocks = List.of(Blocks.DIAMOND_BLOCK, Blocks.NETHERITE_BLOCK);
     @Unique
@@ -67,12 +68,6 @@ abstract class ItemEntityMixin extends Entity {
     public ItemEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
-
-    @Shadow
-    public abstract void setPickupDelayInfinite();
-
-    @Shadow
-    public abstract void setToDefaultPickupDelay();
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {

@@ -26,21 +26,12 @@ import java.util.stream.Collectors;
 @Mixin(InGameHud.class)
 @Feature("tooltipNotName")
 abstract class InGameHudMixin {
-    @Shadow
-    @Final
-    private MinecraftClient client;
 
-    @Shadow
-    private int heldItemTooltipFade;
-
-    @Shadow
-    private ItemStack currentStack;
-
-    @Shadow
-    private int scaledHeight;
-
-    @Shadow
-    private int scaledWidth;
+    @Shadow @Final private MinecraftClient client;
+    @Shadow private int heldItemTooltipFade;
+    @Shadow private ItemStack currentStack;
+    @Shadow private int scaledHeight;
+    @Shadow private int scaledWidth;
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
     private void andromeda$renderTooltip(MatrixStack matrices, CallbackInfo ci) {

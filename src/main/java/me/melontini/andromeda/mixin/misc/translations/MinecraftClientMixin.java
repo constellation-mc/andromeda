@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(MinecraftClient.class)
 @Feature("autoUpdateTranslations")
 class MinecraftClientMixin {
+
     @Shadow @Final public GameOptions options;
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourcePackManager;scanPacks()V", shift = At.Shift.BEFORE), method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;")

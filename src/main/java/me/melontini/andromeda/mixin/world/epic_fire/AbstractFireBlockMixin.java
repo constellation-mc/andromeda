@@ -21,12 +21,12 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(FireBlock.class)
 @Feature("quickFire")
 abstract class AbstractFireBlockMixin extends AbstractFireBlock {
+
+    @Shadow protected abstract void trySpreadingFire(World world, BlockPos pos, int spreadFactor, Random random, int currentAge);
+
     public AbstractFireBlockMixin(Settings settings, float damage) {
         super(settings, damage);
     }
-
-    @Shadow
-    protected abstract void trySpreadingFire(World world, BlockPos pos, int spreadFactor, Random random, int currentAge);
 
     @ModifyVariable(method = "trySpreadingFire", at = @At(value = "LOAD"), index = 3, argsOnly = true)
     public int andromeda$spreadFire0(int value) {

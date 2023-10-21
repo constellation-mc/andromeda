@@ -22,8 +22,7 @@ import java.util.Comparator;
 @Mixin(FurnaceMinecartEntity.class)
 @Feature({"betterFurnaceMinecart", "furnaceMinecartTakeFuelWhenLow"})
 abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
-    @Shadow
-    public int fuel;
+    @Shadow public int fuel;
 
     protected FurnaceMinecartIntakeMixin(EntityType<?> entityType, World world) {
         super(entityType, world);

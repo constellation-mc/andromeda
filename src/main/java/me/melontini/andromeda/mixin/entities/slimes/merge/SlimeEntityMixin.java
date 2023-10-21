@@ -1,7 +1,6 @@
 package me.melontini.andromeda.mixin.entities.slimes.merge;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
@@ -23,11 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Feature("slimes.merge")
 abstract class SlimeEntityMixin extends MobEntity {
 
+    @Shadow public abstract int getSize();
+    @Shadow public abstract void setSize(int size, boolean heal);
+
     @Unique
     private int andromeda$mergeCD = MathStuff.nextInt(700, 2000);
-    @Shadow public abstract int getSize();
-
-    @Shadow public abstract void setSize(int size, boolean heal);
 
     protected SlimeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
@@ -55,7 +54,6 @@ abstract class SlimeEntityMixin extends MobEntity {
             slime.discard();
             this.setSize(size, true);
             this.andromeda$mergeCD = MathStuff.nextInt(700, 2000);
-            AndromedaLog.devInfo("Slime {} and {} merged, cooldown is {}!", this.toString(), slime.toString(), this.andromeda$mergeCD);
         }
     }
 

@@ -32,12 +32,12 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(LivingEntity.class)
 @Feature("totemSettings.enableInfiniteTotem")
 abstract class LivingEntityMixin extends Entity {
+
+    @Shadow public abstract ItemStack getStackInHand(Hand hand);
+
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
-
-    @Shadow
-    public abstract ItemStack getStackInHand(Hand hand);
 
     @ModifyExpressionValue(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean andromeda$infiniteFallback(boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {

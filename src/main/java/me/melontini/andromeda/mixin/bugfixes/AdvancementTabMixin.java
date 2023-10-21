@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Feature("frameIndependentAdvancementShadow")
 class AdvancementTabMixin {
     @Shadow private float alpha;
-
     @Shadow @Final private MinecraftClient client;
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 0), index = 0, method = "drawWidgetTooltip")

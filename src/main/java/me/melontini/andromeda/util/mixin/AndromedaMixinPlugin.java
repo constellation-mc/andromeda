@@ -60,9 +60,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
         }
         Config.get();
 
-        if (Config.get().compatMode) {
-            LOGGER.warn("Compat mode is on!");
-        }
+        if (Config.get().compatMode) LOGGER.warn("Compat mode is on!");
         if (this.isDev()) LOGGER.warn("Will be verifying mixins!");
     }
 

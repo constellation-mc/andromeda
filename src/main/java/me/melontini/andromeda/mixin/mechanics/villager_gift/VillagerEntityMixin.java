@@ -24,8 +24,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(VillagerEntity.class)
 @Feature("villagerGifting")
 abstract class VillagerEntityMixin extends MerchantEntity {
-    @Shadow @Final private VillagerGossips gossip;
 
+    @Shadow @Final private VillagerGossips gossip;
     @Shadow protected abstract void sayNo();
 
     public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {

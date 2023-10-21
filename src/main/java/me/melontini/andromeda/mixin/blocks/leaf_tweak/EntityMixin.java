@@ -29,8 +29,7 @@ abstract class EntityMixin extends Entity {
         super(type, world);
     }
 
-    @Shadow
-    public abstract @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
+    @Shadow public abstract @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {

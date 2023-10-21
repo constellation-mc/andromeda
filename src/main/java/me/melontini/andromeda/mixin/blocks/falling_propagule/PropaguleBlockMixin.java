@@ -19,8 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PropaguleBlock.class)
 @Feature("fallingPropagule")
 abstract class PropaguleBlockMixin {
-    @Shadow
-    private static boolean isFullyGrown(BlockState state) {
+    @Shadow private static boolean isFullyGrown(BlockState state) {
         return false;
     }
 

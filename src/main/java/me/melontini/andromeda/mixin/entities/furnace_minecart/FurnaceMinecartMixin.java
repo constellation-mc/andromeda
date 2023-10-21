@@ -22,8 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FurnaceMinecartEntity.class)
 @Feature("betterFurnaceMinecart")
 class FurnaceMinecartMixin {
-    @Shadow
-    public int fuel;
+    @Shadow public int fuel;
 
     @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
     public void andromeda$interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
