@@ -1,5 +1,6 @@
 package me.melontini.andromeda.items.boats;
 
+import me.melontini.andromeda.util.MiscUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -10,7 +11,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -61,7 +61,7 @@ public abstract class AndromedaBoatItem<T extends BoatEntity> extends Item {
                 } else {
                     if (!world.isClient) {
                         world.spawnEntity(furnace);
-                        world.emitGameEvent(user, GameEvent.ENTITY_PLACE, new BlockPos(hitResult.getPos()));
+                        world.emitGameEvent(user, GameEvent.ENTITY_PLACE, MiscUtil.vec3dAsBlockPos(hitResult.getPos()));
                         if (!user.getAbilities().creativeMode) {
                             itemStack.decrement(1);
                         }
