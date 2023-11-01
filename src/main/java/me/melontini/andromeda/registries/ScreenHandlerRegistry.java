@@ -5,7 +5,6 @@ import me.melontini.andromeda.screens.MerchantInventoryScreenHandler;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.content.RegistryUtil;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandlerType;
 
 import java.util.Objects;
