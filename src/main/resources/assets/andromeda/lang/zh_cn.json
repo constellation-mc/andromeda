@@ -241,7 +241,7 @@
   "text.autoconfig.andromeda.option.tooltips.compass.@Tooltip": "显示指南针到目标的距离。",
   "text.autoconfig.andromeda.option.tooltips.recoveryCompass": "死亡指南针",
   "text.autoconfig.andromeda.option.tooltips.recoveryCompass.@Tooltip": "显示到上次死亡点的距离。",
-  "text.autoconfig.andromeda.option.lockpickEnabled": "启用开锁器",
+  "text.autoconfig.andromeda.option.lockpick.enable": "启用开锁器",
   "text.autoconfig.andromeda.option.lockpick": "开锁器",
   "text.autoconfig.andromeda.option.lockpick.@Tooltip": "创造模式物品，使玩家能够打开你原本无法打开的东西。",
   "text.autoconfig.andromeda.option.lockpick.chance": "成功概率",
@@ -356,6 +356,8 @@
   "text.autoconfig.andromeda.option.unknown": "???",
 
   "andromeda.old.keys": "用于更新翻译的旧翻译键",
+
+  "text.autoconfig.andromeda.option.lockpickEnabled": "启用开锁器",
 
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffects": "营火效果",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffects.@Tooltip": "使营火给予范围内生物药水效果",

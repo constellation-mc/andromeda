@@ -241,7 +241,7 @@
   "text.autoconfig.andromeda.option.tooltips.compass.@Tooltip": "Shows distance to compass' target.",
   "text.autoconfig.andromeda.option.tooltips.recoveryCompass": "Recovery Compass",
   "text.autoconfig.andromeda.option.tooltips.recoveryCompass.@Tooltip": "Shows distance to last death spot.",
-  "text.autoconfig.andromeda.option.lockpickEnabled": "Lockpick Enabled",
+  "text.autoconfig.andromeda.option.lockpick.enable": "Enable",
   "text.autoconfig.andromeda.option.lockpick": "Lockpick",
   "text.autoconfig.andromeda.option.lockpick.@Tooltip": "Creative-only item, which allows opening things that you shouldn't.",
   "text.autoconfig.andromeda.option.lockpick.chance": "Success Chance",
@@ -356,6 +356,8 @@
   "text.autoconfig.andromeda.option.unknown": "???",
 
   "andromeda.old.keys": "Old keys for updating translations.",
+
+  "text.autoconfig.andromeda.option.lockpickEnabled": "Enable",
 
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffects": "Campfire Effects",
   "text.autoconfig.andromeda.option.campfireTweaks.campfireEffects.@Tooltip": "Makes campfires emit potion effects within a certain range.",

@@ -34,7 +34,8 @@ public class Config {
                     .add("autogenRecipeAdvancements.blacklistedRecipeIds", "recipeAdvancementsGeneration.recipeBlacklist")
                     .add("campfireTweaks.campfireEffects", "campfireTweaks.effects")
                     .add("campfireTweaks.campfireEffectsPassive", "campfireTweaks.affectsPassive")
-                    .add("campfireTweaks.campfireEffectsRange", "campfireTweaks.effectsRange"))
+                    .add("campfireTweaks.campfireEffectsRange", "campfireTweaks.effectsRange")
+                    .add("lockpickEnabled", "lockpick.enable"))
             .processors((registry, mod) -> {
                 SpecialProcessors.collect(registry);
                 DefaultProcessors.collect(registry);
