@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.blocks.leaf_tweak;
 
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,15 +22,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-@MixinRelatedConfigOption("leafSlowdown")
-public abstract class EntityMixin extends Entity {
+@Feature("leafSlowdown")
+abstract class EntityMixin extends Entity {
 
     public EntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
-    @Shadow
-    public abstract @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
+    @Shadow public abstract @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,8 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(BowItem.class)
-@MixinRelatedConfigOption("usefulFletching")
-public abstract class BowItemMixin extends RangedWeaponItem {
+@Feature("usefulFletching")
+abstract class BowItemMixin extends RangedWeaponItem {
     public BowItemMixin(Settings settings) {
         super(settings);
     }

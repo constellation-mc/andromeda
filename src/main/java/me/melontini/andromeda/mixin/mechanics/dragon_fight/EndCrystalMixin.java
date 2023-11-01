@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.mechanics.dragon_fight;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.content.managers.EnderDragonManager;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -18,14 +18,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndCrystalEntity.class)
-@MixinRelatedConfigOption({"dragonFight.fightTweaks", "dragonFight.respawnCrystals"})
-public abstract class EndCrystalMixin extends Entity {
+@Feature({"dragonFight.fightTweaks", "dragonFight.respawnCrystals"})
+abstract class EndCrystalMixin extends Entity {
+
+    @Shadow public abstract boolean shouldShowBottom();
+
     public EndCrystalMixin(EntityType<?> type, World world) {
         super(type, world);
     }
-
-    @Shadow
-    public abstract boolean shouldShowBottom();
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/decoration/EndCrystalEntity;remove(Lnet/minecraft/entity/Entity$RemovalReason;)V", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {

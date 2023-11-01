@@ -2,7 +2,8 @@ package me.melontini.andromeda.mixin.gui.name_tooltips;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
@@ -23,23 +24,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Mixin(InGameHud.class)
-@MixinRelatedConfigOption("tooltipNotName")
-public abstract class InGameHudMixin {
-    @Shadow
-    @Final
-    private MinecraftClient client;
+@Feature("tooltipNotName")
+abstract class InGameHudMixin {
 
-    @Shadow
-    private int heldItemTooltipFade;
-
-    @Shadow
-    private ItemStack currentStack;
-
-    @Shadow
-    private int scaledHeight;
-
-    @Shadow
-    private int scaledWidth;
+    @Shadow @Final private MinecraftClient client;
+    @Shadow private int heldItemTooltipFade;
+    @Shadow private ItemStack currentStack;
+    @Shadow private int scaledHeight;
+    @Shadow private int scaledWidth;
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
     private void andromeda$renderTooltip(MatrixStack matrices, CallbackInfo ci) {
@@ -55,7 +47,7 @@ public abstract class InGameHudMixin {
 
             if (l > 0) {
                 int k = this.scaledHeight - 59;
-                if (!this.client.interactionManager.hasStatusBars()) {
+                if (!MakeSure.notNull(this.client.interactionManager).hasStatusBars()) {
                     k += 14;
                 }
 
@@ -65,7 +57,7 @@ public abstract class InGameHudMixin {
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.setShaderColor(1, 1, 1, Math.min(l / 255f, 0.8f));
-                var list = DrawUtil.FAKE_SCREEN.getTooltipFromItem(this.currentStack);
+                var list = DrawUtil.getFakeScreen().getTooltipFromItem(this.currentStack);
                 List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
                 this.currentStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {

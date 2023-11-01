@@ -18,7 +18,7 @@ public class MerchantInventoryScreenHandler extends ScreenHandler {
     }
 
     public MerchantInventoryScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-        super(ScreenHandlerRegistry.get().MERCHANT_INVENTORY_SCREEN_HANDLER, syncId);
+        super(ScreenHandlerRegistry.get().MERCHANT_INVENTORY.get(), syncId);
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 

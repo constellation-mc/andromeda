@@ -39,7 +39,7 @@ import static me.melontini.andromeda.registries.Common.id;
 
 public class ResourceRegistry {
 
-    public static void register() {
+    static void register() {
         ResourceConditions.register(id("config_option"), object -> {
             JsonArray array = JsonHelper.getArray(object, "values");
             boolean load = true;

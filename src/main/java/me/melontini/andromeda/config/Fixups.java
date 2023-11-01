@@ -3,14 +3,15 @@ package me.melontini.andromeda.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import me.melontini.dark_matter.api.config.FixupsBuilder;
+import me.melontini.dark_matter.api.config.serializers.gson.FixupsBuilder;
 
 import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
 class Fixups {
 
-    static void addFixups(FixupsBuilder builder) {
+    static me.melontini.dark_matter.api.config.serializers.gson.Fixups addFixups() {
+        FixupsBuilder builder = FixupsBuilder.create();
         builder.add("throwableItems", (holder) -> {
             if (holder.value() instanceof JsonPrimitive p && p.isBoolean()) {
                 holder.config().remove("throwableItems");
@@ -101,6 +102,8 @@ class Fixups {
             }
             return false;
         });
+
+        return builder.build();
     }
 
     private static boolean surgery(JsonObject donor, JsonObject patient, String oldKey, String newKey) {

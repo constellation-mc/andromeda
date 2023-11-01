@@ -2,21 +2,23 @@ package me.melontini.andromeda.mixin.gui.bye_adventure;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GameModeSelectionScreen.class)
-@MixinRelatedConfigOption("noMoreAdventure")
-public abstract class GameModeSelectionScreenMixin extends Screen {
+@Feature("noMoreAdventure")
+abstract class GameModeSelectionScreenMixin extends Screen {
     protected GameModeSelectionScreenMixin(Text title) {
         super(title);
     }
 
+    @Unique
     private final GameModeSelectionScreen.GameModeSelection[] andromeda$gameModeSelections = ArrayUtils.removeElement(GameModeSelectionScreen.GameModeSelection.values(), GameModeSelectionScreen.GameModeSelection.ADVENTURE);
 
     @ModifyExpressionValue(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;VALUES:[Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;"))

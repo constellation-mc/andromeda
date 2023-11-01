@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.world.falling_beehives;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.minecraft.block.BlockState;
@@ -33,13 +33,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Mixin(FallingBlockEntity.class)
-@MixinRelatedConfigOption("canBeeNestsFall")
-public abstract class FallingBlockMixin extends Entity {
-    @Shadow
-    @Nullable
-    public NbtCompound blockEntityData;
-    @Shadow
-    private BlockState block;
+@Feature("canBeeNestsFall")
+abstract class FallingBlockMixin extends Entity {
+
+    @Shadow @Nullable public NbtCompound blockEntityData;
+    @Shadow private BlockState block;
 
     public FallingBlockMixin(EntityType<?> type, World world) {
         super(type, world);

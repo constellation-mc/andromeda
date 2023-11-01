@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.entities.flower_duplication;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.BlockRegistry;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -19,13 +19,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BeeEntity.class)
-@MixinRelatedConfigOption("beeFlowerDuplication")
-public abstract class BeeEntityMixin extends AnimalEntity {
+@Feature("beeFlowerDuplication")
+abstract class BeeEntityMixin extends AnimalEntity {
 
-    @Shadow
-    @Nullable BlockPos flowerPos;
-    @Shadow
-    BeeEntity.PollinateGoal pollinateGoal;
+    @Shadow @Nullable BlockPos flowerPos;
+    @Shadow BeeEntity.PollinateGoal pollinateGoal;
+
     @Unique
     private int andromeda$plantingCoolDown;
 
@@ -69,7 +68,7 @@ public abstract class BeeEntityMixin extends AnimalEntity {
                             if (world.getBlockState(pos).getBlock() instanceof AirBlock && flowerBlock.canPlaceAt(flowerState, world, pos)) {
                                 if (world.random.nextInt(12) == 0) {
                                     if (Config.get().unknown && world.random.nextInt(100) == 0) {
-                                        world.setBlockState(pos, BlockRegistry.get().ROSE_OF_THE_VALLEY.getDefaultState());
+                                        world.setBlockState(pos, BlockRegistry.get().ROSE_OF_THE_VALLEY.get().getDefaultState());
                                     } else {
                                         world.setBlockState(pos, flowerState);
                                     }

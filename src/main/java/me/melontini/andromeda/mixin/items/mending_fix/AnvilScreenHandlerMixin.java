@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.items.mending_fix;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(AnvilScreenHandler.class)
-@MixinRelatedConfigOption("balancedMending")
-public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
+@Feature("balancedMending")
+abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     public AnvilScreenHandlerMixin(@org.jetbrains.annotations.Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(type, syncId, playerInventory, context);

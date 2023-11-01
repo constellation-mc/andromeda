@@ -7,11 +7,11 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 public class AndromedaLog {
 
     private static final PrependingLogger LOGGER = PrependingLogger.get("Andromeda", logger -> {
-        StackWalker.StackFrame frame = Utilities.STACK_WALKER.walk(s -> s.skip(3).findFirst().orElse(null));
-        String[] split = frame.getClassName().split("\\.");
+        Class<?> cls = Utilities.getCallerClass(4);
+        String[] split = cls.getName().split("\\.");
         String caller = split[split.length - 1];
-        if (frame.getClassName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
-        return ((!Utilities.isDev() && SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) ?
+        if (cls.getName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
+        return ((!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR) ?
                 "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
     });
 
@@ -23,7 +23,7 @@ public class AndromedaLog {
         caller = "Andromeda/" + caller;
         if (cls.getName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
 
-        return PrependingLogger.get(caller, logger -> (!Utilities.isDev() && SharedConstants.PLATFORM != SharedConstants.Platform.CONNECTOR) ?
+        return PrependingLogger.get(caller, logger -> (!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR) ?
                 "(" + logger.getName() + ") " : "");
     }
 

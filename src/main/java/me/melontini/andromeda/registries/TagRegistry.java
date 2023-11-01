@@ -39,10 +39,11 @@ public class TagRegistry {
         return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
     }
 
-    public static void register() {
+    static void register() {
         if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
 
         INSTANCE = new TagRegistry();
+
         share("andromeda:tag_registry", INSTANCE);
         AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }

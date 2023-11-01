@@ -2,8 +2,8 @@ package me.melontini.andromeda.util.translations;
 
 import com.google.common.collect.Sets;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.GitTracker;
-import me.melontini.andromeda.util.SharedConstants;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
 import net.fabricmc.loader.api.FabricLoader;
@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class TranslationUpdater {
 
-    public static final Path TRANSLATION_PACK = SharedConstants.HIDDEN_PATH.resolve("andromeda_translations");
+    public static final Path TRANSLATION_PACK = CommonValues.hiddenPath().resolve("andromeda_translations");
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
     private static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
 
@@ -39,7 +39,7 @@ public class TranslationUpdater {
                 shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
             } catch (Exception ignored) {}
         }
-        if (!shouldUpdate) shouldUpdate = SharedConstants.MOD_UPDATED;
+        if (!shouldUpdate) shouldUpdate = CommonValues.updated();
 
         if (shouldUpdate) {
             Set<String> languages = Sets.newHashSet("en_us");

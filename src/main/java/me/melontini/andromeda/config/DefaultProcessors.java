@@ -1,5 +1,6 @@
 package me.melontini.andromeda.config;
 
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -21,7 +22,7 @@ public class DefaultProcessors {
                 return Map.of("safeBeds", false);
             }
             return null;
-        });
+        }, CommonValues.mod());
 
         registry.register("andromeda:iceberg", config -> {
             if (testModVersion("minecraft", ">=1.20") &&
@@ -32,7 +33,7 @@ public class DefaultProcessors {
                 );
             }
             return null;
-        });
+        }, CommonValues.mod());
     }
 
     static boolean testModVersion(String modId, String predicate) {

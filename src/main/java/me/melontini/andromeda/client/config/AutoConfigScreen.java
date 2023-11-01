@@ -3,10 +3,11 @@ package me.melontini.andromeda.client.config;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
+import me.melontini.dark_matter.api.config.OptionManager;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
@@ -36,10 +37,10 @@ public class AutoConfigScreen {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    Tuple<String, Set<String>> tuple = Config.getOptionManager().blameProcessors(field);
+                    Tuple<String, Set<OptionManager.ProcessorEntry<AndromedaConfig>>> tuple = Config.getOptionManager().blameProcessors(field);
                     Set<Text> texts = new HashSet<>();
-                    for (String processor : tuple.right()) {
-                        Config.getOptionManager().getReason(processor, tuple.left()).ifPresent(textEntry -> {
+                    for (OptionManager.ProcessorEntry<AndromedaConfig> processor : tuple.right()) {
+                        Config.getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
                             if (textEntry.isTranslatable()) {
                                 texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()));
                             } else {
@@ -83,7 +84,7 @@ public class AutoConfigScreen {
         return Support.get("cloth-config", () -> () -> {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(screen)
-                    .setTitle(TextUtil.translatable("config.andromeda.title", SharedConstants.MOD_VERSION.split("-")[0]))
+                    .setTitle(TextUtil.translatable("config.andromeda.title", CommonValues.version().split("-")[0]))
                     .setSavingRunnable(Config::save)
                     .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 

@@ -38,7 +38,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     }
 
     public JukeboxMinecartEntity(World world, double x, double y, double z) {
-        super(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY, world, x, y, z);
+        super(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY.get(), world, x, y, z);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
 
     @Override
     public Item getItem() {
-        return ItemRegistry.get().JUKEBOX_MINECART;
+        return ItemRegistry.get().JUKEBOX_MINECART.get();
     }
 
     @Override
@@ -164,7 +164,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
 
     @Override
     public ItemStack getPickBlockStack() {
-        return new ItemStack(ItemRegistry.get().JUKEBOX_MINECART);
+        return new ItemStack(ItemRegistry.get().JUKEBOX_MINECART.get());
     }
 
     @Override

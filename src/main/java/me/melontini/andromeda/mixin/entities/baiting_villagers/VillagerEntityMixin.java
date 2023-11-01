@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.entities.baiting_villagers;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.entity.ai.goal.VillagerTemptGoal;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VillagerEntity.class)
-@MixinRelatedConfigOption("villagersFollowEmeraldBlocks")
-public abstract class VillagerEntityMixin extends MerchantEntity {
+@Feature("villagersFollowEmeraldBlocks")
+abstract class VillagerEntityMixin extends MerchantEntity {
 
     public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);

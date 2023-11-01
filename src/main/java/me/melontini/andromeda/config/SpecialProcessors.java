@@ -1,6 +1,10 @@
 package me.melontini.andromeda.config;
 
-import lombok.CustomLog;
+import com.google.gson.*;
+import lombok.*;
+import lombok.experimental.Accessors;
+import me.melontini.andromeda.util.CommonValues;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import me.melontini.dark_matter.api.config.interfaces.TextEntry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -11,6 +15,9 @@ import net.fabricmc.loader.api.metadata.CustomValue.CvObject;
 import net.fabricmc.loader.api.metadata.CustomValue.CvType;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static me.melontini.andromeda.config.Config.DEFAULT_KEY;
@@ -36,17 +43,20 @@ class SpecialProcessors {
                     .filter(mod -> mod.getMetadata().containsCustomValue(FEATURES_KEY))
                     .forEach(SpecialProcessors::parseMetadata);
             return MOD_JSON;
-        }, (holder) -> TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(holder.option()).toArray())));
+        }, CommonValues.mod(), (holder) -> TextEntry.translatable(DEFAULT_KEY + "mod_json", Arrays.toString(MOD_BLAME.get(holder.option()).toArray())));
 
         registry.register(MIXIN_ERROR_ID, config -> {
             if (!FAILED_MIXINS.isEmpty()) {
                 Map<String, Object> map = new LinkedHashMap<>();
                 FAILED_MIXINS.forEach((k, v) -> map.put(k, v.value()));
+                map.put("compatMode", true);
                 return map;
             }
             return null;
-        }, (holder) -> {
+        }, CommonValues.mod(), (holder) -> {
             MixinErrorEntry entry = FAILED_MIXINS.get(holder.option());
+            if (entry == null) return null;
+
             String[] split = entry.className().split("\\.");
             return TextEntry.translatable(DEFAULT_KEY + "mixin_error", split[split.length - 1]);
         });
@@ -55,16 +65,18 @@ class SpecialProcessors {
             if (!UNKNOWN_EXCEPTIONS.isEmpty()) {
                 Map<String, Object> map = new LinkedHashMap<>();
                 UNKNOWN_EXCEPTIONS.forEach((k, v) -> map.put(k, v.value()));
+                map.put("compatMode", true);
                 return map;
             }
             return null;
-        }, (holder) -> {
+        }, CommonValues.mod(), (holder) -> {
             ExceptionEntry entry = UNKNOWN_EXCEPTIONS.get(holder.option());
-            Throwable cause = entry.cause();
-            if (cause.getLocalizedMessage() != null) {
-                return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[1]", cause.getClass().getSimpleName(), cause.getLocalizedMessage());
+            if (entry == null) return null;
+
+            if (entry.message() != null) {
+                return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[1]", entry.errorClass(), entry.message());
             }
-            return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[0]", cause.getClass().getSimpleName());
+            return TextEntry.translatable(DEFAULT_KEY + "unknown_exception[0]", entry.errorClass());
         });
     }
 
@@ -117,9 +129,71 @@ class SpecialProcessors {
         return true;
     }
 
-    record MixinErrorEntry(String feature, Object value, String className) {
+    private static final Gson GSON = new Gson();
+    private static final Path SAVE_PATH = CommonValues.hiddenPath().resolve("disabled_options.json");
+
+    static {
+        if (Files.exists(SAVE_PATH)) parseFromJson(Utilities.supplyUnchecked(() -> Files.newBufferedReader(SAVE_PATH)));
     }
 
-    record ExceptionEntry(String feature, Object value, Throwable cause) {
+    static void saveToJson() {
+        JsonObject object = new JsonObject();
+        if (!FAILED_MIXINS.isEmpty()) {
+            JsonArray array = new JsonArray();
+            FAILED_MIXINS.forEach((s, mixinErrorEntry) -> array.add(GSON.toJsonTree(mixinErrorEntry)));
+            object.add("mixins", array);
+        }
+        if (!UNKNOWN_EXCEPTIONS.isEmpty()) {
+            JsonArray array = new JsonArray();
+            UNKNOWN_EXCEPTIONS.forEach((s, exceptionEntry) -> array.add(GSON.toJsonTree(exceptionEntry)));
+            object.add("exceptions", array);
+        }
+        try {
+            Files.writeString(SAVE_PATH, GSON.toJson(object));
+        } catch (Exception e) {
+            LOGGER.error("Failed to write disabled options to file", e);
+        }
+    }
+
+    private static void parseFromJson(Reader reader) {
+        if (CommonValues.updated()) {
+            LOGGER.info("Mod updated! Removing old exceptions.");
+            Utilities.runUnchecked(() -> Files.deleteIfExists(SAVE_PATH));
+            return;
+        }
+
+        LOGGER.info("Loading exceptions from json!");
+        JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
+        if (object.has("mixins")) {
+            JsonArray array = object.getAsJsonArray("mixins");
+            for (JsonElement element : array) {
+                FAILED_MIXINS.put(element.getAsJsonObject().get("feature").getAsString(), SpecialProcessors.GSON.fromJson(element, MixinErrorEntry.class));
+            }
+        }
+        if (object.has("exceptions")) {
+            JsonArray array = object.getAsJsonArray("exceptions");
+            for (JsonElement element : array) {
+                UNKNOWN_EXCEPTIONS.put(element.getAsJsonObject().get("feature").getAsString(), SpecialProcessors.GSON.fromJson(element, ExceptionEntry.class));
+            }
+        }
+    }
+
+    @SuppressWarnings("ClassCanBeRecord")
+    @Getter @Accessors(fluent = true)
+    @ToString @EqualsAndHashCode @AllArgsConstructor
+    static final class MixinErrorEntry {
+        private final String feature;
+        private final Object value;
+        private final String className;
+    }
+
+    @SuppressWarnings("ClassCanBeRecord")
+    @Getter @Accessors(fluent = true)
+    @ToString @EqualsAndHashCode @AllArgsConstructor
+    static final class ExceptionEntry {
+        private final String feature;
+        private final Object value;
+        private final String errorClass;
+        private final String message;
     }
 }
