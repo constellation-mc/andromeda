@@ -103,6 +103,16 @@ class Fixups {
             return false;
         });
 
+        builder.add("lockpickEnabled", holder -> {
+            if (holder.value() instanceof JsonPrimitive p && p.isBoolean() && holder.config().has("lockpick")) {
+                JsonObject lockpick = holder.config().getAsJsonObject("lockpick");
+                lockpick.addProperty("enable", p.getAsBoolean());
+                holder.config().remove("lockpickEnabled");
+                return true;
+            }
+            return false;
+        });
+
         return builder.build();
     }
 
