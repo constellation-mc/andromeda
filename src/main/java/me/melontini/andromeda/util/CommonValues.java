@@ -1,5 +1,6 @@
 package me.melontini.andromeda.util;
 
+import lombok.CustomLog;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -16,6 +17,7 @@ import java.util.HexFormat;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@CustomLog
 public class CommonValues {
 
     public static final String MODID = "andromeda";
@@ -86,6 +88,8 @@ public class CommonValues {
         if (Files.exists(lh)) {
             String lhHash = Utilities.supplyUnchecked(() -> Files.readString(lh));
             if (!lhHash.equals(s)) {
+                if (!FabricLoader.getInstance().isDevelopmentEnvironment())
+                    LOGGER.warn("{} hash changed! was [{}], now [{}]", file.getFileName().toString(), lhHash, s);
                 Utilities.runUnchecked(() -> Files.writeString(lh, s));
                 return true;
             }
@@ -100,7 +104,7 @@ public class CommonValues {
         if (FabricLoader.getInstance().isModLoaded("connectormod")) {
             try {
                 //The above check should be fine, but just in case.
-                Class.forName("dev.su5ed.sinytra.connector.mod.ConnectorLoader");
+                Class.forName("dev.su5ed.sinytra.connector.mod.ConnectorMod");
                 return Platform.CONNECTOR;
             } catch (ClassNotFoundException ignored) {
             }

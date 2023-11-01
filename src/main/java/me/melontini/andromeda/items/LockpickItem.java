@@ -19,7 +19,7 @@ public class LockpickItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if ((Config.get().lockpick.chance - 1 == 0 || user.world.random.nextInt(Config.get().lockpick.chance - 1) == 0) && Config.get().lockpickEnabled) {
+        if (Config.get().lockpick.enable && (Config.get().lockpick.chance - 1 == 0 || user.world.random.nextInt(Config.get().lockpick.chance - 1) == 0)) {
             if (entity instanceof MerchantEntity merchant && Config.get().lockpick.villagerInventory) {
                 if (user.world.isClient()) return ActionResult.SUCCESS;
 

@@ -37,12 +37,10 @@ public class Common {
             if (keeper.initialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
             Feature f = field.getAnnotation(Feature.class);
             try {
-               keeper.initialize();
+                keeper.initialize(f);
             } catch (Throwable t) {
                 AndromedaLog.error("Failed to bootstrap registry object %s!".formatted(field.getName()), t);
-                if (f != null) {
-                    Config.processUnknownException(t, f.value());
-                }
+                if (f != null) Config.processUnknownException(t, f.value());
             }
         }
     }
