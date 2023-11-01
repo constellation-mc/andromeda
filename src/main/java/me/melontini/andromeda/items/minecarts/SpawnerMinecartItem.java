@@ -32,7 +32,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
     protected void onCreate(ItemStack stack, SpawnerMinecartEntity entity) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) if (nbt.getString("Entity") != null) {
-            entity.getLogic().setEntityId(Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("Entity"))), world, world.random, blockPos);
+            entity.getLogic().setEntityId(Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("Entity"))), entity.world, entity.world.random, entity.getBlockPos());
         }
     }
 

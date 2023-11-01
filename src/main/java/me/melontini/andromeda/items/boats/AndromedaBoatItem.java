@@ -54,7 +54,7 @@ public abstract class AndromedaBoatItem<T extends BoatEntity> extends Item {
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 T furnace = this.createEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-                furnace.setBoatType(this.type);
+                furnace.setVariant(this.type);
                 furnace.setYaw(user.getYaw());
                 if (!world.isSpaceEmpty(furnace, furnace.getBoundingBox())) {
                     return TypedActionResult.fail(itemStack);
