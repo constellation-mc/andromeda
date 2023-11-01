@@ -34,7 +34,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
     }
 
     public NoteBlockMinecartEntity(World world, double x, double y, double z) {
-        super(EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY, world, x, y, z);
+        super(EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY.get(), world, x, y, z);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
 
     @Override
     public ItemStack getPickBlockStack() {
-        return new ItemStack(ItemRegistry.get().NOTE_BLOCK_MINECART);
+        return new ItemStack(ItemRegistry.get().NOTE_BLOCK_MINECART.get());
     }
 
     public void cycleNote() {

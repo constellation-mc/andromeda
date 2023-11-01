@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.misc.unknown.nice_level;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.client.gui.screen.LevelLoadingScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.Objects;
 
 @Mixin(LevelLoadingScreen.class)
-@MixinRelatedConfigOption("unknown")
-public class LevelLoadingScreenMixin {
+@Feature("unknown")
+class LevelLoadingScreenMixin {
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
     private String andromeda$getPercentage(String o) {

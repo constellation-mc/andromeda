@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.blocks.campfire_effects;
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.PotionUtil;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(CampfireBlockEntity.class)
-@MixinRelatedConfigOption("campfireTweaks.effects")
-public class CampfireBlockEntityMixin {
+@Feature("campfireTweaks.effects")
+class CampfireBlockEntityMixin {
     @Inject(at = @At("HEAD"), method = "litServerTick")
     private static void andromeda$litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
         if (!Config.get().campfireTweaks.effects) return;

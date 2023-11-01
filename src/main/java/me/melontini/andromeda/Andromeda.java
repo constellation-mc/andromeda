@@ -7,7 +7,7 @@ import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.AdvancementGeneration;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
@@ -93,7 +93,7 @@ public class Andromeda {
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-            if (Config.get().damageBackport) DamageCommand.register(dispatcher);
+            if (Config.get().damageBackport) Config.run(() -> DamageCommand.register(dispatcher), "damageBackport");
         });
 
         EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
@@ -101,7 +101,7 @@ public class Andromeda {
 
     @Override
     public String toString() {
-        return "Andromeda{version=" + SharedConstants.MOD_VERSION + "}";
+        return "Andromeda{version=" + CommonValues.version() + "}";
     }
 
     public static Andromeda get() {

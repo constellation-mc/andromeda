@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.misc.translations;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import net.minecraft.resource.*;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -19,8 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ReloadableResourceManagerImpl.class)
-@MixinRelatedConfigOption("autoUpdateTranslations")
-public class ReloadableResourceManagerImplMixin {
+@Feature("autoUpdateTranslations")
+class ReloadableResourceManagerImplMixin {
+
     @Shadow @Final private ResourceType type;
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/LifecycledResourceManager;close()V", shift = At.Shift.AFTER), method = "reload")
@@ -29,7 +30,7 @@ public class ReloadableResourceManagerImplMixin {
         if (!Config.get().autoUpdateTranslations) return;
 
         packs.set(new ArrayList<>(packs.get()));
-        packs.get().add(Config.run(() -> new DirectoryResourcePack(TranslationUpdater.TRANSLATION_PACK.toFile()) {
+        ResourcePack pack = Config.run(() -> new DirectoryResourcePack(TranslationUpdater.TRANSLATION_PACK.toFile()) {
             @Override
             public String getName() {
                 return "Andromeda Translations";
@@ -40,6 +41,7 @@ public class ReloadableResourceManagerImplMixin {
             public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
                 return null;
             }
-        }, "autoUpdateTranslations"));
+        }, "autoUpdateTranslations");
+        if (pack != null) packs.get().add(pack);
     }
 }

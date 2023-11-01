@@ -1,6 +1,6 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -14,18 +14,6 @@ import java.util.Optional;
 public class DefaultProcessors {
 
     static void collect(OptionProcessorRegistry<AndromedaConfig> registry) {
-        registry.register("andromeda:connector_mod", config -> {
-            if (SharedConstants.PLATFORM == SharedConstants.Platform.CONNECTOR) {
-                return Map.of(
-                        "compatMode", true,
-                        "totemSettings.enableInfiniteTotem", false,
-                        "totemSettings.enableTotemAscension", false,
-                        "quickFire", false
-                );
-            }
-            return null;
-        });
-
         registry.register("andromeda:safe_beds_conflict", manager -> {
             if (manager.getConfig().safeBeds) {
                 return Map.of("bedsExplodeEverywhere", false);
@@ -34,7 +22,7 @@ public class DefaultProcessors {
                 return Map.of("safeBeds", false);
             }
             return null;
-        });
+        }, CommonValues.mod());
 
         registry.register("andromeda:iceberg", config -> {
             if (testModVersion("minecraft", ">=1.20") &&
@@ -45,7 +33,7 @@ public class DefaultProcessors {
                 );
             }
             return null;
-        });
+        }, CommonValues.mod());
     }
 
     static boolean testModVersion(String modId, String predicate) {

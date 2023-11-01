@@ -19,10 +19,12 @@ https://andromeda-wiki.pages.dev/
 ### Cool things/products this project uses:
 
 #### The mod itself:<br/>
-<img alt="Mixpanel icon" src="https://github.com/melontini/dark-matter/assets/104443436/0b656b33-46d1-4d74-b164-686259f405f8" width="50" height="50"></img> [Mixpanel Analytics](https://mixpanel.com/home) and <img alt="Dark Matter icon" src="https://github.com/melontini/dark-matter/assets/104443436/26b2062c-d439-4e5d-be37-404797bf0552" width="50" height="50"></img> [Dark Matter Library](https://github.com/melontini/dark-matter). (Hey, that's me!)
+- [Mixpanel Analytics](https://mixpanel.com/home)
+- [Dark Matter Library](https://github.com/melontini/dark-matter). (Hey, that's me!)
 
 #### The wiki:<br/>
-<img alt="VuePress icon" src="https://github.com/melontini/dark-matter/assets/104443436/c4ea1ccd-f82c-4b99-ba15-7ebf6cf4b7e7" width="50" height="50"></img> [VuePress](https://v2.vuepress.vuejs.org/) and <img alt="Cloudflare Pages icon" src="https://github.com/melontini/dark-matter/assets/104443436/d7bb6939-b96f-48c7-a11d-1b79a1ef074d" width="50" height="50"></img> [Cloudflare Pages](https://pages.cloudflare.com/).
+- [VuePress](https://v2.vuepress.vuejs.org/)
+- [Cloudflare Pages](https://pages.cloudflare.com/)
 
 ***
 

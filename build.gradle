@@ -10,15 +10,15 @@ loader_version = project.loader_version
 group = project.maven_group
 
 repositories {
+    maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.terraformersmc.com/releases/" }
+    mavenCentral()
     maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
         content { includeGroup "maven.modrinth" }
     }
-    maven { url "https://maven.shedaniel.me/" }
-    maven { url "https://maven.terraformersmc.com/releases/" }
     maven { url 'https://jitpack.io' }
-    mavenCentral()
 }
 
 dependencies {
@@ -31,7 +31,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    def dmModules = ["base", "minecraft", "analytics", "analytics-crashes", "analytics-mixpanel", "config", "content", "mirage", "glitter"]
+    def dmModules = ["base", "minecraft", "analytics", "analytics-crashes", "analytics-mixpanel", "config", "content", "danger", "mirage", "glitter"]
     for (final def module in dmModules) {
         modApi include("me.melontini.dark-matter:dark-matter-${module}:${project.dark_matter}")
     }

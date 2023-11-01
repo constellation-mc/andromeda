@@ -356,11 +356,6 @@ public class AndromedaConfig {
     }
 
     @ConfigEntry.Category("items")
-    @ConfigEntry.Gui.RequiresRestart
-    @FeatureEnvironment(Environment.BOTH)
-    public boolean lockpickEnabled = false;
-
-    @ConfigEntry.Category("items")
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.CollapsibleObject
     public Lockpick lockpick = new Lockpick();
@@ -368,6 +363,12 @@ public class AndromedaConfig {
     @Getter
     @Setter
     public static class Lockpick {
+
+        @ConfigEntry.Category("items")
+        @ConfigEntry.Gui.RequiresRestart
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean enable = false;
+
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
         public int chance = 3;
@@ -467,6 +468,7 @@ public class AndromedaConfig {
     @Setter
     public static class ThrowableItems {
 
+        @ConfigEntry.Gui.RequiresRestart
         @ConfigEntry.Category("mechanics")
         public boolean enable = false;
 

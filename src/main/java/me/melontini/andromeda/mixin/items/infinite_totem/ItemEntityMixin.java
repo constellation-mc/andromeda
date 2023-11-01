@@ -4,7 +4,7 @@ import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.ItemRegistry;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -41,19 +41,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Mixin(ItemEntity.class)
-@MixinRelatedConfigOption({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
-public abstract class ItemEntityMixin extends Entity {
+@Feature({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
+abstract class ItemEntityMixin extends Entity {
+
+    @Shadow public abstract void setPickupDelayInfinite();
+    @Shadow public abstract void setToDefaultPickupDelay();
+    @Shadow @Final private static TrackedData<ItemStack> STACK;
+
     @Unique
     private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
     @Unique
     private static final Tuple<BeaconBlockEntity, Integer> ANDROMEDA$NULL_BEACON = Tuple.of(null, 0);
-    @Shadow
-    @Final
-    private static TrackedData<ItemStack> STACK;
-
     @Unique
     private final List<Block> beaconBlocks = List.of(Blocks.DIAMOND_BLOCK, Blocks.NETHERITE_BLOCK);
     @Unique
@@ -67,12 +68,6 @@ public abstract class ItemEntityMixin extends Entity {
     public ItemEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
-
-    @Shadow
-    public abstract void setPickupDelayInfinite();
-
-    @Shadow
-    public abstract void setToDefaultPickupDelay();
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
@@ -140,7 +135,7 @@ public abstract class ItemEntityMixin extends Entity {
 
                             ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
 
-                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(ItemRegistry.get().INFINITE_TOTEM));
+                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(ItemRegistry.get().INFINITE_TOTEM.get()));
                             this.discard();
                             andromeda$itemEntity.discard();
                             world.spawnEntity(entity);

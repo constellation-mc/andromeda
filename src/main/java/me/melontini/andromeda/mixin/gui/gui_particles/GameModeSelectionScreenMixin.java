@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.gui.gui_particles;
 
 import com.google.common.collect.Lists;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -26,8 +26,10 @@ import java.util.*;
 import java.util.function.Supplier;
 
 @Mixin(GameModeSelectionScreen.class)
-@MixinRelatedConfigOption("guiParticles.gameModeSwitcherParticles")
-public abstract class GameModeSelectionScreenMixin extends Screen {
+@Feature("guiParticles.gameModeSwitcherParticles")
+abstract class GameModeSelectionScreenMixin extends Screen {
+
+    @Shadow protected abstract void init();
 
     @Unique
     private static final List<ItemStack> ANDROMEDA$ADVENTURE = Lists.newArrayList(Items.COMPASS.getDefaultStack(), Items.MAP.getDefaultStack(), Items.FILLED_MAP.getDefaultStack());
@@ -43,9 +45,6 @@ public abstract class GameModeSelectionScreenMixin extends Screen {
         map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));
         map.put(GameModeSelectionScreen.GameModeSelection.SPECTATOR, () -> Utilities.pickAtRandom(ANDROMEDA$SPECTATOR));
     });
-
-    @Shadow
-    protected abstract void init();
 
     protected GameModeSelectionScreenMixin(Text title) {
         super(title);
