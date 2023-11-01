@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.world.falling_beehives;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,8 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
 
 @Mixin(BeehiveBlockEntity.class)
-@MixinRelatedConfigOption("canBeeNestsFall")
-public abstract class BeehiveBlockEntityMixin extends BlockEntity {
+@Feature("canBeeNestsFall")
+abstract class BeehiveBlockEntityMixin extends BlockEntity {
+
     @Unique
     private boolean andromeda$FromFallen;
 

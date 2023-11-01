@@ -7,7 +7,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class MerchantInventoryScreen extends HandledScreen<MerchantInventoryScreenHandler> {
 

@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.mechanics.villager_gift;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.TagRegistry;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -22,10 +22,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VillagerEntity.class)
-@MixinRelatedConfigOption("villagerGifting")
-public abstract class VillagerEntityMixin extends MerchantEntity {
-    @Shadow @Final private VillagerGossips gossip;
+@Feature("villagerGifting")
+abstract class VillagerEntityMixin extends MerchantEntity {
 
+    @Shadow @Final private VillagerGossips gossip;
     @Shadow protected abstract void sayNo();
 
     public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {

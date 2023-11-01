@@ -25,7 +25,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
     }
 
     public FletchingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(ScreenHandlerRegistry.get().FLETCHING_SCREEN_HANDLER, syncId, playerInventory, context);
+        super(ScreenHandlerRegistry.get().FLETCHING.get(), syncId, playerInventory, context);
     }
 
     @Override

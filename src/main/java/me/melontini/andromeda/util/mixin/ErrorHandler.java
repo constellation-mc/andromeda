@@ -1,9 +1,10 @@
 package me.melontini.andromeda.util.mixin;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.ClassReader;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.util.Annotations;
 
 import java.util.List;
 
+@CustomLog
 public class ErrorHandler implements IMixinErrorHandler {
 
     @Override
@@ -29,15 +31,16 @@ public class ErrorHandler implements IMixinErrorHandler {
     }
 
     private static ErrorAction handleMixinError(String phase, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        if (action == ErrorAction.ERROR) {
+        if (action == ErrorAction.ERROR && mixin.getClassName().startsWith("me.melontini.andromeda.mixin") && !(th instanceof MixinVerifyError)) {
             try {
                 ClassNode node = mixin.getClassNode(ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
-                AnnotationNode annotationNode = Annotations.getVisible(node, MixinRelatedConfigOption.class);
+                AnnotationNode annotationNode = Annotations.getVisible(node, Feature.class);
                 if (annotationNode != null) {
                     List<String> configOptions = AsmUtil.getAnnotationValue(annotationNode, "value", null);
-                    AndromedaLog.warn("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
+                    LOGGER.error("Mixin({}) failed during {}. Disabling option: {}", mixin.getClassName(), phase, configOptions.get(configOptions.size() - 1));
+
                     Config.processMixinError(configOptions.get(configOptions.size() - 1), mixin.getClassName()); //We assume that the last option is the only relevant one.
-                    AndromedaReporter.handleCrash(th, "Mixin failed during " + phase, FabricLoader.getInstance().getEnvironmentType());
+                    AndromedaReporter.handleCrash(true, th, "Mixin failed during " + phase, FabricLoader.getInstance().getEnvironmentType());
                     return ErrorAction.WARN;
                 }
             } catch (Throwable t) {

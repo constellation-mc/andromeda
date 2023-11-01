@@ -36,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class WorldUtil {
     public static final Identifier BEE_LOOT_ID = new Identifier(MODID, "bee_nest/bee_nest_broken");

@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.block.BlockState;
@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ServerWorld.class)
-@MixinRelatedConfigOption("temperatureBasedCropGrowthSpeed")
-public class ServerWorldMixin {
+@Feature("temperatureBasedCropGrowthSpeed")
+class ServerWorldMixin {
 
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)V"), method = "tickChunk")
     private void andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random, Operation<Void> operation) {

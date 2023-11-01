@@ -5,7 +5,7 @@ import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
 import me.melontini.andromeda.entity.FlyingItemEntity;
 import me.melontini.andromeda.entity.ai.goal.ItemThrowerMob;
 import me.melontini.andromeda.entity.ai.goal.ThrowableItemAttackGoal;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -23,8 +23,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ZombieEntity.class)
-@MixinRelatedConfigOption({"throwableItems.enable", "throwableItems.canZombiesThrowItems"})
-public abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
+@Feature({"throwableItems.enable", "throwableItems.canZombiesThrowItems"})
+abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
 
     @Unique
     private int andromeda$cooldown = 0;

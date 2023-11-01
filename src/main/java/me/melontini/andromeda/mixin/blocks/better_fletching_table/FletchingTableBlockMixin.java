@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.screens.FletchingScreenHandler;
 import me.melontini.andromeda.util.AndromedaTexts;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
@@ -22,8 +22,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FletchingTableBlock.class)
-@MixinRelatedConfigOption("usefulFletching")
-public class FletchingTableBlockMixin extends CraftingTableBlock {
+@Feature("usefulFletching")
+class FletchingTableBlockMixin extends CraftingTableBlock {
     public FletchingTableBlockMixin(Settings settings) {
         super(settings);
     }
@@ -33,8 +33,10 @@ public class FletchingTableBlockMixin extends CraftingTableBlock {
         if (!Config.get().usefulFletching) return;
 
         if (state.isOf(Blocks.FLETCHING_TABLE)) {
-            if (player.world.isClient)
+            if (player.world.isClient) {
                 cir.setReturnValue(ActionResult.SUCCESS);
+                return;
+            }
 
             player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player1) -> new FletchingScreenHandler(syncId, inv, ScreenHandlerContext.create(world, pos)), AndromedaTexts.FLETCHING_SCREEN));
             cir.setReturnValue(ActionResult.SUCCESS);

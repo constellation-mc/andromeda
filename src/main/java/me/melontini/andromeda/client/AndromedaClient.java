@@ -15,7 +15,7 @@ import me.melontini.andromeda.registries.BlockRegistry;
 import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
-import me.melontini.andromeda.util.SharedConstants;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -64,7 +64,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.melontini.andromeda.util.SharedConstants.MODID;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Environment(EnvType.CLIENT)
 public class AndromedaClient {
@@ -112,9 +112,9 @@ public class AndromedaClient {
         });
 
         if (Config.get().usefulFletching)
-            HandledScreens.register(ScreenHandlerRegistry.get().FLETCHING_SCREEN_HANDLER, FletchingScreen::new);
+            HandledScreens.register(ScreenHandlerRegistry.get().FLETCHING.get(), FletchingScreen::new);
 
-        HandledScreens.register(ScreenHandlerRegistry.get().MERCHANT_INVENTORY_SCREEN_HANDLER, MerchantInventoryScreen::new);
+        HandledScreens.register(ScreenHandlerRegistry.get().MERCHANT_INVENTORY.get(), MerchantInventoryScreen::new);
 
         ParticleFactoryRegistry.getInstance().register(Andromeda.get().KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
@@ -189,37 +189,37 @@ public class AndromedaClient {
 
     public void registerBlockRenderers() {
         if (Config.get().unknown)
-            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().ROSE_OF_THE_VALLEY);
+            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().ROSE_OF_THE_VALLEY.get());
 
         if (Config.get().incubator.enable) {
-            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().INCUBATOR_BLOCK);
-            BlockEntityRendererFactories.register(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY, IncubatorBlockRenderer::new);
+            BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), BlockRegistry.get().INCUBATOR_BLOCK.get());
+            BlockEntityRendererFactories.register(BlockRegistry.get().INCUBATOR_BLOCK_ENTITY.get(), IncubatorBlockRenderer::new);
         }
     }
 
     public void registerEntityRenderers() {
         if (Config.get().newBoats.isFurnaceBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_FURNACE, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_FURNACE.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH)));
         if (Config.get().newBoats.isJukeboxBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_JUKEBOX, ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState()));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_JUKEBOX.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState()));
         if (Config.get().newBoats.isTNTBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_TNT, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState()));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_TNT.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState()));
         if (Config.get().newBoats.isHopperBoatOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_HOPPER, ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState()));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().BOAT_WITH_HOPPER.get(), ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState()));
 
         if (Config.get().newMinecarts.isAnvilMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().ANVIL_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().ANVIL_MINECART_ENTITY.get(), ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
         if (Config.get().newMinecarts.isNoteBlockMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY.get(), ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART));
         if (Config.get().newMinecarts.isJukeboxMinecartOn)
-            EntityRendererRegistry.register(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY, (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
+            EntityRendererRegistry.register(EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY.get(), (ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
 
-        EntityRendererRegistry.register(EntityTypeRegistry.get().FLYING_ITEM, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(EntityTypeRegistry.get().FLYING_ITEM.get(), FlyingItemEntityRenderer::new);
     }
 
     @Override
     public String toString() {
-        return "AndromedaClient{version=" + SharedConstants.MOD_VERSION + "}";
+        return "AndromedaClient{version=" + CommonValues.version() + "}";
     }
 
     public static AndromedaClient get() {

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.bugfixes;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
 import org.spongepowered.asm.mixin.Final;
@@ -11,10 +11,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(AdvancementTab.class)
-@MixinRelatedConfigOption("frameIndependentAdvancementShadow")
-public class AdvancementTabMixin {
+@Feature("frameIndependentAdvancementShadow")
+class AdvancementTabMixin {
     @Shadow private float alpha;
-
     @Shadow @Final private MinecraftClient client;
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 0), index = 0, method = "drawWidgetTooltip")

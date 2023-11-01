@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.items.better_names;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,22 +21,13 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 
 @Mixin(ItemStack.class)
-@MixinRelatedConfigOption("slightlyBetterItemNames")
-public abstract class ItemStackMixin {
-    @Shadow
-    public abstract int getMaxDamage();
-
-    @Shadow
-    public abstract Item getItem();
-
-    @Shadow
-    public abstract int getCount();
-
-    @Shadow
-    public abstract int getDamage();
-
-    @Shadow
-    public abstract Rarity getRarity();
+@Feature("slightlyBetterItemNames")
+abstract class ItemStackMixin {
+    @Shadow public abstract int getMaxDamage();
+    @Shadow public abstract Item getItem();
+    @Shadow public abstract int getCount();
+    @Shadow public abstract int getDamage();
+    @Shadow public abstract Rarity getRarity();
 
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip", locals = LocalCapture.CAPTURE_FAILSOFT)
     private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list, MutableText mutableText) {

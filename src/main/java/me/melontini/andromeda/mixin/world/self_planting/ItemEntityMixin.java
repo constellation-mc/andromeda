@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.world.self_planting;
 
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.MixinRelatedConfigOption;
+import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -24,13 +24,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(ItemEntity.class)
-@MixinRelatedConfigOption("autoPlanting.enabled")
-public abstract class ItemEntityMixin {
+@Feature("autoPlanting.enabled")
+abstract class ItemEntityMixin {
+
+    @Shadow public abstract ItemStack getStack();
+
     @Unique
     private final Random andromeda$random = new Random();
-
-    @Shadow
-    public abstract ItemStack getStack();
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void andromeda$tryPlant(CallbackInfo ci) {
