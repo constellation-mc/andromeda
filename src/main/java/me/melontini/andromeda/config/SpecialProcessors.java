@@ -1,7 +1,8 @@
 package me.melontini.andromeda.config;
 
 import com.google.gson.*;
-import lombok.*;
+import lombok.CustomLog;
+import lombok.Value;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -179,21 +180,19 @@ class SpecialProcessors {
     }
 
     @SuppressWarnings("ClassCanBeRecord")
-    @Getter @Accessors(fluent = true)
-    @ToString @EqualsAndHashCode @AllArgsConstructor
-    static final class MixinErrorEntry {
-        private final String feature;
-        private final Object value;
-        private final String className;
+    @Accessors(fluent = true) @Value
+    static class MixinErrorEntry {
+        String feature;
+        Object value;
+        String className;
     }
 
     @SuppressWarnings("ClassCanBeRecord")
-    @Getter @Accessors(fluent = true)
-    @ToString @EqualsAndHashCode @AllArgsConstructor
-    static final class ExceptionEntry {
-        private final String feature;
-        private final Object value;
-        private final String errorClass;
-        private final String message;
+    @Accessors(fluent = true) @Value
+    static class ExceptionEntry {
+        String feature;
+        Object value;
+        String errorClass;
+        String message;
     }
 }
