@@ -353,48 +353,5 @@
   "text.autoconfig.andromeda.option.debugMessages.@Tooltip": "开启后，你游戏的日志文件将会被数不清的条目淹没。别怪我没提醒过哦",
   "text.autoconfig.andromeda.option.enableFeatureManager": "启用特性管理器",
   "text.autoconfig.andromeda.option.enableFeatureManager.@Tooltip": "不推荐关闭。它的用处是解决模组冲突",
-  "text.autoconfig.andromeda.option.unknown": "???",
-
-  "andromeda.old.keys": "用于更新翻译的旧翻译键",
-
-  "text.autoconfig.andromeda.option.lockpickEnabled": "启用开锁器",
-
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffects": "营火效果",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffects.@Tooltip": "使营火给予范围内生物药水效果",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive": "友善生物治愈",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsPassive.@Tooltip": "若关闭，治愈效果将仅作用于玩家",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsRange": "营火生效范围",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsRange.@Tooltip": "设置营火给予药水效果的范围",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList": "你想要生效的药水效果列表",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[0]": "将药水名称列在此处！",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsList.@Tooltip[1]": "此值可大于1。",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsAmplifierList": "效果等级",
-  "text.autoconfig.andromeda.option.campfireTweaks.campfireEffectsAmplifierList.@Tooltip": "在此输入药水效果等级！",
-
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements": "自动配方成就生成",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.@Tooltip": "尝试为绝大多数配方自动生成对应的成就",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.autogenRecipeAdvancements": "启用自动配方成就生成",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.autogenRecipeAdvancements.@Tooltip": "启用自动配方成就生成。需要执行/reload命令！",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.requireAllItems": "万事俱备",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.requireAllItems.@Tooltip": "在配方书解锁配方前，玩家必须找齐合成所需的材料",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.ignoreRecipesHiddenInTheRecipeBook": "无视未在配方书中解锁的配方",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.ignoreRecipesHiddenInTheRecipeBook.@Tooltip": "不为未在配方书中解锁的配方生成配方成就",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.blacklistedRecipeNamespaces": "关键词黑名单",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.blacklistedRecipeNamespaces.@Tooltip": "不为含关键词的物品生成配方成就(在“:”前的那部分物品ID)",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.blacklistedRecipeIds": "物品ID黑名单",
-  "text.autoconfig.andromeda.option.autogenRecipeAdvancements.blacklistedRecipeIds.@Tooltip": "不为特定物品生成配方成就",
-
-  "text.autoconfig.andromeda.option.throwableItemsBlacklist": "可投掷物品黑名单",
-  "text.autoconfig.andromeda.option.throwableItemsBlacklist.@Tooltip": "禁止投掷下列ID的物品",
-
-  "text.autoconfig.andromeda.option.incubatorSettings": "孵蛋器设置",
-  "text.autoconfig.andromeda.option.incubatorSettings.@Tooltip[0]": "一些关于孵蛋器的设置 :)",
-  "text.autoconfig.andromeda.option.incubatorSettings.@Tooltip[1]": "部分选项改动需要游戏重启，部分则不需要",
-  "text.autoconfig.andromeda.option.incubatorSettings.@Tooltip[2]": "我自己也不知道为啥",
-  "text.autoconfig.andromeda.option.incubatorSettings.enableIncubator": "启用孵蛋器",
-  "text.autoconfig.andromeda.option.incubatorSettings.enableIncubator.@Tooltip": "启用一个方便的，用于孵蛋的小装置！",
-  "text.autoconfig.andromeda.option.incubatorSettings.incubatorRandomness": "孵蛋器孵化时间随机化",
-  "text.autoconfig.andromeda.option.incubatorSettings.incubatorRandomness.@Tooltip": "使得孵蛋器的孵蛋时间长度更加随机",
-  "text.autoconfig.andromeda.option.incubatorSettings.incubatorRecipe": "启用孵蛋器合成配方",
-  "text.autoconfig.andromeda.option.incubatorSettings.incubatorRecipe.@Tooltip": "启用本模组自带的孵蛋器合成配方，更改此项不要忘记运行/reload指令"
+  "text.autoconfig.andromeda.option.unknown": "???"
 }
