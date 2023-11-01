@@ -48,8 +48,20 @@ public class Config {
             })
             .build();
 
+    public static <T> T get(Class<T> cls, String feature) throws NoSuchFieldException {
+        return MANAGER.get(feature);
+    }
+
     public static <T> T get(String feature) throws NoSuchFieldException {
         return MANAGER.get(feature);
+    }
+
+    public static boolean get(String... features) throws NoSuchFieldException {
+        boolean value = true;
+        for (String feature : features) {
+            value &= MANAGER.get(boolean.class, feature);
+        }
+        return value;
     }
 
     public static Field set(String feature, Object value) throws NoSuchFieldException {

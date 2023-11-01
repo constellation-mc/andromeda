@@ -471,6 +471,7 @@ public class AndromedaConfig {
     @Setter
     public static class ThrowableItems {
 
+        @ConfigEntry.Gui.RequiresRestart
         @ConfigEntry.Category("mechanics")
         public boolean enable = false;
 

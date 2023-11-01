@@ -53,27 +53,27 @@ public class ItemRegistry {
     @Feature("newMinecarts.isAnvilMinecartOn")
     public final Keeper<AnvilMinecartItem> ANVIL_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newMinecarts.isAnvilMinecartOn));
+            .itemGroup(call(() -> ItemGroup.TRANSPORTATION)));
 
     @Feature("newMinecarts.isNoteBlockMinecartOn")
     public final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newMinecarts.isNoteBlockMinecartOn));
+            .itemGroup(call(() -> ItemGroup.TRANSPORTATION)));
 
     @Feature("newMinecarts.isJukeboxMinecartOn")
     public final Keeper<JukeBoxMinecartItem> JUKEBOX_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(call(() -> ItemGroup.TRANSPORTATION)).register(Config.get().newMinecarts.isJukeboxMinecartOn));
+            .itemGroup(call(() -> ItemGroup.TRANSPORTATION)));
 
     @Feature("totemSettings.enableInfiniteTotem")
     public final Keeper<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
             .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
-            .itemGroup(call(() -> ItemGroup.COMBAT)).register(Config.get().totemSettings.enableInfiniteTotem));
+            .itemGroup(call(() -> ItemGroup.COMBAT)));
 
     @Feature("lockpickEnabled")
     public final Keeper<LockpickItem> LOCKPICK = start(() -> ContentBuilder.ItemBuilder
             .create(id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
-            .itemGroup(call(() -> ItemGroup.TOOLS)).register(Config.get().lockpickEnabled));
+            .itemGroup(call(() -> ItemGroup.TOOLS)));
 
     @Feature("incubator.enable")
     public final Keeper<BlockItem> INCUBATOR = Keeper.of(() -> () -> asItem(BlockRegistry.get().INCUBATOR_BLOCK.get()));
