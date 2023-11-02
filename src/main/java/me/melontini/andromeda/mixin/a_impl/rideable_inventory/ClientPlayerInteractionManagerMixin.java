@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerInteractionManager.class)
-public class ClientPlayerInteractionManagerMixin {//hasRidingInventory
+class ClientPlayerInteractionManagerMixin {//hasRidingInventory
     @Shadow @Final private MinecraftClient client;
 
     @Inject(at = @At("RETURN"), method = "hasRidingInventory", cancellable = true)

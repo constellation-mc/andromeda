@@ -63,12 +63,11 @@ public class EntityTypeRegistry {
                     FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
-    public static EntityType<ChestBoatEntity> BOAT_WITH_CHEST = RegistryUtil.createEntityType(Config.get().newBoats.isChestBoatOn, id("chest_boat"),
-            FabricEntityTypeBuilder.<ChestBoatEntity>create(SpawnGroup.MISC, ChestBoatEntity::new).dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
-
-    public final EntityType<HopperBoatEntity> BOAT_WITH_HOPPER = RegistryUtil.createEntityType(Config.get().newBoats.isHopperBoatOn, id("hopper_boat"),
-            FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new)
-                    .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
+    @Feature("newBoats.isChestBoatOn")
+    public final Keeper<EntityType<ChestBoatEntity>> BOAT_WITH_CHEST = Keeper.of(() -> () ->
+            RegistryUtil.createEntityType(id("chest_boat"),
+                    FabricEntityTypeBuilder.<ChestBoatEntity>create(SpawnGroup.MISC, ChestBoatEntity::new)
+                            .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
     @Feature("throwableItems.enable")
     public final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.of(() -> () ->

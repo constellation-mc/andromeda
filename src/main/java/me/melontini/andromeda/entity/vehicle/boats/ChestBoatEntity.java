@@ -17,7 +17,7 @@ public class ChestBoatEntity extends StorageBoatEntity {
     }
 
     public ChestBoatEntity(World world, double x, double y, double z) {
-        this(EntityTypeRegistry.BOAT_WITH_CHEST, world);
+        this(EntityTypeRegistry.get().BOAT_WITH_CHEST.get(), world);
         this.setPosition(x, y, z);
         this.prevX = x;
         this.prevY = y;
