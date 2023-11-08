@@ -62,11 +62,7 @@ public class ResourceRegistry {
 
             for (JsonElement element : array) {
                 if (element.isJsonPrimitive()) {
-                    try {
-                        if (!Registry.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
-                    } catch (Throwable t) {
-                        return false;
-                    }
+                    if (!Registry.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
                 }
             }
 

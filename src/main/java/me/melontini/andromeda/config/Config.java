@@ -1,9 +1,7 @@
 package me.melontini.andromeda.config;
 
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.analytics.MessageHandler;
-import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import me.melontini.dark_matter.api.config.OptionManager;
@@ -12,7 +10,6 @@ import me.melontini.dark_matter.api.config.serializers.gson.GsonSerializers;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
 
 @SuppressWarnings("UnstableApiUsage")
 public class Config {
@@ -84,25 +81,6 @@ public class Config {
 
     public static void save() {
         MANAGER.save();
-    }
-
-    public static void run(ThrowingRunnable<Throwable> runnable, String... features) {
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
-            processUnknownException(e, features);
-        }
-    }
-
-    public static <T> T run(Callable<T> callable, String... features) {
-        try {
-            return callable.call();
-        } catch (Throwable e) {
-            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
-            processUnknownException(e, features);
-            return null;
-        }
     }
 
     public static void processMixinError(String feature, String className) {

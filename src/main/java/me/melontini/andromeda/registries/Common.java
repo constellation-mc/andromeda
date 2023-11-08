@@ -6,7 +6,7 @@ import me.melontini.andromeda.networks.ServerSideNetworking;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
+import me.melontini.dark_matter.api.base.util.classes.ThrowingSupplier;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -19,11 +19,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-import static me.melontini.andromeda.config.Config.run;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Common {
@@ -53,23 +52,6 @@ public class Common {
         return new Identifier(MODID, path);
     }
 
-    static <T> T call(Callable<T> callable) {
-        try {
-            return callable.call();
-        } catch (Throwable e) {
-            AndromedaLog.error("Error while registering content: {}: {}", e.getClass().getName(), e.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    static void call(ThrowingRunnable<Throwable> runnable) {
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            AndromedaLog.error("Error while registering content: {}: {}", e.getClass().getName(), e.getLocalizedMessage());
-        }
-    }
-
     static ObjectShare objectShare() {
         return FabricLoader.getInstance().getObjectShare();
     }
@@ -90,5 +72,15 @@ public class Common {
         Andromeda.get().AGONY = run(() -> new DamageSource("andromeda_agony"), "minorInconvenience");
         Andromeda.get().LEAF_SLOWNESS = run(() -> new EntityAttributeModifier(UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"), "Leaf Slowness", -0.3, EntityAttributeModifier.Operation.MULTIPLY_BASE), "leafSlowdown");
         Andromeda.get().KNOCKOFF_TOTEM_PARTICLE = RegistryUtil.create(id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple);
+    }
+
+    public static <T> T run(ThrowingSupplier<T, Throwable> callable, String... features) {
+        try {
+            return callable.get();
+        } catch (Throwable e) {
+            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
+            Config.processUnknownException(e, features);
+            return null;
+        }
     }
 }

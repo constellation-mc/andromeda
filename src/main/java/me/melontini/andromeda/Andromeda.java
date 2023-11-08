@@ -98,15 +98,13 @@ public class Andromeda {
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             if (Config.get().recipeAdvancementsGeneration.enable) {
-                Config.run(() -> {
-                    AdvancementGeneration.generateRecipeAdvancements(server);
-                    server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
-                }, "autogenRecipeAdvancements.autogenRecipeAdvancements");
+                AdvancementGeneration.generateRecipeAdvancements(server);
+                server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
             }
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            if (Config.get().damageBackport) Config.run(() -> DamageCommand.register(dispatcher), "damageBackport");
+            if (Config.get().damageBackport) DamageCommand.register(dispatcher);
         });
     }
 
