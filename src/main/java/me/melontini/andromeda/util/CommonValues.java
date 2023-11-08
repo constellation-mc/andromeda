@@ -5,6 +5,7 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.Version;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.service.MixinService;
 
@@ -12,9 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.util.HexFormat;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @CustomLog
@@ -67,34 +65,21 @@ public class CommonValues {
 
     static {
         PLATFORM = resolvePlatform();
-        MOD_UPDATED = verifyHash();
-        Utilities.runUnchecked(() -> Files.deleteIfExists(hiddenPath().resolve("last_version.txt")));
+        MOD_UPDATED = checkUpdate();
     }
 
-    private static boolean verifyHash() {
-        String s;
-        Path file = Path.of(Utilities.supplyUnchecked(() -> CommonValues.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
-        if (Files.isDirectory(file)) {
-            file = MOD_CONTAINER.findPath("fabric.mod.json").orElseThrow(() -> new NoSuchElementException("fabric.mod.json"));
-        }
-        try (var is = Files.newInputStream(file)) {
-            byte[] read = is.readAllBytes();
-            s = HexFormat.of().formatHex(Utilities.supplyUnchecked(() -> MessageDigest.getInstance("SHA-1")).digest(read));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Path lh = hiddenPath().resolve("last_hash.txt");
+    private static boolean checkUpdate() {
+        Path lh = hiddenPath().resolve("last_version.txt");
         if (Files.exists(lh)) {
-            String lhHash = Utilities.supplyUnchecked(() -> Files.readString(lh));
-            if (!lhHash.equals(s)) {
+            Version version = Utilities.supplyUnchecked(() -> Version.parse(Files.readString(lh)));
+            if (mod().getMetadata().getVersion().compareTo(version) != 0) {
                 if (!FabricLoader.getInstance().isDevelopmentEnvironment())
-                    LOGGER.warn("{} hash changed! was [{}], now [{}]", file.getFileName().toString(), lhHash, s);
-                Utilities.runUnchecked(() -> Files.writeString(lh, s));
+                    LOGGER.warn("Andromeda version changed! was [{}], now [{}]", version.getFriendlyString(), mod().getMetadata().getVersion().getFriendlyString());
+                Utilities.runUnchecked(() -> Files.writeString(lh, mod().getMetadata().getVersion().getFriendlyString()));
                 return true;
             }
         } else {
-            Utilities.runUnchecked(() -> Files.writeString(lh, s));
+            Utilities.runUnchecked(() -> Files.writeString(lh, mod().getMetadata().getVersion().getFriendlyString()));
             return true;
         }
         return false;
