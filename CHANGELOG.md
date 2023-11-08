@@ -24,8 +24,7 @@ New Tweaks:
 * Multiple processors can now be blamed for setting a feature.
 * Added `fabric:load_conditions` support to mod's resources.
 * Tried to improve JSON parsing. It should be faster* and have better error messages.
-* Moved `FeatureConfig` and `ItemBehaviors` to `api`. You still need to use their entrypoints.
-* Added `andromeda:pre/post-main` and `andromeda:pre/post-client` entrypoints.
+* Moved `ItemBehaviors` to `api`. You still need to use its entrypoint.
 * Removed BoatEntityMixin in favor of AWs and an `@Override` in FurnaceBoatEntity.
 * A billion of other internal changes.
 * Registries are now shared over ObjectShare.

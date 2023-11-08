@@ -11,12 +11,10 @@ import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.data.EggProcessingData;
 import me.melontini.andromeda.util.data.PlantTemperatureData;
-import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
 import me.melontini.dark_matter.api.minecraft.world.interfaces.TickableState;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -62,8 +60,6 @@ public class Andromeda {
     }
 
     private void onInitialize() {
-        EntrypointRunner.runEntrypoint("andromeda:pre-main", ModInitializer.class, ModInitializer::onInitialize);
-
         AndromedaReporter.initCrashHandler();
         Common.bootstrap();
 
@@ -112,8 +108,6 @@ public class Andromeda {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             if (Config.get().damageBackport) Config.run(() -> DamageCommand.register(dispatcher), "damageBackport");
         });
-
-        EntrypointRunner.runEntrypoint("andromeda:post-main", ModInitializer.class, ModInitializer::onInitialize);
     }
 
     @Override

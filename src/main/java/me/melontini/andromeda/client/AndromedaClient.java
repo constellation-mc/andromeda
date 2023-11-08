@@ -18,13 +18,11 @@ import me.melontini.andromeda.registries.ScreenHandlerRegistry;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.translations.TranslationUpdater;
-import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -89,10 +87,7 @@ public class AndromedaClient {
     }
 
     public void onInitializeClient() {
-        EntrypointRunner.runEntrypoint("andromeda:pre-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
-
-        //noinspection Convert2MethodRef
-        Support.run("cloth-config", () -> () -> AutoConfigScreen.register());
+        Support.run("cloth-config", () -> AutoConfigScreen::register);
         if (Config.get().autoUpdateTranslations) TranslationUpdater.checkAndUpdate();
         ClientSideNetworking.register();
         registerEntityRenderers();
@@ -134,9 +129,7 @@ public class AndromedaClient {
             }
         });
 
-        Config.run(AndromedaReporter::handleUpload, "sendOptionalData");
-
-        EntrypointRunner.runEntrypoint("andromeda:post-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
+        Support.runWeak(EnvType.CLIENT, () -> AndromedaReporter::handleUpload);
     }
 
     public void lateInit() {
