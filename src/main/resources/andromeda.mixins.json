@@ -73,6 +73,7 @@
     "items.tooltips.clock.ItemMixin",
     "items.tooltips.compass.ItemMixin",
     "items.tooltips.recovery_compass.ItemMixin",
+    "misc.MinecraftClientMixin",
     "misc.translations.MinecraftClientMixin",
     "misc.translations.ReloadableResourceManagerImplMixin",
     "misc.unknown.nice_level.LevelLoadingScreenMixin",

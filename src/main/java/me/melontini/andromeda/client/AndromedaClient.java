@@ -1,6 +1,7 @@
 package me.melontini.andromeda.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import lombok.Getter;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.config.AutoConfigScreen;
 import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
@@ -69,6 +70,9 @@ public class AndromedaClient {
 
     private static AndromedaClient INSTANCE;
 
+    @Getter
+    private final Notifier notifier = new Notifier();
+
     public final Identifier WIKI_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/wiki_button.png");
     public final Style WIKI_LINK = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
 
@@ -81,6 +85,7 @@ public class AndromedaClient {
     public static void init() {
         INSTANCE = new AndromedaClient();
         INSTANCE.onInitializeClient();
+        FabricLoader.getInstance().getObjectShare().put("andromeda:client", INSTANCE);
     }
 
     public void onInitializeClient() {
@@ -132,6 +137,10 @@ public class AndromedaClient {
         Config.run(AndromedaReporter::handleUpload, "sendOptionalData");
 
         EntrypointRunner.runEntrypoint("andromeda:post-client", ClientModInitializer.class, ClientModInitializer::onInitializeClient);
+    }
+
+    public void lateInit() {
+        notifier.showQueued();
     }
 
     private void inGameTooltips() {

@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -57,6 +58,7 @@ public class Andromeda {
     public static void init() {
         INSTANCE = new Andromeda();
         INSTANCE.onInitialize();
+        FabricLoader.getInstance().getObjectShare().put("andromeda:main", INSTANCE);
     }
 
     private void onInitialize() {
