@@ -11,8 +11,8 @@ import me.melontini.andromeda.items.minecarts.AnvilMinecartItem;
 import me.melontini.andromeda.items.minecarts.JukeBoxMinecartItem;
 import me.melontini.andromeda.items.minecarts.NoteBlockMinecartItem;
 import me.melontini.andromeda.items.minecarts.SpawnerMinecartItem;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.andromeda.util.annotations.AndromedaRegistry;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.content.ContentBuilder;
@@ -33,67 +33,67 @@ import net.minecraft.util.registry.Registry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
-import static me.melontini.andromeda.registries.Common.*;
+import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.start;
 import static me.melontini.andromeda.util.ItemStackUtil.getStackOrEmpty;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
+@AndromedaRegistry("andromeda:item_registry")
 public class ItemRegistry {
 
-    private static ItemRegistry INSTANCE;
-
     @Feature("incubator.enable")
-    public final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.of(() -> () -> asItem(BlockRegistry.get().ROSE_OF_THE_VALLEY.get()));
+    public static final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.of(() -> () -> asItem(BlockRegistry.ROSE_OF_THE_VALLEY.get()));
 
-    public final Keeper<SpawnerMinecartItem> SPAWNER_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public static final Keeper<SpawnerMinecartItem> SPAWNER_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("spawner_minecart"), () -> new SpawnerMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION));
 
     @Feature("newMinecarts.isAnvilMinecartOn")
-    public final Keeper<AnvilMinecartItem> ANVIL_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public static final Keeper<AnvilMinecartItem> ANVIL_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION));
 
     @Feature("newMinecarts.isNoteBlockMinecartOn")
-    public final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public static final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION));
 
     @Feature("newMinecarts.isJukeboxMinecartOn")
-    public final Keeper<JukeBoxMinecartItem> JUKEBOX_MINECART = start(() -> ContentBuilder.ItemBuilder
+    public static final Keeper<JukeBoxMinecartItem> JUKEBOX_MINECART = start(() -> ContentBuilder.ItemBuilder
             .create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(ItemGroup.TRANSPORTATION));
 
     @Feature("totemSettings.enableInfiniteTotem")
-    public final Keeper<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
+    public static final Keeper<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
             .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
             .itemGroup(ItemGroup.COMBAT));
 
     @Feature("lockpickEnabled")
-    public final Keeper<LockpickItem> LOCKPICK = start(() -> ContentBuilder.ItemBuilder
+    public static final Keeper<LockpickItem> LOCKPICK = start(() -> ContentBuilder.ItemBuilder
             .create(id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
             .itemGroup(ItemGroup.TOOLS));
 
     @Feature("incubator.enable")
-    public final Keeper<BlockItem> INCUBATOR = Keeper.of(() -> () -> asItem(BlockRegistry.get().INCUBATOR_BLOCK.get()));
+    public static final Keeper<BlockItem> INCUBATOR = Keeper.of(() -> () -> asItem(BlockRegistry.INCUBATOR_BLOCK.get()));
 
-    private ItemStack ITEM_GROUP_ICON;
+    private static ItemStack ITEM_GROUP_ICON;
 
-    private boolean animate = true;
-    public final ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(id("group"))
+    private static boolean animate = true;
+    @SuppressWarnings("unused")
+    public static final Keeper<ItemGroup> GROUP = start(() -> ContentBuilder.ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 List<ItemStack> misc = new ArrayList<>();
-                misc.add(getStackOrEmpty(this.INCUBATOR.get()));
-                misc.add(getStackOrEmpty(this.INFINITE_TOTEM.get()));
-                misc.add(getStackOrEmpty(this.LOCKPICK.get()));
+                misc.add(getStackOrEmpty(INCUBATOR.get()));
+                misc.add(getStackOrEmpty(INFINITE_TOTEM.get()));
+                misc.add(getStackOrEmpty(LOCKPICK.get()));
                 appendStacks(entries, misc, true);
 
                 List<ItemStack> carts = new ArrayList<>();
-                carts.add(getStackOrEmpty(this.ANVIL_MINECART.get()));
-                carts.add(getStackOrEmpty(this.JUKEBOX_MINECART.get()));
-                carts.add(getStackOrEmpty(this.NOTE_BLOCK_MINECART.get()));
-                carts.add(getStackOrEmpty(this.SPAWNER_MINECART.get()));
+                carts.add(getStackOrEmpty(ANVIL_MINECART.get()));
+                carts.add(getStackOrEmpty(JUKEBOX_MINECART.get()));
+                carts.add(getStackOrEmpty(NOTE_BLOCK_MINECART.get()));
+                carts.add(getStackOrEmpty(SPAWNER_MINECART.get()));
                 appendStacks(entries, carts, true);
 
                 List<ItemStack> boats = new ArrayList<>();
@@ -104,7 +104,7 @@ public class ItemRegistry {
                     boats.add(getStackOrEmpty(Registry.ITEM.get(boatId(value, "jukebox"))));
                 }
                 appendStacks(entries, boats, false);
-            }).icon(this::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> {
+            }).icon(ItemRegistry::getAndSetIcon).animatedIcon(() -> (group, matrixStack, itemX, itemY, selected, isTopRow) -> {
                 try {
                     if (!animate) return;
                     MinecraftClient client = MinecraftClient.getInstance();
@@ -122,17 +122,9 @@ public class ItemRegistry {
                 } catch (Throwable t) {
                     animate = false;
                 }
-            }).displayName(AndromedaTexts.ITEM_GROUP_NAME).buildOrEmpty().orElse(null);
+            }).displayName(AndromedaTexts.ITEM_GROUP_NAME));
 
-    public static ItemRegistry get() {
-        return Objects.requireNonNull(INSTANCE, "%s requested too early!".formatted(INSTANCE.getClass()));
-    }
-
-    static void register() {
-        if (INSTANCE != null) throw new IllegalStateException("%s already initialized!".formatted(INSTANCE.getClass()));
-
-        INSTANCE = new ItemRegistry();
-        bootstrap(INSTANCE);
+    public static void init() {
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
             ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1)))
                     .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isFurnaceBoatOn).build();
@@ -143,9 +135,6 @@ public class ItemRegistry {
             ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1)))
                     .itemGroup(ItemGroup.TRANSPORTATION).register(Config.get().newBoats.isHopperBoatOn).build();
         }
-
-        share("andromeda:item_registry", INSTANCE);
-        AndromedaLog.info("%s init complete!".formatted(INSTANCE.getClass().getSimpleName()));
     }
 
     public static Identifier boatId(BoatEntity.Type type, String boat) {
@@ -166,7 +155,7 @@ public class ItemRegistry {
         if (lineBreak) entries.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY), DarkMatterEntries.Visibility.TAB); //line break
     }
 
-    private ItemStack getAndSetIcon() {
+    private static ItemStack getAndSetIcon() {
         if (ITEM_GROUP_ICON == null) {
             if (Config.get().unknown && ROSE_OF_THE_VALLEY.get() != null) {
                 ITEM_GROUP_ICON = new ItemStack(ROSE_OF_THE_VALLEY.get());

@@ -109,8 +109,8 @@ public class AndromedaClient {
             }
         });
 
-        ScreenHandlerRegistry.get().FLETCHING.ifPresent(s -> HandledScreens.register(s, FletchingScreen::new));
-        ScreenHandlerRegistry.get().MERCHANT_INVENTORY.ifPresent(s -> HandledScreens.register(s, MerchantInventoryScreen::new));
+        ScreenHandlerRegistry.FLETCHING.ifPresent(s -> HandledScreens.register(s, FletchingScreen::new));
+        ScreenHandlerRegistry.MERCHANT_INVENTORY.ifPresent(s -> HandledScreens.register(s, MerchantInventoryScreen::new));
 
         ParticleFactoryRegistry.getInstance().register(Andromeda.get().KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
@@ -185,23 +185,23 @@ public class AndromedaClient {
     }
 
     public void registerBlockRenderers() {
-        BlockRegistry.get().ROSE_OF_THE_VALLEY.ifPresent(b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
+        BlockRegistry.ROSE_OF_THE_VALLEY.ifPresent(b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
 
-        BlockRegistry.get().INCUBATOR_BLOCK.ifPresent(b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
-        BlockRegistry.get().INCUBATOR_BLOCK_ENTITY.ifPresent(b -> BlockEntityRendererFactories.register(b, IncubatorBlockRenderer::new));
+        BlockRegistry.INCUBATOR_BLOCK.ifPresent(b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
+        BlockRegistry.INCUBATOR_BLOCK_ENTITY.ifPresent(b -> BlockEntityRendererFactories.register(b, IncubatorBlockRenderer::new));
     }
 
     public void registerEntityRenderers() {
-        EntityTypeRegistry.get().BOAT_WITH_FURNACE.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH))));
-        EntityTypeRegistry.get().BOAT_WITH_JUKEBOX.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState())));
-        EntityTypeRegistry.get().BOAT_WITH_TNT.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState())));
-        EntityTypeRegistry.get().BOAT_WITH_HOPPER.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState())));
+        EntityTypeRegistry.BOAT_WITH_FURNACE.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH))));
+        EntityTypeRegistry.BOAT_WITH_JUKEBOX.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState())));
+        EntityTypeRegistry.BOAT_WITH_TNT.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState())));
+        EntityTypeRegistry.BOAT_WITH_HOPPER.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState())));
 
-        EntityTypeRegistry.get().ANVIL_MINECART_ENTITY.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
-        EntityTypeRegistry.get().NOTEBLOCK_MINECART_ENTITY.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
-        EntityTypeRegistry.get().JUKEBOX_MINECART_ENTITY.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
+        EntityTypeRegistry.ANVIL_MINECART_ENTITY.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
+        EntityTypeRegistry.NOTEBLOCK_MINECART_ENTITY.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
+        EntityTypeRegistry.JUKEBOX_MINECART_ENTITY.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new MinecartEntityRenderer<>(ctx, EntityModelLayers.MINECART)));
 
-        EntityTypeRegistry.get().FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
+        EntityTypeRegistry.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
     }
 
     @Override

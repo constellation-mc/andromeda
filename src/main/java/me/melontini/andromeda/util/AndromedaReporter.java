@@ -39,7 +39,7 @@ public class AndromedaReporter {
                         object.addProperty("mod_version", CommonValues.version().split("-")[0]);
                         object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
                         object.addProperty("modloader", CommonValues.platform().toString());
-                        AndromedaLog.info("Uploading optional data.: " + object);
+                        AndromedaLog.info("Uploading optional data: " + object);
                         mixpanel.set(analytics.getUUIDString(), object);
                     });
                 } else AndromedaLog.info("Skipped optional data upload.");

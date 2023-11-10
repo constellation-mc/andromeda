@@ -28,7 +28,7 @@ public class HopperBoatEntity extends StorageBoatEntity implements Hopper {
     }
 
     public HopperBoatEntity(World world, double x, double y, double z) {
-        this(EntityTypeRegistry.get().BOAT_WITH_HOPPER.get(), world);
+        this(EntityTypeRegistry.BOAT_WITH_HOPPER.get(), world);
         this.setPosition(x, y, z);
         this.prevX = x;
         this.prevY = y;

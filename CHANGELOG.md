@@ -27,6 +27,5 @@ New Tweaks:
 * Moved `ItemBehaviors` to `api`. You still need to use its entrypoint.
 * Removed BoatEntityMixin in favor of AWs and an `@Override` in FurnaceBoatEntity.
 * A billion of other internal changes.
-* Registries are now shared over ObjectShare.
 * Updated Chinese translation. Courtesy of [Rad233](https://github.com/Rad233).
 * Updated Dark Matter.
