@@ -1,24 +1,24 @@
 package me.melontini.andromeda.networks;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.entity.vehicle.boats.TNTBoatEntity;
+import me.melontini.andromeda.registries.EntityTypeRegistry;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
-import net.minecraft.world.explosion.Explosion;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class ServerSideNetworking {
 
     public static void register() {
-        if (Config.get().newBoats.isTNTBoatOn)
-            ServerPlayNetworking.registerGlobalReceiver(AndromedaPackets.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {
-                UUID id = buf.readUuid();
-                server.execute(() -> {
-                    Entity entity = player.world.getEntityLookup().get(id);
-                    Objects.requireNonNull(entity, String.format("(Andromeda) Server Received Invalid TNT Boat UUID: %s", id)).discard();
-                    player.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), 4.0F, Explosion.DestructionType.DESTROY);
-                });
-            });
+        EntityTypeRegistry.BOAT_WITH_TNT.ifPresent(e -> ServerPlayNetworking.registerGlobalReceiver(AndromedaPackets.EXPLODE_BOAT_ON_SERVER,
+                (server, player, handler, buf, responseSender) -> {
+                    UUID id = buf.readUuid();
+                    server.execute(() -> {
+                        Entity entity = player.world.getEntityLookup().get(id);
+                        MakeSure.notNull(entity, "(Andromeda) Server Received Invalid TNT Boat UUID: %s".formatted(id));
+                        if (entity instanceof TNTBoatEntity boat) boat.explode();
+                    });
+                }));
     }
 }
