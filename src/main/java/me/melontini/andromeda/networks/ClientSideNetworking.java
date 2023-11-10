@@ -2,9 +2,10 @@ package me.melontini.andromeda.networks;
 
 import me.melontini.andromeda.client.particles.screen.DyeParticle;
 import me.melontini.andromeda.client.sound.PersistentMovingSoundInstance;
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.registries.EntityTypeRegistry;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -30,19 +31,19 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
+import static me.melontini.dark_matter.api.base.util.MathStuff.threadRandom;
 
 public class ClientSideNetworking {
 
     public static Map<UUID, SoundInstance> soundInstanceMap = new ConcurrentHashMap<>();
 
     public static void register() {
-        if (Config.get().newMinecarts.isJukeboxMinecartOn) {
+        EntityTypeRegistry.JUKEBOX_MINECART_ENTITY.ifPresent(e -> {
             ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.JUKEBOX_MINECART_START_PLAYING, (client, handler, buf, responseSender) -> {
                 UUID id = buf.readUuid();
                 ItemStack stack = buf.readItemStack();
                 client.execute(() -> {
-                    assert client.world != null;
-                    Entity entity = client.world.getEntityLookup().get(id);
+                    Entity entity = MakeSure.notNull(client.world, "client.world").getEntityLookup().get(id);
                     if (stack.getItem() instanceof MusicDiscItem disc) {
                         var discName = disc.getDescription();
                         soundInstanceMap.computeIfAbsent(id, k -> {
@@ -50,10 +51,11 @@ public class ClientSideNetworking {
                             client.getSoundManager().play(instance);
                             return instance;
                         });
-                        if (discName != null)
-                            if (client.player != null) if (entity != null) if (entity.distanceTo(client.player) < 76) {
+                        if (discName != null) {
+                            if (client.player != null && entity != null && entity.distanceTo(client.player) < 76) {
                                 client.inGameHud.setRecordPlayingOverlay(discName);
                             }
+                        }
                     }
                 });
             });
@@ -61,42 +63,35 @@ public class ClientSideNetworking {
                 UUID id = buf.readUuid();
                 client.execute(() -> {
                     SoundInstance instance = soundInstanceMap.remove(id);
-                    if (client.getSoundManager().isPlaying(instance)) {
-                        client.getSoundManager().stop(instance);
-                    }
+                    if (client.getSoundManager().isPlaying(instance)) client.getSoundManager().stop(instance);
                 });
             });
-        }
+        });
 
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
             UUID id = buf.readUuid();
             ItemStack stack = buf.readItemStack();
             DefaultParticleType particle = (DefaultParticleType) buf.readRegistryValue(Registry.PARTICLE_TYPE);
             client.execute(() -> {
-                Entity entity = client.world.getEntityLookup().get(id);
-                client.particleManager.addEmitter(entity, particle, 30);
+                Entity entity = MakeSure.notNull(client.world, "client.world").getEntityLookup().get(id);
+                client.particleManager.addEmitter(MakeSure.notNull(entity, "(Andromeda) Client received invalid entity ID"), particle, 30);
                 client.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
-                if (entity == client.player) {
-                    client.gameRenderer.showFloatingItem(stack);
-                }
+                if (entity == client.player) client.gameRenderer.showFloatingItem(stack);
             });
         });
 
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.ADD_ONE_PARTICLE, (client, handler, packetByteBuf, responseSender) -> {
-            DefaultParticleType particle = (DefaultParticleType) packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE);
+            DefaultParticleType particle = (DefaultParticleType) MakeSure.notNull(packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE));
             double x = packetByteBuf.readDouble(), y = packetByteBuf.readDouble(), z = packetByteBuf.readDouble();
             double velocityX = packetByteBuf.readDouble(), velocityY = packetByteBuf.readDouble(), velocityZ = packetByteBuf.readDouble();
-            client.execute(() -> {
-                assert particle != null;
-                client.worldRenderer.addParticle(particle, particle.shouldAlwaysSpawn(), x, y, z, velocityX, velocityY, velocityZ);
-            });
+            client.execute(() -> client.worldRenderer.addParticle(particle, particle.shouldAlwaysSpawn(), x, y, z, velocityX, velocityY, velocityZ));
         });
 
         ClientPlayNetworking.registerGlobalReceiver(new Identifier(MODID, "notify_client_about_stuff_please"), (client, handler, packetByteBuf, responseSender) -> {
             int uuid = packetByteBuf.readVarInt();
             ItemStack stack = packetByteBuf.readItemStack();
             client.execute(() -> {
-                ItemEntity entity = (ItemEntity) client.world.getEntityLookup().get(uuid);
+                ItemEntity entity = (ItemEntity) MakeSure.notNull(client.world, "client.world").getEntityLookup().get(uuid);
                 if (entity != null) entity.getDataTracker().set(ItemEntity.STACK, stack);
             });
         });
@@ -108,37 +103,27 @@ public class ClientSideNetworking {
             boolean spawnColor = buf.readBoolean();
 
             int color = 0;
-            if (spawnColor) {
-                color = buf.readVarInt();
-            }
+            if (spawnColor) color = buf.readVarInt();
 
-            float r = ColorUtil.getRedF(color);
-            float g = ColorUtil.getGreenF(color);
-            float b = ColorUtil.getBlueF(color);
+            float r = ColorUtil.getRedF(color), g = ColorUtil.getGreenF(color), b = ColorUtil.getBlueF(color);
             client.execute(() -> {
                 ParticlesMode particlesMode = MinecraftClient.getInstance().options.getParticles().getValue();
                 if (particlesMode == ParticlesMode.MINIMAL) return;
 
-                if (spawnItem) {
-                    for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 8 : 4); ++i) {
-                        (MinecraftClient.getInstance()).particleManager.addParticle(
-                                new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
-                                x, y, z,
-                                MathStuff.threadRandom().nextGaussian() * 0.15,
-                                MathStuff.threadRandom().nextDouble() * 0.2,
-                                MathStuff.threadRandom().nextGaussian() * 0.15
-                        );
-                    }
+                if (spawnItem) for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 8 : 4); ++i) {
+                    MinecraftClient.getInstance().particleManager.addParticle(
+                            new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
+                            x, y, z,
+                            threadRandom().nextGaussian() * 0.15,
+                            threadRandom().nextDouble() * 0.2,
+                            threadRandom().nextGaussian() * 0.15
+                    );
                 }
 
-                if (spawnColor) {
-                    for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 15 : 7); i++) {
-                        Particle particle = (MinecraftClient.getInstance()).particleManager.addParticle(ParticleTypes.EFFECT, x, y, z,
-                                MathStuff.threadRandom().nextGaussian() * 0.15, 0.5, MathStuff.threadRandom().nextGaussian() * 0.15);
-                        if (particle != null) {
-                            particle.setColor(r, g, b);
-                        }
-                    }
+                if (spawnColor) for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 15 : 7); i++) {
+                    Particle particle = MinecraftClient.getInstance().particleManager.addParticle(ParticleTypes.EFFECT, x, y, z,
+                            threadRandom().nextGaussian() * 0.15, 0.5, threadRandom().nextGaussian() * 0.15);
+                    if (particle != null) particle.setColor(r, g, b);
                 }
             });
         });
@@ -147,7 +132,7 @@ public class ClientSideNetworking {
             ItemStack dye = buf.readItemStack();
             client.execute(() -> {
                 int a = client.getWindow().getScaledWidth();
-                ScreenParticleHelper.addParticle(new DyeParticle(MathStuff.nextDouble(a/2d - (a/3d), a/2d + a/3d),client.getWindow().getScaledHeight()/2d,0,0, dye));
+                ScreenParticleHelper.addParticle(new DyeParticle(MathStuff.nextDouble(a / 2d - (a / 3d), a / 2d + a / 3d), client.getWindow().getScaledHeight() / 2d, 0, 0, dye));
             });
         });
 
