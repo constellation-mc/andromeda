@@ -23,6 +23,10 @@ public class Keeper<T> {
         return new Keeper<>(supplier);
     }
 
+    public boolean isPresent() {
+        return value != null;
+    }
+
     public void ifPresent(Consumer<T> consumer) {
         if (value != null) consumer.accept(value);
     }

@@ -35,10 +35,10 @@ import static me.melontini.dark_matter.api.base.util.MathStuff.threadRandom;
 
 public class ClientSideNetworking {
 
-    public static Map<UUID, SoundInstance> soundInstanceMap = new ConcurrentHashMap<>();
+    public static Map<UUID, PersistentMovingSoundInstance> soundInstanceMap = new ConcurrentHashMap<>();
 
     public static void register() {
-        EntityTypeRegistry.JUKEBOX_MINECART_ENTITY.ifPresent(e -> {
+        if (EntityTypeRegistry.JUKEBOX_MINECART_ENTITY.isPresent() || EntityTypeRegistry.BOAT_WITH_JUKEBOX.isPresent()) {
             ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.JUKEBOX_MINECART_START_PLAYING, (client, handler, buf, responseSender) -> {
                 UUID id = buf.readUuid();
                 ItemStack stack = buf.readItemStack();
@@ -47,7 +47,7 @@ public class ClientSideNetworking {
                     if (stack.getItem() instanceof MusicDiscItem disc) {
                         var discName = disc.getDescription();
                         soundInstanceMap.computeIfAbsent(id, k -> {
-                            SoundInstance instance = new PersistentMovingSoundInstance(disc.getSound(), SoundCategory.RECORDS, id, client.world, Random.create());
+                            var instance = new PersistentMovingSoundInstance(disc.getSound(), SoundCategory.RECORDS, id, client.world, Random.create());
                             client.getSoundManager().play(instance);
                             return instance;
                         });
@@ -66,7 +66,7 @@ public class ClientSideNetworking {
                     if (client.getSoundManager().isPlaying(instance)) client.getSoundManager().stop(instance);
                 });
             });
-        });
+        };
 
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
             UUID id = buf.readUuid();
