@@ -21,14 +21,12 @@
   "accessWidener" : "andromeda.accesswidener",
   "entrypoints": {
     "client": [
-      "me.melontini.andromeda.client.AndromedaClient::init",
       "me.melontini.andromeda.base.ModuleManager::onClient"
     ],
     "server": [
       "me.melontini.andromeda.base.ModuleManager::onServer"
     ],
     "main": [
-      "me.melontini.andromeda.Andromeda::init",
       "me.melontini.andromeda.base.ModuleManager::onMain"
     ],
     "preLaunch": [
