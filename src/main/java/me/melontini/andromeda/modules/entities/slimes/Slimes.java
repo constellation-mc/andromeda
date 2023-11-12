@@ -10,7 +10,7 @@ public class Slimes implements Module {
     }
 
     @Override
-    public boolean enabled() {
-        return true;
+    public Class<?> configClass() {
+        return Config.class;
     }
 }

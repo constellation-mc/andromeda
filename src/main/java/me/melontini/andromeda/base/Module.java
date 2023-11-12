@@ -1,6 +1,9 @@
 package me.melontini.andromeda.base;
 
+import me.melontini.andromeda.config.BasicConfig;
 import me.melontini.andromeda.util.annotations.config.Environment;
+import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.config.ConfigManager;
 
 public interface Module {
 
@@ -12,6 +15,10 @@ public interface Module {
     default Environment environment() {
         return Environment.BOTH;
     }
+    default Class<?> configClass() { return BasicConfig.class; }
 
-    boolean enabled();
+    default <T> ConfigManager<T> manager() { return Utilities.cast(ModuleManager.get().getConfig(this.getClass())); }
+    default <T> T config(Class<T> cls) {return Utilities.cast(manager().getConfig());}
+    default <T> T config() {return Utilities.cast(manager().getConfig());}
+    default boolean enabled() { return manager().get(boolean.class, "enable"); }
 }

@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.modules.blocks.incubator.client.Client;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.andromeda.registries.Common;
@@ -19,7 +18,7 @@ public class Incubator implements Module {
     }
 
     @Override
-    public boolean enabled() {
-        return Config.get().incubator.enable;
+    public Class<?> configClass() {
+        return Config.class;
     }
 }

@@ -11,7 +11,7 @@ public class Tooltips implements Module {
     }
 
     @Override
-    public boolean enabled() {
-        return true;//TODO
+    public Class<?> configClass() {
+        return Config.class;
     }
 }

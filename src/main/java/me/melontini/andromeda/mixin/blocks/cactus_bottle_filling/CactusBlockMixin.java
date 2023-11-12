@@ -1,4 +1,4 @@
-package me.melontini.andromeda.mixin.blocks.cactus_filler;
+package me.melontini.andromeda.mixin.blocks.cactus_bottle_filling;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.BlockUtil;

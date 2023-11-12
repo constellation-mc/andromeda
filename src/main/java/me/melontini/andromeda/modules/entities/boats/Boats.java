@@ -13,12 +13,11 @@ public class Boats implements Module {
 
     @Override
     public void onMain() {
-        Common.bootstrap(BoatItems.class);
-        Common.bootstrap(BoatEntities.class);
+        Common.bootstrap(BoatItems.class, BoatEntities.class);
     }
 
     @Override
-    public boolean enabled() {
-        return true;
+    public Class<?> configClass() {
+        return Config.class;
     }
 }

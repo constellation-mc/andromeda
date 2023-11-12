@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.modules.items.lockpick.client.Client;
 import me.melontini.andromeda.registries.Common;
 
@@ -18,7 +17,7 @@ public class Lockpick implements Module {
     }
 
     @Override
-    public boolean enabled() {
-        return Config.get().lockpick.enable;
+    public Class<?> configClass() {
+        return Config.class;
     }
 }

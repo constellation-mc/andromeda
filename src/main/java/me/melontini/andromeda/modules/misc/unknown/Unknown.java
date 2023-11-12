@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.misc.unknown;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.Common;
 
 public class Unknown implements Module {
@@ -16,10 +15,5 @@ public class Unknown implements Module {
     @Override
     public void onMain() {
         Common.bootstrap(UnknownContent.class);
-    }
-
-    @Override
-    public boolean enabled() {
-        return Config.get().unknown;
     }
 }

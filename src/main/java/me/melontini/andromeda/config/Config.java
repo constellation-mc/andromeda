@@ -5,10 +5,10 @@ import me.melontini.dark_matter.api.analytics.MessageHandler;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import me.melontini.dark_matter.api.config.OptionManager;
+import me.melontini.dark_matter.api.config.interfaces.Option;
 import me.melontini.dark_matter.api.config.interfaces.TextEntry;
 import me.melontini.dark_matter.api.config.serializers.gson.GsonSerializers;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -62,7 +62,7 @@ public class Config {
         return value;
     }
 
-    public static Field set(String feature, Object value) throws NoSuchFieldException {
+    public static Option set(String feature, Object value) throws NoSuchFieldException {
         MANAGER.set(feature, value);
         return MANAGER.getField(feature);
     }

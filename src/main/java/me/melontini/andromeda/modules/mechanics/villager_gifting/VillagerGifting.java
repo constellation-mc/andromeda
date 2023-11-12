@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.villager_gifting;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.config.Environment;
 
 public class VillagerGifting implements Module {
@@ -14,10 +13,5 @@ public class VillagerGifting implements Module {
     @Override
     public Environment environment() {
         return Environment.SERVER;
-    }
-
-    @Override
-    public boolean enabled() {
-        return Config.get().villagerGifting;
     }
 }

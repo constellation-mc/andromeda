@@ -9,12 +9,13 @@ import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.config.Environment;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.config.ConfigBuilder;
+import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import org.spongepowered.asm.mixin.transformer.ClassInfo;
 import org.spongepowered.asm.service.MixinService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -23,30 +24,50 @@ public class ModuleManager {
     private static final Supplier<ModuleManager> INSTANCE = Suppliers.memoize(ModuleManager::new);
     private static final int modulePrefixLength = "me.melontini.andromeda.modules.".length();
 
-    private final List<Module> modules = new ArrayList<>();
+    private final Map<Class<?>, ModuleInfo> modules = new LinkedHashMap<>();
+    private final Map<Class<?>, ConfigManager<?>> configs = new HashMap<>();
 
     public void collect() {
+        List<Module> list = new ArrayList<>();
         Utilities.supplyUnchecked(() -> ClassPath.from(ModuleManager.class.getClassLoader())).getTopLevelClassesRecursive("me.melontini.andromeda.modules")
                 .stream().map(ClassPath.ClassInfo::getName).map(s -> Utilities.supplyUnchecked(() -> ClassInfo.forName(s)))
                 .filter(ci -> ci.getInterfaces().contains(Module.class.getName().replace(".", "/")))
                 .map(ci -> Utilities.supplyUnchecked(() -> Class.forName(ci.getClassName())))
                 .map(cls -> Utilities.supplyUnchecked(() -> Reflect.setAccessible(cls.getDeclaredConstructor())))
-                .forEach(ctx -> modules.add((Module) Utilities.supplyUnchecked(ctx::newInstance)));
-        modules.removeIf(m -> !m.enabled() || (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
-        modules.forEach(m -> AndromedaLog.info("Loading module: {}", m.getClass().getPackageName().substring(modulePrefixLength)));
+                .forEach(ctx -> list.add((Module) Utilities.supplyUnchecked(ctx::newInstance)));
+
+        list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
+        list.forEach(m -> modules.put(m.getClass(), new ModuleInfo(m.getClass().getPackageName().substring(modulePrefixLength), m)));
+        setUpConfigs();
+        modules.values().removeIf(m -> !m.module().enabled());
+        modules.values().forEach(m -> AndromedaLog.info("Loading module: {}", m.name()));
+    }
+
+    public void setUpConfigs() {
+        modules.values().forEach(m -> configs.put(m.module().getClass(),
+                ConfigBuilder.create(m.module().configClass(), CommonValues.mod(),
+                                "andromeda/" + m.name().replace('.', '/'))
+                        .traverseSuper(true)
+                        .build()));
     }
 
     public List<String> getMixins() {
         ClassPath p = Utilities.supplyUnchecked(() -> ClassPath.from(ModuleManager.class.getClassLoader()));
 
         List<String> mixins = new ArrayList<>();
-        modules.forEach(m -> {
-            String s = "me.melontini.andromeda.mixin." + m.getClass().getPackageName().substring(modulePrefixLength);
-            p.getTopLevelClassesRecursive(s).stream().map(ClassPath.ClassInfo::getName).forEach(mixins::add);
-        });
+        modules.values().forEach(m -> p.getTopLevelClassesRecursive("me.melontini.andromeda.mixin." + m.name()).stream()
+                .map(ClassPath.ClassInfo::getName).forEach(mixins::add));
         //mixins.forEach(s -> AndromedaLog.info("Discovered {}", s));
         return mixins.stream().map(s -> Utilities.supplyUnchecked(() -> MixinService.getService().getBytecodeProvider().getClassNode(s.replace('.', '/'))))
                 .filter(MixinProcessor::checkNode).map(n -> n.name.replace('/', '.').substring("me.melontini.andromeda.mixin.".length())).toList();
+    }
+
+    public ConfigManager<?> getConfig(Class<?> cls) {
+        return configs.get(cls);
+    }
+
+    public Module getModule(Class<?> cls) {
+        return modules.get(cls).module();
     }
 
     public static ModuleManager get() {
@@ -54,20 +75,24 @@ public class ModuleManager {
     }
 
     public static void onClient() {
-        get().modules.forEach(Module::onClient);
+        get().modules.values().forEach(m -> m.module().onClient());
         AndromedaClient.init();
     }
 
     public static void onServer() {
-        get().modules.forEach(Module::onServer);
+        get().modules.values().forEach(m -> m.module().onServer());
     }
 
     public static void onMain() {
-        get().modules.forEach(Module::onMain);
+        get().modules.values().forEach(m -> m.module().onMain());
         Andromeda.init();
     }
 
     public static void onPreLaunch() {
-        get().modules.forEach(Module::onPreLaunch);
+        get().modules.values().forEach(m -> m.module().onPreLaunch());
+    }
+
+    record ModuleInfo(String name, Module module) {
+
     }
 }

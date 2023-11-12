@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.items.infinite_totem;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.registries.Common;
 
 public class InfiniteTotem implements Module {
@@ -17,7 +16,7 @@ public class InfiniteTotem implements Module {
     }
 
     @Override
-    public boolean enabled() {
-        return Config.get().totemSettings.enableInfiniteTotem;
+    public Class<?> configClass() {
+        return Config.class;
     }
 }

@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.blocks.campfire_effects;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.config.Environment;
 
 public class CampfireEffects implements Module {
@@ -12,7 +11,7 @@ public class CampfireEffects implements Module {
     }
 
     @Override
-    public boolean enabled() {
-        return Config.get().campfireTweaks.effects;
+    public Class<?> configClass() {
+        return Config.class;
     }
 }

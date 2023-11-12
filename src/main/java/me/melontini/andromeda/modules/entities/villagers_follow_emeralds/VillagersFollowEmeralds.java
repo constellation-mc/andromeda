@@ -8,9 +8,4 @@ public class VillagersFollowEmeralds implements Module {
     public Environment environment() {
         return Environment.SERVER;
     }
-
-    @Override
-    public boolean enabled() {
-        return false;
-    }
 }

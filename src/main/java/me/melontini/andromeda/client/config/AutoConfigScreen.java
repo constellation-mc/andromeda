@@ -10,6 +10,7 @@ import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import me.melontini.dark_matter.api.config.OptionManager;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import me.melontini.dark_matter.impl.config.FieldOption;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
 import me.shedaniel.autoconfig.gui.DefaultGuiTransformers;
@@ -38,7 +39,7 @@ public class AutoConfigScreen {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    Tuple<String, Set<OptionManager.ProcessorEntry<AndromedaConfig>>> tuple = Config.getOptionManager().blameProcessors(field);
+                    Tuple<String, Set<OptionManager.ProcessorEntry<AndromedaConfig>>> tuple = Config.getOptionManager().blameProcessors(new FieldOption(field));
                     Set<Text> texts = new HashSet<>();
                     for (OptionManager.ProcessorEntry<AndromedaConfig> processor : tuple.right()) {
                         Config.getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
@@ -54,7 +55,7 @@ public class AutoConfigScreen {
                 }
             });
             return list;
-        }, field -> Config.getOptionManager().isModified(field));
+        }, field -> Config.getOptionManager().isModified(new FieldOption(field)));
 
         Holder.OURS.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             if (field.getType() == boolean.class || field.getType() == Boolean.class)
