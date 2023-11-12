@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.reflect.ClassPath;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.AndromedaClient;
+import me.melontini.andromeda.config.BasicConfig;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.config.Environment;
@@ -25,7 +26,7 @@ public class ModuleManager {
     private static final int modulePrefixLength = "me.melontini.andromeda.modules.".length();
 
     private final Map<Class<?>, ModuleInfo> modules = new LinkedHashMap<>();
-    private final Map<Class<?>, ConfigManager<?>> configs = new HashMap<>();
+    private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
 
     public void collect() {
         List<Module> list = new ArrayList<>();
@@ -62,12 +63,15 @@ public class ModuleManager {
                 .filter(MixinProcessor::checkNode).map(n -> n.name.replace('/', '.').substring("me.melontini.andromeda.mixin.".length())).toList();
     }
 
-    public ConfigManager<?> getConfig(Class<?> cls) {
+    public ConfigManager<? extends BasicConfig> getConfig(Class<?> cls) {
         return configs.get(cls);
     }
 
     public Module getModule(Class<?> cls) {
         return modules.get(cls).module();
+    }
+    public static  <T extends BasicConfig> T config(Class<?> module, Class<T> cls) {
+        return (T) get().getConfig(module).getConfig();
     }
 
     public static ModuleManager get() {
