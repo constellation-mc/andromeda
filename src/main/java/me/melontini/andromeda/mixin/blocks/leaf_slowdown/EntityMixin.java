@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.leaf_slowdown;
 
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.modules.blocks.leaf_slowdown.Content;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -42,15 +42,15 @@ abstract class EntityMixin extends Entity {
                 if (((LivingEntity) (Object) this) instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))
                     return;
                 if (attributeInstance != null)
-                    if (!attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
-                        attributeInstance.addTemporaryModifier(Andromeda.get().LEAF_SLOWNESS);
+                    if (!attributeInstance.hasModifier(Content.LEAF_SLOWNESS)) {
+                        attributeInstance.addTemporaryModifier(Content.LEAF_SLOWNESS);
                     }
                 /*Does this even work?*/
                 setVelocity(getVelocity().getX(), getVelocity().getY() * 0.7, getVelocity().getZ());
             } else {
                 if (attributeInstance != null)
-                    if (attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
-                        attributeInstance.removeModifier(Andromeda.get().LEAF_SLOWNESS);
+                    if (attributeInstance.hasModifier(Content.LEAF_SLOWNESS)) {
+                        attributeInstance.removeModifier(Content.LEAF_SLOWNESS);
                     }
             }
         }

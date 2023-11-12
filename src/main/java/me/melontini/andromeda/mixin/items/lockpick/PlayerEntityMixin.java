@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.items.lockpick;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.melontini.andromeda.items.LockpickItem;
+import me.melontini.andromeda.modules.items.lockpick.LockpickItem;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

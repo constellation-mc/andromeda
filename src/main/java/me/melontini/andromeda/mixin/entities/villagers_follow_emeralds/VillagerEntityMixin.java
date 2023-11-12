@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.entities.villagers_follow_emeralds;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.entity.ai.goal.VillagerTemptGoal;
+import me.melontini.andromeda.modules.entities.villagers_follow_emeralds.VillagerTemptGoal;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;

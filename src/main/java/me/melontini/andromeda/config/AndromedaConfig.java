@@ -1,10 +1,13 @@
 package me.melontini.andromeda.config;
 
 import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import me.melontini.andromeda.util.annotations.config.Environment;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
+import me.melontini.andromeda.util.annotations.config.ValueSwitch;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.Arrays;
@@ -29,6 +32,7 @@ public class AndromedaConfig {
 
         @ConfigEntry.Category("world")
         @ConfigEntry.Gui.Tooltip
+        @ValueSwitch
         public boolean blacklistMode = true;
 
         @ConfigEntry.Category("world")
@@ -75,7 +79,6 @@ public class AndromedaConfig {
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip(count = 2)
-    @ConfigEntry.Gui.RequiresRestart
     @FeatureEnvironment(Environment.BOTH)
     public boolean cactusBottleFilling = false;
 
@@ -90,13 +93,13 @@ public class AndromedaConfig {
     public static class IncubatorSettings {
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean enable = false;
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
+        @ValueSwitch
         public boolean randomness = true;
 
         @ConfigEntry.Category("blocks")
@@ -107,7 +110,6 @@ public class AndromedaConfig {
 
     @ConfigEntry.Category("blocks")
     @ConfigEntry.Gui.Tooltip()
-    @ConfigEntry.Gui.RequiresRestart
     @FeatureEnvironment(Environment.BOTH)
     public boolean usefulFletching = false;
 
@@ -150,6 +152,7 @@ public class AndromedaConfig {
 
         @ConfigEntry.Category("blocks")
         @ConfigEntry.Gui.Tooltip
+        @ValueSwitch
         public boolean affectsPassive = true;
 
         @ConfigEntry.Category("blocks")
@@ -157,22 +160,12 @@ public class AndromedaConfig {
         public int effectsRange = 10;
 
         @ConfigEntry.Category("blocks")
-        public List<Effect> effectList = Arrays.asList(new Effect());
+        public List<Effect> effectList = Arrays.asList(new Effect("minecraft:regeneration", 0));
 
+        @AllArgsConstructor @NoArgsConstructor
         public static class Effect {
-
             public String identifier;
             public int amplifier;
-
-            public Effect(String identifier, int amplifier) {
-                this.identifier = identifier;
-                this.amplifier = amplifier;
-            }
-
-            public Effect() {
-                this.identifier = "minecraft:regeneration";
-                this.amplifier = 0;
-            }
         }
     }
 
@@ -256,7 +249,6 @@ public class AndromedaConfig {
 
     @ConfigEntry.Category("entities")
     @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart
     @FeatureEnvironment(Environment.SERVER)
     public boolean villagersFollowEmeraldBlocks = false;
 
@@ -285,19 +277,16 @@ public class AndromedaConfig {
     public static class NewMinecarts {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean isAnvilMinecartOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean isNoteBlockMinecartOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean isJukeboxMinecartOn = false;
     }
@@ -312,25 +301,21 @@ public class AndromedaConfig {
     public static class NewBoats {
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean isFurnaceBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean isTNTBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean isJukeboxBoatOn = false;
 
         @ConfigEntry.Category("entities")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean isHopperBoatOn = false;
     }
@@ -346,16 +331,19 @@ public class AndromedaConfig {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.CLIENT)
+        @ValueSwitch
         public boolean clock = true;
 
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.CLIENT)
+        @ValueSwitch
         public boolean compass = true;
 
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.CLIENT)
+        @ValueSwitch
         public boolean recoveryCompass = true;
     }
 
@@ -369,7 +357,6 @@ public class AndromedaConfig {
     public static class Lockpick {
 
         @ConfigEntry.Category("items")
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean enable = false;
 
@@ -379,10 +366,12 @@ public class AndromedaConfig {
 
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
+        @ValueSwitch
         public boolean breakAfterUse = true;
 
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
+        @ValueSwitch
         public boolean villagerInventory = true;
     }
 
@@ -401,7 +390,6 @@ public class AndromedaConfig {
     public static class TotemSettings {
         @ConfigEntry.Category("items")
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.Gui.RequiresRestart
         @FeatureEnvironment(Environment.BOTH)
         public boolean enableInfiniteTotem = false;
 
@@ -448,15 +436,19 @@ public class AndromedaConfig {
     public static class DragonFight {
         @ConfigEntry.Category("mechanics")
         public boolean fightTweaks = true;
+
         @ConfigEntry.Category("mechanics")
         @ConfigEntry.Gui.Tooltip
         public boolean respawnCrystals = true;
+
         @ConfigEntry.Category("mechanics")
         @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean scaleHealthByMaxPlayers = false;
+
         @ConfigEntry.Category("mechanics")
         @ConfigEntry.Gui.Tooltip
         public boolean shorterCrystalTrackRange = true;
+
         @ConfigEntry.Category("mechanics")
         @ConfigEntry.Gui.Tooltip
         public boolean shorterSpikes = false;
@@ -472,7 +464,6 @@ public class AndromedaConfig {
     @Setter
     public static class ThrowableItems {
 
-        @ConfigEntry.Gui.RequiresRestart
         @ConfigEntry.Category("mechanics")
         public boolean enable = false;
 
@@ -516,21 +507,27 @@ public class AndromedaConfig {
     @Setter
     public static class GuiParticles {
         @ConfigEntry.Category("gui")
+        @ValueSwitch
         public boolean anvilScreenParticles = true;
 
         @ConfigEntry.Category("gui")
+        @ValueSwitch
         public boolean enchantmentScreenParticles = true;
 
         @ConfigEntry.Category("gui")
+        @ValueSwitch
         public boolean furnaceScreenParticles = true;
 
         @ConfigEntry.Category("gui")
+        @ValueSwitch
         public boolean creativeScreenParticles = true;
 
         @ConfigEntry.Category("gui")
+        @ValueSwitch
         public double creativeScreenParticlesVelX = 0.7d;
 
         @ConfigEntry.Category("gui")
+        @ValueSwitch
         public boolean gameModeSwitcherParticles = true;
     }
 
@@ -581,7 +578,6 @@ public class AndromedaConfig {
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip(count = 2)
-    @ConfigEntry.Gui.RequiresRestart
     public boolean compatMode = false;
 
     @ConfigEntry.Category("misc")
@@ -591,20 +587,20 @@ public class AndromedaConfig {
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip(count = 2)
-    @ConfigEntry.Gui.RequiresRestart
     @FeatureEnvironment(Environment.CLIENT)
     public boolean sendOptionalData = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip(count = 3)
+    @ValueSwitch
     public boolean sendCrashReports = true;
 
     @ConfigEntry.Category("misc")
     @ConfigEntry.Gui.Tooltip
+    @ValueSwitch
     public boolean debugMessages = false;
 
     @ConfigEntry.Category("misc")
-    @ConfigEntry.Gui.RequiresRestart
     @FeatureEnvironment(Environment.BOTH)
     public boolean unknown = false;
 }

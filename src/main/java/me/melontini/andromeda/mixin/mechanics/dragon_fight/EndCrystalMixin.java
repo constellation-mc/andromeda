@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.mechanics.dragon_fight;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.content.managers.EnderDragonManager;
+import me.melontini.andromeda.modules.mechanics.dragon_fight.EnderDragonManager;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.Entity;

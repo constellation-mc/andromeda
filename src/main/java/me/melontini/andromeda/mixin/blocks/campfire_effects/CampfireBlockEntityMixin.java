@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.blocks.campfire_effects;
 
 import me.melontini.andromeda.config.AndromedaConfig;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.PotionUtil;
+import me.melontini.andromeda.modules.blocks.campfire_effects.PotionUtil;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;

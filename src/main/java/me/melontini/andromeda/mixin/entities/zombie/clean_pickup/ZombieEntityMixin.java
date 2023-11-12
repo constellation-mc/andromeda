@@ -2,8 +2,8 @@ package me.melontini.andromeda.mixin.entities.zombie.clean_pickup;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
-import me.melontini.andromeda.registries.TagRegistry;
+import me.melontini.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.HostileEntity;
@@ -27,7 +27,7 @@ abstract class ZombieEntityMixin extends HostileEntity {
     public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
         if (Config.get().zombiesPreventUselessItems)
             return original && (stack.getItem() instanceof ToolItem || stack.getItem() instanceof ArmorItem ||
-                    stack.isIn(TagRegistry.ZOMBIES_PICKUP) ||
+                    stack.isIn(PickupTag.ZOMBIES_PICKUP) ||
                     (Config.get().throwableItems.canZombiesThrowItems && ItemBehaviorManager.hasBehaviors(stack.getItem())));
         else
             return original;

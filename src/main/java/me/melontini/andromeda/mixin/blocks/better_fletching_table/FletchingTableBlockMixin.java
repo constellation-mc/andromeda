@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.screens.FletchingScreenHandler;
+import me.melontini.andromeda.modules.blocks.better_fletching_table.FletchingScreenHandler;
 import me.melontini.andromeda.util.AndromedaTexts;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BlockState;

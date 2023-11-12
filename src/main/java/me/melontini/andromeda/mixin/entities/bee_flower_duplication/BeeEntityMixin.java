@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.entities.bee_flower_duplication;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.registries.BlockRegistry;
+import me.melontini.andromeda.modules.misc.unknown.UnknownContent;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
@@ -68,7 +68,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                             if (world.getBlockState(pos).getBlock() instanceof AirBlock && flowerBlock.canPlaceAt(flowerState, world, pos)) {
                                 if (world.random.nextInt(12) == 0) {
                                     if (Config.get().unknown && world.random.nextInt(100) == 0) {
-                                        world.setBlockState(pos, BlockRegistry.ROSE_OF_THE_VALLEY.get().getDefaultState());
+                                        world.setBlockState(pos, UnknownContent.ROSE_OF_THE_VALLEY_BLOCK.get().getDefaultState());
                                     } else {
                                         world.setBlockState(pos, flowerState);
                                     }

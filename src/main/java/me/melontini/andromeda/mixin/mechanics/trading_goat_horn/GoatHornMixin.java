@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.mechanics.trading_goat_horn;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.content.managers.CustomTraderManager;
+import me.melontini.andromeda.modules.mechanics.trading_goat_horn.CustomTraderManager;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GoatHornItem;

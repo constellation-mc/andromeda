@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.misc.unknown.rose_of_the_valley;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.items.RoseOfTheValley;
+import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;

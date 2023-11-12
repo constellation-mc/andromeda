@@ -5,8 +5,8 @@ import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.networks.AndromedaPackets;
-import me.melontini.andromeda.registries.ItemRegistry;
+import me.melontini.andromeda.modules.items.infinite_totem.Content;
+import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -41,23 +41,23 @@ abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean andromeda$infiniteFallback(boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
-        return original || itemStack.isOf(ItemRegistry.INFINITE_TOTEM.get());
+        return original || itemStack.isOf(Content.INFINITE_TOTEM.get());
     }
 
     @WrapWithCondition(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
     private boolean andromeda$infiniteFallback(ItemStack instance, int i) {
-        return !instance.isOf(ItemRegistry.INFINITE_TOTEM.get());
+        return !instance.isOf(Content.INFINITE_TOTEM.get());
     }
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;sendEntityStatus(Lnet/minecraft/entity/Entity;B)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "tryUseTotem", cancellable = true)
     private void andromeda$useInfiniteTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir, ItemStack itemStack) {
         if (Config.get().totemSettings.enableInfiniteTotem) {
-            if (itemStack.isOf(ItemRegistry.INFINITE_TOTEM.get())) {
+            if (itemStack.isOf(Content.INFINITE_TOTEM.get())) {
                 if (!world.isClient()) {
                     PacketByteBuf buf = PacketByteBufs.create()
                             .writeUuid(this.getUuid())
-                            .writeItemStack(new ItemStack(ItemRegistry.INFINITE_TOTEM.get()));
+                            .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.get()));
                     buf.writeRegistryValue(Registry.PARTICLE_TYPE, Andromeda.get().KNOCKOFF_TOTEM_PARTICLE);
 
                     for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {

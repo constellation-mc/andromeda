@@ -1,8 +1,8 @@
 package me.melontini.andromeda.mixin.misc.translations;
 
 import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.modules.misc.translations.TranslationUpdater;
 import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.andromeda.util.translations.TranslationUpdater;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import org.spongepowered.asm.mixin.Final;

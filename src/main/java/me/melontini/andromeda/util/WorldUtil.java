@@ -1,6 +1,5 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.andromeda.networks.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;

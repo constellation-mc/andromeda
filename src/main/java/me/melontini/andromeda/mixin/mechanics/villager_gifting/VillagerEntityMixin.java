@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.mechanics.villager_gifting;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.registries.TagRegistry;
+import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -41,22 +41,22 @@ abstract class VillagerEntityMixin extends MerchantEntity {
         ItemStack gift = stack.copy();
         gift.setCount(1);
 
-        if (stack.isIn(TagRegistry.VillagerGifts.MAJOR_POSITIVE)) {
+        if (stack.isIn(GiftTags.MAJOR_POSITIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_POSITIVE)) {
                 this.world.sendEntityStatus(this, (byte)14);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.VillagerGifts.MAJOR_NEGATIVE)) {
+        } else if (stack.isIn(GiftTags.MAJOR_NEGATIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_NEGATIVE)) {
                 this.world.sendEntityStatus(this, (byte)13);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.VillagerGifts.MINOR_POSITIVE)) {
+        } else if (stack.isIn(GiftTags.MINOR_POSITIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_POSITIVE)) {
                 this.world.sendEntityStatus(this, (byte)14);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.VillagerGifts.MINOR_NEGATIVE)) {
+        } else if (stack.isIn(GiftTags.MINOR_NEGATIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_NEGATIVE)) {
                 this.world.sendEntityStatus(this, (byte)13);
                 if (!player.isCreative()) stack.decrement(1);

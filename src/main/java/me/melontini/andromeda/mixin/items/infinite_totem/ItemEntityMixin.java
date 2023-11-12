@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.items.infinite_totem;
 
 import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.registries.ItemRegistry;
+import me.melontini.andromeda.modules.items.infinite_totem.Content;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.Feature;
@@ -135,7 +135,7 @@ abstract class ItemEntityMixin extends Entity {
 
                             ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
 
-                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(ItemRegistry.INFINITE_TOTEM.get()));
+                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(Content.INFINITE_TOTEM.get()));
                             this.discard();
                             andromeda$itemEntity.discard();
                             world.spawnEntity(entity);

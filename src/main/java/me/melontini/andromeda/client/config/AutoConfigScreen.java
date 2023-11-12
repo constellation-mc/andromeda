@@ -5,6 +5,7 @@ import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
+import me.melontini.andromeda.util.annotations.config.ValueSwitch;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import me.melontini.dark_matter.api.config.OptionManager;
@@ -59,7 +60,7 @@ public class AutoConfigScreen {
             if (field.getType() == boolean.class || field.getType() == Boolean.class)
                 list.forEach(gui -> gui.setRequiresRestart(true));
             return list;
-        }, field -> Config.get().compatMode);
+        }, field -> !field.isAnnotationPresent(ValueSwitch.class));
 
         Holder.OURS.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
