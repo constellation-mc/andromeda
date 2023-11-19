@@ -59,6 +59,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
         if (this.isDev()) LOGGER.warn("Will be verifying mixins!");
 
         ModuleManager.get().collect();
+        ModuleManager.get().print();
     }
 
     @Override

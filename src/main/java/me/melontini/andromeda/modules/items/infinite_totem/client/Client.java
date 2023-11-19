@@ -1,8 +1,10 @@
 package me.melontini.andromeda.modules.items.infinite_totem.client;
 
+import me.melontini.andromeda.modules.items.infinite_totem.Content;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
@@ -25,5 +27,7 @@ public class Client {
                 if (entity == client.player) client.gameRenderer.showFloatingItem(stack);
             });
         });
+
+        Content.KNOCKOFF_TOTEM_PARTICLE.ifPresent(t -> ParticleFactoryRegistry.getInstance().register(t, KnockoffTotemParticle.Factory::new));
     }
 }

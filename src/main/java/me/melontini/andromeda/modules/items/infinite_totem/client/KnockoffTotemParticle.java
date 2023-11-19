@@ -1,4 +1,4 @@
-package me.melontini.andromeda.client.particles;
+package me.melontini.andromeda.modules.items.infinite_totem.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

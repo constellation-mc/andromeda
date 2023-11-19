@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.items.infinite_totem;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.modules.items.infinite_totem.Content;
 import me.melontini.andromeda.util.AndromedaPackets;
@@ -58,7 +57,7 @@ abstract class LivingEntityMixin extends Entity {
                     PacketByteBuf buf = PacketByteBufs.create()
                             .writeUuid(this.getUuid())
                             .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.get()));
-                    buf.writeRegistryValue(Registry.PARTICLE_TYPE, Andromeda.get().KNOCKOFF_TOTEM_PARTICLE);
+                    buf.writeRegistryValue(Registry.PARTICLE_TYPE, Content.KNOCKOFF_TOTEM_PARTICLE.get());
 
                     for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
                         ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);

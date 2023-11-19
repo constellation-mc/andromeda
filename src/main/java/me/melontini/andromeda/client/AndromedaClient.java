@@ -1,15 +1,12 @@
 package me.melontini.andromeda.client;
 
 import lombok.Getter;
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.client.config.AutoConfigScreen;
-import me.melontini.andromeda.client.particles.KnockoffTotemParticle;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -36,8 +33,6 @@ public class AndromedaClient {
     public void onInitializeClient() {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
         ClientSideNetworking.register();
-
-        ParticleFactoryRegistry.getInstance().register(Andromeda.get().KNOCKOFF_TOTEM_PARTICLE, KnockoffTotemParticle.Factory::new);
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
             ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(MODID, "dark"), modContainer, ResourcePackActivationType.NORMAL);

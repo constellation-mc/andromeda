@@ -26,6 +26,7 @@ public class ModuleManager {
     private static final int modulePrefixLength = "me.melontini.andromeda.modules.".length();
 
     private final Map<Class<?>, ModuleInfo> modules = new LinkedHashMap<>();
+    private final Map<String, ModuleInfo> moduleNames = new HashMap<>();
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
 
     public void collect() {
@@ -41,7 +42,7 @@ public class ModuleManager {
         list.forEach(m -> modules.put(m.getClass(), new ModuleInfo(m.getClass().getPackageName().substring(modulePrefixLength), m)));
         setUpConfigs();
         modules.values().removeIf(m -> !m.module().enabled());
-        modules.values().forEach(m -> AndromedaLog.info("Loading module: {}", m.name()));
+        modules.values().forEach(m -> moduleNames.put(m.name(), m));
     }
 
     public void setUpConfigs() {
@@ -67,8 +68,11 @@ public class ModuleManager {
         return configs.get(cls);
     }
 
-    public Module getModule(Class<?> cls) {
-        return modules.get(cls).module();
+    public Optional<Module> getModule(Class<?> cls) {
+        return Optional.ofNullable(modules.get(cls)).map(ModuleInfo::module);
+    }
+    public Optional<Module> getModule(String name) {
+        return Optional.ofNullable(moduleNames.get(name)).map(ModuleInfo::module);
     }
     public static  <T extends BasicConfig> T config(Class<?> module, Class<T> cls) {
         return (T) get().getConfig(module).getConfig();
@@ -94,6 +98,12 @@ public class ModuleManager {
 
     public static void onPreLaunch() {
         get().modules.values().forEach(m -> m.module().onPreLaunch());
+    }
+
+    public void print() {
+        StringBuilder builder = new StringBuilder();
+        modules.values().forEach(m -> builder.append(m.name()).append(", "));
+        AndromedaLog.info("Loading modules: {}", builder);
     }
 
     record ModuleInfo(String name, Module module) {

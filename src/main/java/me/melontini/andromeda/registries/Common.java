@@ -1,6 +1,5 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
@@ -8,8 +7,6 @@ import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingSupplier;
 import me.melontini.dark_matter.api.content.ContentBuilder;
-import me.melontini.dark_matter.api.content.RegistryUtil;
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,8 +52,6 @@ public class Common {
 
     public static void bootstrap() {
         bootstrap(ItemGroup.class, ResourceRegistry.class);
-
-        Andromeda.get().KNOCKOFF_TOTEM_PARTICLE = RegistryUtil.create(id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple);
     }
 
     public static <T> T run(ThrowingSupplier<T, Throwable> callable, String... features) {
