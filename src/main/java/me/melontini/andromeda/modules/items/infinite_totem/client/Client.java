@@ -1,4 +1,4 @@
-package me.melontini.andromeda.modules.items.infinite_totem;
+package me.melontini.andromeda.modules.items.infinite_totem.client;
 
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;

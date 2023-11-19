@@ -14,7 +14,7 @@ import static me.melontini.andromeda.registries.Common.id;
 import static me.melontini.andromeda.registries.Common.start;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
-public class UnknownContent {
+public class Content {
     @Feature("unknown")
     public static final Keeper<FlowerBlock> ROSE_OF_THE_VALLEY_BLOCK = start(() -> ContentBuilder.BlockBuilder.create(id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON)))));

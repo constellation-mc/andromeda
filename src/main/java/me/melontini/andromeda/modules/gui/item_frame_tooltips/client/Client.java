@@ -1,4 +1,4 @@
-package me.melontini.andromeda.modules.gui.item_frame_tooltips;
+package me.melontini.andromeda.modules.gui.item_frame_tooltips.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.dark_matter.api.base.util.Utilities;

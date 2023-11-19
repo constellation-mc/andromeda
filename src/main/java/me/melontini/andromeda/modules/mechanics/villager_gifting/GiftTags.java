@@ -11,8 +11,4 @@ public class GiftTags {
     public static final TagKey<Item> MINOR_POSITIVE = TagKey.of(TagUtil.key("item"), id("villager_gifts/minor_positive"));
     public static final TagKey<Item> MINOR_NEGATIVE = TagKey.of(TagUtil.key("item"), id("villager_gifts/major_negative"));
     public static final TagKey<Item> MAJOR_NEGATIVE = TagKey.of(TagUtil.key("item"), id("villager_gifts/minor_negative"));
-
-    public static void init() {
-
-    }
 }

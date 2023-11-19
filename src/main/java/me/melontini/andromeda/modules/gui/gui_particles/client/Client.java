@@ -1,4 +1,4 @@
-package me.melontini.andromeda.modules.gui.gui_particles;
+package me.melontini.andromeda.modules.gui.gui_particles.client;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.dark_matter.api.base.util.MathStuff;

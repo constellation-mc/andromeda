@@ -1,15 +1,27 @@
 package me.melontini.andromeda.base;
 
 import me.melontini.andromeda.config.BasicConfig;
+import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.annotations.config.Environment;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.ConfigManager;
 
+@SuppressWarnings("UnstableApiUsage")
 public interface Module {
 
-    default void onClient() { }
+    default void onClient() {
+        try {
+            Class<?> cls = Class.forName(this.getClass().getPackageName() + ".client.Client");
+            Common.bootstrap(cls);
+        } catch (ClassNotFoundException ignored) { }
+    }
     default void onServer() { }
-    default void onMain() { }
+    default void onMain() {
+        try {
+            Class<?> cls = Class.forName(this.getClass().getPackageName() + ".Content");
+            Common.bootstrap(cls);
+        } catch (ClassNotFoundException ignored) { }
+    }
     default void onPreLaunch() { }
 
     default Environment environment() {
