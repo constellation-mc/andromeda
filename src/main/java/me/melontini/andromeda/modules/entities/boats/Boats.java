@@ -1,10 +1,13 @@
 package me.melontini.andromeda.modules.entities.boats;
 
+import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
-public class Boats implements Module {
+public class Boats implements Module<Boats.Config> {
 
     @Override
     public void onMain() {
@@ -12,7 +15,26 @@ public class Boats implements Module {
     }
 
     @Override
-    public Class<? extends BasicConfig> configClass() {
+    public Class<Config> configClass() {
         return Config.class;
+    }
+
+    public static class Config extends BasicConfig {
+
+        @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isFurnaceBoatOn = false;
+
+        @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isTNTBoatOn = false;
+
+        @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isJukeboxBoatOn = false;
+
+        @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isHopperBoatOn = false;
     }
 }

@@ -8,5 +8,5 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @Setter
 public class BasicConfig {
     @ConfigEntry.Gui.RequiresRestart
-    public boolean enable = false;
+    public boolean enabled = false;
 }

@@ -29,13 +29,13 @@ public class ModuleManager {
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
 
     public void collect() {
-        List<Module> list = new ArrayList<>();
+        List<Module<?>> list = new ArrayList<>();
         Utilities.supplyUnchecked(() -> ClassPath.from(ModuleManager.class.getClassLoader())).getTopLevelClassesRecursive("me.melontini.andromeda.modules")
                 .stream().map(ClassPath.ClassInfo::getName).map(s -> Utilities.supplyUnchecked(() -> ClassInfo.forName(s)))
                 .filter(ci -> ci.getInterfaces().contains(Module.class.getName().replace(".", "/")))
                 .map(ci -> Utilities.supplyUnchecked(() -> Class.forName(ci.getClassName())))
                 .map(cls -> Utilities.supplyUnchecked(() -> Reflect.setAccessible(cls.getDeclaredConstructor())))
-                .forEach(ctx -> list.add((Module) Utilities.supplyUnchecked(ctx::newInstance)));
+                .forEach(ctx -> list.add((Module<?>) Utilities.supplyUnchecked(ctx::newInstance)));
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
         list.forEach(m -> modules.put(m.getClass(), new ModuleInfo(m.getClass().getPackageName().substring(modulePrefixLength), m)));
@@ -67,14 +67,16 @@ public class ModuleManager {
         return configs.get(cls);
     }
 
-    public Optional<Module> getModule(Class<?> cls) {
-        return Optional.ofNullable(modules.get(cls)).map(ModuleInfo::module);
+    @SuppressWarnings("unchecked")
+    public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
+        return (Optional<T>) Optional.ofNullable(modules.get(cls)).map(ModuleInfo::module);
     }
-    public Optional<Module> getModule(String name) {
-        return Optional.ofNullable(moduleNames.get(name)).map(ModuleInfo::module);
+    @SuppressWarnings("unchecked")
+    public <T extends Module<?>> Optional<T> getModule(String name) {
+        return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).map(ModuleInfo::module);
     }
-    public static  <T extends BasicConfig> T config(Class<?> module, Class<T> cls) {
-        return (T) get().getConfig(module).getConfig();
+    public <T extends Module<?>> T forMixin(Class<T> cls) {
+        return getModule(cls).orElseThrow(() -> new IllegalStateException("Module's mixin loaded without module. Module %s".formatted(cls)));
     }
 
     public static ModuleManager get() {
@@ -105,7 +107,7 @@ public class ModuleManager {
         AndromedaLog.info("Loading modules: {}", builder);
     }
 
-    record ModuleInfo(String name, Module module) {
+    record ModuleInfo(String name, Module<?> module) {
 
     }
 }
