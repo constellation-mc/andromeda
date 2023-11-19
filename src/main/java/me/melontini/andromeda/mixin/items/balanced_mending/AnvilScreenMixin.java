@@ -3,7 +3,7 @@ package me.melontini.andromeda.mixin.items.balanced_mending;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.andromeda.util.annotations.MixinEnvironment;
+import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;

@@ -2,8 +2,8 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import com.google.common.collect.Lists;
 import me.melontini.andromeda.config.BasicConfig;
-import me.melontini.andromeda.util.annotations.config.Environment;
-import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
+import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.List;

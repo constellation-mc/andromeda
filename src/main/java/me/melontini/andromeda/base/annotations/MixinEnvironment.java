@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util.annotations;
+package me.melontini.andromeda.base.annotations;
 
 import net.fabricmc.api.EnvType;
 

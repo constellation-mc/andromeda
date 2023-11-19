@@ -2,7 +2,7 @@ package me.melontini.andromeda.base;
 
 import me.melontini.andromeda.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
-import me.melontini.andromeda.util.annotations.config.Environment;
+import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.ConfigManager;
 
@@ -25,6 +25,8 @@ public interface Module {
     default void onPreLaunch() { }
 
     default Environment environment() {
+        FeatureEnvironment env = this.getClass().getAnnotation(FeatureEnvironment.class);
+        if (env != null) return env.value();
         return Environment.BOTH;
     }
     default Class<? extends BasicConfig> configClass() { return BasicConfig.class; }

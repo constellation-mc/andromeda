@@ -1,11 +1,10 @@
 package me.melontini.andromeda.modules.world.falling_beenests;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.util.annotations.config.Environment;
+import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 
+@FeatureEnvironment(Environment.SERVER)
 public class CanBeeNestsFall implements Module {
-    @Override
-    public Environment environment() {
-        return Environment.SERVER;
-    }
+
 }

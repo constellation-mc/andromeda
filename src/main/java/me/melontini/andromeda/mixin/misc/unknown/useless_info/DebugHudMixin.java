@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.andromeda.util.annotations.MixinEnvironment;
+import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.hud.DebugHud;
 import org.spongepowered.asm.mixin.Mixin;

@@ -2,7 +2,7 @@ package me.melontini.andromeda.mixin.misc.unknown.useless_info;
 
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.andromeda.util.annotations.MixinEnvironment;
+import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;

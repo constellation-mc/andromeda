@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util.annotations.config;
+package me.melontini.andromeda.base;
 
 public enum Environment {
     CLIENT,

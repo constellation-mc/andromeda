@@ -1,12 +1,10 @@
 package me.melontini.andromeda.modules.bugfixes.advancement_shadow;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.util.annotations.config.Environment;
+import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 
+@FeatureEnvironment(Environment.CLIENT)
 public class AdvancementShadow implements Module {
 
-    @Override
-    public Environment environment() {
-        return Environment.CLIENT;
-    }
 }

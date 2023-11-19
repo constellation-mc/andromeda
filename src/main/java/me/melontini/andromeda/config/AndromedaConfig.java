@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import me.melontini.andromeda.util.annotations.config.Environment;
-import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
+import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.util.annotations.config.ValueSwitch;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 

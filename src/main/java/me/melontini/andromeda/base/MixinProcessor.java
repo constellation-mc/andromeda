@@ -4,7 +4,7 @@ import lombok.CustomLog;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.andromeda.util.annotations.MixinEnvironment;
+import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import net.fabricmc.api.EnvType;

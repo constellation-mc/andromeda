@@ -1,4 +1,6 @@
-package me.melontini.andromeda.util.annotations.config;
+package me.melontini.andromeda.base.annotations;
+
+import me.melontini.andromeda.base.Environment;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
