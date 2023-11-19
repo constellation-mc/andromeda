@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.blocks.cactus_bottle_filling;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.annotations.Feature;
@@ -22,6 +23,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -29,9 +31,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractBlock.class)
 @Feature("cactusBottleFilling")
 class AbstractBlockMixin {
+    @Unique
+    private static final CactusFiller am$cbf = ModuleManager.quick(CactusFiller.class);
+
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
     private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (!Config.get().cactusBottleFilling) return;
+        if (!am$cbf.config().enabled) return;
 
         if (state.getBlock() instanceof CactusBlock) {
             ItemStack stack = player.getStackInHand(hand);

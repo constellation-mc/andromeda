@@ -1,7 +1,8 @@
 package me.melontini.andromeda.mixin.items.infinite_totem;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.infinite_totem.Content;
+import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.Feature;
@@ -46,6 +47,8 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 @Mixin(ItemEntity.class)
 @Feature({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
 abstract class ItemEntityMixin extends Entity {
+    @Unique
+    private static final InfiniteTotem am$itou = ModuleManager.quick(InfiniteTotem.class);
 
     @Shadow public abstract void setPickupDelayInfinite();
     @Shadow public abstract void setToDefaultPickupDelay();
@@ -71,7 +74,7 @@ abstract class ItemEntityMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!Config.get().totemSettings.enableTotemAscension || !Config.get().totemSettings.enableInfiniteTotem)
+        if (!am$itou.config().enableAscension || !am$itou.config().enabled)
             return;
         if (!this.dataTracker.get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
 

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.world.falling_beenests;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.AirBlock;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -28,6 +30,8 @@ import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
 @Mixin(PersistentProjectileEntity.class)
 @Feature("canBeeNestsFall")
 abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
+    @Unique
+    private static final CanBeeNestsFall am$cbnf = ModuleManager.quick(CanBeeNestsFall.class);
     public PersistentProjectileEntityMixin(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -35,7 +39,7 @@ abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
     @SuppressWarnings("ConstantConditions")
     @Inject(at = @At("TAIL"), method = "onBlockHit")
     private void andromeda$onBeeNestHit(BlockHitResult blockHitResult, CallbackInfo ci) {
-        if (!Config.get().canBeeNestsFall) return;
+        if (!am$cbnf.config().enabled) return;
 
         Entity entity = this;
         BlockPos pos = blockHitResult.getBlockPos();

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.gui.gui_particles;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.block.BlockState;
@@ -19,6 +20,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,13 +28,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AnvilScreenHandler.class)
 @Feature("guiParticles.anvilScreenParticles")
 abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
+    @Unique
+    private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);
+
     public AnvilScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(type, syncId, playerInventory, context);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V", ordinal = 0), method = "onTakeOutput")
     private void andromeda$particles(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        if (!Config.get().guiParticles.anvilScreenParticles) return;
+        if (!am$guip.config().anvilScreenParticles) return;
 
         try {
             if (MinecraftClient.getInstance().isOnThread() && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {

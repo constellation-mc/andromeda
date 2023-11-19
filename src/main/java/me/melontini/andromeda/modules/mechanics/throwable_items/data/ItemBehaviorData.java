@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -56,8 +55,6 @@ public class ItemBehaviorData {
             @Override
             public void reload(ResourceManager manager) {
                 ItemBehaviorManager.clear();
-                if (!Config.get().throwableItems.enable) return;
-
                 EntrypointRunner.runEntrypoint("andromeda:collect_behaviors", Runnable.class, Runnable::run);
 
                 var map = manager.findResources("am_item_throw_behavior", identifier -> identifier.getPath().endsWith(".json"));

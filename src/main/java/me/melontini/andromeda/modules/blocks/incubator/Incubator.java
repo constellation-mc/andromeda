@@ -25,9 +25,5 @@ public class Incubator implements Module<Incubator.Config> {
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
         public boolean randomness = true;
-
-        @ConfigEntry.Gui.Tooltip
-        @FeatureEnvironment(Environment.SERVER)
-        public boolean recipe = true; //Used in JSON
     }
 }

@@ -1,10 +1,10 @@
 package me.melontini.andromeda.base;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import net.fabricmc.api.EnvType;
@@ -32,7 +32,7 @@ public class MixinProcessor {
             }
         }
 
-        if (Config.get().compatMode) {
+        /*if (Config.get().compatMode) {
             AnnotationNode annotationNode = Annotations.getVisible(n, Feature.class);
             if (annotationNode != null) {
                 Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
@@ -46,7 +46,7 @@ public class MixinProcessor {
                     if (!load) break;
                 }
             }
-        }
+        }*/
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) verifyMixin(n, n.name);
 

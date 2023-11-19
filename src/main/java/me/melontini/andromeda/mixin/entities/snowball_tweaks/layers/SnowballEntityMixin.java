@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.entities.snowball_tweaks.layers;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.mixin.annotations.ConstructDummy;
 import net.minecraft.block.Block;
@@ -26,6 +27,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SnowballEntity.class)
 @Feature("snowballs.layers")
 abstract class SnowballEntityMixin extends ThrownItemEntity {
+    @Unique
+    private static final Snowballs am$snow = ModuleManager.quick(Snowballs.class);
 
     public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -35,7 +38,7 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
     @ConstructDummy(owner = "net.minecraft.class_1297", name = "method_5773", desc = "()V")
     @Inject(at = @At("TAIL"), method = "tick()V")
     public void andromeda$onBlockHit(CallbackInfo ci) {
-        if (!Config.get().snowballs.layers || world.isClient()) return;
+        if (!am$snow.config().layers || world.isClient()) return;
 
         Vec3d pos = this.getPos();
         Vec3d vec3d = pos.add(this.getVelocity());

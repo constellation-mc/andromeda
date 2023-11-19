@@ -34,9 +34,8 @@ public class Config {
                     .add("campfireTweaks.campfireEffectsRange", "campfireTweaks.effectsRange")
                     .add("lockpickEnabled", "lockpick.enable"))
             .processors((registry, mod) -> {
-                SpecialProcessors.collect(registry);
-                DefaultProcessors.collect(registry);
-                AndromedaFeatureManager.runLegacy(registry);
+                //SpecialProcessors.collect(registry);
+                //AndromedaFeatureManager.runLegacy(registry);
             })
             .defaultReason(holder -> {
                 if ("andromeda:custom_values".equals(holder.processor().id())) {

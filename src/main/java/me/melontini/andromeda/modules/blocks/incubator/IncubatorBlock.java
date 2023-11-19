@@ -1,7 +1,8 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
+import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.AndromedaTexts;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -60,7 +61,7 @@ public class IncubatorBlock extends BlockWithEntity {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        if (Config.get().unknown)
+        if (ModuleManager.get().getModule(Unknown.class).map(m->m.config().enabled).orElse(false))
             tooltip.add(AndromedaTexts.INCUBATOR_SECRET);
     }
 

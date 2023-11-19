@@ -1,7 +1,9 @@
 package me.melontini.andromeda.mixin.items.minecart_block_picking;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
+import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -45,6 +47,8 @@ import java.util.Objects;
 @Mixin(MinecartItem.class)
 @Feature("minecartBlockPicking")
 abstract class MinecartItemMixin extends Item {
+    @Unique
+    private static final MinecartBlockPicking am$mbp = ModuleManager.quick(MinecartBlockPicking.class);
 
     @Shadow @Final public AbstractMinecartEntity.Type type;
 
@@ -100,7 +104,7 @@ abstract class MinecartItemMixin extends Item {
                     AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, (double) pos.getX() + 0.5, (double) pos.getY() + 0.0625 + d, (double) pos.getZ() + 0.5, this.type);
                     FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) abstractMinecartEntity;
 
-                    furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, Config.get().maxFurnaceMinecartFuel);
+                    furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m->m.config().maxFuel).orElse(32000));
                     furnaceMinecart.interact(player, player.getActiveHand());
                     if (stack.hasCustomName()) furnaceMinecart.setCustomName(stack.getName());
 
@@ -113,7 +117,7 @@ abstract class MinecartItemMixin extends Item {
             }
         }
 
-        if (Config.get().minecartBlockPicking && player.isSneaking()) {
+        if (am$mbp.config().enabled && player.isSneaking()) {
             if (stack.getItem() != Items.MINECART) return;
 
             if (state.isOf(Blocks.CHEST)) {
@@ -131,7 +135,7 @@ abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient()));
                 return;
             }
-            if (state.isOf(Blocks.SPAWNER) && Config.get().minecartSpawnerPicking) {
+            if (state.isOf(Blocks.SPAWNER) && am$mbp.config().spawnerPicking && MinecartItems.SPAWNER_MINECART.isPresent()) {
                 if (!world.isClient()) {
                     MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
                     if (!player.isCreative()) stack.decrement(1);
@@ -185,7 +189,7 @@ abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient()));
                 return;
             }
-            if (state.isOf(Blocks.NOTE_BLOCK) && Config.get().newMinecarts.isNoteBlockMinecartOn) {
+            if (state.isOf(Blocks.NOTE_BLOCK) && MinecartItems.NOTE_BLOCK_MINECART.isPresent()) {
                 if (!world.isClient()) {
                     NoteBlock noteBlock = (NoteBlock) state.getBlock();
                     if (!player.isCreative()) stack.decrement(1);
@@ -200,7 +204,7 @@ abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient()));
                 return;
             }
-            if (state.isOf(Blocks.JUKEBOX) && Config.get().newMinecarts.isJukeboxMinecartOn) {
+            if (state.isOf(Blocks.JUKEBOX) && MinecartItems.JUKEBOX_MINECART.isPresent()) {
                 if (!world.isClient()) {
                     if (!player.isCreative()) stack.decrement(1);
                     JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
@@ -220,7 +224,7 @@ abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient()));
                 return;
             }
-            if (state.isOf(Blocks.ANVIL) && Config.get().newMinecarts.isAnvilMinecartOn) {
+            if (state.isOf(Blocks.ANVIL) && MinecartItems.ANVIL_MINECART.isPresent()) {
                 if (!world.isClient()) {
                     if (!player.isCreative()) stack.decrement(1);
                     ItemStack anvilMinecart = new ItemStack(MinecartItems.ANVIL_MINECART.get());

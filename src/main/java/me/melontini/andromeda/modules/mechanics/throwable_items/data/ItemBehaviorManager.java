@@ -2,21 +2,24 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
+import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
+import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 
 import java.util.*;
 
 public class ItemBehaviorManager {
+    private static final Lazy<ThrowableItems> module = Lazy.of(() -> () -> ModuleManager.quick(ThrowableItems.class));
 
     private static final Map<Item, Holder> ITEM_BEHAVIORS = new IdentityHashMap<>();
     private static final Object2IntOpenHashMap<Item> CUSTOM_COOLDOWNS = new Object2IntOpenHashMap<>();
     private static final Set<Item> OVERRIDE_VANILLA = new HashSet<>();
 
     public static List<ItemBehavior> getBehaviors(Item item) {
-        if (Config.get().throwableItems.blacklist.contains(Registry.ITEM.getId(item).toString()))
+        if (module.get().config().blacklist.contains(Registry.ITEM.getId(item).toString()))
             return Collections.emptyList();
         Holder holder = ITEM_BEHAVIORS.get(item);
         if (holder == null) return Collections.emptyList();
@@ -40,7 +43,7 @@ public class ItemBehaviorManager {
     }
 
     public static boolean hasBehaviors(Item item) {
-        return ITEM_BEHAVIORS.containsKey(item) && !Config.get().throwableItems.blacklist.contains(Registry.ITEM.getId(item).toString());
+        return ITEM_BEHAVIORS.containsKey(item) && !module.get().config().blacklist.contains(Registry.ITEM.getId(item).toString());
     }
 
     public static void clear() {

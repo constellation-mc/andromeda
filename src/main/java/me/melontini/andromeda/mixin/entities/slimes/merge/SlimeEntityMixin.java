@@ -1,6 +1,7 @@
 package me.melontini.andromeda.mixin.entities.slimes.merge;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
@@ -21,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SlimeEntity.class)
 @Feature("slimes.merge")
 abstract class SlimeEntityMixin extends MobEntity {
+    @Unique
+    private static final Slimes am$slimes = ModuleManager.quick(Slimes.class);
 
     @Shadow public abstract int getSize();
     @Shadow public abstract void setSize(int size, boolean heal);
@@ -34,19 +37,19 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "initGoals")
     private void andromeda$newGoal(CallbackInfo ci) {
-        if (!Config.get().slimes.merge) return;
+        if (!am$slimes.config().merge) return;
 
         this.targetSelector.add(2, new ActiveTargetGoal<>((SlimeEntity) (Object) this, SlimeEntity.class, 5, true, false, livingEntity -> {
-            if (!Config.get().slimes.merge) return false;
+            if (!am$slimes.config().merge) return false;
             if (this.andromeda$mergeCD > 0) return false;
             float d = livingEntity.distanceTo((SlimeEntity) (Object) this);
-            return d <= 6 && (getSize() <= Config.get().slimes.maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
+            return d <= 6 && (getSize() <= am$slimes.config().maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
         }));
     }
 
     @Inject(at = @At("TAIL"), method = "pushAwayFrom")
     private void andromeda$push(Entity entity, CallbackInfo ci) {
-        if (!Config.get().slimes.merge) return;
+        if (!am$slimes.config().merge) return;
 
         if (getTarget() instanceof SlimeEntity slime && slime == entity && this.andromeda$mergeCD == 0) {
             int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);
@@ -59,16 +62,16 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (Config.get().slimes.merge) if (this.andromeda$mergeCD > 0) --this.andromeda$mergeCD;
+        if (am$slimes.config().merge) if (this.andromeda$mergeCD > 0) --this.andromeda$mergeCD;
     }
 
     @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
     private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (Config.get().slimes.merge) nbt.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
+        if (am$slimes.config().merge) nbt.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (Config.get().slimes.merge) this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(700, 2000));
+        if (am$slimes.config().merge) this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(700, 2000));
     }
 }

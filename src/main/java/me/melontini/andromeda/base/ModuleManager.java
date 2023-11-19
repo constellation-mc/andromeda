@@ -32,7 +32,8 @@ public class ModuleManager {
         List<Module<?>> list = new ArrayList<>();
         Utilities.supplyUnchecked(() -> ClassPath.from(ModuleManager.class.getClassLoader())).getTopLevelClassesRecursive("me.melontini.andromeda.modules")
                 .stream().map(ClassPath.ClassInfo::getName).map(s -> Utilities.supplyUnchecked(() -> ClassInfo.forName(s)))
-                .filter(ci -> ci.getInterfaces().contains(Module.class.getName().replace(".", "/")))
+                .filter(ci -> ci.getInterfaces().contains(Module.class.getName().replace(".", "/")) ||
+                        ci.getInterfaces().contains(BasicModule.class.getName().replace(".", "/")))
                 .map(ci -> Utilities.supplyUnchecked(() -> Class.forName(ci.getClassName())))
                 .map(cls -> Utilities.supplyUnchecked(() -> Reflect.setAccessible(cls.getDeclaredConstructor())))
                 .forEach(ctx -> list.add((Module<?>) Utilities.supplyUnchecked(ctx::newInstance)));
@@ -75,8 +76,8 @@ public class ModuleManager {
     public <T extends Module<?>> Optional<T> getModule(String name) {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).map(ModuleInfo::module);
     }
-    public <T extends Module<?>> T forMixin(Class<T> cls) {
-        return getModule(cls).orElseThrow(() -> new IllegalStateException("Module's mixin loaded without module. Module %s".formatted(cls)));
+    public static  <T extends Module<?>> T quick(Class<T> cls) {
+        return get().getModule(cls).orElseThrow(() -> new IllegalStateException("Module %s requested quickly, but is not loaded.".formatted(cls)));
     }
 
     public static ModuleManager get() {

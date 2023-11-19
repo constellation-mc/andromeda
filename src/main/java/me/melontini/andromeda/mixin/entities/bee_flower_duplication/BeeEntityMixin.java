@@ -1,7 +1,9 @@
 package me.melontini.andromeda.mixin.entities.bee_flower_duplication;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import me.melontini.andromeda.modules.misc.unknown.Content;
+import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
@@ -21,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BeeEntity.class)
 @Feature("beeFlowerDuplication")
 abstract class BeeEntityMixin extends AnimalEntity {
+    @Unique
+    private static final BeeFlowerDuplication am$bfd = ModuleManager.quick(BeeFlowerDuplication.class);
 
     @Shadow @Nullable BlockPos flowerPos;
     @Shadow BeeEntity.PollinateGoal pollinateGoal;
@@ -34,7 +38,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;tick()V", shift = At.Shift.AFTER), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!Config.get().beeFlowerDuplication) return;
+        if (!am$bfd.config().enabled) return;
 
         if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
 
@@ -67,7 +71,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                             BlockPos pos = new BlockPos(flowerPos.getX() + i, flowerPos.getY() + b, flowerPos.getZ() + c);
                             if (world.getBlockState(pos).getBlock() instanceof AirBlock && flowerBlock.canPlaceAt(flowerState, world, pos)) {
                                 if (world.random.nextInt(12) == 0) {
-                                    if (Config.get().unknown && world.random.nextInt(100) == 0) {
+                                    if (ModuleManager.get().getModule(Unknown.class).map(m->m.config().enabled).orElse(false) && world.random.nextInt(100) == 0) {
                                         world.setBlockState(pos, Content.ROSE_OF_THE_VALLEY_BLOCK.get().getDefaultState());
                                     } else {
                                         world.setBlockState(pos, flowerState);
@@ -77,7 +81,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                         }
                     }
                 }
-            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && Config.get().beeTallFlowerDuplication) {
+            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && am$bfd.config().enabled) {
                 andromeda$plantingCoolDown = world.random.nextBetween(3600, 8000);
                 for (int i = -1; i <= 1; i++) {
                     for (int b = -2; b <= 2; b++) {

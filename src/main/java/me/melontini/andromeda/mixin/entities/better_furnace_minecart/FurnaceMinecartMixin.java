@@ -2,7 +2,8 @@ package me.melontini.andromeda.mixin.entities.better_furnace_minecart;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.andromeda.util.annotations.Feature;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,26 +15,32 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+;
+
 @Mixin(FurnaceMinecartEntity.class)
 @Feature("betterFurnaceMinecart")
 class FurnaceMinecartMixin {
+    @Unique
+    private static final BetterFurnaceMinecart am$bfm = ModuleManager.quick(BetterFurnaceMinecart.class);
+
     @Shadow public int fuel;
 
     @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
     public void andromeda$interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (!Config.get().betterFurnaceMinecart) return;
+        if (!am$bfm.config().enabled) return;
         ItemStack stack = player.getStackInHand(hand);
         Item item = stack.getItem();
 
         FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
         if (FuelRegistry.INSTANCE.get(item) != null) {
             int itemFuel = FuelRegistry.INSTANCE.get(item);
-            if ((this.fuel + (itemFuel * 2.25)) <= Config.get().maxFurnaceMinecartFuel) {
+            if ((this.fuel + (itemFuel * 2.25)) <= am$bfm.config().maxFuel) {
                 if (!player.getAbilities().creativeMode) {
                     ItemStack reminder = stack.getRecipeRemainder();
                     if (!reminder.isEmpty())
@@ -55,12 +62,12 @@ class FurnaceMinecartMixin {
 
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")
     private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, /* short */ short value, Operation<Void> operation) {
-        if (Config.get().betterFurnaceMinecart) nbt.putInt(key, this.fuel);
+        if (am$bfm.config().enabled) nbt.putInt(key, this.fuel);
         else operation.call(nbt, key, value);
     }
 
     @Inject(at = @At(value = "TAIL"), method = "readCustomDataFromNbt")
     public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (Config.get().betterFurnaceMinecart) this.fuel = nbt.getInt("Fuel");
+        if (am$bfm.config().enabled) this.fuel = nbt.getInt("Fuel");
     }
 }

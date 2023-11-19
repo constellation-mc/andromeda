@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.blocks.incubator.data;
 
 import com.google.gson.JsonObject;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -45,8 +44,6 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
             @Override
             public void reload(ResourceManager manager) {
                 EggProcessingData.EGG_DATA.clear();
-                if (!Config.get().incubator.enable) return;
-
                 //well...
                 for (Item item : Registry.ITEM) {
                     if (item instanceof SpawnEggItem spawnEggItem) {
