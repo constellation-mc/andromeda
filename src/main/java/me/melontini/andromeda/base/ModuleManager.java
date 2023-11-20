@@ -40,6 +40,7 @@ public class ModuleManager {
                 .forEach(ctx -> list.add((Module<?>) Utilities.supplyUnchecked(ctx::newInstance)));
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
+        list.sort(Comparator.comparing(module -> module.getClass().getPackageName().substring(modulePrefixLength)));
         list.forEach(m -> modules.put(m.getClass(), new ModuleInfo(m.getClass().getPackageName().substring(modulePrefixLength), m)));
         discoveredModules.addAll(modules.values());
         setUpConfigs();
@@ -50,8 +51,7 @@ public class ModuleManager {
     public void setUpConfigs() {
         modules.values().forEach(m -> {
             var config = ConfigBuilder.create(m.module().configClass(), CommonValues.mod(),
-                            "andromeda/" + m.name().replace('.', '/'))
-                    .traverseSuper(true);
+                            "andromeda/" + m.name().replace('.', '/'));
             m.module().onConfig(Utilities.cast(config));
             configs.put(m.module().getClass(), config.build());
         });

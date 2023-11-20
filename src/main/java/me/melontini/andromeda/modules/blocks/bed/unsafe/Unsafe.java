@@ -11,6 +11,7 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 
 import java.util.Map;
 
+@SuppressWarnings("UnstableApiUsage")
 @ModuleTooltip(2)
 @FeatureEnvironment(Environment.SERVER)
 public class Unsafe implements BasicModule {

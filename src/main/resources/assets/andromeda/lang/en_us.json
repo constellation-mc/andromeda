@@ -97,9 +97,9 @@
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",
 
-  "config.andromeda.option.Effect": "Effect",
-  "config.andromeda.option.Effect.identifier": "Identifier",
-  "config.andromeda.option.Effect.amplifier": "Amplifier",
+  "config.andromeda.blocks.campfire_effects.option.Effect": "Effect",
+  "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "Identifier",
+  "config.andromeda.blocks.campfire_effects.option.Effect.amplifier": "Amplifier",
 
   "config.andromeda.category.world": "World",
   "config.andromeda.world.auto_planting": "Self Planting Crops",
