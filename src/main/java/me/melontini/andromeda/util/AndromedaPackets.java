@@ -6,9 +6,9 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class AndromedaPackets {
 
-    public static final Identifier JUKEBOX_MINECART_START_PLAYING = new Identifier(MODID, "jukebox_minecart_start_playing");
+    public static final Identifier JUKEBOX_START_PLAYING = new Identifier(MODID, "jukebox_start_playing");
 
-    public static final Identifier JUKEBOX_MINECART_STOP_PLAYING = new Identifier(MODID, "jukebox_minecart_stop_playing");
+    public static final Identifier JUKEBOX_STOP_PLAYING = new Identifier(MODID, "jukebox_stop_playing");
 
     public static final Identifier USED_CUSTOM_TOTEM = new Identifier(MODID, "used_custom_totem");
 

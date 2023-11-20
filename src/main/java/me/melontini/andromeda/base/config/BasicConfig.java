@@ -1,4 +1,4 @@
-package me.melontini.andromeda.config;
+package me.melontini.andromeda.base.config;
 
 import lombok.Getter;
 import lombok.Setter;

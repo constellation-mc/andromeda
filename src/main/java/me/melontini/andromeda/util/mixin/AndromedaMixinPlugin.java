@@ -3,7 +3,6 @@ package me.melontini.andromeda.util.mixin;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.MixinEnvironment;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
@@ -51,9 +50,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
         }
-        Config.get();
 
-        if (Config.get().compatMode) LOGGER.warn("Compat mode is on!");
         if (this.isDev()) LOGGER.warn("Will be verifying mixins!");
 
         ModuleManager.get().collect();

@@ -1,7 +1,5 @@
 package me.melontini.andromeda.registries;
 
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingSupplier;
@@ -10,7 +8,6 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
@@ -56,9 +53,7 @@ public class Common {
         try {
             return callable.get();
         } catch (Throwable e) {
-            AndromedaLog.error("Something went very wrong! Disabling %s".formatted(Arrays.toString(features)), e);
-            Config.processUnknownException(e, features);
-            return null;
+            throw new RuntimeException("Something went very wrong!", e);
         }
     }
 }

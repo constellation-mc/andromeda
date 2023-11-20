@@ -10,10 +10,10 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
 
 import java.util.Objects;
 
+import static me.melontini.andromeda.registries.Common.id;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Getter
@@ -21,8 +21,6 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public class AndromedaClient {
 
     private static AndromedaClient INSTANCE;
-
-    private final Notifier notifier = new Notifier();
 
     public static void init() {
         INSTANCE = new AndromedaClient();
@@ -34,15 +32,13 @@ public class AndromedaClient {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
         ClientSideNetworking.register();
 
-        FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
-            ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(MODID, "dark"), modContainer, ResourcePackActivationType.NORMAL);
-        });
+        FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
+                ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
 
         Support.runWeak(EnvType.CLIENT, () -> AndromedaReporter::handleUpload);
     }
 
     public void lateInit() {
-        notifier.showQueued();
     }
 
     @Override

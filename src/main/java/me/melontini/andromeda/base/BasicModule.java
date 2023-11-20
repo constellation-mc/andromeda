@@ -1,6 +1,6 @@
 package me.melontini.andromeda.base;
 
-import me.melontini.andromeda.config.BasicConfig;
+import me.melontini.andromeda.base.config.BasicConfig;
 
 public interface BasicModule extends Module<BasicConfig> {
 

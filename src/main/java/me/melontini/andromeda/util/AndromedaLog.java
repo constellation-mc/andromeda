@@ -1,6 +1,6 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.config.Config;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.Utilities;
 

@@ -29,7 +29,7 @@ public class ClientSideNetworking {
 
     public static void register() {
         if (MinecartEntities.JUKEBOX_MINECART_ENTITY.isPresent() || BoatEntities.BOAT_WITH_JUKEBOX.isPresent()) {
-            ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.JUKEBOX_MINECART_START_PLAYING, (client, handler, buf, responseSender) -> {
+            ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.JUKEBOX_START_PLAYING, (client, handler, buf, responseSender) -> {
                 UUID id = buf.readUuid();
                 ItemStack stack = buf.readItemStack();
                 client.execute(() -> {
@@ -49,7 +49,7 @@ public class ClientSideNetworking {
                     }
                 });
             });
-            ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.JUKEBOX_MINECART_STOP_PLAYING, (client, handler, buf, responseSender) -> {
+            ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.JUKEBOX_STOP_PLAYING, (client, handler, buf, responseSender) -> {
                 UUID id = buf.readUuid();
                 client.execute(() -> {
                     SoundInstance instance = soundInstanceMap.remove(id);

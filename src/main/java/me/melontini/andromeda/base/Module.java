@@ -1,7 +1,7 @@
 package me.melontini.andromeda.base;
 
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
-import me.melontini.andromeda.config.BasicConfig;
+import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.ConfigBuilder;

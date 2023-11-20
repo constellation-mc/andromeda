@@ -102,7 +102,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
         buf.writeUuid(this.getUuid());
 
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, AndromedaPackets.JUKEBOX_MINECART_STOP_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, AndromedaPackets.JUKEBOX_STOP_PLAYING, buf);
         }
     }
 
@@ -112,7 +112,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
         buf.writeItemStack(this.record);
 
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, AndromedaPackets.JUKEBOX_MINECART_START_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, AndromedaPackets.JUKEBOX_START_PLAYING, buf);
         }
         AndromedaLog.devInfo(this.record);
     }
