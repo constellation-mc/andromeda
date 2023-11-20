@@ -3,6 +3,7 @@ package me.melontini.andromeda.mixin.items.minecart_block_picking;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
+import me.melontini.andromeda.modules.entities.minecarts.Minecarts;
 import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.annotations.Feature;
@@ -135,20 +136,6 @@ abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient()));
                 return;
             }
-            if (state.isOf(Blocks.SPAWNER) && am$mbp.config().spawnerPicking && MinecartItems.SPAWNER_MINECART.isPresent()) {
-                if (!world.isClient()) {
-                    MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
-                    if (!player.isCreative()) stack.decrement(1);
-                    ItemStack spawnerMinecart = new ItemStack(MinecartItems.SPAWNER_MINECART.get(), 1);
-
-                    spawnerMinecart.setNbt(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build());
-
-                    player.getInventory().offerOrDrop(spawnerMinecart);
-                    world.breakBlock(pos, false);
-                }
-                cir.setReturnValue(ActionResult.success(world.isClient()));
-                return;
-            }
             if (state.isOf(Blocks.TNT)) {
                 if (!world.isClient()) {
                     if (!player.isCreative()) stack.decrement(1);
@@ -189,49 +176,67 @@ abstract class MinecartItemMixin extends Item {
                 cir.setReturnValue(ActionResult.success(world.isClient()));
                 return;
             }
-            if (state.isOf(Blocks.NOTE_BLOCK) && MinecartItems.NOTE_BLOCK_MINECART.isPresent()) {
-                if (!world.isClient()) {
-                    NoteBlock noteBlock = (NoteBlock) state.getBlock();
-                    if (!player.isCreative()) stack.decrement(1);
-                    int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
-                    ItemStack noteBlockMinecart = new ItemStack(MinecartItems.NOTE_BLOCK_MINECART.get());
 
-                    noteBlockMinecart.setNbt(NbtBuilder.create().putInt("Note", noteProp).build());
+            if (ModuleManager.get().getModule(Minecarts.class).isPresent()) {
 
-                    player.getInventory().offerOrDrop(noteBlockMinecart);
-                    world.breakBlock(pos, false);
-                }
-                cir.setReturnValue(ActionResult.success(world.isClient()));
-                return;
-            }
-            if (state.isOf(Blocks.JUKEBOX) && MinecartItems.JUKEBOX_MINECART.isPresent()) {
-                if (!world.isClient()) {
-                    if (!player.isCreative()) stack.decrement(1);
-                    JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+                if (state.isOf(Blocks.SPAWNER) && am$mbp.config().spawnerPicking && MinecartItems.SPAWNER_MINECART.isPresent()) {
+                    if (!world.isClient()) {
+                        MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+                        if (!player.isCreative()) stack.decrement(1);
+                        ItemStack spawnerMinecart = new ItemStack(MinecartItems.SPAWNER_MINECART.get(), 1);
 
-                    ItemStack record = jukeboxBlockEntity.getRecord();
-                    ItemStack jukeboxMinecart = new ItemStack(MinecartItems.JUKEBOX_MINECART.get());
+                        spawnerMinecart.setNbt(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build());
 
-                    if (!record.isEmpty()) {
-                        world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
-                        jukeboxMinecart.setNbt(NbtBuilder.create().put("Items", record.writeNbt(new NbtCompound())).build());
+                        player.getInventory().offerOrDrop(spawnerMinecart);
+                        world.breakBlock(pos, false);
                     }
+                    cir.setReturnValue(ActionResult.success(world.isClient()));
+                    return;
+                }
+                if (state.isOf(Blocks.NOTE_BLOCK) && MinecartItems.NOTE_BLOCK_MINECART.isPresent()) {
+                    if (!world.isClient()) {
+                        NoteBlock noteBlock = (NoteBlock) state.getBlock();
+                        if (!player.isCreative()) stack.decrement(1);
+                        int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
+                        ItemStack noteBlockMinecart = new ItemStack(MinecartItems.NOTE_BLOCK_MINECART.get());
 
-                    player.getInventory().offerOrDrop(jukeboxMinecart);
-                    jukeboxBlockEntity.clear();
-                    world.breakBlock(pos, false);
+                        noteBlockMinecart.setNbt(NbtBuilder.create().putInt("Note", noteProp).build());
+
+                        player.getInventory().offerOrDrop(noteBlockMinecart);
+                        world.breakBlock(pos, false);
+                    }
+                    cir.setReturnValue(ActionResult.success(world.isClient()));
+                    return;
                 }
-                cir.setReturnValue(ActionResult.success(world.isClient()));
-                return;
-            }
-            if (state.isOf(Blocks.ANVIL) && MinecartItems.ANVIL_MINECART.isPresent()) {
-                if (!world.isClient()) {
-                    if (!player.isCreative()) stack.decrement(1);
-                    ItemStack anvilMinecart = new ItemStack(MinecartItems.ANVIL_MINECART.get());
-                    player.getInventory().offerOrDrop(anvilMinecart);
-                    world.breakBlock(pos, false);
+                if (state.isOf(Blocks.JUKEBOX) && MinecartItems.JUKEBOX_MINECART.isPresent()) {
+                    if (!world.isClient()) {
+                        if (!player.isCreative()) stack.decrement(1);
+                        JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+
+                        ItemStack record = jukeboxBlockEntity.getRecord();
+                        ItemStack jukeboxMinecart = new ItemStack(MinecartItems.JUKEBOX_MINECART.get());
+
+                        if (!record.isEmpty()) {
+                            world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
+                            jukeboxMinecart.setNbt(NbtBuilder.create().put("Items", record.writeNbt(new NbtCompound())).build());
+                        }
+
+                        player.getInventory().offerOrDrop(jukeboxMinecart);
+                        jukeboxBlockEntity.clear();
+                        world.breakBlock(pos, false);
+                    }
+                    cir.setReturnValue(ActionResult.success(world.isClient()));
+                    return;
                 }
-                cir.setReturnValue(ActionResult.success(world.isClient()));
+                if (state.isOf(Blocks.ANVIL) && MinecartItems.ANVIL_MINECART.isPresent()) {
+                    if (!world.isClient()) {
+                        if (!player.isCreative()) stack.decrement(1);
+                        ItemStack anvilMinecart = new ItemStack(MinecartItems.ANVIL_MINECART.get());
+                        player.getInventory().offerOrDrop(anvilMinecart);
+                        world.breakBlock(pos, false);
+                    }
+                    cir.setReturnValue(ActionResult.success(world.isClient()));
+                }
             }
         }
     }
