@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.misc.recipe_advancements_generation;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.misc.recipe_advancements_generation.AdvancementGeneration;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import org.spongepowered.asm.mixin.Final;
@@ -16,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static me.melontini.andromeda.modules.misc.recipe_advancements_generation.Helper.generateRecipeAdvancements;
 
 @Mixin(PlayerManager.class)
-@Feature("recipeAdvancementsGeneration.enable")
 class PlayerManagerMixin {
     @Unique
     private static final AdvancementGeneration am$rag = ModuleManager.quick(AdvancementGeneration.class);

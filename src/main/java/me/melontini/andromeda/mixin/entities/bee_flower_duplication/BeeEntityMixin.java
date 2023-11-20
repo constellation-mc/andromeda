@@ -4,7 +4,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import me.melontini.andromeda.modules.misc.unknown.Content;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BeeEntity.class)
-@Feature("beeFlowerDuplication")
 abstract class BeeEntityMixin extends AnimalEntity {
     @Unique
     private static final BeeFlowerDuplication am$bfd = ModuleManager.quick(BeeFlowerDuplication.class);

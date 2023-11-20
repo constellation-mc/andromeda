@@ -7,7 +7,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.infinite_totem.Content;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.util.AndromedaPackets;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -31,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LivingEntity.class)
-@Feature("totemSettings.enableInfiniteTotem")
 abstract class LivingEntityMixin extends Entity {
     @Unique
     private static final InfiniteTotem am$itou = ModuleManager.quick(InfiniteTotem.class);

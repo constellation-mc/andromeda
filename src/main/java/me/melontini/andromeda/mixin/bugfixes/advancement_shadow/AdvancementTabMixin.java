@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.bugfixes.advancement_shadow;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.bugfixes.advancement_shadow.AdvancementShadow;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
 import org.spongepowered.asm.mixin.Final;
@@ -13,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(AdvancementTab.class)
-@Feature("frameIndependentAdvancementShadow")
 class AdvancementTabMixin {
     @Unique
     private static final AdvancementShadow am$fias = ModuleManager.quick(AdvancementShadow.class);

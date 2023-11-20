@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperature;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PlantBlock;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ServerWorld.class)
-@Feature("temperatureBasedCropGrowthSpeed")
 class ServerWorldMixin {
     @Unique
     private static final PlantTemperature am$tbpgs = ModuleManager.quick(PlantTemperature.class);

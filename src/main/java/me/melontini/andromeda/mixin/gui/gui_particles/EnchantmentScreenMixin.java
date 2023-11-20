@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.gui.gui_particles;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -18,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EnchantmentScreen.class)
-@Feature("guiParticles.enchantmentScreenParticles")
 abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentScreenHandler> {
     @Unique
     private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);

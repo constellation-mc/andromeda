@@ -6,7 +6,6 @@ import me.melontini.andromeda.modules.entities.zombie.clean_pickup.Pickup;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -19,7 +18,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ZombieEntity.class)
-@Feature("zombiesPreventUselessItems")
 abstract class ZombieEntityMixin extends HostileEntity {
     @Unique
     private static final Pickup am$zpui = ModuleManager.quick(Pickup.class);

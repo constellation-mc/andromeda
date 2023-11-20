@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.entities.slimes.slowness;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -18,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SlimeEntity.class)
-@Feature("slimes.slowness")
 abstract class SlimeEntityMixin extends MobEntity {
     @Unique
     private static final Slimes am$slimes = ModuleManager.quick(Slimes.class);

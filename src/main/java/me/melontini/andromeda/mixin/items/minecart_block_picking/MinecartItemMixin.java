@@ -6,7 +6,6 @@ import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.andromeda.modules.entities.minecarts.Minecarts;
 import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
@@ -46,7 +45,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 
 @Mixin(MinecartItem.class)
-@Feature("minecartBlockPicking")
 abstract class MinecartItemMixin extends Item {
     @Unique
     private static final MinecartBlockPicking am$mbp = ModuleManager.quick(MinecartBlockPicking.class);

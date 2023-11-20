@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.guarded_loot.GuardedLoot;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
@@ -29,7 +28,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.List;
 
 @Mixin(LootableContainerBlockEntity.class)
-@Feature("guardedLoot.enabled")
 abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockEntity {
     @Unique
     private static final GuardedLoot am$guard = ModuleManager.quick(GuardedLoot.class);

@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.blocks.campfire_effects;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import me.melontini.andromeda.modules.blocks.campfire_effects.PotionUtil;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(CampfireBlockEntity.class)
-@Feature("campfireTweaks.effects")
 class CampfireBlockEntityMixin {
     @Unique
     private static final CampfireEffects am$ceff = ModuleManager.quick(CampfireEffects.class);

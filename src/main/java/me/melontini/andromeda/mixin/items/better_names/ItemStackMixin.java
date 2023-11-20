@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.items.better_names;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.better_names.BetterNames;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 
 @Mixin(ItemStack.class)
-@Feature("slightlyBetterItemNames")
 abstract class ItemStackMixin {
     @Unique
     private static final BetterNames am$sbin = ModuleManager.quick(BetterNames.class);

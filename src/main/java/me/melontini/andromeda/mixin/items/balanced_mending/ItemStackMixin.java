@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.items.balanced_mending;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.balanced_mending.BalancedMending;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
@@ -12,7 +11,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ItemStack.class)
-@Feature("balancedMending")
 abstract class ItemStackMixin {
     @Unique
     private static final BalancedMending am$balmend = ModuleManager.quick(BalancedMending.class);

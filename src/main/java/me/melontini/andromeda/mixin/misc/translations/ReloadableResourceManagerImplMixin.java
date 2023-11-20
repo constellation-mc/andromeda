@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.misc.translations.TranslationUpdater;
 import me.melontini.andromeda.modules.misc.translations.Translations;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.resource.*;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ReloadableResourceManagerImpl.class)
-@Feature("autoUpdateTranslations")
 class ReloadableResourceManagerImplMixin {
     @Unique
     private static final Translations am$trans = ModuleManager.quick(Translations.class);

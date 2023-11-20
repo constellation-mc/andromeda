@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.hud.DebugHud;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +17,6 @@ import java.util.List;
 
 @MixinEnvironment(EnvType.CLIENT)
 @Mixin(DebugHud.class)
-@Feature("unknown")
 class DebugHudMixin {
     @Unique
     private static final Unknown am$unk = ModuleManager.quick(Unknown.class);

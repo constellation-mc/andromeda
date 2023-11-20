@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.gui.gui_particles;
 import com.google.common.collect.Lists;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -28,7 +27,6 @@ import java.util.*;
 import java.util.function.Supplier;
 
 @Mixin(GameModeSelectionScreen.class)
-@Feature("guiParticles.gameModeSwitcherParticles")
 abstract class GameModeSelectionScreenMixin extends Screen {
     @Unique
     private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);

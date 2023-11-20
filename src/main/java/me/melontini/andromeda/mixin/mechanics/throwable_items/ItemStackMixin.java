@@ -5,7 +5,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
-@Feature("throwableItems.enable")
 abstract class ItemStackMixin {
     @Unique
     private static final ThrowableItems am$thritm = ModuleManager.quick(ThrowableItems.class);

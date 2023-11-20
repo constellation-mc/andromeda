@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.gui.no_more_adventure;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.gui.no_more_adventure.NoMoreAdventure;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -13,7 +12,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GameModeSelectionScreen.class)
-@Feature("noMoreAdventure")
 abstract class GameModeSelectionScreenMixin extends Screen {
     @Unique
     private static final NoMoreAdventure am$noma = ModuleManager.quick(NoMoreAdventure.class);

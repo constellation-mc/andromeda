@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.items.minecart_block_picking;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.RailShape;
@@ -25,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(targets = "net/minecraft/item/MinecartItem$1")
-@Feature("minecartBlockPicking")
 class ItemDispenserBehaviorMixin {
     @Unique
     private static final MinecartBlockPicking am$mbp = ModuleManager.quick(MinecartBlockPicking.class);

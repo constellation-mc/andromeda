@@ -4,7 +4,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.ItemStackUtil;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CactusBlock;
@@ -29,7 +28,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractBlock.class)
-@Feature("cactusBottleFilling")
 class AbstractBlockMixin {
     @Unique
     private static final CactusFiller am$cbf = ModuleManager.quick(CactusFiller.class);

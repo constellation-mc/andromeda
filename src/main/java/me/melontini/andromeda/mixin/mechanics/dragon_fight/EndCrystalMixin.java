@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.mechanics.dragon_fight;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.EnderDragonManager;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -20,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndCrystalEntity.class)
-@Feature({"dragonFight.fightTweaks", "dragonFight.respawnCrystals"})
 abstract class EndCrystalMixin extends Entity {
     @Unique
     private static final DragonFight am$dft = ModuleManager.quick(DragonFight.class);

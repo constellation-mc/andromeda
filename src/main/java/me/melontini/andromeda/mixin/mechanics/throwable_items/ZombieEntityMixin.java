@@ -6,7 +6,6 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.ItemThrowerMob;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItemAttackGoal;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ZombieEntity.class)
-@Feature({"throwableItems.enable", "throwableItems.canZombiesThrowItems"})
 abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
     @Unique
     private static final ThrowableItems am$thritm = ModuleManager.quick(ThrowableItems.class);

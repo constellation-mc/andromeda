@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.mechanics.trading_goat_horn;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.trading_goat_horn.CustomTraderManager;
 import me.melontini.andromeda.modules.mechanics.trading_goat_horn.GoatHorn;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GoatHornItem;
 import net.minecraft.item.Instrument;
@@ -27,7 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Mixin(GoatHornItem.class)
-@Feature("tradingGoatHorn")
 class GoatHornMixin {
     @Unique
     private static final GoatHorn am$goathorn = ModuleManager.quick(GoatHorn.class);

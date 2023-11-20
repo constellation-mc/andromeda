@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.misc.unknown.rose_of_the_valley;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
@@ -18,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Item.class)
-@Feature("unknown")
 class ItemMixin {
     @Unique
     private static final Unknown am$unk = ModuleManager.quick(Unknown.class);

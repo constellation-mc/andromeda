@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.blocks.leaf_slowdown;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.Content;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -24,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-@Feature("leafSlowdown")
 abstract class EntityMixin extends Entity {
     @Unique
     private static final LeafSlowdown am$leaf = ModuleManager.quick(LeafSlowdown.class);

@@ -2,11 +2,10 @@ package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.annotations.Feature;
-import me.melontini.andromeda.base.annotations.MixinEnvironment;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import net.fabricmc.loader.api.FabricLoader;
@@ -24,7 +23,6 @@ import java.util.Set;
 @CustomLog
 public class AndromedaMixinPlugin extends ExtendablePlugin {
 
-    private static final String MIXIN_TO_OPTION_ANNOTATION = "L" + Feature.class.getName().replace(".", "/") + ";";
     private static final String MIXIN_ENVIRONMENT_ANNOTATION = "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
 
     static {
@@ -70,7 +68,6 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     @Override
     public void afterApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
         if (targetClass.visibleAnnotations != null && !targetClass.visibleAnnotations.isEmpty()) {//strip our annotation from the class
-            targetClass.visibleAnnotations.removeIf(node -> MIXIN_TO_OPTION_ANNOTATION.equals(node.desc));
             targetClass.visibleAnnotations.removeIf(node -> MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
         }
     }

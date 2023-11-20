@@ -4,7 +4,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable;
 import me.melontini.andromeda.modules.blocks.better_fletching_table.FletchingScreenHandler;
 import me.melontini.andromeda.util.AndromedaTexts;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
@@ -24,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FletchingTableBlock.class)
-@Feature("usefulFletching")
 class FletchingTableBlockMixin extends CraftingTableBlock {
     @Unique
     private static final BetterFletchingTable am$bft = ModuleManager.quick(BetterFletchingTable.class);

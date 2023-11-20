@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.mechanics.villager_gifting;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -23,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VillagerEntity.class)
-@Feature("villagerGifting")
 abstract class VillagerEntityMixin extends MerchantEntity {
     @Unique
     private static final VillagerGifting am$villgifts = ModuleManager.quick(VillagerGifting.class);

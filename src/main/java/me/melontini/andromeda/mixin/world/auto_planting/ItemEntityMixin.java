@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.world.auto_planting;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.world.auto_planting.AutoPlanting;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -25,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(ItemEntity.class)
-@Feature("autoPlanting.enabled")
 abstract class ItemEntityMixin {
     @Unique
     private static final AutoPlanting am$tbpgs = ModuleManager.quick(AutoPlanting.class);

@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.world.falling_beenests;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
 
 @Mixin(BeehiveBlockEntity.class)
-@Feature("canBeeNestsFall")
 abstract class BeehiveBlockEntityMixin extends BlockEntity {
     @Unique
     private static final CanBeeNestsFall am$cbnf = ModuleManager.quick(CanBeeNestsFall.class);

@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.items.tooltips.clock;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
@@ -22,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(Item.class)
-@Feature("tooltips.clock")
 class ItemMixin {
     @Unique
     private static final Tooltips am$tooltips = ModuleManager.quick(Tooltips.class);

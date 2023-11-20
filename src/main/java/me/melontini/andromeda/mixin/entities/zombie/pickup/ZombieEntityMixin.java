@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.entities.zombie.pickup;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.zombie.pickup.Pickup;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -19,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ZombieEntity.class)
-@Feature("allZombiesCanPickUpItems")
 abstract class ZombieEntityMixin extends HostileEntity {
     @Unique
     private static final Pickup am$azcbi = ModuleManager.quick(Pickup.class);

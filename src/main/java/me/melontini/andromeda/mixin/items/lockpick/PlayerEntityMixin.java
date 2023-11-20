@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.lockpick.Lockpick;
 import me.melontini.andromeda.modules.items.lockpick.LockpickItem;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -18,7 +17,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(PlayerEntity.class)
-@Feature("lockpick.enable")
 abstract class PlayerEntityMixin extends LivingEntity {
     @Unique
     private static final Lockpick am$lockpick = ModuleManager.quick(Lockpick.class);

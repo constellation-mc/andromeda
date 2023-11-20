@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.world.quick_fire;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.world.quick_fire.QuickFire;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FireBlock;
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(FireBlock.class)
-@Feature("quickFire")
 abstract class AbstractFireBlockMixin extends AbstractFireBlock {
     @Unique
     private static final QuickFire am$quickf = ModuleManager.quick(QuickFire.class);

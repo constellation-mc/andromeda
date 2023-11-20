@@ -3,7 +3,6 @@ package me.melontini.andromeda.mixin.entities.villagers_follow_emeralds;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.villagers_follow_emeralds.VillagerTemptGoal;
 import me.melontini.andromeda.modules.entities.villagers_follow_emeralds.VillagersFollowEmeralds;
-import me.melontini.andromeda.util.annotations.Feature;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -18,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VillagerEntity.class)
-@Feature("villagersFollowEmeraldBlocks")
 abstract class VillagerEntityMixin extends MerchantEntity {
     @Unique
     private static final VillagersFollowEmeralds am$vfeb = ModuleManager.quick(VillagersFollowEmeralds.class);

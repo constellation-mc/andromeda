@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.blocks.better_fletching_table;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
@@ -22,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(Item.class)
-@Feature("usefulFletching")
 class ItemMixin {
     @Unique
     private static final BetterFletchingTable am$bft = ModuleManager.quick(BetterFletchingTable.class);

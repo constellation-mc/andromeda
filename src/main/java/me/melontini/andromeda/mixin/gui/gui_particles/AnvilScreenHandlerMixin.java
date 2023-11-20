@@ -2,7 +2,6 @@ package me.melontini.andromeda.mixin.gui.gui_particles;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AnvilScreenHandler.class)
-@Feature("guiParticles.anvilScreenParticles")
 abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
     @Unique
     private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);

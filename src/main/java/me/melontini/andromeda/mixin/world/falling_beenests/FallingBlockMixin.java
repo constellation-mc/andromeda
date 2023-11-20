@@ -4,7 +4,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.minecraft.block.BlockState;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Mixin(FallingBlockEntity.class)
-@Feature("canBeeNestsFall")
 abstract class FallingBlockMixin extends Entity {
     @Unique
     private static final CanBeeNestsFall am$cbnf = ModuleManager.quick(CanBeeNestsFall.class);
