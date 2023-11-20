@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.infinite_totem;
 
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.registries.Keeper;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -16,12 +16,12 @@ import static me.melontini.andromeda.registries.Common.start;
 
 public class Content {
 
-    @Feature("totemSettings.enableInfiniteTotem")
     public static final Keeper<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
             .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
-            .itemGroup(ItemGroup.COMBAT));
+            .itemGroup(ItemGroup.COMBAT)
+            .register(() -> ModuleManager.quick(InfiniteTotem.class).config().enabled));
 
-    @Feature("totemSettings.enableInfiniteTotem")
     public static Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.of(() -> () ->
-            RegistryUtil.create(id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple));
+            RegistryUtil.create(() -> ModuleManager.quick(InfiniteTotem.class).config().enabled,
+                    id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple));
 }

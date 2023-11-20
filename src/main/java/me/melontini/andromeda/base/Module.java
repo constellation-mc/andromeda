@@ -4,6 +4,7 @@ import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -23,6 +24,7 @@ public interface Module<T extends BasicConfig> {
         } catch (ClassNotFoundException ignored) { }
     }
     default void onPreLaunch() { }
+    default void onConfig(ConfigBuilder<T> builder) { }
 
     default Environment environment() {
         FeatureEnvironment env = this.getClass().getAnnotation(FeatureEnvironment.class);

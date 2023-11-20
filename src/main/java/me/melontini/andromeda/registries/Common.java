@@ -2,7 +2,6 @@ package me.melontini.andromeda.registries;
 
 import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingSupplier;
@@ -31,12 +30,11 @@ public class Common {
 
             Keeper<?> keeper = (Keeper<?>) Utilities.supplyUnchecked(() -> field.get(reg));
             if (keeper.initialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
-            Feature f = field.getAnnotation(Feature.class);
+
             try {
-                keeper.initialize(f);
+                keeper.initialize();
             } catch (Throwable t) {
-                AndromedaLog.error("Failed to bootstrap registry object %s!".formatted(field.getName()), t);
-                if (f != null) Config.processUnknownException(t, f.value());
+                throw new IllegalStateException("Failed to bootstrap registry object %s!".formatted(field.getName()), t);
             }
         }
     }

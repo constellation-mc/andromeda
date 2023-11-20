@@ -32,5 +32,9 @@ public class Minecarts implements Module<Minecarts.Config> {
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.BOTH)
         public boolean isJukeboxMinecartOn = false;
+
+        @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isSpawnerMinecartOn = false;
     }
 }

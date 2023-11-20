@@ -46,11 +46,13 @@ public class ModuleManager {
     }
 
     public void setUpConfigs() {
-        modules.values().forEach(m -> configs.put(m.module().getClass(),
-                ConfigBuilder.create(m.module().configClass(), CommonValues.mod(),
-                                "andromeda/" + m.name().replace('.', '/'))
-                        .traverseSuper(true)
-                        .build()));
+        modules.values().forEach(m -> {
+            var config = ConfigBuilder.create(m.module().configClass(), CommonValues.mod(),
+                            "andromeda/" + m.name().replace('.', '/'))
+                    .traverseSuper(true);
+            m.module().onConfig(Utilities.cast(config));
+            configs.put(m.module().getClass(), config.build());
+        });
     }
 
     public List<String> getMixins() {

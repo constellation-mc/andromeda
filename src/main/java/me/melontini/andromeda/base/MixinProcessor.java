@@ -2,9 +2,7 @@ package me.melontini.andromeda.base;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.MixinEnvironment;
-import me.melontini.andromeda.config.Config;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import net.fabricmc.api.EnvType;
@@ -14,10 +12,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.util.Annotations;
 
 import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-
-import static me.melontini.dark_matter.api.base.util.Utilities.cast;
 
 @CustomLog
 public class MixinProcessor {
@@ -54,7 +48,7 @@ public class MixinProcessor {
     }
 
     private static void verifyMixin(ClassNode mixinNode, String mixinClassName) {
-        LOGGER.debug("Verifying @MixinRelatedConfigOption from " + mixinClassName);
+        /*LOGGER.debug("Verifying @MixinRelatedConfigOption from " + mixinClassName);
         AnnotationNode annotationNode = Annotations.getVisible(mixinNode, Feature.class);
         if (annotationNode != null) {
             Map<String, Object> values = AsmUtil.mapAnnotationNode(annotationNode);
@@ -72,7 +66,7 @@ public class MixinProcessor {
                 }
             }
             LOGGER.debug("Verified @MixinRelatedConfigOption from %s. State: %s".formatted(mixinClassName, dummy));
-        } else LOGGER.debug("No @MixinRelatedConfigOption found in " + mixinClassName);
+        } else LOGGER.debug("No @MixinRelatedConfigOption found in " + mixinClassName);*/
 
         LOGGER.debug("Verifying access flags!");
         if ((mixinNode.access & Modifier.PUBLIC) == Modifier.PUBLIC) {

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.registries.Keeper;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -13,9 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import static me.melontini.andromeda.registries.Common.id;
 
 public class Content {
-    @Feature("throwableItems.enable")
+
     public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.of(() -> () ->
-            RegistryUtil.createEntityType(id("flying_item"),
+            RegistryUtil.createEntityType(() -> ModuleManager.quick(ThrowableItems.class).config().enabled,
+                    id("flying_item"),
                     FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                             .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10)));
 
