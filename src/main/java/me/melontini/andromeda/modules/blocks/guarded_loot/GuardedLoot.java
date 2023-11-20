@@ -1,8 +1,10 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 
+@ModuleTooltip
 public class GuardedLoot implements Module<GuardedLoot.Config> {
 
     @Override

@@ -3,8 +3,11 @@ package me.melontini.andromeda.modules.entities.better_furnace_minecart;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
+@ModuleTooltip(3)
 @FeatureEnvironment(Environment.SERVER)
 public class BetterFurnaceMinecart implements Module<BetterFurnaceMinecart.Config> {
 
@@ -14,7 +17,10 @@ public class BetterFurnaceMinecart implements Module<BetterFurnaceMinecart.Confi
     }
 
     public static class Config extends BasicConfig {
+        @ConfigEntry.Gui.Tooltip
         public int maxFuel = 45000;
+
+        @ConfigEntry.Gui.Tooltip(count = 3)
         public boolean takeFuelWhenLow = true;
     }
 }

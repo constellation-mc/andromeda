@@ -1,9 +1,11 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
+@ModuleTooltip
 public class Lockpick implements Module<Lockpick.Config> {
 
     @Override

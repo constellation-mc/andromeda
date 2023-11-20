@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -10,6 +11,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import java.util.Arrays;
 import java.util.List;
 
+@ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
 public class AdvancementGeneration implements Module<AdvancementGeneration.Config> {
 

@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.List;
 
+@ModuleTooltip
 public class ThrowableItems implements Module<ThrowableItems.Config> {
 
     @Override

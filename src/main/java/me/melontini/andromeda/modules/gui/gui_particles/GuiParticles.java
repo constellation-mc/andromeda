@@ -3,8 +3,10 @@ package me.melontini.andromeda.modules.gui.gui_particles;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 
+@ModuleTooltip
 @FeatureEnvironment(Environment.CLIENT)
 public class GuiParticles implements Module<GuiParticles.Config> {
 

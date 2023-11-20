@@ -24,6 +24,7 @@ public class ModuleManager {
     private static final Supplier<ModuleManager> INSTANCE = Suppliers.memoize(ModuleManager::new);
     private static final int modulePrefixLength = "me.melontini.andromeda.modules.".length();
 
+    private final Set<ModuleInfo> discoveredModules = new LinkedHashSet<>();
     private final Map<Class<?>, ModuleInfo> modules = new LinkedHashMap<>();
     private final Map<String, ModuleInfo> moduleNames = new HashMap<>();
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
@@ -40,6 +41,7 @@ public class ModuleManager {
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
         list.forEach(m -> modules.put(m.getClass(), new ModuleInfo(m.getClass().getPackageName().substring(modulePrefixLength), m)));
+        discoveredModules.addAll(modules.values());
         setUpConfigs();
         modules.values().removeIf(m -> !m.module().enabled());
         modules.values().forEach(m -> moduleNames.put(m.name(), m));
@@ -78,6 +80,11 @@ public class ModuleManager {
     public <T extends Module<?>> Optional<T> getModule(String name) {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).map(ModuleInfo::module);
     }
+
+    public Set<ModuleInfo> allDiscovered() {
+        return Collections.unmodifiableSet(discoveredModules);
+    }
+
     public static  <T extends Module<?>> T quick(Class<T> cls) {
         return get().getModule(cls).orElseThrow(() -> new IllegalStateException("Module %s requested quickly, but is not loaded.".formatted(cls)));
     }
@@ -110,7 +117,7 @@ public class ModuleManager {
         AndromedaLog.info("Loading modules: {}", builder);
     }
 
-    record ModuleInfo(String name, Module<?> module) {
+    public record ModuleInfo(String name, Module<?> module) {
 
     }
 }
