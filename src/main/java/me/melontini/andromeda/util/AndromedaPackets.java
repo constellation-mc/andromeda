@@ -19,4 +19,6 @@ public class AndromedaPackets {
     public static final Identifier ADD_ONE_PARTICLE = new Identifier(MODID, "add_one_particle");
 
     public static final Identifier EXPLODE_BOAT_ON_SERVER = new Identifier(MODID, "explode_boat_on_server");
+
+    public static final Identifier VERIFY_MODULES = new Identifier(MODID, "verify_modules");
 }

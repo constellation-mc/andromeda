@@ -30,8 +30,8 @@ public class ModuleManager {
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
 
     public void collect() {
-        List<Module<?>> list = Arrays.asList(ServiceLoader.load(Module.class).stream().filter(p -> p.type().getName().startsWith("me.melontini.andromeda.modules."))
-                .map(ServiceLoader.Provider::get).toArray(Module<?>[]::new));
+        List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class).stream().filter(p -> p.type().getName().startsWith("me.melontini.andromeda.modules."))
+                .map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
         list.sort(Comparator.comparing(module -> module.getClass().getPackageName().substring(modulePrefixLength)));
@@ -90,8 +90,11 @@ public class ModuleManager {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).map(ModuleInfo::module);
     }
 
-    public Set<ModuleInfo> allDiscovered() {
+    public Set<ModuleInfo> all() {
         return Collections.unmodifiableSet(discoveredModules);
+    }
+    public Collection<ModuleInfo> loaded() {
+        return Collections.unmodifiableCollection(modules.values());
     }
 
     public static  <T extends Module<?>> T quick(Class<T> cls) {

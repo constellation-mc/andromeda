@@ -14,6 +14,8 @@
   "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
   "andromeda.container.guarded": "Can't open! The container is guarded!",
 
+  "andromeda.disconnected.module_mismatch": "Andromeda module mismatch!\nDisable: %s\n Enable: %s\nTo join this server!",
+
   "andromeda.config.option_manager.reason.andromeda.module_conflict": "Conflicting module enabled!",
   "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
   "andromeda.config.option_manager.reason.andromeda.spawner_enabled": "Spawner minecart must be enabled to use this!",

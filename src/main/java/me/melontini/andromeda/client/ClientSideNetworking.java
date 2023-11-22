@@ -1,11 +1,15 @@
 package me.melontini.andromeda.client;
 
+import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.client.sound.PersistentMovingSoundInstance;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -19,6 +23,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
@@ -72,6 +77,17 @@ public class ClientSideNetworking {
                 ItemEntity entity = (ItemEntity) MakeSure.notNull(client.world, "client.world").getEntityLookup().get(uuid);
                 if (entity != null) entity.getDataTracker().set(ItemEntity.STACK, stack);
             });
+        });
+
+        ClientLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (client, handler, buf, listenerAdder) -> {
+            String[] modules = ModuleManager.get().loaded().stream().filter(m->m.module().environment() == Environment.BOTH)
+                    .map(ModuleManager.ModuleInfo::name).toArray(String[]::new);
+            var pbf = PacketByteBufs.create();
+            pbf.writeVarInt(modules.length);
+            for (String module : modules) {
+                pbf.writeString(module);
+            }
+            return CompletableFuture.completedFuture(pbf);
         });
     }
 }

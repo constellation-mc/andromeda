@@ -89,7 +89,7 @@ public class AutoConfigScreen {
                     .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 
             var eb = builder.entryBuilder();
-            ModuleManager.get().allDiscovered().forEach(module -> {
+            ModuleManager.get().all().forEach(module -> {
                 try {
                     CONTEXT.set(module);
 
@@ -133,7 +133,7 @@ public class AutoConfigScreen {
     //TODO
     private static void powerSave() {
         Config.save();
-        ModuleManager.get().allDiscovered().forEach(module -> module.module().manager().save());
+        ModuleManager.get().all().forEach(module -> module.module().manager().save());
     }
 
     private static ConfigCategory getOrCreateCategoryForField(ModuleManager.ModuleInfo info, ConfigBuilder screenBuilder) {
