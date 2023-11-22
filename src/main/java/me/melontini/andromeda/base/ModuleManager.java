@@ -7,12 +7,10 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.client.AndromedaClient;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
-import org.spongepowered.asm.mixin.transformer.ClassInfo;
 import org.spongepowered.asm.service.MixinService;
 
 import java.util.*;
@@ -30,14 +28,8 @@ public class ModuleManager {
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
 
     public void collect() {
-        List<Module<?>> list = new ArrayList<>();
-        Utilities.supplyUnchecked(() -> ClassPath.from(ModuleManager.class.getClassLoader())).getTopLevelClassesRecursive("me.melontini.andromeda.modules")
-                .stream().map(ClassPath.ClassInfo::getName).map(s -> Utilities.supplyUnchecked(() -> ClassInfo.forName(s)))
-                .filter(ci -> ci.getInterfaces().contains(Module.class.getName().replace(".", "/")) ||
-                        ci.getInterfaces().contains(BasicModule.class.getName().replace(".", "/")))
-                .map(ci -> Utilities.supplyUnchecked(() -> Class.forName(ci.getClassName())))
-                .map(cls -> Utilities.supplyUnchecked(() -> Reflect.setAccessible(cls.getDeclaredConstructor())))
-                .forEach(ctx -> list.add((Module<?>) Utilities.supplyUnchecked(ctx::newInstance)));
+        List<Module<?>> list = Arrays.asList(ServiceLoader.load(Module.class).stream().filter(p -> p.type().getName().startsWith("me.melontini.andromeda.modules."))
+                .map(ServiceLoader.Provider::get).toArray(Module<?>[]::new));
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
         list.sort(Comparator.comparing(module -> module.getClass().getPackageName().substring(modulePrefixLength)));
