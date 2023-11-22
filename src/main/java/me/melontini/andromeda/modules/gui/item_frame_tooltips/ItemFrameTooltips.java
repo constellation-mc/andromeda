@@ -5,7 +5,9 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
-import me.melontini.dark_matter.api.config.ConfigBuilder;
+import me.melontini.andromeda.util.CommonValues;
+import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
+import net.fabricmc.loader.api.ModContainer;
 
 import java.util.Map;
 
@@ -17,13 +19,13 @@ import static me.melontini.andromeda.util.MiscUtil.testModVersion;
 public class ItemFrameTooltips implements BasicModule {
 
     @Override
-    public void onConfig(ConfigBuilder<BasicConfig> builder) {
-        builder.processors((registry, mod) -> registry.register("andromeda:iceberg", manager -> {
+    public void onProcessors(OptionProcessorRegistry<BasicConfig> registry, ModContainer mod) {
+        registry.register(CommonValues.MODID + ":iceberg", manager -> {
             if (testModVersion("minecraft", ">=1.20") &&
                     testModVersion("iceberg", "<1.1.13")) {
                 return Map.of("enabled", false);
             }
             return null;
-        }, mod));
+        }, mod);
     }
 }

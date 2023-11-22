@@ -17,6 +17,7 @@
   "andromeda.config.option_manager.reason.andromeda.module_conflict": "Conflicting module enabled!",
   "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
   "andromeda.config.option_manager.reason.andromeda.spawner_enabled": "Spawner minecart must be enabled to use this!",
+  "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "Module disabled in side-only mode!",
 
   "andromeda.config.tooltip.environment.client": "Client-only feature",
   "andromeda.config.tooltip.environment.server": "Server-only feature.",
@@ -323,6 +324,8 @@
   "config.andromeda.misc.minor_inconvenience.@Tooltip": "Makes the player explode after taking any damage.",
   "config.andromeda.misc.unknown": "???",
 
+  "config.andromeda.base.option.sideOnlyMode": "Side-Only Mode",
+  "config.andromeda.base.option.sideOnlyMode.@Tooltip": "Disables all modules which require Andromeda to be present on server.",
   "config.andromeda.base.option.sendOptionalData": "Send Optional Data",
   "config.andromeda.base.option.sendOptionalData.@Tooltip[0]": "Data sent at startup:",
   "config.andromeda.base.option.sendOptionalData.@Tooltip[1]": "Mod version, Minecraft version, Modloader.",

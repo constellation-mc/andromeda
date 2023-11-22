@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.reflect.ClassPath;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.BasicConfig;
+import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.client.AndromedaClient;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
@@ -11,6 +12,7 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import org.spongepowered.asm.service.MixinService;
 
 import java.util.*;
@@ -44,7 +46,22 @@ public class ModuleManager {
         modules.values().forEach(m -> {
             var config = ConfigBuilder.create(m.module().configClass(), CommonValues.mod(),
                             "andromeda/" + m.name().replace('.', '/'));
-            m.module().onConfig(Utilities.cast(config));
+            config.processors((registry, mod) -> {
+                registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
+                    if (Config.get().sideOnlyMode) {
+                        return switch (m.module().environment()) {
+                            case ANY -> null;
+                            case CLIENT -> FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT ?
+                                    null : Map.of("enabled", false);
+                            case SERVER -> FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER ?
+                                    null : Map.of("enabled", false);
+                            default -> Map.of("enabled", false);
+                        };
+                    }
+                    return null;
+                }, mod);
+                m.module().onProcessors(Utilities.cast(registry), mod);
+            });
             configs.put(m.module().getClass(), config.build());
         });
     }

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.client;
 
 import lombok.Getter;
+import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.client.config.AutoConfigScreen;
 import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.CommonValues;
@@ -30,7 +31,7 @@ public class AndromedaClient {
 
     public void onInitializeClient() {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
-        ClientSideNetworking.register();
+        if (!Config.get().sideOnlyMode) ClientSideNetworking.register();
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
                 ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
