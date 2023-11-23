@@ -1,7 +1,7 @@
-package me.melontini.andromeda.mixin.entities.zombie.pickup;
+package me.melontini.andromeda.mixin.entities.zombie.all_pick_up;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.entities.zombie.pickup.Pickup;
+import me.melontini.andromeda.modules.entities.zombie.all_pick_up.Pickup;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;

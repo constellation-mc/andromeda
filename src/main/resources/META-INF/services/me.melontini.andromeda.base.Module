@@ -18,7 +18,7 @@ me.melontini.andromeda.modules.entities.slimes.Slimes
 me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs
 me.melontini.andromeda.modules.entities.villagers_follow_emeralds.VillagersFollowEmeralds
 me.melontini.andromeda.modules.entities.zombie.clean_pickup.Pickup
-me.melontini.andromeda.modules.entities.zombie.pickup.Pickup
+me.melontini.andromeda.modules.entities.zombie.all_pick_up.Pickup
 me.melontini.andromeda.modules.gui.gui_particles.GuiParticles
 me.melontini.andromeda.modules.gui.item_frame_tooltips.ItemFrameTooltips
 me.melontini.andromeda.modules.gui.name_tooltips.NameTooltips
