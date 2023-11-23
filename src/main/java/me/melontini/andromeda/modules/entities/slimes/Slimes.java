@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @FeatureEnvironment(Environment.SERVER)
-public class Slimes implements Module<Slimes.Config> {
+public class Slimes extends Module<Slimes.Config> {
 
     @Override
     public Class<Config> configClass() {

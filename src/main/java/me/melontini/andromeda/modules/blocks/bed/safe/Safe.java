@@ -4,5 +4,5 @@ import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip(2)
-public class Safe implements BasicModule {
+public class Safe extends BasicModule {
 }

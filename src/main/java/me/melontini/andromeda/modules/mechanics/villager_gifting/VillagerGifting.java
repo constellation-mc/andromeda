@@ -8,7 +8,7 @@ import me.melontini.andromeda.registries.Common;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class VillagerGifting implements BasicModule {
+public class VillagerGifting extends BasicModule {
 
     @Override
     public void onMain() {

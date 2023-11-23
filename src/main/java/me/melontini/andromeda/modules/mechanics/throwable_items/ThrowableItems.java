@@ -11,7 +11,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import java.util.List;
 
 @ModuleTooltip
-public class ThrowableItems implements Module<ThrowableItems.Config> {
+public class ThrowableItems extends Module<ThrowableItems.Config> {
 
     @Override
     public Class<Config> configClass() {

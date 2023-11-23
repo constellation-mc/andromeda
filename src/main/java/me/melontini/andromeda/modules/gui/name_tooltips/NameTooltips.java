@@ -16,7 +16,7 @@ import static me.melontini.andromeda.util.MiscUtil.testModVersion;
 @SuppressWarnings("UnstableApiUsage")
 @ModuleTooltip
 @FeatureEnvironment(Environment.CLIENT)
-public class NameTooltips implements BasicModule {
+public class NameTooltips extends BasicModule {
 
     @Override
     public void onProcessors(OptionProcessorRegistry<BasicConfig> registry, ModContainer mod) {

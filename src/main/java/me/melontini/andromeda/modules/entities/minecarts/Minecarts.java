@@ -9,7 +9,7 @@ import me.melontini.andromeda.registries.Common;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip
-public class Minecarts implements Module<Minecarts.Config> {
+public class Minecarts extends Module<Minecarts.Config> {
 
     @Override
     public void onMain() {

@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip(2)
 @FeatureEnvironment(Environment.SERVER)
-public class CanBeeNestsFall implements BasicModule {
+public class CanBeeNestsFall extends BasicModule {
 
 }

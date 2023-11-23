@@ -13,7 +13,7 @@ import java.util.List;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class AdvancementGeneration implements Module<AdvancementGeneration.Config> {
+public class AdvancementGeneration extends Module<AdvancementGeneration.Config> {
 
     @Override
     public void onMain() {

@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class Pickup implements BasicModule {
+public class Pickup extends BasicModule {
 
 }

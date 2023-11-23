@@ -14,7 +14,7 @@ import java.util.List;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class CampfireEffects implements Module<CampfireEffects.Config> {
+public class CampfireEffects extends Module<CampfireEffects.Config> {
 
     @Override
     public Class<Config> configClass() {

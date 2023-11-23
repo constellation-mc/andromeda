@@ -9,7 +9,7 @@ import me.melontini.andromeda.registries.Common;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip
-public class Boats implements Module<Boats.Config> {
+public class Boats extends Module<Boats.Config> {
 
     @Override
     public void onMain() {

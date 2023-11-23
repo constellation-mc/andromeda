@@ -8,7 +8,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class Power implements Module<Power.Config> {
+public class Power extends Module<Power.Config> {
 
     @Override
     public Class<Config> configClass() {

@@ -4,6 +4,6 @@ import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip
-public class BetterFletchingTable implements BasicModule {
+public class BetterFletchingTable extends BasicModule {
 
 }

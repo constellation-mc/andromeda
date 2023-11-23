@@ -14,7 +14,7 @@ import java.util.Map;
 
 @ModuleTooltip
 @SuppressWarnings("UnstableApiUsage")
-public class MinecartBlockPicking implements Module<MinecartBlockPicking.Config> {
+public class MinecartBlockPicking extends Module<MinecartBlockPicking.Config> {
 
     @Override
     public void onProcessors(OptionProcessorRegistry<Config> registry, ModContainer mod) {

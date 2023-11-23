@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip(2)
 @FeatureEnvironment(Environment.CLIENT)
-public class AdvancementShadow implements BasicModule {
+public class AdvancementShadow extends BasicModule {
 
 }

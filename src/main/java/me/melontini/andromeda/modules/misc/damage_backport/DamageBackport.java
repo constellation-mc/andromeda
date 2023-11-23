@@ -8,7 +8,7 @@ import me.melontini.andromeda.registries.Common;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class DamageBackport implements BasicModule {
+public class DamageBackport extends BasicModule {
 
     @Override
     public void onMain() {

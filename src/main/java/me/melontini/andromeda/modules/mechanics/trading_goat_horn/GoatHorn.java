@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip(3)
 @FeatureEnvironment(Environment.SERVER)
-public class GoatHorn implements BasicModule {
+public class GoatHorn extends BasicModule {
 
 }

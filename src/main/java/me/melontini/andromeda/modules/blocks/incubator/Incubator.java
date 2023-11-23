@@ -10,7 +10,7 @@ import me.melontini.andromeda.registries.Common;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip(3)
-public class Incubator implements Module<Incubator.Config> {
+public class Incubator extends Module<Incubator.Config> {
 
     @Override
     public void onMain() {

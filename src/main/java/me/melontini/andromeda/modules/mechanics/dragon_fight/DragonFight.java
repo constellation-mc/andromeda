@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @FeatureEnvironment(Environment.SERVER)
-public class DragonFight implements Module<DragonFight.Config> {
+public class DragonFight extends Module<DragonFight.Config> {
 
     @Override
     public Class<Config> configClass() {

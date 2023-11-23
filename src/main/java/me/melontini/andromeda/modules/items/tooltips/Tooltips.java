@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @FeatureEnvironment(Environment.CLIENT)
-public class Tooltips implements Module<Tooltips.Config> {
+public class Tooltips extends Module<Tooltips.Config> {
 
     @Override
     public Class<Config> configClass() {

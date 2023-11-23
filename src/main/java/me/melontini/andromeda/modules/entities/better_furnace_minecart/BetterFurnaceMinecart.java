@@ -9,7 +9,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip(3)
 @FeatureEnvironment(Environment.SERVER)
-public class BetterFurnaceMinecart implements Module<BetterFurnaceMinecart.Config> {
+public class BetterFurnaceMinecart extends Module<BetterFurnaceMinecart.Config> {
 
     @Override
     public Class<Config> configClass() {

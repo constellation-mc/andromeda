@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.CLIENT)
-public class NoMoreAdventure implements BasicModule {
+public class NoMoreAdventure extends BasicModule {
 
 }

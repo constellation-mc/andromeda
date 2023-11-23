@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip(2)
 @FeatureEnvironment(Environment.SERVER)
-public class LeafSlowdown implements BasicModule {
+public class LeafSlowdown extends BasicModule {
 
 }

@@ -5,7 +5,7 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 
 @ModuleTooltip
-public class GuardedLoot implements Module<GuardedLoot.Config> {
+public class GuardedLoot extends Module<GuardedLoot.Config> {
 
     @Override
     public Class<Config> configClass() {

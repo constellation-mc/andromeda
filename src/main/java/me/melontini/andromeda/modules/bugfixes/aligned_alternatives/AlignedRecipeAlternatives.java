@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.CLIENT)
-public class AlignedRecipeAlternatives implements BasicModule {
+public class AlignedRecipeAlternatives extends BasicModule {
 
 }

@@ -6,7 +6,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip
-public class Lockpick implements Module<Lockpick.Config> {
+public class Lockpick extends Module<Lockpick.Config> {
 
     @Override
     public Class<Config> configClass() {

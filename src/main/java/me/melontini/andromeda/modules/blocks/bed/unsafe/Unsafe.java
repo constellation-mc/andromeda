@@ -16,7 +16,7 @@ import java.util.Map;
 @SuppressWarnings("UnstableApiUsage")
 @ModuleTooltip(2)
 @FeatureEnvironment(Environment.SERVER)
-public class Unsafe implements BasicModule {
+public class Unsafe extends BasicModule {
 
     @Override
     public void onProcessors(OptionProcessorRegistry<BasicConfig> registry, ModContainer mod) {

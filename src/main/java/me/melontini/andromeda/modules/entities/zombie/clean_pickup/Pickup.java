@@ -8,7 +8,7 @@ import me.melontini.andromeda.registries.Common;
 
 @ModuleTooltip(3)
 @FeatureEnvironment(Environment.SERVER)
-public class Pickup implements BasicModule {
+public class Pickup extends BasicModule {
 
     @Override
     public void onMain() {

@@ -6,7 +6,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip
-public class InfiniteTotem implements Module<InfiniteTotem.Config> {
+public class InfiniteTotem extends Module<InfiniteTotem.Config> {
 
     @Override
     public Class<Config> configClass() {

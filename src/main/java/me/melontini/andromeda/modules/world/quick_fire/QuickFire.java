@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class QuickFire implements BasicModule {
+public class QuickFire extends BasicModule {
 
 }

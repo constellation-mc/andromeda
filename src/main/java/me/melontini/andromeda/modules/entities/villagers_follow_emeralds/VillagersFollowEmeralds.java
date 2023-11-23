@@ -7,6 +7,6 @@ import me.melontini.andromeda.base.annotations.ModuleTooltip;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class VillagersFollowEmeralds implements BasicModule {
+public class VillagersFollowEmeralds extends BasicModule {
 
 }

@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @FeatureEnvironment(Environment.SERVER)
-public class Snowballs implements Module<Snowballs.Config> {
+public class Snowballs extends Module<Snowballs.Config> {
 
     @Override
     public Class<Config> configClass() {

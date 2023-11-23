@@ -9,7 +9,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip(2)
 @FeatureEnvironment(Environment.SERVER)
-public class BeeFlowerDuplication implements Module<BeeFlowerDuplication.Config> {
+public class BeeFlowerDuplication extends Module<BeeFlowerDuplication.Config> {
 
     @Override
     public Class<Config> configClass() {

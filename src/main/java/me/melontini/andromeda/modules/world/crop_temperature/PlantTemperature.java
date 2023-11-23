@@ -8,7 +8,7 @@ import me.melontini.andromeda.registries.Common;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.SERVER)
-public class PlantTemperature implements BasicModule {
+public class PlantTemperature extends BasicModule {
 
     @Override
     public void onMain() {

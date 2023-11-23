@@ -8,7 +8,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 
 @ModuleTooltip
 @FeatureEnvironment(Environment.CLIENT)
-public class GuiParticles implements Module<GuiParticles.Config> {
+public class GuiParticles extends Module<GuiParticles.Config> {
 
     @Override
     public Class<Config> configClass() {

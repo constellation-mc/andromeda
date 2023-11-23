@@ -12,16 +12,11 @@ import java.util.List;
 
 @ModuleTooltip(2)
 @FeatureEnvironment(Environment.SERVER)
-public class AutoPlanting implements Module<AutoPlanting.Config> {
+public class AutoPlanting extends Module<AutoPlanting.Config> {
 
     @Override
     public Class<Config> configClass() {
         return Config.class;
-    }
-
-    @Override
-    public Config config() {
-        return Module.super.config();
     }
 
     public static class Config extends BasicConfig {
