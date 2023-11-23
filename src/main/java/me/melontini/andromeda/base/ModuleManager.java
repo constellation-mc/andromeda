@@ -37,8 +37,12 @@ public class ModuleManager {
         list.sort(Comparator.comparing(module -> module.getClass().getPackageName().substring(modulePrefixLength)));
         list.forEach(m -> modules.put(m.getClass(), new ModuleInfo(m.getClass().getPackageName().substring(modulePrefixLength), m)));
         discoveredModules.addAll(modules.values());
+
         setUpConfigs();
+        modules.values().forEach(m -> m.module().manager().getOptionManager().processOptions());
         modules.values().removeIf(m -> !m.module().enabled());
+        modules.values().forEach(m -> m.module().manager().save());
+
         modules.values().forEach(m -> moduleNames.put(m.name(), m));
     }
 
@@ -62,7 +66,7 @@ public class ModuleManager {
                 }, mod);
                 m.module().onProcessors(Utilities.cast(registry), mod);
             });
-            configs.put(m.module().getClass(), config.build());
+            configs.put(m.module().getClass(), config.build(false));
         });
     }
 
@@ -83,11 +87,11 @@ public class ModuleManager {
 
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
-        return (Optional<T>) Optional.ofNullable(modules.get(cls)).map(ModuleInfo::module);
+        return (Optional<T>) Optional.ofNullable(modules.get(cls)).filter(m->m.module().enabled()).map(ModuleInfo::module);
     }
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
-        return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).map(ModuleInfo::module);
+        return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).filter(m->m.module().enabled()).map(ModuleInfo::module);
     }
 
     public Set<ModuleInfo> all() {
