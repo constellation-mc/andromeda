@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.world.auto_planting;
 import com.google.common.collect.Lists;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -11,7 +11,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import java.util.List;
 
 @ModuleTooltip(2)
-@FeatureEnvironment(Environment.SERVER)
+@ModuleInfo(name = "auto_planting", category = "world", environment = Environment.SERVER)
 public class AutoPlanting extends Module<AutoPlanting.Config> {
 
     @Override

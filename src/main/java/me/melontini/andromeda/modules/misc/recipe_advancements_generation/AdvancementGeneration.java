@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @ModuleTooltip
-@FeatureEnvironment(Environment.SERVER)
+@ModuleInfo(name = "recipe_advancements_generation", category = "misc", environment = Environment.SERVER)
 public class AdvancementGeneration extends Module<AdvancementGeneration.Config> {
 
     @Override

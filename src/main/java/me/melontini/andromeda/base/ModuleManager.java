@@ -1,7 +1,6 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.base.Suppliers;
-import com.google.common.reflect.ClassPath;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
@@ -13,7 +12,6 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import org.spongepowered.asm.service.MixinService;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -22,38 +20,47 @@ import java.util.function.Supplier;
 public class ModuleManager {
 
     private static final Supplier<ModuleManager> INSTANCE = Suppliers.memoize(ModuleManager::new);
-    private static final int modulePrefixLength = "me.melontini.andromeda.modules.".length();
 
-    private final Set<ModuleInfo> discoveredModules = new LinkedHashSet<>();
-    private final Map<Class<?>, ModuleInfo> modules = new LinkedHashMap<>();
-    private final Map<String, ModuleInfo> moduleNames = new HashMap<>();
+    private final Set<Module<?>> discoveredModules = new LinkedHashSet<>();
+    private final Map<Class<?>, Module<?>> modules = new LinkedHashMap<>();
+    private final Map<String, Module<?>> moduleNames = new HashMap<>();
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
+    private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
     public void collect() {
-        List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class).stream().filter(p -> p.type().getName().startsWith("me.melontini.andromeda.modules."))
-                .map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
+        List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
+                .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
-        list.sort(Comparator.comparing(module -> module.getClass().getPackageName().substring(modulePrefixLength)));
-        list.forEach(m -> modules.put(m.getClass(), new ModuleInfo(m.getClass().getPackageName().substring(modulePrefixLength), m)));
+
+        Set<String> ids = new HashSet<>();
+        for (Module<?> module : list) {
+            if (module.category() == null || module.category().isBlank()) throw new IllegalStateException("Module category can't be null or empty! Module: " + module.getClass());
+            if (module.name() == null || module.name().isBlank()) throw new IllegalStateException("Module name can't be null or empty! Module: " + module.getClass());
+
+            if (ids.contains(module.id())) throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.id(), module.getClass()));
+            ids.add(module.id());
+        }
+
+        list.sort(Comparator.comparingInt(m->categories.indexOf(m.category())));
+        list.forEach(m -> modules.put(m.getClass(), m));
         discoveredModules.addAll(modules.values());
 
         setUpConfigs();
-        modules.values().forEach(m -> m.module().manager().getOptionManager().processOptions());
-        modules.values().removeIf(m -> !m.module().enabled());
-        modules.values().forEach(m -> m.module().manager().save());
+        modules.values().forEach(m -> m.manager().getOptionManager().processOptions());
+        modules.values().removeIf(m -> !m.enabled());
+        modules.values().forEach(m -> m.manager().save());
 
         modules.values().forEach(m -> moduleNames.put(m.name(), m));
     }
 
     public void setUpConfigs() {
         modules.values().forEach(m -> {
-            var config = ConfigBuilder.create(m.module().configClass(), CommonValues.mod(),
-                            "andromeda/" + m.name().replace('.', '/'));
+            var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.id());
             config.processors((registry, mod) -> {
                 registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
                     if (Config.get().sideOnlyMode) {
-                        return switch (m.module().environment()) {
+                        return switch (m.environment()) {
                             case ANY -> null;
                             case CLIENT -> FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT ?
                                     null : Map.of("enabled", false);
@@ -64,21 +71,10 @@ public class ModuleManager {
                     }
                     return null;
                 }, mod);
-                m.module().onProcessors(Utilities.cast(registry), mod);
+                m.onProcessors(Utilities.cast(registry), mod);
             });
-            configs.put(m.module().getClass(), config.build(false));
+            configs.put(m.getClass(), config.build(false));
         });
-    }
-
-    public List<String> getMixins() {
-        ClassPath p = Utilities.supplyUnchecked(() -> ClassPath.from(ModuleManager.class.getClassLoader()));
-
-        List<String> mixins = new ArrayList<>();
-        modules.values().forEach(m -> p.getTopLevelClassesRecursive("me.melontini.andromeda.mixin." + m.name()).stream()
-                .map(ClassPath.ClassInfo::getName).forEach(mixins::add));
-        //mixins.forEach(s -> AndromedaLog.info("Discovered {}", s));
-        return mixins.stream().map(s -> Utilities.supplyUnchecked(() -> MixinService.getService().getBytecodeProvider().getClassNode(s.replace('.', '/'))))
-                .filter(MixinProcessor::checkNode).map(n -> n.name.replace('/', '.').substring("me.melontini.andromeda.mixin.".length())).toList();
     }
 
     public ConfigManager<? extends BasicConfig> getConfig(Class<?> cls) {
@@ -87,17 +83,17 @@ public class ModuleManager {
 
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
-        return (Optional<T>) Optional.ofNullable(modules.get(cls)).filter(m->m.module().enabled()).map(ModuleInfo::module);
+        return (Optional<T>) Optional.ofNullable(modules.get(cls)).filter(Module::enabled);
     }
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
-        return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).filter(m->m.module().enabled()).map(ModuleInfo::module);
+        return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).filter(Module::enabled);
     }
 
-    public Set<ModuleInfo> all() {
+    public Set<Module<?>> all() {
         return Collections.unmodifiableSet(discoveredModules);
     }
-    public Collection<ModuleInfo> loaded() {
+    public Collection<Module<?>> loaded() {
         return Collections.unmodifiableCollection(modules.values());
     }
 
@@ -110,30 +106,26 @@ public class ModuleManager {
     }
 
     public static void onClient() {
-        get().modules.values().forEach(m -> m.module().onClient());
+        get().modules.values().forEach(Module::onClient);
         AndromedaClient.init();
     }
 
     public static void onServer() {
-        get().modules.values().forEach(m -> m.module().onServer());
+        get().modules.values().forEach(Module::onServer);
     }
 
     public static void onMain() {
-        get().modules.values().forEach(m -> m.module().onMain());
+        get().modules.values().forEach(Module::onMain);
         Andromeda.init();
     }
 
     public static void onPreLaunch() {
-        get().modules.values().forEach(m -> m.module().onPreLaunch());
+        get().modules.values().forEach(Module::onPreLaunch);
     }
 
     public void print() {
         StringBuilder builder = new StringBuilder();
-        modules.values().forEach(m -> builder.append(m.name()).append(", "));
+        modules.values().forEach(m -> builder.append(m.id()).append(", "));
         AndromedaLog.info("Loading modules: {}", builder);
-    }
-
-    public record ModuleInfo(String name, Module<?> module) {
-
     }
 }

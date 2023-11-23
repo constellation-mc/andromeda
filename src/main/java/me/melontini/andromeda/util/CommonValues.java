@@ -25,7 +25,7 @@ public class CommonValues {
     private static final boolean MOD_UPDATED;
 
     private static final Path HIDDEN_PATH = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json");
 
     private static final Platform PLATFORM;
     private static final EnvType ENVIRONMENT = FabricLoader.getInstance().getEnvironmentType();

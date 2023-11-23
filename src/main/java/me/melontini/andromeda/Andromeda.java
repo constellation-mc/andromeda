@@ -1,6 +1,7 @@
 package me.melontini.andromeda;
 
 import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
@@ -33,7 +34,7 @@ public class Andromeda {
         Common.bootstrap();
 
         ServerLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
-            Set<String> modules = ModuleManager.get().loaded().stream().filter(m->m.module().environment() == Environment.BOTH).map(ModuleManager.ModuleInfo::name).collect(Collectors.toSet());
+            Set<String> modules = ModuleManager.get().loaded().stream().filter(m->m.environment() == Environment.BOTH).map(Module::id).collect(Collectors.toSet());
             if (!understood) {
                 if (!modules.isEmpty())
                     handler.disconnect(TextUtil.translatable("andromeda.disconnected.module_mismatch",

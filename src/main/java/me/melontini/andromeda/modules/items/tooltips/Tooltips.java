@@ -2,11 +2,11 @@ package me.melontini.andromeda.modules.items.tooltips;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
-@FeatureEnvironment(Environment.CLIENT)
+@ModuleInfo(name = "tooltips", category = "items", environment = Environment.CLIENT)
 public class Tooltips extends Module<Tooltips.Config> {
 
     @Override

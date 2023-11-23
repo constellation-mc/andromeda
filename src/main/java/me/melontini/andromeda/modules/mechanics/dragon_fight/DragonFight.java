@@ -2,11 +2,11 @@ package me.melontini.andromeda.modules.mechanics.dragon_fight;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
-@FeatureEnvironment(Environment.SERVER)
+@ModuleInfo(name = "dragon_fight", category = "mechanics", environment = Environment.SERVER)
 public class DragonFight extends Module<DragonFight.Config> {
 
     @Override

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.client.config;
 
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
@@ -33,7 +34,7 @@ import java.util.stream.IntStream;
 @SuppressWarnings("UnstableApiUsage")
 public class AutoConfigScreen {
 
-    private static final ThreadLocal<ModuleManager.ModuleInfo> CONTEXT = new ThreadLocal<>();
+    private static final ThreadLocal<Module<?>> CONTEXT = new ThreadLocal<>();
 
     public static void register() {
         AndromedaLog.info("Loading ClothConfig support!");
@@ -42,10 +43,10 @@ public class AutoConfigScreen {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    var tuple = CONTEXT.get().module().manager().getOptionManager().blameProcessors(new FieldOption(field));
+                    var tuple = CONTEXT.get().manager().getOptionManager().blameProcessors(new FieldOption(field));
                     Set<Text> texts = new HashSet<>();
                     for (OptionManager.ProcessorEntry<?> processor : tuple.right()) {
-                        CONTEXT.get().module().manager().getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
+                        CONTEXT.get().manager().getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
                             if (textEntry.isTranslatable()) {
                                 texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()));
                             } else {
@@ -58,7 +59,7 @@ public class AutoConfigScreen {
                 }
             });
             return list;
-        }, field -> CONTEXT.get() != null && CONTEXT.get().module().manager()
+        }, field -> CONTEXT.get() != null && CONTEXT.get().manager()
                 .getOptionManager().isModified(new FieldOption(field)));
 
         Holder.OURS.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
@@ -93,24 +94,24 @@ public class AutoConfigScreen {
                 try {
                     CONTEXT.set(module);
 
-                    List<Field> fields = Arrays.asList(module.module().configClass().getFields());
+                    List<Field> fields = Arrays.asList(module.configClass().getFields());
                     fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
                     List<AbstractConfigListEntry<?>> list = new ArrayList<>();
                     fields.forEach((field) -> {
-                        String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda." + module.name() + ".option." + field.getName();
-                        Holder.COMPOSED.getAndTransform(opt, field, module.module().config(), module.module().manager().getDefaultConfig(), Holder.COMPOSED).forEach(list::add);
+                        String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.id().replace('/', '.'), field.getName());
+                        Holder.COMPOSED.getAndTransform(opt, field, module.config(), module.manager().getDefaultConfig(), Holder.COMPOSED).forEach(list::add);
                     });
 
-                    var e = eb.startSubCategory(TextUtil.translatable("config.andromeda." + module.name()), Utilities.cast(list));
-                    if (module.module().getClass().isAnnotationPresent(ModuleTooltip.class)) {
-                        ModuleTooltip tooltip = module.module().getClass().getAnnotation(ModuleTooltip.class);
+                    var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.id().replace('/', '.'))), Utilities.cast(list));
+                    if (module.getClass().isAnnotationPresent(ModuleTooltip.class)) {
+                        ModuleTooltip tooltip = module.getClass().getAnnotation(ModuleTooltip.class);
                         if (tooltip.value() == 1) {
-                            Text[] text = new Text[]{TextUtil.translatable("config.andromeda." + module.name() + ".@Tooltip")};
+                            Text[] text = new Text[]{TextUtil.translatable("config.andromeda.%s.@Tooltip".formatted(module.id().replace('/', '.')))};
                             e.setTooltipSupplier(() -> Optional.of(text));
                         } else if (tooltip.value() > 1) {
                             Text[] text = IntStream.range(0, tooltip.value()).boxed()
-                                    .map(i -> "config.andromeda." + module.name() + ".@Tooltip[%s]".formatted(i))
+                                    .map(i -> "config.andromeda.%s.@Tooltip[%s]".formatted(module.id().replace('/', '.'), i))
                                     .map(TextUtil::translatable).toArray(Text[]::new);
                             e.setTooltipSupplier(() -> Optional.of(text));
                         }
@@ -133,12 +134,11 @@ public class AutoConfigScreen {
     //TODO
     private static void powerSave() {
         Config.save();
-        ModuleManager.get().all().forEach(module -> module.module().manager().save());
+        ModuleManager.get().all().forEach(module -> module.manager().save());
     }
 
-    private static ConfigCategory getOrCreateCategoryForField(ModuleManager.ModuleInfo info, ConfigBuilder screenBuilder) {
-        String[] split = info.name().split("\\.");
-        Text key = TextUtil.translatable("config.andromeda.category.%s".formatted(split[0]));
+    private static ConfigCategory getOrCreateCategoryForField(Module<?> info, ConfigBuilder screenBuilder) {
+        Text key = TextUtil.translatable("config.andromeda.category.%s".formatted(info.category()));
         return screenBuilder.getOrCreateCategory(key);
     }
 

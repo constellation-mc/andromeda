@@ -1,6 +1,7 @@
 package me.melontini.andromeda.client;
 
 import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.client.sound.PersistentMovingSoundInstance;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
@@ -80,8 +81,8 @@ public class ClientSideNetworking {
         });
 
         ClientLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (client, handler, buf, listenerAdder) -> {
-            String[] modules = ModuleManager.get().loaded().stream().filter(m->m.module().environment() == Environment.BOTH)
-                    .map(ModuleManager.ModuleInfo::name).toArray(String[]::new);
+            String[] modules = ModuleManager.get().loaded().stream().filter(m->m.environment() == Environment.BOTH)
+                    .map(Module::id).toArray(String[]::new);
             var pbf = PacketByteBufs.create();
             pbf.writeVarInt(modules.length);
             for (String module : modules) {

@@ -3,12 +3,14 @@ package me.melontini.andromeda.modules.entities.minecarts;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip
+@ModuleInfo(name = "minecarts", category = "entities")
 public class Minecarts extends Module<Minecarts.Config> {
 
     @Override
