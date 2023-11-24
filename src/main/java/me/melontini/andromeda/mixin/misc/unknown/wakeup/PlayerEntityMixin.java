@@ -1,8 +1,8 @@
 package me.melontini.andromeda.mixin.misc.unknown.wakeup;
 
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,14 +24,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 @Mixin(PlayerEntity.class)
-@Feature("unknown")
 abstract class PlayerEntityMixin {
+    @Unique
+    private static final Unknown am$unk = ModuleManager.quick(Unknown.class);
 
     @Shadow public abstract void playSound(SoundEvent event, SoundCategory category, float volume, float pitch);
 
     @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
     private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
-        if (!Config.get().unknown) return;
+        if (!am$unk.config().enabled) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
 
         if (!player.world.isClient) if (Random.create().nextInt(100000) == 0) {

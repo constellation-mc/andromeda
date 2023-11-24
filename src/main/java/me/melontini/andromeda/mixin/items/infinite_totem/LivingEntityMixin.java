@@ -3,11 +3,10 @@ package me.melontini.andromeda.mixin.items.infinite_totem;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.networks.AndromedaPackets;
-import me.melontini.andromeda.registries.ItemRegistry;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.items.infinite_totem.Content;
+import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
+import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -24,14 +23,16 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LivingEntity.class)
-@Feature("totemSettings.enableInfiniteTotem")
 abstract class LivingEntityMixin extends Entity {
+    @Unique
+    private static final InfiniteTotem am$itou = ModuleManager.quick(InfiniteTotem.class);
 
     @Shadow public abstract ItemStack getStackInHand(Hand hand);
 
@@ -41,24 +42,24 @@ abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean andromeda$infiniteFallback(boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
-        return original || itemStack.isOf(ItemRegistry.get().INFINITE_TOTEM.get());
+        return original || itemStack.isOf(Content.INFINITE_TOTEM.get());
     }
 
     @WrapWithCondition(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
     private boolean andromeda$infiniteFallback(ItemStack instance, int i) {
-        return !instance.isOf(ItemRegistry.get().INFINITE_TOTEM.get());
+        return !instance.isOf(Content.INFINITE_TOTEM.get());
     }
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;sendEntityStatus(Lnet/minecraft/entity/Entity;B)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "tryUseTotem", cancellable = true)
     private void andromeda$useInfiniteTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir, ItemStack itemStack) {
-        if (Config.get().totemSettings.enableInfiniteTotem) {
-            if (itemStack.isOf(ItemRegistry.get().INFINITE_TOTEM.get())) {
+        if (am$itou.config().enabled) {
+            if (itemStack.isOf(Content.INFINITE_TOTEM.get())) {
                 if (!world.isClient()) {
                     PacketByteBuf buf = PacketByteBufs.create()
                             .writeUuid(this.getUuid())
-                            .writeItemStack(new ItemStack(ItemRegistry.get().INFINITE_TOTEM.get()));
-                    buf.writeRegistryValue(Registries.PARTICLE_TYPE, Andromeda.get().KNOCKOFF_TOTEM_PARTICLE);
+                            .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.get()));
+                    buf.writeRegistryValue(Registries.PARTICLE_TYPE, Content.KNOCKOFF_TOTEM_PARTICLE.get());
 
                     for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
                         ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);

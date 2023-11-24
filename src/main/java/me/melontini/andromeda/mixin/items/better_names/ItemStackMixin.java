@@ -1,7 +1,7 @@
 package me.melontini.andromeda.mixin.items.better_names;
 
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.items.better_names.BetterNames;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +13,7 @@ import net.minecraft.util.Rarity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -21,8 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 
 @Mixin(ItemStack.class)
-@Feature("slightlyBetterItemNames")
 abstract class ItemStackMixin {
+    @Unique
+    private static final BetterNames am$sbin = ModuleManager.quick(BetterNames.class);
     @Shadow public abstract int getMaxDamage();
     @Shadow public abstract Item getItem();
     @Shadow public abstract int getCount();
@@ -31,7 +33,7 @@ abstract class ItemStackMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip", locals = LocalCapture.CAPTURE_FAILSOFT)
     private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list, MutableText mutableText) {
-        if (!Config.get().slightlyBetterItemNames) return;
+        if (!am$sbin.config().enabled) return;
 
         if (!this.getItem().isDamageable()) {
             if (this.getCount() > 1)

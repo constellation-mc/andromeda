@@ -1,8 +1,8 @@
 package me.melontini.andromeda.mixin.mechanics.dragon_fight;
 
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.content.managers.EnderDragonManager;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight;
+import me.melontini.andromeda.modules.mechanics.dragon_fight.EnderDragonManager;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -13,13 +13,15 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndCrystalEntity.class)
-@Feature({"dragonFight.fightTweaks", "dragonFight.respawnCrystals"})
 abstract class EndCrystalMixin extends Entity {
+    @Unique
+    private static final DragonFight am$dft = ModuleManager.quick(DragonFight.class);
 
     @Shadow public abstract boolean shouldShowBottom();
 
@@ -29,7 +31,7 @@ abstract class EndCrystalMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/decoration/EndCrystalEntity;remove(Lnet/minecraft/entity/Entity$RemovalReason;)V", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!Config.get().dragonFight.fightTweaks || !Config.get().dragonFight.respawnCrystals) return;
+        if (!am$dft.config().enabled || !am$dft.config().respawnCrystals) return;
 
         if (world.getRegistryKey() == World.END && !((ServerWorld) world).getAliveEnderDragons().isEmpty() && shouldShowBottom()) {
             if (this.getPos().getY() > 71)

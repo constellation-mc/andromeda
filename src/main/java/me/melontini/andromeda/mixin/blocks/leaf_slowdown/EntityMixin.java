@@ -1,8 +1,8 @@
 package me.melontini.andromeda.mixin.blocks.leaf_slowdown;
 
-import me.melontini.andromeda.Andromeda;
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.blocks.leaf_slowdown.Content;
+import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -17,13 +17,15 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-@Feature("leafSlowdown")
 abstract class EntityMixin extends Entity {
+    @Unique
+    private static final LeafSlowdown am$leaf = ModuleManager.quick(LeafSlowdown.class);
 
     public EntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -33,7 +35,7 @@ abstract class EntityMixin extends Entity {
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (!Config.get().leafSlowdown) return;
+        if (!am$leaf.config().enabled) return;
 
         EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (!this.world.isClient) {
@@ -42,15 +44,15 @@ abstract class EntityMixin extends Entity {
                 if (((LivingEntity) (Object) this) instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))
                     return;
                 if (attributeInstance != null)
-                    if (!attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
-                        attributeInstance.addTemporaryModifier(Andromeda.get().LEAF_SLOWNESS);
+                    if (!attributeInstance.hasModifier(Content.LEAF_SLOWNESS)) {
+                        attributeInstance.addTemporaryModifier(Content.LEAF_SLOWNESS);
                     }
                 /*Does this even work?*/
                 setVelocity(getVelocity().getX(), getVelocity().getY() * 0.7, getVelocity().getZ());
             } else {
                 if (attributeInstance != null)
-                    if (attributeInstance.hasModifier(Andromeda.get().LEAF_SLOWNESS)) {
-                        attributeInstance.removeModifier(Andromeda.get().LEAF_SLOWNESS);
+                    if (attributeInstance.hasModifier(Content.LEAF_SLOWNESS)) {
+                        attributeInstance.removeModifier(Content.LEAF_SLOWNESS);
                     }
             }
         }

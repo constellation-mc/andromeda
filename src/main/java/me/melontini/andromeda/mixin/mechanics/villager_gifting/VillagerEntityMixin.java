@@ -1,8 +1,8 @@
 package me.melontini.andromeda.mixin.mechanics.villager_gifting;
 
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.registries.TagRegistry;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
+import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -22,8 +22,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VillagerEntity.class)
-@Feature("villagerGifting")
 abstract class VillagerEntityMixin extends MerchantEntity {
+    @Unique
+    private static final VillagerGifting am$villgifts = ModuleManager.quick(VillagerGifting.class);
 
     @Shadow @Final private VillagerGossips gossip;
     @Shadow protected abstract void sayNo();
@@ -34,29 +35,29 @@ abstract class VillagerEntityMixin extends MerchantEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;getOffers()Lnet/minecraft/village/TradeOfferList;", shift = At.Shift.BEFORE), cancellable = true, method = "interactMob")
     private void andromeda$useGifts(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (!Config.get().villagerGifting) return;
+        if (!am$villgifts.config().enabled) return;
         if (hand != Hand.MAIN_HAND || world.isClient()) return;
         ItemStack stack = player.getStackInHand(hand);
 
         ItemStack gift = stack.copy();
         gift.setCount(1);
 
-        if (stack.isIn(TagRegistry.get().getGifts().MAJOR_POSITIVE)) {
+        if (stack.isIn(GiftTags.MAJOR_POSITIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_POSITIVE)) {
                 this.world.sendEntityStatus(this, (byte)14);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.get().getGifts().MAJOR_NEGATIVE)) {
+        } else if (stack.isIn(GiftTags.MAJOR_NEGATIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_NEGATIVE)) {
                 this.world.sendEntityStatus(this, (byte)13);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.get().getGifts().MINOR_POSITIVE)) {
+        } else if (stack.isIn(GiftTags.MINOR_POSITIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_POSITIVE)) {
                 this.world.sendEntityStatus(this, (byte)14);
                 if (!player.isCreative()) stack.decrement(1);
             }
-        } else if (stack.isIn(TagRegistry.get().getGifts().MINOR_NEGATIVE)) {
+        } else if (stack.isIn(GiftTags.MINOR_NEGATIVE)) {
             if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_NEGATIVE)) {
                 this.world.sendEntityStatus(this, (byte)13);
                 if (!player.isCreative()) stack.decrement(1);

@@ -1,20 +1,24 @@
 package me.melontini.andromeda.client.config;
 
-import me.melontini.andromeda.config.AndromedaConfig;
-import me.melontini.andromeda.config.Config;
+import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.annotations.FeatureEnvironment;
+import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.config.AndromedaConfig;
+import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.annotations.config.FeatureEnvironment;
 import me.melontini.dark_matter.api.base.util.Support;
-import me.melontini.dark_matter.api.base.util.classes.Tuple;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.OptionManager;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.melontini.dark_matter.impl.config.FieldOption;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
 import me.shedaniel.autoconfig.gui.DefaultGuiTransformers;
 import me.shedaniel.autoconfig.gui.registry.ComposedGuiRegistryAccess;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import me.shedaniel.autoconfig.gui.registry.api.GuiRegistryAccess;
+import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
@@ -25,10 +29,12 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @SuppressWarnings("UnstableApiUsage")
 public class AutoConfigScreen {
+
+    private static final ThreadLocal<Module<?>> CONTEXT = new ThreadLocal<>();
 
     public static void register() {
         AndromedaLog.info("Loading ClothConfig support!");
@@ -37,10 +43,10 @@ public class AutoConfigScreen {
             list.forEach(gui -> {
                 gui.setEditable(false);
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    Tuple<String, Set<OptionManager.ProcessorEntry<AndromedaConfig>>> tuple = Config.getOptionManager().blameProcessors(field);
+                    var tuple = CONTEXT.get().manager().getOptionManager().blameProcessors(new FieldOption(field));
                     Set<Text> texts = new HashSet<>();
-                    for (OptionManager.ProcessorEntry<AndromedaConfig> processor : tuple.right()) {
-                        Config.getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
+                    for (OptionManager.ProcessorEntry<?> processor : tuple.right()) {
+                        CONTEXT.get().manager().getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
                             if (textEntry.isTranslatable()) {
                                 texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()));
                             } else {
@@ -53,13 +59,8 @@ public class AutoConfigScreen {
                 }
             });
             return list;
-        }, field -> Config.getOptionManager().isModified(field));
-
-        Holder.OURS.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
-            if (field.getType() == boolean.class || field.getType() == Boolean.class)
-                list.forEach(gui -> gui.setRequiresRestart(true));
-            return list;
-        }, field -> Config.get().compatMode);
+        }, field -> CONTEXT.get() != null && CONTEXT.get().manager()
+                .getOptionManager().isModified(new FieldOption(field)));
 
         Holder.OURS.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
@@ -85,25 +86,59 @@ public class AutoConfigScreen {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(screen)
                     .setTitle(TextUtil.translatable("config.andromeda.title", CommonValues.version().split("-")[0]))
-                    .setSavingRunnable(Config::save)
+                    .setSavingRunnable(AutoConfigScreen::powerSave)
                     .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 
-            Arrays.stream(AndromedaConfig.class.getDeclaredFields())
-                    .collect(Collectors.groupingBy(
-                            field -> getOrCreateCategoryForField(field, builder), LinkedHashMap::new, Collectors.toList()
-                    )).forEach((category, fields) -> fields.forEach(field -> {
-                        String opt = "text.autoconfig.andromeda.option." + field.getName();
-                        Holder.COMPOSED.getAndTransform(opt, field, Config.get(), Config.getDefault(), Holder.COMPOSED).forEach(category::addEntry);
-                    }));
+            var eb = builder.entryBuilder();
+            ModuleManager.get().all().forEach(module -> {
+                try {
+                    CONTEXT.set(module);
 
+                    List<Field> fields = Arrays.asList(module.configClass().getFields());
+                    fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
+
+                    List<AbstractConfigListEntry<?>> list = new ArrayList<>();
+                    fields.forEach((field) -> {
+                        String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.id().replace('/', '.'), field.getName());
+                        Holder.COMPOSED.getAndTransform(opt, field, module.config(), module.manager().getDefaultConfig(), Holder.COMPOSED).forEach(list::add);
+                    });
+
+                    var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.id().replace('/', '.'))), Utilities.cast(list));
+                    if (module.getClass().isAnnotationPresent(ModuleTooltip.class)) {
+                        ModuleTooltip tooltip = module.getClass().getAnnotation(ModuleTooltip.class);
+                        if (tooltip.value() == 1) {
+                            Text[] text = new Text[]{TextUtil.translatable("config.andromeda.%s.@Tooltip".formatted(module.id().replace('/', '.')))};
+                            e.setTooltipSupplier(() -> Optional.of(text));
+                        } else if (tooltip.value() > 1) {
+                            Text[] text = IntStream.range(0, tooltip.value()).boxed()
+                                    .map(i -> "config.andromeda.%s.@Tooltip[%s]".formatted(module.id().replace('/', '.'), i))
+                                    .map(TextUtil::translatable).toArray(Text[]::new);
+                            e.setTooltipSupplier(() -> Optional.of(text));
+                        }
+                    }
+                    getOrCreateCategoryForField(module, builder).addEntry(e.build());
+                } finally {
+                    CONTEXT.remove();
+                }
+            });
+
+            ConfigCategory misc = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.misc"));
+            Arrays.stream(AndromedaConfig.class.getFields()).forEach((field) -> {
+                String opt = "config.andromeda.base.option." + field.getName();
+                Holder.COMPOSED.getAndTransform(opt, field, Config.get(), Config.getDefault(), Holder.COMPOSED).forEach(misc::addEntry);
+            });
             return builder.build();
         });
     }
 
-    private static ConfigCategory getOrCreateCategoryForField(Field field, ConfigBuilder screenBuilder) {
-        String name = Optional.ofNullable(field.getAnnotation(ConfigEntry.Category.class)).map(ConfigEntry.Category::value).orElse("default");
+    //TODO
+    private static void powerSave() {
+        Config.save();
+        ModuleManager.get().all().forEach(module -> module.manager().save());
+    }
 
-        Text key = TextUtil.translatable("text.autoconfig.andromeda.category.%s".formatted(name));
+    private static ConfigCategory getOrCreateCategoryForField(Module<?> info, ConfigBuilder screenBuilder) {
+        Text key = TextUtil.translatable("config.andromeda.category.%s".formatted(info.category()));
         return screenBuilder.getOrCreateCategory(key);
     }
 

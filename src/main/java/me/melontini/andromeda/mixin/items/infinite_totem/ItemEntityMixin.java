@@ -1,10 +1,10 @@
 package me.melontini.andromeda.mixin.items.infinite_totem;
 
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.registries.ItemRegistry;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.items.infinite_totem.Content;
+import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.WorldUtil;
-import me.melontini.andromeda.util.annotations.Feature;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -44,8 +44,9 @@ import java.util.Set;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Mixin(ItemEntity.class)
-@Feature({"totemSettings.enableInfiniteTotem", "totemSettings.enableTotemAscension"})
 abstract class ItemEntityMixin extends Entity {
+    @Unique
+    private static final InfiniteTotem am$itou = ModuleManager.quick(InfiniteTotem.class);
 
     @Shadow public abstract void setPickupDelayInfinite();
     @Shadow public abstract void setToDefaultPickupDelay();
@@ -71,7 +72,7 @@ abstract class ItemEntityMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!Config.get().totemSettings.enableTotemAscension || !Config.get().totemSettings.enableInfiniteTotem)
+        if (!am$itou.config().enableAscension || !am$itou.config().enabled)
             return;
         if (!this.dataTracker.get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
 
@@ -135,7 +136,7 @@ abstract class ItemEntityMixin extends Entity {
 
                             ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
 
-                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(ItemRegistry.get().INFINITE_TOTEM.get()));
+                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(Content.INFINITE_TOTEM.get()));
                             this.discard();
                             andromeda$itemEntity.discard();
                             world.spawnEntity(entity);

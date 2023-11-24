@@ -1,9 +1,9 @@
 {
   "fabric:load_conditions": [
     {
-      "condition": "andromeda:config_option",
+      "condition": "andromeda:items_registered",
       "values": [
-        "incubator.recipe"
+        "andromeda:incubator"
       ]
     }
   ],

@@ -2,8 +2,9 @@ package me.melontini.andromeda.mixin.items.lockpick;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.melontini.andromeda.items.LockpickItem;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.items.lockpick.Lockpick;
+import me.melontini.andromeda.modules.items.lockpick.LockpickItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -12,11 +13,13 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(PlayerEntity.class)
-@Feature("lockpick.enable")
 abstract class PlayerEntityMixin extends LivingEntity {
+    @Unique
+    private static final Lockpick am$lockpick = ModuleManager.quick(Lockpick.class);
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }

@@ -1,10 +1,10 @@
 package me.melontini.andromeda.mixin.mechanics.throwable_items;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import me.melontini.andromeda.config.Config;
-import me.melontini.andromeda.content.throwable_items.ItemBehaviorManager;
-import me.melontini.andromeda.entity.FlyingItemEntity;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
+import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,8 +23,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
-@Feature("throwableItems.enable")
 abstract class ItemStackMixin {
+    @Unique
+    private static final ThrowableItems am$thritm = ModuleManager.quick(ThrowableItems.class);
 
     @Shadow public abstract Item getItem();
     @Shadow public abstract void decrement(int amount);
@@ -50,7 +51,7 @@ abstract class ItemStackMixin {
 
     @Unique
     private boolean andromeda$runBehaviors(World world, PlayerEntity user) {
-        if (!Config.get().throwableItems.enable) return false;
+        if (!am$thritm.config().enabled) return false;
 
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {

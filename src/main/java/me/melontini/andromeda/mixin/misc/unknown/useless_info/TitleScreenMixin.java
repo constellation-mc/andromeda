@@ -1,7 +1,8 @@
 package me.melontini.andromeda.mixin.misc.unknown.useless_info;
 
-import me.melontini.andromeda.client.AndromedaClient;
-import me.melontini.andromeda.util.annotations.Feature;
+import me.melontini.andromeda.base.annotations.MixinEnvironment;
+import me.melontini.andromeda.modules.misc.unknown.Unknown;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
@@ -10,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@MixinEnvironment(EnvType.CLIENT)
 @Mixin(TitleScreen.class)
-@Feature("unknown")
 class TitleScreenMixin extends Screen {
     protected TitleScreenMixin(Text title) {
         super(title);
@@ -19,6 +20,6 @@ class TitleScreenMixin extends Screen {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resource/SplashTextResourceSupplier;get()Ljava/lang/String;"), method = "init")
     private void andromeda$init(CallbackInfo ci) {
-        AndromedaClient.get().DEBUG_SPLASH = this.client.getSplashTextLoader().get();
+        Unknown.DEBUG_SPLASH = this.client.getSplashTextLoader().get();
     }
 }
