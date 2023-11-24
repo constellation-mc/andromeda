@@ -5,8 +5,8 @@ import lombok.Getter;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.client.config.AutoConfigScreen;
 import me.melontini.andromeda.registries.ItemGroup;
-import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -57,7 +57,7 @@ public class AndromedaClient {
             }
         }));
 
-        Support.runWeak(EnvType.CLIENT, () -> AndromedaReporter::handleUpload);
+        Support.runWeak(EnvType.CLIENT, () -> CrashHandler::nukeProfile);
     }
 
     public void lateInit() {

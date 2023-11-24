@@ -328,13 +328,10 @@
 
   "config.andromeda.base.option.sideOnlyMode": "Side-Only Mode",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "Disables all modules which require Andromeda to be present on server.",
-  "config.andromeda.base.option.sendOptionalData": "Send Optional Data",
-  "config.andromeda.base.option.sendOptionalData.@Tooltip[0]": "Data sent at startup:",
-  "config.andromeda.base.option.sendOptionalData.@Tooltip[1]": "Mod version, Minecraft version, Modloader.",
   "config.andromeda.base.option.sendCrashReports": "Send Crash Reports",
   "config.andromeda.base.option.sendCrashReports.@Tooltip[0]": "Data sent at crash:",
   "config.andromeda.base.option.sendCrashReports.@Tooltip[1]": "Stacktrace, Loaded mods, Environment (server/client)",
-  "config.andromeda.base.option.sendCrashReports.@Tooltip[2]": "Unlike optional data, crash reports don't have a unique profile attached.",
+  "config.andromeda.base.option.sendCrashReports.@Tooltip[2]": "Crash reports don't have a unique profile attached.",
   "config.andromeda.base.option.debugMessages": "Enable debug messages?",
   "config.andromeda.base.option.debugMessages.@Tooltip": "If enabled, log messages could get spammy."
 }

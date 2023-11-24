@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.analytics.Analytics;
-import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
@@ -17,40 +16,20 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Set;
 
-public class AndromedaReporter {
+public class CrashHandler {
 
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
     private static final Analytics ANALYTICS = Analytics.get(CommonValues.mod());
     private static final MixpanelHandler HANDLER = Utilities.supply(() -> MixpanelAnalytics.init(ANALYTICS, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true));
 
     @SuppressWarnings("deprecation")
-    public static void handleUpload() {
+    public static void nukeProfile() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
             Analytics.oldUUID().ifPresent(uuid -> HANDLER.send((mixpanel, analytics) -> mixpanel.delete(uuid.toString())));
-            if (Config.get().sendOptionalData) {
-                if (CommonValues.updated()) {
-                    HANDLER.send((mixpanel, analytics) -> {
-                        JsonObject object = new JsonObject();
-                        object.addProperty("mod_version", CommonValues.version().split("-")[0]);
-                        object.addProperty("mc_version", Prop.MINECRAFT_VERSION.get());
-                        object.addProperty("modloader", CommonValues.platform().toString());
-                        AndromedaLog.info("Uploading optional data: " + object);
-                        mixpanel.set(analytics.getUUIDString(), object);
-                    });
-                } else AndromedaLog.info("Skipped optional data upload.");
-
-                Path fakeConfig = CommonValues.hiddenPath().resolve("config_copy.json");
-                try {
-                    Files.deleteIfExists(fakeConfig);
-                } catch (Exception e) {
-                    AndromedaLog.warn("Failed to delete config_copy.json", e);
-                }
-            } else {
+            if (CommonValues.updated() && !ANALYTICS.getDefaultUUID().equals(ANALYTICS.getUUID())) {
                 HANDLER.send((mixpanel, analytics) -> mixpanel.delete(analytics.getUUIDString()));
             }
         }

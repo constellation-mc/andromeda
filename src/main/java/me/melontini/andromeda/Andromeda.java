@@ -6,8 +6,8 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
-import me.melontini.andromeda.util.AndromedaReporter;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
@@ -31,7 +31,7 @@ public class Andromeda {
     }
 
     private void onInitialize() {
-        AndromedaReporter.initCrashHandler();
+        CrashHandler.initCrashHandler();
         Common.bootstrap();
 
         if (!Config.get().sideOnlyMode) {
