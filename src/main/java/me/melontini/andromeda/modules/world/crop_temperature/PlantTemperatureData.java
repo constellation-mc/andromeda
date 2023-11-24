@@ -7,12 +7,12 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.block.Block;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,7 +45,7 @@ public record PlantTemperatureData(Block block, float min, float max, float aMin
                         JsonObject object = JsonHelper.deserialize(reader);
                         if (!ResourceConditions.objectMatchesConditions(object)) continue;
 
-                        Block block = parseFromId(object.get("identifier").getAsString(), Registry.BLOCK);
+                        Block block = parseFromId(object.get("identifier").getAsString(), Registries.BLOCK);
                         PLANT_DATA.putIfAbsent(block, new PlantTemperatureData(
                                 block,
                                 object.get("min").getAsFloat(),

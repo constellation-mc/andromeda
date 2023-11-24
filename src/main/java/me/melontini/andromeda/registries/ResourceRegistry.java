@@ -3,6 +3,8 @@ package me.melontini.andromeda.registries;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;

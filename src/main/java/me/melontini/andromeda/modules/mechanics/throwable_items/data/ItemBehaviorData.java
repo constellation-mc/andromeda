@@ -9,13 +9,13 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -71,9 +71,9 @@ public class ItemBehaviorData {
 
                         JsonElement element = object.get("item_id");
                         if (element.isJsonArray()) {
-                            element.getAsJsonArray().forEach(e -> items.add(parseFromId(e.getAsString(), Registry.ITEM)));
+                            element.getAsJsonArray().forEach(e -> items.add(parseFromId(e.getAsString(), Registries.ITEM)));
                         } else {
-                            items.add(parseFromId(element.getAsString(), Registry.ITEM));
+                            items.add(parseFromId(element.getAsString(), Registries.ITEM));
                         }
 
                         data.on_entity_hit = readCommands(JsonHelper.getObject(object, "on_entity_hit",  new JsonObject()));

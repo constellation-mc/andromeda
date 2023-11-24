@@ -10,12 +10,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,7 +45,7 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
             public void reload(ResourceManager manager) {
                 EggProcessingData.EGG_DATA.clear();
                 //well...
-                for (Item item : Registry.ITEM) {
+                for (Item item : Registries.ITEM) {
                     if (item instanceof SpawnEggItem spawnEggItem) {
                         EggProcessingData.EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(spawnEggItem, spawnEggItem.getEntityType(new NbtCompound()), 8000));
                     }
@@ -57,8 +57,8 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
                         JsonObject object = JsonHelper.deserialize(reader);
                         if (!ResourceConditions.objectMatchesConditions(object)) continue;
 
-                        EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registry.ENTITY_TYPE);
-                        Item item = parseFromId(object.get("identifier").getAsString(), Registry.ITEM);
+                        EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registries.ENTITY_TYPE);
+                        Item item = parseFromId(object.get("identifier").getAsString(), Registries.ITEM);
                         EggProcessingData.EGG_DATA.putIfAbsent(item, new EggProcessingData(item, entity, object.get("time").getAsInt()));
                     } catch (Exception e) {
                         AndromedaLog.error("Error while loading am_egg_processing. id: " + entry.getKey(), e);

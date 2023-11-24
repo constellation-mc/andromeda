@@ -17,8 +17,8 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -50,7 +50,7 @@ public class AndromedaClient {
                 if (!animate) return;
                 drawTexture(matrices, itemX + 8, itemY + 8, stack -> {
                 }, new Identifier("andromeda:textures/gui/background.png"));
-                drawTexture(matrices, itemX + 8, itemY + 8, stack -> stack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(Util.getMeasuringTimeMs() * 0.05f)),
+                drawTexture(matrices, itemX + 8, itemY + 8, stack -> stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(Util.getMeasuringTimeMs() * 0.05f)),
                         new Identifier("andromeda:textures/gui/galaxy.png"));
             } catch (Throwable t) {
                 animate = false;
@@ -73,7 +73,7 @@ public class AndromedaClient {
     }
 
     public static void drawTexture(MatrixStack matrices, int x, int y, Consumer<MatrixStack> transform, Identifier id) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, id);
 
         matrices.push();
@@ -92,7 +92,7 @@ public class AndromedaClient {
 
         //RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         RenderSystem.disableBlend();
         //RenderSystem.disableDepthTest();
         matrices.pop();

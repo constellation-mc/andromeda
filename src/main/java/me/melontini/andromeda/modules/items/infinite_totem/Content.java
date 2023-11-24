@@ -7,7 +7,7 @@ import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.Rarity;
 
@@ -18,7 +18,7 @@ public class Content {
 
     public static final Keeper<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
             .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
-            .itemGroup(ItemGroup.COMBAT)
+            .itemGroup(ItemGroups.COMBAT)
             .register(() -> ModuleManager.quick(InfiniteTotem.class).config().enabled));
 
     public static Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.of(() -> () ->
