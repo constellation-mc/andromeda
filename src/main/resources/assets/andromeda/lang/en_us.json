@@ -10,6 +10,7 @@
   "tooltip.andromeda.compass.lodestone": "Distance to lodestone: %s",
   "tooltip.andromeda.compass.recovery": "Distance to last death spot: %s",
   "tooltip.andromeda.frameitem": "Item inside the frame",
+  "tooltip.andromeda.throwable_item": "This item can be thrown.",
   "death.attack.andromeda_agony": "%s died from agony",
   "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
   "andromeda.container.guarded": "Can't open! The container is guarded!",

@@ -52,6 +52,10 @@ public class ItemBehaviorManager {
         OVERRIDE_VANILLA.clear();
     }
 
+    public static Set<Item> itemsWithBehaviors() {
+        return Collections.unmodifiableSet(ITEM_BEHAVIORS.keySet());
+    }
+
     public static void overrideVanilla(Item item) {
         OVERRIDE_VANILLA.add(item);
     }

@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
-import me.melontini.andromeda.util.AndromedaPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
@@ -87,7 +86,7 @@ public class DefaultBehaviors implements Runnable {
                             PacketByteBuf buf = PacketByteBufs.create();
                             buf.writeItemStack(stack);
 
-                            ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.COLORED_FLYING_STACK_LANDED, buf);
+                            ServerPlayNetworking.send((ServerPlayerEntity) player, Content.COLORED_FLYING_STACK_LANDED, buf);
                         } else {
                             Vec3d pos = hitResult.getPos();
                             List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(new BlockPos(pos)).expand(0.5), LivingEntity::isAlive);
@@ -96,7 +95,7 @@ public class DefaultBehaviors implements Runnable {
                                         PacketByteBuf buf = PacketByteBufs.create();
                                         buf.writeItemStack(stack);
 
-                                        ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.COLORED_FLYING_STACK_LANDED, buf);
+                                        ServerPlayNetworking.send((ServerPlayerEntity) player, Content.COLORED_FLYING_STACK_LANDED, buf);
                                     });
                         }
                     } else if (hitResult.getType() == HitResult.Type.BLOCK) {
@@ -107,7 +106,7 @@ public class DefaultBehaviors implements Runnable {
                                     PacketByteBuf buf = PacketByteBufs.create();
                                     buf.writeItemStack(stack);
 
-                                    ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.COLORED_FLYING_STACK_LANDED, buf);
+                                    ServerPlayNetworking.send((ServerPlayerEntity) player, Content.COLORED_FLYING_STACK_LANDED, buf);
                                 });
                     }
                 }
