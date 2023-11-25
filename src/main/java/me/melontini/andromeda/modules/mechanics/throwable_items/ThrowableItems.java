@@ -30,6 +30,7 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.SERVER)
         public List<String> blacklist = Lists.newArrayList();
 
         @ConfigEntry.Gui.Tooltip
@@ -37,9 +38,10 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
         public boolean canZombiesThrowItems = true;
 
         @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.SERVER)
         public int zombieThrowInterval = 40;
 
-        @FeatureEnvironment(Environment.CLIENT)
+        @FeatureEnvironment(Environment.BOTH)
         public boolean tooltip = true;
     }
 }
