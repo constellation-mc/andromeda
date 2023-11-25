@@ -1,19 +1,30 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.andromeda.registries.Keeper;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.dispenser.DispenserBehavior;
+import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static me.melontini.andromeda.registries.Common.id;
@@ -31,7 +42,23 @@ public class Content {
     public static final Identifier ITEMS_WITH_BEHAVIORS = new Identifier(MODID, "items_with_behaviors");
     public static final Identifier COLORED_FLYING_STACK_LANDED = new Identifier(MODID, "colored_flying_stack_landed");
 
+    public static final ProjectileDispenserBehavior BEHAVIOR = new ProjectileDispenserBehavior() {
+        @Override
+        protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
+            ItemStack stack1 = stack.copy();
+            stack1.setCount(1);
+            return new FlyingItemEntity(stack1, position.getX(), position.getY(), position.getZ(), world);
+        }
+    };
+
     public static void init() {
+        if (DispenserBlock.BEHAVIORS instanceof Object2ObjectMap<Item, DispenserBehavior> map) {
+            var b = map.defaultReturnValue();
+            DispenserBlock.BEHAVIORS = createBehaviorMap(b);
+        } else {
+            AndromedaLog.error("DispenserBlock.BEHAVIORS is not Object2ObjectMap! Can't override default dispense behavior!");
+        }
+
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             var packet = PacketByteBufs.create();
             var items = ItemBehaviorManager.itemsWithBehaviors();
@@ -41,6 +68,22 @@ public class Content {
             }
             sender.sendPacket(ITEMS_WITH_BEHAVIORS, packet);
         });
+    }
+
+    @NotNull
+    private static Object2ObjectMap<Item, DispenserBehavior> createBehaviorMap(DispenserBehavior b) {
+        Object2ObjectMap<Item, DispenserBehavior> n = new Object2ObjectOpenHashMap<>() {
+            @Override
+            public DispenserBehavior get(Object k) {
+                if (k instanceof ItemStack stack && ItemBehaviorManager.hasBehaviors(stack.getItem()) && ItemBehaviorManager.overridesVanilla(stack.getItem())) {
+                    return BEHAVIOR;
+                }
+                return super.get(k);
+            }
+        };
+        n.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.hasBehaviors(stack.getItem()) ?
+                BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
+        return n;
     }
 
     public static DamageSource bricked(@Nullable Entity attacker) {
