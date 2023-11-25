@@ -27,7 +27,7 @@ public class ModuleManager {
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    public void collect() {
+    public void prepare() {
         List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
                 .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
 
@@ -44,18 +44,17 @@ public class ModuleManager {
 
         list.sort(Comparator.comparingInt(m->categories.indexOf(m.category())));
         list.forEach(m -> modules.put(m.getClass(), m));
+        list.forEach(m -> moduleNames.put(m.id(), m));
         discoveredModules.addAll(modules.values());
 
-        setUpConfigs();
-        modules.values().forEach(m -> m.manager().getOptionManager().processOptions());
+        setUpConfigs(list);
+        list.forEach(m -> m.manager().getOptionManager().processOptions());
         modules.values().removeIf(m -> !m.enabled());
-        modules.values().forEach(m -> m.manager().save());
-
-        modules.values().forEach(m -> moduleNames.put(m.name(), m));
+        list.forEach(m -> m.manager().save());
     }
 
-    public void setUpConfigs() {
-        modules.values().forEach(m -> {
+    public void setUpConfigs(List<Module<?>> list) {
+        list.forEach(m -> {
             var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.id());
             config.processors((registry, mod) -> {
                 registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
