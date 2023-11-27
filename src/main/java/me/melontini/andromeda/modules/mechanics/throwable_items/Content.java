@@ -53,8 +53,7 @@ public class Content {
 
     public static void init() {
         if (DispenserBlock.BEHAVIORS instanceof Object2ObjectMap<Item, DispenserBehavior> map) {
-            var b = map.defaultReturnValue();
-            DispenserBlock.BEHAVIORS = createBehaviorMap(b);
+            DispenserBlock.BEHAVIORS = createBehaviorMap(map);
         } else {
             AndromedaLog.error("DispenserBlock.BEHAVIORS is not Object2ObjectMap! Can't override default dispense behavior!");
         }
@@ -71,8 +70,8 @@ public class Content {
     }
 
     @NotNull
-    private static Object2ObjectMap<Item, DispenserBehavior> createBehaviorMap(DispenserBehavior b) {
-        Object2ObjectMap<Item, DispenserBehavior> n = new Object2ObjectOpenHashMap<>() {
+    private static Object2ObjectMap<Item, DispenserBehavior> createBehaviorMap(Object2ObjectMap<Item, DispenserBehavior> map) {
+        Object2ObjectMap<Item, DispenserBehavior> n = new Object2ObjectOpenHashMap<>(map) {
             @Override
             public DispenserBehavior get(Object k) {
                 if (k instanceof ItemStack stack && ItemBehaviorManager.hasBehaviors(stack.getItem()) && ItemBehaviorManager.overridesVanilla(stack.getItem())) {
@@ -81,6 +80,7 @@ public class Content {
                 return super.get(k);
             }
         };
+        var b = map.defaultReturnValue();
         n.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.hasBehaviors(stack.getItem()) ?
                 BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
         return n;
