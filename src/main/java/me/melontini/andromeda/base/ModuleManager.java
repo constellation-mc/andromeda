@@ -1,6 +1,7 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.base.Suppliers;
+import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
@@ -12,7 +13,13 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.service.IMixinService;
+import org.spongepowered.asm.service.MixinService;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -118,7 +125,33 @@ public class ModuleManager {
         Andromeda.init();
     }
 
+    static final ThreadLocal<InputStream> config = ThreadLocal.withInitial(() -> null);
+
     public static void onPreLaunch() {
+        IMixinService service = MixinService.getService();
+        MixinProcessor.injectService(service);
+        get().loaded().forEach((module) -> {
+            JsonObject object = new JsonObject();
+            object.addProperty("required", true);
+            object.addProperty("minVersion", "0.8");
+            object.addProperty("package", module.mixins());
+            object.addProperty("compatibilityLevel", "JAVA_17");
+            object.addProperty("plugin", module.mixinPlugin().getName());
+            object.addProperty("refmap", module.refmap());
+            JsonObject injectors = new JsonObject();
+            injectors.addProperty("defaultRequire", 1);
+            object.add("injectors", injectors);
+
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(object.toString().getBytes())) {
+                config.set(bais);
+                Mixins.addConfiguration("andromeda$$" + module.id().replace('/', '.') + ".mixins.json");
+            } catch (IOException e) {
+                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.id()));
+            } finally {
+                config.remove();
+            }
+        });
+        MixinProcessor.dejectService(service);
         get().modules.values().forEach(Module::onPreLaunch);
     }
 
