@@ -1,45 +1,50 @@
 accessWidener  v2	named
 
-accessible class net/minecraft/entity/mob/SlimeEntity$FaceTowardTargetGoal
-accessible class net/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection
-accessible class net/minecraft/client/particle/ParticleManager$SpriteAwareFactory
-accessible class net/minecraft/block/entity/BlockEntityType$BlockEntityFactory
-accessible class net/minecraft/block/entity/BeehiveBlockEntity$Bee
-# Fields
-accessible field net/minecraft/entity/vehicle/BoatEntity location Lnet/minecraft/entity/vehicle/BoatEntity$Location;
 accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen children Ljava/util/List;
+accessible field net/minecraft/entity/Entity world Lnet/minecraft/world/World;
+
+# entities/slimes/flee
+accessible class net/minecraft/entity/mob/SlimeEntity$FaceTowardTargetGoal
+
+# gui/no_more_adventure
+accessible class net/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection
+
+# mechanics/throwable_items
+accessible field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
+mutable field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
+
+# entities/boats (furnaceBoat)
+accessible field net/minecraft/client/render/entity/BoatEntityRenderer texturesAndModels Ljava/util/Map;
+accessible field net/minecraft/entity/vehicle/BoatEntity location Lnet/minecraft/entity/vehicle/BoatEntity$Location;
+extendable method net/minecraft/entity/vehicle/BoatEntity updateVelocity ()V
+
+# gui/gui_particles (furnaceScreen)
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen y I
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen x I
-accessible field net/minecraft/entity/Entity world Lnet/minecraft/world/World;
-accessible field net/minecraft/client/render/entity/BoatEntityRenderer texturesAndModels Ljava/util/Map;
+
+# gui/gui_particles (gameModeParticles)
 accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen$ButtonWidget gameMode Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;
 accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen gameModeButtons Ljava/util/List;
-accessible field net/minecraft/client/gui/tooltip/OrderedTextTooltipComponent text Lnet/minecraft/text/OrderedText;
+
+# misc/recipe_advancements_generation
 accessible field net/minecraft/server/ServerAdvancementLoader manager Lnet/minecraft/advancement/AdvancementManager;
-accessible field net/minecraft/block/entity/BeaconBlockEntity level I
-accessible field net/minecraft/block/entity/BeehiveBlockEntity$Bee entityData Lnet/minecraft/nbt/NbtCompound;
-mutable field net/minecraft/item/ItemStack item Lnet/minecraft/item/Item;
-accessible field net/minecraft/item/ItemStack item Lnet/minecraft/item/Item;
+
+# items/minecart_block_picking
 accessible field net/minecraft/entity/vehicle/FurnaceMinecartEntity fuel I
-accessible field net/minecraft/entity/vehicle/BoatEntity ticksUnderwater F
-accessible field net/minecraft/entity/vehicle/BoatEntity yawVelocity F
+accessible field net/minecraft/block/entity/AbstractFurnaceBlockEntity burnTime I
+accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
 accessible field net/minecraft/block/entity/ChestBlockEntity inventory Lnet/minecraft/util/collection/DefaultedList;
 accessible field net/minecraft/block/entity/HopperBlockEntity inventory Lnet/minecraft/util/collection/DefaultedList;
-accessible field net/minecraft/block/entity/AbstractFurnaceBlockEntity burnTime I
-accessible field net/minecraft/item/MinecartItem type Lnet/minecraft/entity/vehicle/AbstractMinecartEntity$Type;
-accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
+
+# entities/villagers_follow_emeralds  mechanics/throwable_items
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
-# Methods
-extendable method net/minecraft/entity/vehicle/BoatEntity updateVelocity ()V
-accessible method net/minecraft/entity/mob/MobEntity changeAngle (FFF)F
-accessible method net/minecraft/client/particle/ParticleManager registerFactory (Lnet/minecraft/particle/ParticleType;Lnet/minecraft/client/particle/ParticleManager$SpriteAwareFactory;)V
-accessible method net/minecraft/client/particle/ParticleTextureData <init> (Ljava/util/List;)V
-accessible method net/minecraft/recipe/ShapedRecipe readSymbols (Lcom/google/gson/JsonObject;)Ljava/util/Map;
-accessible method net/minecraft/block/entity/BeehiveBlockEntity$Bee <init> (Lnet/minecraft/nbt/NbtCompound;II)V
-accessible method net/minecraft/block/entity/BeehiveBlockEntity removeIrrelevantNbtKeys (Lnet/minecraft/nbt/NbtCompound;)V
+
+# entities/bee_flower_duplication
 accessible method net/minecraft/entity/passive/BeeEntity$PollinateGoal isRunning ()Z
 accessible method net/minecraft/entity/passive/BeeEntity$PollinateGoal completedPollination ()Z
-accessible method net/minecraft/block/CropBlock getAvailableMoisture (Lnet/minecraft/block/Block;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F
+
+# world/falling_beenests
 accessible method net/minecraft/entity/FallingBlockEntity readCustomDataFromNbt (Lnet/minecraft/nbt/NbtCompound;)V
+accessible method net/minecraft/block/entity/BeehiveBlockEntity removeIrrelevantNbtKeys (Lnet/minecraft/nbt/NbtCompound;)V
