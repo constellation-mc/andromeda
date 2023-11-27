@@ -287,6 +287,7 @@
   "config.andromeda.mechanics.throwable_items.option.canZombiesThrowItems.@Tooltip": "Allows zombies to throw items with behaviors.",
   "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval": "Throw Interval",
   "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval.@Tooltip": "In addition to the cooldown, zombies have an interval between throws.",
+  "config.andromeda.mechanics.throwable_items.option.tooltip": "Show tooltip",
   "config.andromeda.mechanics.trading_goat_horn": "Wandering Trader Horn",
   "config.andromeda.mechanics.trading_goat_horn.@Tooltip[0]": "Every 2 days you can blow the \"sing\" horn to summon a wandering trader.",
   "config.andromeda.mechanics.trading_goat_horn.@Tooltip[1]": "Please note, wandering traders will still spawn naturally",

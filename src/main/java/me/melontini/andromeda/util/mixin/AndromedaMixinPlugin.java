@@ -45,6 +45,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
         Path newCfg = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
         if (Files.exists(newCfg)) {
             try {
+                Files.createDirectories(CommonValues.configPath().getParent());
                 Files.move(newCfg, CommonValues.configPath());
             } catch (IOException e) {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);

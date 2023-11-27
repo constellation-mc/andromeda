@@ -3,9 +3,8 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FireBlock;
 import net.minecraft.block.TntBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -30,6 +29,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
 import java.util.Comparator;
@@ -41,7 +41,7 @@ public class DefaultBehaviors implements Runnable {
     private static final Set<Item> DYE_ITEMS = Set.of(
             Items.RED_DYE, Items.BLUE_DYE, Items.LIGHT_BLUE_DYE,
             Items.CYAN_DYE, Items.BLACK_DYE, Items.BROWN_DYE,
-            Items.GREEN_DYE, Items.PINK_DYE,  Items.PURPLE_DYE,
+            Items.GREEN_DYE, Items.PINK_DYE, Items.PURPLE_DYE,
             Items.YELLOW_DYE, Items.WHITE_DYE, Items.ORANGE_DYE,
             Items.LIME_DYE, Items.MAGENTA_DYE, Items.LIGHT_GRAY_DYE,
             Items.GRAY_DYE);
@@ -136,18 +136,27 @@ public class DefaultBehaviors implements Runnable {
                     BlockPos blockPos = result.getBlockPos();
                     BlockState blockState = world.getBlockState(blockPos);
 
+
                     if (blockState.getBlock() instanceof TntBlock) {
                         TntBlock.primeTnt(world, blockPos);
                         world.removeBlock(blockPos, false);
-                    } else if (FlammableBlockRegistry.getDefaultInstance().get(blockState.getBlock()) != null) {
-                        world.setBlockState(blockPos.offset(result.getSide()), FireBlock.getState(world, blockPos.offset(result.getSide())));
+                        world.emitGameEvent(user, GameEvent.BLOCK_ACTIVATE, blockPos);
+                    } else {
+                        blockPos = blockPos.offset(result.getSide());
+                        blockState = world.getBlockState(blockPos);
+                        if (blockState.isAir()) {
+                            world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
+                            world.emitGameEvent(user, GameEvent.BLOCK_PLACE, blockPos);
+                        }
                     }
+
                     Random random = world.getRandom();
                     world.playSound(null, flyingItemEntity.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
                 } else if (hitResult.getType() == HitResult.Type.ENTITY) {
                     EntityHitResult result = (EntityHitResult) hitResult;
                     Entity entity = result.getEntity();
-                    if (entity instanceof LivingEntity livingEntity) livingEntity.takeKnockback(0.4, -flyingItemEntity.getVelocity().getX(), -flyingItemEntity.getVelocity().getZ());
+                    if (entity instanceof LivingEntity livingEntity)
+                        livingEntity.takeKnockback(0.4, -flyingItemEntity.getVelocity().getX(), -flyingItemEntity.getVelocity().getZ());
                     entity.setOnFireFor(8);
                     Random random = world.getRandom();
                     world.playSound(null, flyingItemEntity.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
