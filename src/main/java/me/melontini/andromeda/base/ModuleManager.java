@@ -1,6 +1,7 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.base.Suppliers;
+import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
@@ -12,7 +13,13 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.service.IMixinService;
+import org.spongepowered.asm.service.MixinService;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -27,7 +34,7 @@ public class ModuleManager {
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    public void collect() {
+    public void prepare() {
         List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
                 .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
 
@@ -44,18 +51,17 @@ public class ModuleManager {
 
         list.sort(Comparator.comparingInt(m->categories.indexOf(m.category())));
         list.forEach(m -> modules.put(m.getClass(), m));
+        list.forEach(m -> moduleNames.put(m.id(), m));
         discoveredModules.addAll(modules.values());
 
-        setUpConfigs();
-        modules.values().forEach(m -> m.manager().getOptionManager().processOptions());
+        setUpConfigs(list);
+        list.forEach(m -> m.manager().getOptionManager().processOptions());
         modules.values().removeIf(m -> !m.enabled());
-        modules.values().forEach(m -> m.manager().save());
-
-        modules.values().forEach(m -> moduleNames.put(m.name(), m));
+        list.forEach(m -> m.manager().save());
     }
 
-    public void setUpConfigs() {
-        modules.values().forEach(m -> {
+    public void setUpConfigs(List<Module<?>> list) {
+        list.forEach(m -> {
             var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.id());
             config.processors((registry, mod) -> {
                 registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
@@ -119,13 +125,56 @@ public class ModuleManager {
         Andromeda.init();
     }
 
+    static final ThreadLocal<InputStream> config = ThreadLocal.withInitial(() -> null);
+
     public static void onPreLaunch() {
+        IMixinService service = MixinService.getService();
+        MixinProcessor.injectService(service);
+        get().loaded().forEach((module) -> {
+            JsonObject object = new JsonObject();
+            object.addProperty("required", true);
+            object.addProperty("minVersion", "0.8");
+            object.addProperty("package", module.mixins());
+            object.addProperty("compatibilityLevel", "JAVA_17");
+            object.addProperty("plugin", module.mixinPlugin().getName());
+            object.addProperty("refmap", module.refmap());
+            JsonObject injectors = new JsonObject();
+            injectors.addProperty("defaultRequire", 1);
+            object.add("injectors", injectors);
+
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(object.toString().getBytes())) {
+                config.set(bais);
+                Mixins.addConfiguration("andromeda$$" + module.id().replace('/', '.') + ".mixins.json");
+            } catch (IOException e) {
+                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.id()));
+            } finally {
+                config.remove();
+            }
+        });
+        MixinProcessor.dejectService(service);
         get().modules.values().forEach(Module::onPreLaunch);
     }
 
     public void print() {
+        Map<String, Set<Module<?>>> categories = Utilities.consume(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
+                map.computeIfAbsent(m.category(), s -> new LinkedHashSet<>()).add(m)));
+
         StringBuilder builder = new StringBuilder();
-        modules.values().forEach(m -> builder.append(m.id()).append(", "));
-        AndromedaLog.info("Loading modules: {}", builder);
+        categories.forEach((s, strings) -> {
+            builder.append("\n\t - ").append(s);
+            if (!ModuleManager.categories.contains(s)) builder.append("*");
+            builder.append("\n\t  |-- ");
+            strings.forEach(m -> {
+                builder.append('\'').append(m.name().replace('/', '.')).append('\'').append("  ");
+                if (!m.getClass().getName().startsWith("me.melontini.andromeda"))
+                    builder.append('*');
+            });
+        });
+        if (!categories.isEmpty()) {
+            AndromedaLog.info("Loading modules: {}", builder);
+            AndromedaLog.info("* - custom modules/categories not provided by Andromeda.");
+        } else {
+            AndromedaLog.info("Not loading any modules!");
+        }
     }
 }

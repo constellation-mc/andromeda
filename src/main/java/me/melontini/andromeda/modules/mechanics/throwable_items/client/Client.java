@@ -1,27 +1,50 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
 import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
-import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static me.melontini.dark_matter.api.base.util.MathStuff.threadRandom;
 
 public class Client {
 
+    private static final Set<Item> showTooltip = new HashSet<>();
+
+    public static boolean hasTooltip(Item item) {
+        return showTooltip.contains(item);
+    }
+
     public static void init() {
         Content.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
-        ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
+        ClientPlayNetworking.registerGlobalReceiver(Content.ITEMS_WITH_BEHAVIORS, (client, handler, buf, responseSender) -> {
+            Set<Identifier> ids = new HashSet<>();
+            int length = buf.readVarInt();
+            for (int i = 0; i < length; i++) ids.add(buf.readIdentifier());
+            client.execute(() -> {
+                showTooltip.clear();
+                for (Identifier id : ids) showTooltip.add(Registry.ITEM.get(id));
+            });
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(Content.FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
             double x = buf.readDouble(), y = buf.readDouble(), z = buf.readDouble();
             boolean spawnItem = buf.readBoolean();
             ItemStack stack = buf.readItemStack();
@@ -53,7 +76,7 @@ public class Client {
             });
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.COLORED_FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(Content.COLORED_FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
             ItemStack dye = buf.readItemStack();
             client.execute(() -> {
                 int a = client.getWindow().getScaledWidth();

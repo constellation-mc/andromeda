@@ -30,8 +30,10 @@ public class FlyingItemEntity extends ThrownItemEntity {
 
     @Override
     protected void onCollision(HitResult hitResult) {
-        for (ItemBehavior behavior : ItemBehaviorManager.getBehaviors(getItem().getItem())) {
-            if (!this.isRemoved()) behavior.onCollision(getItem(), this, world, getOwner(), hitResult);
+        if (!this.world.isClient()) {
+            for (ItemBehavior behavior : ItemBehaviorManager.getBehaviors(getItem().getItem())) {
+                if (!this.isRemoved()) behavior.onCollision(getItem(), this, world, getOwner(), hitResult);
+            }
         }
         this.discard();
     }
