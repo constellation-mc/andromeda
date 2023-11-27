@@ -2,34 +2,34 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
-import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.item.Item;
-import net.minecraft.util.registry.Registry;
 
 import java.util.*;
 
 public class ItemBehaviorManager {
-    private static final Lazy<ThrowableItems> module = Lazy.of(() -> () -> ModuleManager.quick(ThrowableItems.class));
 
     private static final Map<Item, Holder> ITEM_BEHAVIORS = new IdentityHashMap<>();
-    private static final Object2IntOpenHashMap<Item> CUSTOM_COOLDOWNS = new Object2IntOpenHashMap<>();
+    private static final Object2IntOpenHashMap<Item> CUSTOM_COOLDOWNS = Utilities.consume(new Object2IntOpenHashMap<>(), map -> {
+        map.defaultReturnValue(50);
+    });
     private static final Set<Item> OVERRIDE_VANILLA = new HashSet<>();
+    private static final Set<Item> DISABLED = new HashSet<>();
 
     public static List<ItemBehavior> getBehaviors(Item item) {
-        if (module.get().config().blacklist.contains(Registry.ITEM.getId(item).toString()))
-            return Collections.emptyList();
         Holder holder = ITEM_BEHAVIORS.get(item);
         if (holder == null) return Collections.emptyList();
         return Collections.unmodifiableList(holder.behaviors);
     }
 
     public static void addBehavior(Item item, ItemBehavior behavior, boolean complement) {
+        if (DISABLED.contains(item)) return;
+
         Holder holder = ITEM_BEHAVIORS.computeIfAbsent(item, Holder::new);
         holder.addBehavior(behavior, complement);
     }
+
     public static void addBehavior(Item item, ItemBehavior behavior) {
         addBehavior(item, behavior, true);
     }
@@ -42,14 +42,20 @@ public class ItemBehaviorManager {
         for (Item item : items) addBehavior(item, behavior);
     }
 
+    public static void disable(Item item) {
+        DISABLED.add(item);
+        ITEM_BEHAVIORS.remove(item);
+    }
+
     public static boolean hasBehaviors(Item item) {
-        return ITEM_BEHAVIORS.containsKey(item) && !module.get().config().blacklist.contains(Registry.ITEM.getId(item).toString());
+        return ITEM_BEHAVIORS.containsKey(item);
     }
 
     public static void clear() {
         ITEM_BEHAVIORS.clear();
         CUSTOM_COOLDOWNS.clear();
         OVERRIDE_VANILLA.clear();
+        DISABLED.clear();
     }
 
     public static Set<Item> itemsWithBehaviors() {
@@ -70,7 +76,7 @@ public class ItemBehaviorManager {
         CUSTOM_COOLDOWNS.put(item, cooldown);
     }
     public static int getCooldown(Item item) {
-        return CUSTOM_COOLDOWNS.getOrDefault(item, 50);
+        return CUSTOM_COOLDOWNS.getInt(item);
     }
 
     private static class Holder {

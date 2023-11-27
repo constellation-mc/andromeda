@@ -43,6 +43,11 @@ public class BehaviorLoader extends JsonDataLoader {
                 if (tuple.left().isEmpty()) return;
 
                 for (Item item : tuple.left()) {
+                    if (tuple.right().disabled) {
+                        ItemBehaviorManager.disable(item);
+                        continue;
+                    }
+
                     ItemBehaviorManager.addBehavior(item, ItemBehaviorAdder.dataPack(tuple.right()), tuple.right().complement);
                     if (tuple.right().override_vanilla) ItemBehaviorManager.overrideVanilla(item);
 

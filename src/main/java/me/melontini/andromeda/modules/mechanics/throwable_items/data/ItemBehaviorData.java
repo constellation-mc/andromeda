@@ -19,6 +19,7 @@ public class ItemBehaviorData {
 
     public static final ItemBehaviorData DEFAULT = new ItemBehaviorData();
 
+    public boolean disabled = false;
     public boolean override_vanilla = false;
     public boolean complement = true;
     public int cooldown_time = 50;
@@ -39,8 +40,6 @@ public class ItemBehaviorData {
     }
 
     public static Tuple<Set<Item>, ItemBehaviorData> create(JsonObject object) {
-        ItemBehaviorData data = new ItemBehaviorData();
-
         Set<Item> items = new HashSet<>();
 
         if (!object.has("item_id")) throw new InvalidIdentifierException("(Andromeda) missing item_id!");
@@ -52,6 +51,13 @@ public class ItemBehaviorData {
             items.add(parseFromId(element.getAsString(), Registry.ITEM));
         }
         if (items.isEmpty()) return Tuple.of(Collections.emptySet(), ItemBehaviorData.DEFAULT);
+
+        ItemBehaviorData data = new ItemBehaviorData();
+
+        if (JsonHelper.getBoolean(object, "disabled", false)) {
+            data.disabled = true;
+            return Tuple.of(items, data);
+        }
 
         data.on_entity_hit = readCommands(JsonHelper.getObject(object, "on_entity_hit",  new JsonObject()));
         data.on_block_hit = readCommands(JsonHelper.getObject(object, "on_block_hit",  new JsonObject()));

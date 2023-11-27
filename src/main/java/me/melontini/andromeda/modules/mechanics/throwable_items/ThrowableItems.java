@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import com.google.common.collect.Lists;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
@@ -10,8 +9,6 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.registries.Common;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-
-import java.util.List;
 
 @ModuleTooltip
 @ModuleInfo(name = "throwable_items", category = "mechanics")
@@ -28,10 +25,6 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
     }
 
     public static class Config extends BasicConfig {
-
-        @ConfigEntry.Gui.Tooltip
-        @FeatureEnvironment(Environment.SERVER)
-        public List<String> blacklist = Lists.newArrayList();
 
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.SERVER)
