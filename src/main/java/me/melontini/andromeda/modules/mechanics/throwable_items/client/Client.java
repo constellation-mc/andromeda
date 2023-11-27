@@ -14,8 +14,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +40,7 @@ public class Client {
             for (int i = 0; i < length; i++) ids.add(buf.readIdentifier());
             client.execute(() -> {
                 showTooltip.clear();
-                for (Identifier id : ids) showTooltip.add(Registry.ITEM.get(id));
+                for (Identifier id : ids) showTooltip.add(Registries.ITEM.get(id));
             });
         });
 

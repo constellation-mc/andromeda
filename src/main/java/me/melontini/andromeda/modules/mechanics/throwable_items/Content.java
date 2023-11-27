@@ -9,7 +9,10 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.*;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
@@ -20,11 +23,11 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Position;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,19 +80,9 @@ public class Content {
         var items = ItemBehaviorManager.itemsWithBehaviors();
         packet.writeVarInt(items.size());
         for (Item item : items) {
-            packet.writeIdentifier(Registry.ITEM.getId(item));
+            packet.writeIdentifier(Registries.ITEM.getId(item));
         }
         return packet;
-    }
-
-    private static void sendItemsS2C(PacketSender sender) {
-        var packet = PacketByteBufs.create();
-        var items = ItemBehaviorManager.itemsWithBehaviors();
-        packet.writeVarInt(items.size());
-        for (Item item : items) {
-            packet.writeIdentifier(Registry.ITEM.getId(item));
-        }
-        sender.sendPacket(ITEMS_WITH_BEHAVIORS, packet);
     }
 
     @NotNull
