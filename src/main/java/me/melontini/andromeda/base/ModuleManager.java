@@ -156,8 +156,25 @@ public class ModuleManager {
     }
 
     public void print() {
+        Map<String, Set<Module<?>>> categories = Utilities.consume(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
+                map.computeIfAbsent(m.category(), s -> new LinkedHashSet<>()).add(m)));
+
         StringBuilder builder = new StringBuilder();
-        modules.values().forEach(m -> builder.append(m.id()).append(", "));
-        AndromedaLog.info("Loading modules: {}", builder);
+        categories.forEach((s, strings) -> {
+            builder.append("\n\t - ").append(s);
+            if (!ModuleManager.categories.contains(s)) builder.append("*");
+            builder.append("\n\t  |-- ");
+            strings.forEach(m -> {
+                builder.append('\'').append(m.name().replace('/', '.')).append('\'').append("  ");
+                if (!m.getClass().getName().startsWith("me.melontini.andromeda"))
+                    builder.append('*');
+            });
+        });
+        if (!categories.isEmpty()) {
+            AndromedaLog.info("Loading modules: {}", builder);
+            AndromedaLog.info("* - custom modules/categories not provided by Andromeda.");
+        } else {
+            AndromedaLog.info("Not loading any modules!");
+        }
     }
 }
