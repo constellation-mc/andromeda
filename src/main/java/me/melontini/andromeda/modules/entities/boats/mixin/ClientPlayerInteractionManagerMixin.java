@@ -1,6 +1,6 @@
-package me.melontini.andromeda.mixin.a_impl.rideable_inventory;
+package me.melontini.andromeda.modules.entities.boats.mixin;
 
-import me.melontini.andromeda.entity.vehicle.RideableInventory;
+import me.melontini.andromeda.modules.entities.boats.entities.RideableInventory;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import org.spongepowered.asm.mixin.Final;

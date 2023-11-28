@@ -4,7 +4,6 @@ me.melontini.andromeda.modules.blocks.bed.unsafe.Unsafe
 me.melontini.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable
 me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller
 me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects
-me.melontini.andromeda.modules.blocks.falling_propagule.FallingPropagule
 me.melontini.andromeda.modules.blocks.guarded_loot.GuardedLoot
 me.melontini.andromeda.modules.blocks.incubator.Incubator
 me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown
@@ -31,7 +30,6 @@ me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking
 me.melontini.andromeda.modules.items.tooltips.Tooltips
 me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight
 me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems
-me.melontini.andromeda.modules.mechanics.trading_goat_horn.GoatHorn
 me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting
 me.melontini.andromeda.modules.misc.damage_backport.DamageBackport
 me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience

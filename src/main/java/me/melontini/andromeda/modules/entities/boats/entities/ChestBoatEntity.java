@@ -1,6 +1,6 @@
-package me.melontini.andromeda.entity.vehicle.boats;
+package me.melontini.andromeda.modules.entities.boats.entities;
 
-import me.melontini.andromeda.registries.EntityTypeRegistry;
+import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -17,7 +17,7 @@ public class ChestBoatEntity extends StorageBoatEntity {
     }
 
     public ChestBoatEntity(World world, double x, double y, double z) {
-        this(EntityTypeRegistry.get().BOAT_WITH_CHEST.get(), world);
+        this(BoatEntities.BOAT_WITH_CHEST.get(), world);
         this.setPosition(x, y, z);
         this.prevX = x;
         this.prevY = y;

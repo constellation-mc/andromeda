@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
-import me.melontini.andromeda.entity.vehicle.RideableInventory;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

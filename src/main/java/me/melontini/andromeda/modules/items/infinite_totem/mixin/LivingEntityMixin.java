@@ -59,7 +59,7 @@ abstract class LivingEntityMixin extends Entity {
                     PacketByteBuf buf = PacketByteBufs.create()
                             .writeUuid(this.getUuid())
                             .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.get()));
-                    buf.writeIdentifier(Registry.PARTICLE_TYPE.getId(Content.KNOCKOFF_TOTEM_PARTICLE));
+                    buf.writeIdentifier(Registry.PARTICLE_TYPE.getId(Content.KNOCKOFF_TOTEM_PARTICLE.get()));
 
                     for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
                         ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);

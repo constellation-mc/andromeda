@@ -55,7 +55,7 @@ public class Client {
 
             float r = ColorUtil.getRedF(color), g = ColorUtil.getGreenF(color), b = ColorUtil.getBlueF(color);
             client.execute(() -> {
-                ParticlesMode particlesMode = MinecraftClient.getInstance().options.getParticles().getValue();
+                ParticlesMode particlesMode = MinecraftClient.getInstance().options.particles;
                 if (particlesMode == ParticlesMode.MINIMAL) return;
 
                 if (spawnItem) for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 8 : 4); ++i) {

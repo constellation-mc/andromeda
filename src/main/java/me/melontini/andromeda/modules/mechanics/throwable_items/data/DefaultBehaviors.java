@@ -27,12 +27,12 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class DefaultBehaviors implements Runnable {
@@ -109,7 +109,7 @@ public class DefaultBehaviors implements Runnable {
                 if (blockState.getBlock() instanceof TntBlock) {
                     TntBlock.primeTnt(world, blockPos);
                     world.removeBlock(blockPos, false);
-                    world.emitGameEvent(user, GameEvent.BLOCK_ACTIVATE, blockPos);
+                    world.emitGameEvent(user, GameEvent.BLOCK_CHANGE, blockPos);
                 } else {
                     if (world.getBlockState(blockPos = blockPos.offset(result.getSide())).isAir()) {
                         world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
@@ -117,7 +117,7 @@ public class DefaultBehaviors implements Runnable {
                     }
                 }
 
-                Random random = world.getRandom();
+                Random random = new Random();
                 world.playSound(null, flyingItemEntity.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
             } else if (hitResult.getType() == HitResult.Type.ENTITY) {
                 EntityHitResult result = (EntityHitResult) hitResult;

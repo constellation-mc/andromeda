@@ -19,7 +19,7 @@ public class Client {
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
             UUID id = buf.readUuid();
             ItemStack stack = buf.readItemStack();
-            DefaultParticleType particle = (DefaultParticleType) buf.readRegistryValue(Registry.PARTICLE_TYPE);
+            DefaultParticleType particle = (DefaultParticleType)Registry.PARTICLE_TYPE.get(buf.readIdentifier());
             client.execute(() -> {
                 Entity entity = MakeSure.notNull(client.world, "client.world").getEntityLookup().get(id);
                 client.particleManager.addEmitter(MakeSure.notNull(entity, "(Andromeda) Client received invalid entity ID"), particle, 30);

@@ -21,8 +21,5 @@ public class Tooltips extends Module<Tooltips.Config> {
 
         @ConfigEntry.Gui.Tooltip
         public boolean compass = true;
-
-        @ConfigEntry.Gui.Tooltip
-        public boolean recoveryCompass = true;
     }
 }

@@ -92,7 +92,8 @@ public class AndromedaClient {
 
         //RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
         RenderSystem.disableBlend();
         //RenderSystem.disableDepthTest();
         matrices.pop();

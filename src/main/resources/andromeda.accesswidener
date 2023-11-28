@@ -17,8 +17,10 @@ accessible method net/minecraft/server/world/ServerWorld sendToPlayerIfNearby (L
 # mechanics/throwable_items
 accessible field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
 mutable field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
+accessible method net/minecraft/item/ItemUsageContext <init> (Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/hit/BlockHitResult;)V
 
-# entities/boats (furnaceBoat)
+# entities/boats
+accessible field net/minecraft/entity/vehicle/BoatEntity yawVelocity F
 accessible field net/minecraft/entity/vehicle/BoatEntity location Lnet/minecraft/entity/vehicle/BoatEntity$Location;
 extendable method net/minecraft/entity/vehicle/BoatEntity updateVelocity ()V
 
@@ -53,3 +55,6 @@ accessible method net/minecraft/block/entity/BeehiveBlockEntity removeIrrelevant
 
 # world/auto_planting
 accessible method net/minecraft/item/ItemPlacementContext <init> (Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/hit/BlockHitResult;)V
+
+# misc/damage_backport
+accessible method net/minecraft/entity/damage/DamageSource <init> (Ljava/lang/String;)V

@@ -40,5 +40,9 @@ public class Boats extends Module<Boats.Config> {
         @ConfigEntry.Gui.Tooltip
         @FeatureEnvironment(Environment.BOTH)
         public boolean isHopperBoatOn = false;
+
+        @ConfigEntry.Gui.Tooltip
+        @FeatureEnvironment(Environment.BOTH)
+        public boolean isChestBoatOn = false;
     }
 }

@@ -1,7 +1,7 @@
-package me.melontini.andromeda.items.boats;
+package me.melontini.andromeda.modules.entities.boats.items;
 
 
-import me.melontini.andromeda.entity.vehicle.boats.ChestBoatEntity;
+import me.melontini.andromeda.modules.entities.boats.entities.ChestBoatEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;

@@ -1,10 +1,7 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
-import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
-import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
-import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
+import me.melontini.andromeda.modules.entities.boats.entities.*;
 import me.melontini.andromeda.registries.Keeper;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -44,6 +41,12 @@ public class BoatEntities {
             RegistryUtil.createEntityType(() -> ModuleManager.quick(Boats.class).config().isHopperBoatOn,
                     id("hopper_boat"),
                     FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new)
+                            .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
+
+    public static final Keeper<EntityType<ChestBoatEntity>> BOAT_WITH_CHEST = Keeper.of(() -> () ->
+            RegistryUtil.createEntityType(() -> ModuleManager.quick(Boats.class).config().isChestBoatOn,
+                    id("chest_boat"),
+                    FabricEntityTypeBuilder.<ChestBoatEntity>create(SpawnGroup.MISC, ChestBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
     public static void init() {

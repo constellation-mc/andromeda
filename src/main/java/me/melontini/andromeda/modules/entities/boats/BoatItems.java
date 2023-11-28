@@ -1,10 +1,7 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.entities.boats.items.FurnaceBoatItem;
-import me.melontini.andromeda.modules.entities.boats.items.HopperBoatItem;
-import me.melontini.andromeda.modules.entities.boats.items.JukeboxBoatItem;
-import me.melontini.andromeda.modules.entities.boats.items.TNTBoatItem;
+import me.melontini.andromeda.modules.entities.boats.items.*;
 import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -27,6 +24,8 @@ public class BoatItems {
                     .itemGroup(ItemGroup.TRANSPORTATION).register(module.get().config().isTNTBoatOn).build();
             ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1)))
                     .itemGroup(ItemGroup.TRANSPORTATION).register(module.get().config().isHopperBoatOn).build();
+            ContentBuilder.ItemBuilder.create(boatId(value, "chest"), () -> new ChestBoatItem(value, new FabricItemSettings().maxCount(1)))
+                    .itemGroup(ItemGroup.TRANSPORTATION).register(module.get().config().isChestBoatOn).build();
         }
     }
 

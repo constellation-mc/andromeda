@@ -19,7 +19,6 @@ import net.minecraft.item.MusicDiscItem;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
@@ -43,7 +42,7 @@ public class ClientSideNetworking {
                     if (stack.getItem() instanceof MusicDiscItem disc) {
                         var discName = disc.getDescription();
                         soundInstanceMap.computeIfAbsent(id, k -> {
-                            var instance = new PersistentMovingSoundInstance(disc.getSound(), SoundCategory.RECORDS, id, client.world, Random.create());
+                            var instance = new PersistentMovingSoundInstance(disc.getSound(), SoundCategory.RECORDS, id, client.world);
                             client.getSoundManager().play(instance);
                             return instance;
                         });
@@ -65,7 +64,7 @@ public class ClientSideNetworking {
         }
 
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.ADD_ONE_PARTICLE, (client, handler, packetByteBuf, responseSender) -> {
-            DefaultParticleType particle = (DefaultParticleType) MakeSure.notNull(packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE));
+            DefaultParticleType particle = (DefaultParticleType) MakeSure.notNull(Registry.PARTICLE_TYPE.get(packetByteBuf.readIdentifier()));
             double x = packetByteBuf.readDouble(), y = packetByteBuf.readDouble(), z = packetByteBuf.readDouble();
             double velocityX = packetByteBuf.readDouble(), velocityY = packetByteBuf.readDouble(), velocityZ = packetByteBuf.readDouble();
             client.execute(() -> client.worldRenderer.addParticle(particle, particle.shouldAlwaysSpawn(), x, y, z, velocityX, velocityY, velocityZ));

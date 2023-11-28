@@ -5,10 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "me.melontini.andromeda.util.mixin.AndromedaMixinPlugin",
   "mixins": [
-    "a_impl.rideable_inventory.ServerPlayNetworkHandlerMixin"
   ],
   "client": [
-    "a_impl.rideable_inventory.ClientPlayerInteractionManagerMixin",
     "internal.MinecraftClientMixin",
     "internal.ParticleManagerMixin"
   ],
