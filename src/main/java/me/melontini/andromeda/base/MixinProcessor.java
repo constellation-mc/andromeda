@@ -54,7 +54,7 @@ public class MixinProcessor {
             if (method.getName().equals("getResourceAsStream")) {
                 if (args[0] instanceof String s) {
                     if (s.startsWith("andromeda$$")) {
-                        return ModuleManager.config.get();
+                        return ModuleManager.CONFIG.get();
                     }
                 }
             }

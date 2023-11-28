@@ -13,6 +13,7 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.spongepowered.asm.mixin.FabricUtil;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.service.IMixinService;
 import org.spongepowered.asm.service.MixinService;
@@ -125,7 +126,12 @@ public class ModuleManager {
         Andromeda.init();
     }
 
-    static final ThreadLocal<InputStream> config = ThreadLocal.withInitial(() -> null);
+    static final ThreadLocal<InputStream> CONFIG = ThreadLocal.withInitial(() -> null);
+    private final Map<String, String> mixinConfigs = new HashMap<>();
+
+    public Optional<Module<?>> moduleFromConfig(String name) {
+        return Optional.ofNullable(mixinConfigs.get(name)).flatMap(this::getModule);
+    }
 
     public static void onPreLaunch() {
         IMixinService service = MixinService.getService();
@@ -142,16 +148,23 @@ public class ModuleManager {
             injectors.addProperty("defaultRequire", 1);
             object.add("injectors", injectors);
 
+            String cfg = "andromeda$$" + module.id().replace('/', '.') + ".mixins.json";
             try (ByteArrayInputStream bais = new ByteArrayInputStream(object.toString().getBytes())) {
-                config.set(bais);
-                Mixins.addConfiguration("andromeda$$" + module.id().replace('/', '.') + ".mixins.json");
+                CONFIG.set(bais);
+                Mixins.addConfiguration(cfg);
+                get().mixinConfigs.put(cfg, module.id());
             } catch (IOException e) {
                 throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.id()));
             } finally {
-                config.remove();
+                CONFIG.remove();
             }
         });
         MixinProcessor.dejectService(service);
+        Mixins.getConfigs().forEach(config1 -> {
+            if (get().mixinConfigs.containsKey(config1.getName())) {
+                config1.getConfig().decorate(FabricUtil.KEY_MOD_ID, "andromeda");
+            }
+        });
         get().modules.values().forEach(Module::onPreLaunch);
     }
 
