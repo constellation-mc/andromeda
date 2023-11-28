@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
+import me.melontini.andromeda.util.MiscUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.AbstractFireBlock;
@@ -9,6 +10,7 @@ import net.minecraft.block.TntBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
@@ -34,6 +36,8 @@ import net.minecraft.world.event.GameEvent;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
+import static me.melontini.andromeda.modules.mechanics.throwable_items.Content.BRICKED;
 
 public class DefaultBehaviors implements Runnable {
 
@@ -89,7 +93,7 @@ public class DefaultBehaviors implements Runnable {
         ItemBehaviorManager.addBehaviors((stack, flyingItemEntity, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) hitResult).getEntity();
-                entity.damage(Content.bricked(user), 2);
+                entity.damage(new DamageSource(MiscUtil.getTypeReference(world, BRICKED), user), 2);
                 if (entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 0));
                 }

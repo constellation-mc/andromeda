@@ -9,7 +9,6 @@ me.melontini.andromeda.modules.blocks.guarded_loot.GuardedLoot
 me.melontini.andromeda.modules.blocks.incubator.Incubator
 me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown
 me.melontini.andromeda.modules.bugfixes.advancement_shadow.AdvancementShadow
-me.melontini.andromeda.modules.bugfixes.aligned_alternatives.AlignedRecipeAlternatives
 me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication
 me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart
 me.melontini.andromeda.modules.entities.boats.Boats
@@ -33,7 +32,6 @@ me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight
 me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems
 me.melontini.andromeda.modules.mechanics.trading_goat_horn.GoatHorn
 me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting
-me.melontini.andromeda.modules.misc.damage_backport.DamageBackport
 me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience
 me.melontini.andromeda.modules.misc.recipe_advancements_generation.AdvancementGeneration
 me.melontini.andromeda.modules.misc.translations.Translations

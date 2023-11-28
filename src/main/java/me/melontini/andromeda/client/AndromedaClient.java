@@ -45,12 +45,12 @@ public class AndromedaClient {
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
                 ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
-        ItemGroup.GROUP.ifPresent(group -> group.dm$setIconAnimation((group1, matrices, itemX, itemY, selected, isTopRow) -> {
+        ItemGroup.GROUP.ifPresent(group -> group.dm$setIconAnimation((group1, context, itemX, itemY, selected, isTopRow) -> {
             try {
                 if (!animate) return;
-                drawTexture(matrices, itemX + 8, itemY + 8, stack -> {
+                drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> {
                 }, new Identifier("andromeda:textures/gui/background.png"));
-                drawTexture(matrices, itemX + 8, itemY + 8, stack -> stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(Util.getMeasuringTimeMs() * 0.05f)),
+                drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(Util.getMeasuringTimeMs() * 0.05f)),
                         new Identifier("andromeda:textures/gui/galaxy.png"));
             } catch (Throwable t) {
                 animate = false;

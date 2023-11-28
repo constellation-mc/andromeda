@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.misc.minor_inconvenience.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.misc.minor_inconvenience.Agony;
 import me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -18,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
+
+import static me.melontini.andromeda.modules.misc.minor_inconvenience.Agony.AGONY;
 
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin extends LivingEntity {

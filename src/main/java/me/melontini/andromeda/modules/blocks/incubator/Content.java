@@ -6,10 +6,10 @@ import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.BlockSoundGroup;
 
 import static me.melontini.andromeda.registries.Common.id;
@@ -18,8 +18,8 @@ import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
 public class Content {
 
-    public static final Keeper<IncubatorBlock> INCUBATOR_BLOCK = start(() -> ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
-            .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(ItemGroups.REDSTONE))
+    public static final Keeper<IncubatorBlock> INCUBATOR_BLOCK = start(() -> ContentBuilder.BlockBuilder.create(id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)))
+            .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new BlockItem(block, new FabricItemSettings())).itemGroup(Registries.ITEM_GROUP.get(ItemGroups.REDSTONE)))
             .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder.create(id, IncubatorBlockEntity::new, block))
             .register(() -> ModuleManager.quick(Incubator.class).config().enabled));
 

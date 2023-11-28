@@ -7,7 +7,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -38,11 +40,12 @@ public class Client {
     }
 
     private static void inGameTooltips() {
-        HudRenderCallback.EVENT.register((matrices, delta) -> {
+        HudRenderCallback.EVENT.register((context, delta) -> {
             if (MinecraftClient.getInstance().currentScreen == null) {
                 var client = MinecraftClient.getInstance();
 
                 if (!frameStack.isEmpty()) {
+                    MatrixStack matrices = context.getMatrices();
                     float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
                     matrices.push();
                     matrices.translate(0, 0, -450);
@@ -50,7 +53,7 @@ public class Client {
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
-                    var list = DrawUtil.getFakeScreen().getTooltipFromItem(frameStack);
+                    var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), frameStack);
                     //list.add(AndromedaTexts.ITEM_IN_FRAME);
                     List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
@@ -65,7 +68,7 @@ public class Client {
                         j += tooltipComponent.getHeight();
                     }
 
-                    DrawUtil.renderTooltipFromComponents(matrices, list1, ((client.getWindow().getScaledWidth() / 2f) - (flow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
+                    DrawUtil.renderTooltipFromComponents(context, list1, ((client.getWindow().getScaledWidth() / 2f) - (flow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
                     RenderSystem.disableBlend();
                     matrices.pop();

@@ -7,7 +7,6 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehavio
 import me.melontini.andromeda.registries.Keeper;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.content.RegistryUtil;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -17,22 +16,25 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
-import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.registries.Common.run;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Content {
@@ -42,6 +44,8 @@ public class Content {
                     id("flying_item"),
                     FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                             .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10)));
+
+    public static RegistryKey<DamageType> BRICKED;
 
     public static final Identifier FLYING_STACK_LANDED = new Identifier(MODID, "flying_stack_landed");
     public static final Identifier ITEMS_WITH_BEHAVIORS = new Identifier(MODID, "items_with_behaviors");
@@ -62,6 +66,8 @@ public class Content {
         } else {
             AndromedaLog.error("DispenserBlock.BEHAVIORS is not Object2ObjectMap! Can't override default dispense behavior!");
         }
+
+        BRICKED = run(() -> RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked")));
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             var packet = sendItemsS2CPacket();
@@ -100,29 +106,5 @@ public class Content {
         n.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.hasBehaviors(stack.getItem()) ?
                 BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
         return n;
-    }
-
-    public static DamageSource bricked(@Nullable Entity attacker) {
-        return new BrickedDamageSource(attacker);
-    }
-
-    private static class BrickedDamageSource extends DamageSource {
-        private final Entity attacker;
-
-        public BrickedDamageSource(Entity attacker) {
-            super("andromeda_bricked");
-            this.attacker = attacker;
-        }
-
-        @Override
-        public Text getDeathMessage(LivingEntity entity) {
-            return TextUtil.translatable("death.attack.andromeda_bricked", entity.getDisplayName(), attacker != null ? attacker.getDisplayName() : "");
-        }
-
-        @Nullable
-        @Override
-        public Entity getAttacker() {
-            return attacker;
-        }
     }
 }
