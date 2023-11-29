@@ -1,7 +1,6 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.base.Suppliers;
-import com.google.gson.JsonObject;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
@@ -13,14 +12,13 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import org.spongepowered.asm.mixin.FabricUtil;
-import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.service.IMixinService;
-import org.spongepowered.asm.service.MixinService;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -28,12 +26,13 @@ import java.util.function.Supplier;
 public class ModuleManager {
 
     private static final Supplier<ModuleManager> INSTANCE = Suppliers.memoize(ModuleManager::new);
+    private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
     private final Set<Module<?>> discoveredModules = new LinkedHashSet<>();
     private final Map<Class<?>, Module<?>> modules = new LinkedHashMap<>();
     private final Map<String, Module<?>> moduleNames = new HashMap<>();
     private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
-    private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
+    final Map<String, String> mixinConfigs = new HashMap<>();
 
     public void prepare() {
         List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
@@ -82,6 +81,20 @@ public class ModuleManager {
             });
             configs.put(m.getClass(), config.build(false));
         });
+
+        Set<Path> paths = new HashSet<>();
+        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
+        configs.values().forEach(m -> paths.add(m.getSerializer().getPath()));
+        Utilities.runUnchecked(() -> Files.walkFileTree(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!paths.contains(file)) {
+                    Files.delete(file);
+                    AndromedaLog.info("Removed {} as it doesn't belong to any module!", file);
+                }
+                return super.visitFile(file, attrs);
+            }
+        }));
     }
 
     public ConfigManager<? extends BasicConfig> getConfig(Class<?> cls) {
@@ -95,6 +108,10 @@ public class ModuleManager {
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).filter(Module::enabled);
+    }
+
+    public Optional<Module<?>> moduleFromConfig(String name) {
+        return Optional.ofNullable(mixinConfigs.get(name)).flatMap(this::getModule);
     }
 
     public Set<Module<?>> all() {
@@ -126,45 +143,8 @@ public class ModuleManager {
         Andromeda.init();
     }
 
-    static final ThreadLocal<InputStream> CONFIG = ThreadLocal.withInitial(() -> null);
-    private final Map<String, String> mixinConfigs = new HashMap<>();
-
-    public Optional<Module<?>> moduleFromConfig(String name) {
-        return Optional.ofNullable(mixinConfigs.get(name)).flatMap(this::getModule);
-    }
-
     public static void onPreLaunch() {
-        IMixinService service = MixinService.getService();
-        MixinProcessor.injectService(service);
-        get().loaded().forEach((module) -> {
-            JsonObject object = new JsonObject();
-            object.addProperty("required", true);
-            object.addProperty("minVersion", "0.8");
-            object.addProperty("package", module.mixins());
-            object.addProperty("compatibilityLevel", "JAVA_17");
-            object.addProperty("plugin", module.mixinPlugin().getName());
-            object.addProperty("refmap", module.refmap());
-            JsonObject injectors = new JsonObject();
-            injectors.addProperty("defaultRequire", 1);
-            object.add("injectors", injectors);
-
-            String cfg = "andromeda$$" + module.id().replace('/', '.') + ".mixins.json";
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(object.toString().getBytes())) {
-                CONFIG.set(bais);
-                Mixins.addConfiguration(cfg);
-                get().mixinConfigs.put(cfg, module.id());
-            } catch (IOException e) {
-                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.id()));
-            } finally {
-                CONFIG.remove();
-            }
-        });
-        MixinProcessor.dejectService(service);
-        Mixins.getConfigs().forEach(config1 -> {
-            if (get().mixinConfigs.containsKey(config1.getName())) {
-                config1.getConfig().decorate(FabricUtil.KEY_MOD_ID, "andromeda");
-            }
-        });
+        MixinProcessor.addMixins();
         get().modules.values().forEach(Module::onPreLaunch);
     }
 
