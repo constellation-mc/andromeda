@@ -63,12 +63,12 @@ public class AndromedaItemGroup {
         if (list == null || list.isEmpty()) return; //we shouldn't add line breaks if there are no items.
 
         int rows = MathStuff.fastCeil(list.size() / 9d);
-        stacks.addAll(list);
+        stacks.addAll(list, DarkMatterEntries.Visibility.TAB);
         int left = (rows * 9) - list.size();
         for (int i = 0; i < left; i++) {
-            stacks.add(ItemStack.EMPTY); //fill the gaps
+            stacks.add(ItemStack.EMPTY, DarkMatterEntries.Visibility.TAB); //fill the gaps
         }
-        stacks.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY)); //line break
+        stacks.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY), DarkMatterEntries.Visibility.TAB); //line break
     }
 
     public static void accept(Consumer<Acceptor> consumer) {
