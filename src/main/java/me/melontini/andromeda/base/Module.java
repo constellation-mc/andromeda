@@ -1,6 +1,6 @@
 package me.melontini.andromeda.base;
 
-import me.melontini.andromeda.base.annotations.MixinConfig;
+import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.registries.Common;
@@ -53,16 +53,7 @@ public abstract class Module<T extends BasicConfig> {
     public String mixins() {
         return this.getClass().getPackageName() + ".mixin";
     }
-    public Class<?> mixinPlugin() {
-        MixinConfig config = this.getClass().getAnnotation(MixinConfig.class);
-        if (config != null) return config.plugin();
-        return MixinProcessor.Plugin.class;
-    }
-    public String refmap() {
-        MixinConfig config = this.getClass().getAnnotation(MixinConfig.class);
-        if (config != null) return config.refmap();
-        return "andromeda-refmap.json";
-    }
+    public void acceptMixinConfig(JsonObject config) { }
 
     public abstract Class<T> configClass();
 
