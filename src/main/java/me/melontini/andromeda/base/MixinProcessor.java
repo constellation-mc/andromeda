@@ -14,6 +14,7 @@ import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.FabricUtil;
@@ -136,6 +137,7 @@ public class MixinProcessor {
     public static class Plugin extends ExtendablePlugin {
 
         private static final String MIXIN_ENVIRONMENT_ANNOTATION = "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
+        private static final ClassPath CLASS_PATH = Utilities.supplyUnchecked(() -> ClassPath.from(MixinProcessor.class.getClassLoader()));
 
         private String mixinPackage;
 
@@ -149,11 +151,15 @@ public class MixinProcessor {
         }
 
         protected void getMixins(List<String> mixins) {
-            ClassPath p = Utilities.supplyUnchecked(() -> ClassPath.from(ClassLoader.getSystemClassLoader()));
-
-            p.getTopLevelClassesRecursive(this.mixinPackage).stream()
-                    .map(ClassPath.ClassInfo::getName)
-                    .map((s) -> Utilities.supplyUnchecked(() -> MixinService.getService().getBytecodeProvider().getClassNode(s.replace('.', '/'))))
+            CLASS_PATH.getTopLevelClassesRecursive(this.mixinPackage).stream()
+                    .map(ClassPath.ClassInfo::asByteSource)
+                    .map(byteSource -> Utilities.supplyUnchecked(byteSource::read))
+                    .map(bytes -> {
+                        ClassReader reader = new ClassReader(bytes);
+                        ClassNode node = new ClassNode();
+                        reader.accept(node,ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                        return node;
+                    })
                     .filter(MixinProcessor::checkNode)
                     .map((n) -> n.name.replace('/', '.').substring((this.mixinPackage + ".").length()))
                     .forEach(mixins::add);
