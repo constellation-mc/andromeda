@@ -18,6 +18,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.FabricUtil;
 import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.service.IMixinService;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.util.Annotations;
@@ -133,6 +134,9 @@ public class MixinProcessor {
 
     @SuppressWarnings("UnstableApiUsage")
     public static class Plugin extends ExtendablePlugin {
+
+        private static final String MIXIN_ENVIRONMENT_ANNOTATION = "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
+
         private String mixinPackage;
 
         @Override
@@ -145,7 +149,7 @@ public class MixinProcessor {
         }
 
         protected void getMixins(List<String> mixins) {
-            ClassPath p = Utilities.supplyUnchecked(() -> ClassPath.from(Plugin.class.getClassLoader()));
+            ClassPath p = Utilities.supplyUnchecked(() -> ClassPath.from(ClassLoader.getSystemClassLoader()));
 
             p.getTopLevelClassesRecursive(this.mixinPackage).stream()
                     .map(ClassPath.ClassInfo::getName)
@@ -153,6 +157,13 @@ public class MixinProcessor {
                     .filter(MixinProcessor::checkNode)
                     .map((n) -> n.name.replace('/', '.').substring((this.mixinPackage + ".").length()))
                     .forEach(mixins::add);
+        }
+
+        @Override
+        protected void afterApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+            if (targetClass.visibleAnnotations != null && !targetClass.visibleAnnotations.isEmpty()) {//strip our annotation from the class
+                targetClass.visibleAnnotations.removeIf(node -> MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
+            }
         }
     }
 }
