@@ -11,6 +11,7 @@
     "internal.ParticleManagerMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 1,
+    "maxShiftBy": 3
   }
 }
