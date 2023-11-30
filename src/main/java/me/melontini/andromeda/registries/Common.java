@@ -29,7 +29,7 @@ public class Common {
             if (keeper.initialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
 
             try {
-                keeper.initialize();
+                keeper.init();
             } catch (Throwable t) {
                 throw new IllegalStateException("Failed to bootstrap registry object %s!".formatted(field.getName()), t);
             }
@@ -46,7 +46,7 @@ public class Common {
     }
 
     public static void bootstrap() {
-        bootstrap(ItemGroup.class, ResourceRegistry.class);
+        bootstrap(AndromedaItemGroup.class, ResourceRegistry.class);
     }
 
     public static <T> T run(ThrowingSupplier<T, Throwable> callable, String... features) {
