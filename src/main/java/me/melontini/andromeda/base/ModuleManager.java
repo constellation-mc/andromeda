@@ -1,12 +1,11 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.base.Suppliers;
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.client.AndromedaClient;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
@@ -20,12 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ModuleManager {
 
-    private static final Supplier<ModuleManager> INSTANCE = Suppliers.memoize(ModuleManager::new);
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
     private final Set<Module<?>> discoveredModules = new LinkedHashSet<>();
@@ -37,6 +34,8 @@ public class ModuleManager {
     public void prepare() {
         List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
                 .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
+
+        EntrypointRunner.run("andromeda:modules", ModuleSupplier.class, s -> list.addAll(s.get()));
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
 
@@ -126,31 +125,7 @@ public class ModuleManager {
     }
 
     public static ModuleManager get() {
-        return INSTANCE.get();
-    }
-
-    public static void onClient() {
-        get().modules.values().forEach(Module::onClient);
-        AndromedaClient.init();
-    }
-
-    public static void onServer() {
-        get().modules.values().forEach(Module::onServer);
-    }
-
-    public static void onMain() {
-        get().modules.values().forEach(Module::onMain);
-        Andromeda.init();
-    }
-
-    public static void onPreLaunch() {
-        Config.get();
-
-        ModuleManager.get().prepare();
-        ModuleManager.get().print();
-
-        MixinProcessor.addMixins();
-        get().modules.values().forEach(Module::onPreLaunch);
+        return MakeSure.notNull(Bootstrap.INSTANCE, "ModuleManager requested too early!");
     }
 
     public void print() {
@@ -169,10 +144,14 @@ public class ModuleManager {
             });
         });
         if (!categories.isEmpty()) {
-            AndromedaLog.info("Loading modules: {}", builder);
+            AndromedaLog.info("Loaded modules: {}", builder);
             AndromedaLog.info("* - custom modules/categories not provided by Andromeda.");
         } else {
-            AndromedaLog.info("Not loading any modules!");
+            AndromedaLog.info("No modules loaded!");
         }
+    }
+
+    public interface ModuleSupplier {
+        List<Module<?>> get();
     }
 }
