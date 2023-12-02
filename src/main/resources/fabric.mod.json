@@ -29,6 +29,9 @@
     "main": [
       "me.melontini.andromeda.base.ModuleManager::onMain"
     ],
+    "preLaunch": [
+      "me.melontini.andromeda.base.ModuleManager::onPreLaunch"
+    ],
     "modmenu": [
       "me.melontini.andromeda.client.config.ModMenuIntegration"
     ],

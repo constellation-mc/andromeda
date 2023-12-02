@@ -6,7 +6,6 @@ import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import net.fabricmc.loader.api.FabricLoader;
 import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,8 +38,5 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
         }
 
         if (this.isDev()) LOGGER.warn("Will be verifying mixins!");
-
-        IExtension extension = new InitExtension();
-        InitExtension.addExtension(extension);
     }
 }

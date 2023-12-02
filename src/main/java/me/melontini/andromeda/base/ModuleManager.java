@@ -144,6 +144,11 @@ public class ModuleManager {
     }
 
     public static void onPreLaunch() {
+        Config.get();
+
+        ModuleManager.get().prepare();
+        ModuleManager.get().print();
+
         MixinProcessor.addMixins();
         get().modules.values().forEach(Module::onPreLaunch);
     }

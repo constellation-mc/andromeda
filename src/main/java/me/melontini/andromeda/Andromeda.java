@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,6 +34,13 @@ public class Andromeda {
     private void onInitialize() {
         CrashHandler.initCrashHandler();
         Common.bootstrap();
+
+        if (Mixins.getUnvisitedCount() > 0) {
+            for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
+                if (!config.isVisited() && config.getName().startsWith("andromeda$$"))
+                    throw new IllegalStateException("Mixin failed to consume Andromeda's late configs!");
+            }
+        }
 
         if (!Config.get().sideOnlyMode) {
             ServerLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
