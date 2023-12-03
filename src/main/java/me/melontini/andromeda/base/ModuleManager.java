@@ -1,8 +1,8 @@
 package me.melontini.andromeda.base;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -21,6 +21,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 @SuppressWarnings("UnstableApiUsage")
+@CustomLog
 public class ModuleManager {
 
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
@@ -36,6 +37,11 @@ public class ModuleManager {
                 .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
 
         EntrypointRunner.run("andromeda:modules", ModuleSupplier.class, s -> list.addAll(s.get()));
+
+        if (list.isEmpty()) {
+            LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
+            return;
+        }
 
         list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
 
@@ -92,7 +98,7 @@ public class ModuleManager {
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (!paths.contains(file)) {
                     Files.delete(file);
-                    AndromedaLog.info("Removed {} as it doesn't belong to any module!", file);
+                    LOGGER.info("Removed {} as it doesn't belong to any module!", file);
                 }
                 return super.visitFile(file, attrs);
             }
@@ -147,14 +153,14 @@ public class ModuleManager {
             });
         });
         if (!categories.isEmpty()) {
-            AndromedaLog.info("Loaded modules: {}", builder);
-            AndromedaLog.info("* - custom modules/categories not provided by Andromeda.");
+            LOGGER.info("Loaded modules: {}", builder);
+            LOGGER.info("* - custom modules/categories not provided by Andromeda.");
         } else {
-            AndromedaLog.info("No modules loaded!");
+            LOGGER.info("No modules loaded!");
         }
     }
 
     public interface ModuleSupplier {
-        List<Module<?>> get();
+        List<? extends Module<?>> get();
     }
 }
