@@ -41,14 +41,17 @@ public class ModuleManager {
 
         Set<String> ids = new HashSet<>();
         for (Module<?> module : list) {
-            if (module.category() == null || module.category().isBlank()) throw new IllegalStateException("Module category can't be null or empty! Module: " + module.getClass());
-            if (module.name() == null || module.name().isBlank()) throw new IllegalStateException("Module name can't be null or empty! Module: " + module.getClass());
+            MakeSure.notEmpty(module.category(), "Module category can't be null or empty! Module: " + module.getClass());
+            MakeSure.notEmpty(module.name(), "Module name can't be null or empty! Module: " + module.getClass());
 
             if (ids.contains(module.id())) throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.id(), module.getClass()));
             ids.add(module.id());
         }
 
-        list.sort(Comparator.comparingInt(m->categories.indexOf(m.category())));
+        list.sort(Comparator.comparingInt(m-> {
+            int i = categories.indexOf(m.category());
+            return i >= 0 ? i : categories.size();
+        }));
         list.forEach(m -> modules.put(m.getClass(), m));
         list.forEach(m -> moduleNames.put(m.id(), m));
         discoveredModules.addAll(modules.values());

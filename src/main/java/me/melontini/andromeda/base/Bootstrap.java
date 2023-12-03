@@ -1,15 +1,25 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.reflect.ClassPath;
+import lombok.CustomLog;
 import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.client.AndromedaClient;
+import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.mixin.ErrorHandler;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import org.spongepowered.asm.mixin.Mixins;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 @SuppressWarnings("UnstableApiUsage")
+@CustomLog
 public class Bootstrap {
 
     public static ModuleManager INSTANCE;
@@ -48,6 +58,25 @@ public class Bootstrap {
 
         MixinProcessor.addMixins(m);
         for (Module<?> module : m.loaded()) { module.onPreLaunch(); }
+    }
+
+    public static void onPluginLoad() {
+        LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
+
+        Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
+
+        Path newCfg = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
+        if (Files.exists(newCfg) && !Files.exists(CommonValues.configPath())) {
+            try {
+                Files.createDirectories(CommonValues.configPath().getParent());
+                Files.move(newCfg, CommonValues.configPath());
+            } catch (IOException e) {
+                AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
+            }
+        }
+
+        if (FabricLoader.getInstance().isDevelopmentEnvironment())
+            LOGGER.warn("Will be verifying mixins!");
     }
 
     public static ClassPath getKnotClassPath() {
