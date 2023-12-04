@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import static me.melontini.andromeda.common.registries.Common.id;
-import static me.melontini.andromeda.registries.Common.run;
+import static me.melontini.andromeda.common.registries.Common.run;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Content {

@@ -4,7 +4,7 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.id;
 import static me.melontini.andromeda.common.registries.Common.run;
 
 public class Agony {
