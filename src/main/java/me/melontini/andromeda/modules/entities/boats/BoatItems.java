@@ -30,11 +30,11 @@ public class BoatItems {
                     .ifPresent(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(module, item)));
 
             ContentBuilder.ItemBuilder.create(boatId(value, "hopper"), () -> new HopperBoatItem(value, new FabricItemSettings().maxCount(1)))
-                    .itemGroup(ItemGroup.TRANSPORTATION).register(module.get().config().isHopperBoatOn).optional()
+                    .itemGroup(ItemGroup.TRANSPORTATION).register(module.config().isHopperBoatOn).optional()
                     .ifPresent(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(module, item)));
 
             ContentBuilder.ItemBuilder.create(boatId(value, "chest"), () -> new ChestBoatItem(value, new FabricItemSettings().maxCount(1)))
-                    .itemGroup(ItemGroup.TRANSPORTATION).register(module.get().config().isChestBoatOn).optional()
+                    .itemGroup(ItemGroup.TRANSPORTATION).register(module.config().isChestBoatOn).optional()
                     .ifPresent(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(module, item)));
         }
     }
