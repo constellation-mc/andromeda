@@ -1,31 +1,17 @@
 ### What's New:
 
-New Tweaks:
-* Can Zombies Throw Items?
-  * An extension of "Throwable Items".
-  * Allows zombies to throw items with behaviors.
-* Zombies Don't Pickup Garbage
-  * Prevents zombies from picking up garbage with no use.
-* All Zombies Can Pick up Items
-  * Gives all zombies the ability to pickup items.
-* Guarded Loot!
-  * Block players from opening unlooted containers if there are any monsters nearby.
-* New Snowball Tweaks!
-  * Melt When on Fire: Snowballs will melt if set on fire.
-  * Build Up Layers: Snowballs will freeze water and build up snow layers on hit.
+## Alpha warning!
 
-***
+- In v1.0.0 Andromeda has been rewritten in a fairly major way. There were a lot of breaking changes!
+- This release does not function properly on Connector and requires some complicated fixes on its side. 
+- I suggest reading the "State of Andromeda" post I made on GitHub for more context and changes in this version!
 
-* Cloth Config is no longer required. You'll have no config screen without it, though.
-* Added config fix-ups. Makes updating to new versions even easier, by renaming/converting old keys and values!
-* Updated a few config keys.
-* Added a switch for Bed Explosion Power.
-* Added a fallback in case of some mixin and general failures.
-* Multiple processors can now be blamed for setting a feature.
-* Added `fabric:load_conditions` support to mod's resources.
-* Tried to improve JSON parsing. It should be faster* and have better error messages.
-* Moved `ItemBehaviors` to `api`. You still need to use its entrypoint.
-* Removed BoatEntityMixin in favor of AWs and an `@Override` in FurnaceBoatEntity.
-* A billion of other internal changes.
-* Updated Chinese translation. Courtesy of [Rad233](https://github.com/Rad233).
-* Updated Dark Matter.
+### https://github.com/melontini/andromeda/discussions/63
+
+Something not mentioned in the post:
+
+- All resources were moved from `am_{something}` to `andromeda/{something}`
+- There's no config migration, so you need to re-configure the mod again, sorry.
+- `throwable_items:blacklist` is now part of the data pack as `"disabled": true`.
+- Added `andromeda:tempting_for_villagers` tag to specify items villagers will follow.
+- Throwable Items can now be dispensed!
