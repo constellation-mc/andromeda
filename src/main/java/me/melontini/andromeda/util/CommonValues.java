@@ -86,7 +86,7 @@ public class CommonValues {
     }
 
     private static Platform resolvePlatform() {
-        if (FabricLoader.getInstance().isModLoaded("connectormod")) {
+        if (FabricLoader.getInstance().isModLoaded(Platform.CONNECTOR.modId)) {
             try {
                 //The above check should be fine, but just in case.
                 Class.forName("dev.su5ed.sinytra.connector.mod.ConnectorMod");
@@ -94,7 +94,7 @@ public class CommonValues {
             } catch (ClassNotFoundException ignored) {
             }
         }
-        if (FabricLoader.getInstance().isModLoaded("quilt_loader")) {
+        if (FabricLoader.getInstance().isModLoaded(Platform.QUILT.modId)) {
             String sn = MixinService.getService().getName().replaceAll("^Knot|^Launchwrapper|^ModLauncher|/", "");
             if ("quilt".equalsIgnoreCase(sn)) return Platform.QUILT;
         }
