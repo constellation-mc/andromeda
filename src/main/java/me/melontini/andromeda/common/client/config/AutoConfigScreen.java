@@ -120,6 +120,7 @@ public class AutoConfigScreen {
                         e.setTooltipSupplier(supplier);
                         e.setDefaultValue(() -> Utilities.supplyUnchecked(() -> f.getBoolean(module.manager().getDefaultConfig())));
                         e.setSaveConsumer(b -> Utilities.runUnchecked(() -> f.setBoolean(module.config(), b)));
+                        e.requireRestart();
                         getOrCreateCategoryForField(module, builder).addEntry(e.build());
                     } else {
                         List<AbstractConfigListEntry<?>> list = new ArrayList<>();
