@@ -60,20 +60,20 @@ public class MixinProcessor {
     private static final ThreadLocal<InputStream> CONFIG = ThreadLocal.withInitial(() -> null);
     private static boolean done = false;
 
-    public static void addMixins() {
+    public static void addMixins(ModuleManager manager) {
         if (done) return;
         IMixinService service = MixinService.getService();
         MixinProcessor.injectService(service);
-        ModuleManager.get().loaded().forEach((module) -> {
+        manager.loaded().forEach((module) -> {
             JsonObject config = createConfig(module);
 
-            String cfg = "andromeda$$" + module.id().replace('/', '.') + ".mixins.json";
+            String cfg = "andromeda_dynamic$$" + module.meta().dotted() + ".mixins.json";
             try (ByteArrayInputStream bais = new ByteArrayInputStream(config.toString().getBytes())) {
                 CONFIG.set(bais);
                 Mixins.addConfiguration(cfg);
-                ModuleManager.get().mixinConfigs.put(cfg, module.id());
+                manager.mixinConfigs.put(cfg, module.meta().id());
             } catch (IOException e) {
-                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.id()));
+                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()));
             } finally {
                 CONFIG.remove();
             }
@@ -82,7 +82,7 @@ public class MixinProcessor {
         done = true;
 
         Mixins.getConfigs().forEach(config1 -> {
-            if (ModuleManager.get().mixinConfigs.containsKey(config1.getName())) {
+            if (manager.mixinConfigs.containsKey(config1.getName())) {
                 config1.getConfig().decorate(FabricUtil.KEY_MOD_ID, "andromeda");
             }
         });
@@ -112,7 +112,7 @@ public class MixinProcessor {
         IMixinService service = (IMixinService) Proxy.newProxyInstance(MixinProcessor.class.getClassLoader(), new Class[]{IMixinService.class}, (proxy, method, args) -> {
             if (method.getName().equals("getResourceAsStream")) {
                 if (args[0] instanceof String s) {
-                    if (s.startsWith("andromeda$$")) {
+                    if (s.startsWith("andromeda_dynamic$$")) {
                         return CONFIG.get();
                     }
                 }
@@ -137,7 +137,6 @@ public class MixinProcessor {
     public static class Plugin extends ExtendablePlugin {
 
         private static final String MIXIN_ENVIRONMENT_ANNOTATION = "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
-        private static final ClassPath CLASS_PATH = Utilities.supplyUnchecked(() -> ClassPath.from(MixinProcessor.class.getClassLoader()));
 
         private String mixinPackage;
 
@@ -151,7 +150,7 @@ public class MixinProcessor {
         }
 
         protected void getMixins(List<String> mixins) {
-            CLASS_PATH.getTopLevelClassesRecursive(this.mixinPackage).stream()
+            Bootstrap.getKnotClassPath().getTopLevelClassesRecursive(this.mixinPackage).stream()
                     .map(ClassPath.ClassInfo::asByteSource)
                     .map(byteSource -> Utilities.supplyUnchecked(byteSource::read))
                     .map(bytes -> {

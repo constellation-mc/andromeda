@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.misc.minor_inconvenience;
 
 import net.minecraft.entity.damage.DamageSource;
 
-import static me.melontini.andromeda.registries.Common.run;
+import static me.melontini.andromeda.common.registries.Common.run;
 
 public class Agony {
     public static DamageSource AGONY;

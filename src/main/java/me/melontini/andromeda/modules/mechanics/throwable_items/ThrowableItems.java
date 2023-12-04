@@ -6,8 +6,8 @@ import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.BasicConfig;
+import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
-import me.melontini.andromeda.registries.Common;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleTooltip

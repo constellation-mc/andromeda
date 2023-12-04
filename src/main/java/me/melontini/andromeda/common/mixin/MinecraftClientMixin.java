@@ -1,6 +1,6 @@
-package me.melontini.andromeda.mixin.internal;
+package me.melontini.andromeda.common.mixin;
 
-import me.melontini.andromeda.client.AndromedaClient;
+import me.melontini.andromeda.common.client.AndromedaClient;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

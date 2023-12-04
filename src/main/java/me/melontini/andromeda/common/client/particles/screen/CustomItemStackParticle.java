@@ -1,4 +1,4 @@
-package me.melontini.andromeda.client.particles.screen;
+package me.melontini.andromeda.common.client.particles.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.dark_matter.api.base.util.MathStuff;

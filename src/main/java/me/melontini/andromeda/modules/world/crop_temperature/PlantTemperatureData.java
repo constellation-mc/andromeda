@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import static me.melontini.andromeda.registries.ResourceRegistry.parseFromId;
+import static me.melontini.andromeda.common.registries.ResourceRegistry.parseFromId;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public record PlantTemperatureData(Block block, float min, float max, float aMin, float aMax) {

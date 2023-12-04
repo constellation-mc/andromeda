@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.misc.unknown;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.registries.Keeper;
+import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.AbstractBlock;
@@ -10,8 +10,8 @@ import net.minecraft.block.FlowerBlock;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Rarity;
 
-import static me.melontini.andromeda.registries.Common.id;
-import static me.melontini.andromeda.registries.Common.start;
+import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.start;
 import static me.melontini.dark_matter.api.content.RegistryUtil.asItem;
 
 public class Content {
