@@ -63,6 +63,10 @@ public class Bootstrap {
     public static void onPluginLoad() {
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
+        if (CommonValues.platform() == CommonValues.Platform.CONNECTOR) {
+            LOGGER.warn("v1.0.x Alphas may not work on Connector! (If #568 and #557 are open on Connector's GitHub)");
+        }
+
         Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
 
         Path newCfg = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
