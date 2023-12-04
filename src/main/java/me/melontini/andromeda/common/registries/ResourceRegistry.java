@@ -1,4 +1,4 @@
-package me.melontini.andromeda.registries;
+package me.melontini.andromeda.common.registries;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -8,7 +8,7 @@ import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.id;
 
 public class ResourceRegistry {
 

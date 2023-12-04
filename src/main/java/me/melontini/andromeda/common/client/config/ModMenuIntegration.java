@@ -1,4 +1,4 @@
-package me.melontini.andromeda.client.config;
+package me.melontini.andromeda.common.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

@@ -33,7 +33,7 @@
       "me.melontini.andromeda.base.Bootstrap::onPreLaunch"
     ],
     "modmenu": [
-      "me.melontini.andromeda.client.config.ModMenuIntegration"
+      "me.melontini.andromeda.common.client.config.ModMenuIntegration"
     ],
     "andromeda:modules": [
       "me.melontini.andromeda.modules.ModuleDiscovery"

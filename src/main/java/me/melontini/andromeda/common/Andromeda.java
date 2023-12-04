@@ -1,9 +1,9 @@
-package me.melontini.andromeda;
+package me.melontini.andromeda.common;//common between modules, not environments.
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.registries.Common;
+import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;

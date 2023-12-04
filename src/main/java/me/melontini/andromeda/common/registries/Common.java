@@ -1,4 +1,4 @@
-package me.melontini.andromeda.registries;
+package me.melontini.andromeda.common.registries;
 
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;

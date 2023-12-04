@@ -4,7 +4,7 @@ import me.melontini.andromeda.util.TagUtil;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.id;
 
 public class GiftTags {
     public static final TagKey<Item> MAJOR_POSITIVE = TagKey.of(TagUtil.key("item"), id("villager_gifts/major_positive"));

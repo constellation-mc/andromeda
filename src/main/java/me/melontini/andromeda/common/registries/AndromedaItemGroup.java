@@ -1,4 +1,4 @@
-package me.melontini.andromeda.registries;
+package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.util.AndromedaTexts;
@@ -15,8 +15,8 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static me.melontini.andromeda.registries.Common.id;
-import static me.melontini.andromeda.registries.Common.start;
+import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.start;
 
 public class AndromedaItemGroup {
 

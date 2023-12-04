@@ -1,8 +1,8 @@
-package me.melontini.andromeda.client;
+package me.melontini.andromeda.common.client;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.client.sound.PersistentMovingSoundInstance;
+import me.melontini.andromeda.common.client.sound.PersistentMovingSoundInstance;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.util.AndromedaPackets;

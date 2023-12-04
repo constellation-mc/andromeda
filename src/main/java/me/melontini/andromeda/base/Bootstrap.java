@@ -2,9 +2,9 @@ package me.melontini.andromeda.base;
 
 import com.google.common.reflect.ClassPath;
 import lombok.CustomLog;
-import me.melontini.andromeda.Andromeda;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.client.AndromedaClient;
+import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.mixin.ErrorHandler;
