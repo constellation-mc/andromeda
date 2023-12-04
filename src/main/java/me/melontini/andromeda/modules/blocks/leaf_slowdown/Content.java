@@ -4,7 +4,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 
 import java.util.UUID;
 
-import static me.melontini.andromeda.registries.Common.run;
+import static me.melontini.andromeda.common.registries.Common.run;
 
 public class Content {
 

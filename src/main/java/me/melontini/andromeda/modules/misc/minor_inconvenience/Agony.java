@@ -5,7 +5,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 import static me.melontini.andromeda.registries.Common.id;
-import static me.melontini.andromeda.registries.Common.run;
+import static me.melontini.andromeda.common.registries.Common.run;
 
 public class Agony {
     public static RegistryKey<DamageType> AGONY;

@@ -1,4 +1,4 @@
-package me.melontini.andromeda.registries;
+package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.util.AndromedaTexts;
@@ -15,8 +15,8 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static me.melontini.andromeda.registries.Common.id;
-import static me.melontini.andromeda.registries.Common.start;
+import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.start;
 
 public class AndromedaItemGroup {
 
@@ -41,18 +41,18 @@ public class AndromedaItemGroup {
                 });
 
                 List<ItemStack> stacks = new ArrayList<>();
-                small.forEach((module, itemStacks) -> {
+                small.forEach((m, itemStacks) -> {
                     ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(module.id().replace('/', '.'))));
+                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
                     stacks.add(sign);
                     stacks.addAll(itemStacks);
                     stacks.add(ItemStack.EMPTY);
                 });
                 appendStacks(entries, stacks);
 
-                big.forEach((module, itemStacks) -> {
+                big.forEach((m, itemStacks) -> {
                     ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(module.id().replace('/', '.'))));
+                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
                     itemStacks.add(0, sign);
                     appendStacks(entries, itemStacks);
                 });

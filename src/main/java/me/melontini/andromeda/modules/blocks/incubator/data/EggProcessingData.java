@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import static me.melontini.andromeda.registries.Common.id;
-import static me.melontini.andromeda.registries.ResourceRegistry.parseFromId;
+import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.registries.ResourceRegistry.parseFromId;
 
 public record EggProcessingData(Item item, EntityType<?> entity, int time) {
 

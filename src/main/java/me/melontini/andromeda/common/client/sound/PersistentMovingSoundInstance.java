@@ -1,4 +1,4 @@
-package me.melontini.andromeda.client.sound;
+package me.melontini.andromeda.common.client.sound;
 
 import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.client.world.ClientWorld;

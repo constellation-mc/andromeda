@@ -1,11 +1,18 @@
 package me.melontini.andromeda.modules.entities.villagers_follow_emeralds;
 
+import me.melontini.andromeda.util.TagUtil;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.TagKey;
+
+import static me.melontini.andromeda.common.registries.Common.id;
 
 public class VillagerTemptGoal extends TemptGoal {
+
+    public static TagKey<Item> TEMPTING = TagKey.of(TagUtil.key("item"), id("tempting_for_villagers"));
 
     public VillagerTemptGoal(VillagerEntity entity, double speed, Ingredient food, boolean canBeScared) {
         super(entity, speed, food, canBeScared);

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.blocks.campfire_effects;
 
-import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -10,7 +11,13 @@ public class PotionUtil {
 
     public static @NotNull StatusEffect getStatusEffect(Identifier id) {
         StatusEffect effect = Registries.STATUS_EFFECT.get(id);
-        MakeSure.notNull(effect, "(Andromeda) Couldn't get StatusEffect from identifier: " + id);
+        if (effect == null) {
+            ModuleManager.get().getModule(CampfireEffects.class).ifPresent(effects -> {
+                effects.manager().resetToDefault("effectList");
+                effects.manager().save();
+            });
+            throw new AndromedaException(false, "(Andromeda) Couldn't get StatusEffect from identifier: " + id);
+        }
         return effect;
     }
 }

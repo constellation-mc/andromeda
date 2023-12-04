@@ -1,4 +1,4 @@
-package me.melontini.andromeda.client.config;
+package me.melontini.andromeda.common.client.config;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -29,6 +29,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -97,26 +98,40 @@ public class AutoConfigScreen {
                     List<Field> fields = Arrays.asList(module.configClass().getFields());
                     fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
-                    List<AbstractConfigListEntry<?>> list = new ArrayList<>();
-                    fields.forEach((field) -> {
-                        String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.id().replace('/', '.'), field.getName());
-                        Holder.COMPOSED.getAndTransform(opt, field, module.config(), module.manager().getDefaultConfig(), Holder.COMPOSED).forEach(list::add);
-                    });
-
-                    var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.id().replace('/', '.'))), Utilities.cast(list));
+                    Supplier<Optional<Text[]>> supplier = Optional::empty;
                     if (module.getClass().isAnnotationPresent(ModuleTooltip.class)) {
                         ModuleTooltip tooltip = module.getClass().getAnnotation(ModuleTooltip.class);
                         if (tooltip.value() == 1) {
-                            Text[] text = new Text[]{TextUtil.translatable("config.andromeda.%s.@Tooltip".formatted(module.id().replace('/', '.')))};
-                            e.setTooltipSupplier(() -> Optional.of(text));
+                            Text[] text = new Text[]{TextUtil.translatable("config.andromeda.%s.@Tooltip".formatted(module.meta().dotted()))};
+                            supplier = () -> Optional.of(text);
                         } else if (tooltip.value() > 1) {
                             Text[] text = IntStream.range(0, tooltip.value()).boxed()
-                                    .map(i -> "config.andromeda.%s.@Tooltip[%s]".formatted(module.id().replace('/', '.'), i))
+                                    .map(i -> "config.andromeda.%s.@Tooltip[%s]".formatted(module.meta().dotted(), i))
                                     .map(TextUtil::translatable).toArray(Text[]::new);
-                            e.setTooltipSupplier(() -> Optional.of(text));
+                            supplier = () -> Optional.of(text);
                         }
                     }
-                    getOrCreateCategoryForField(module, builder).addEntry(e.build());
+
+                    if (fields.size() == 1) {
+                        Field f = fields.get(0);
+                        if (!"enabled".equals(f.getName())) throw new IllegalStateException();
+
+                        var e = eb.startBooleanToggle(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.supplyUnchecked(() -> f.getBoolean(module.config())));
+                        e.setTooltipSupplier(supplier);
+                        e.setDefaultValue(() -> Utilities.supplyUnchecked(() -> f.getBoolean(module.manager().getDefaultConfig())));
+                        e.setSaveConsumer(b -> Utilities.runUnchecked(() -> f.setBoolean(module.config(), b)));
+                        e.requireRestart();
+                        getOrCreateCategoryForField(module, builder).addEntry(e.build());
+                    } else {
+                        List<AbstractConfigListEntry<?>> list = new ArrayList<>();
+                        fields.forEach((field) -> {
+                            String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
+                            Holder.COMPOSED.getAndTransform(opt, field, module.config(), module.manager().getDefaultConfig(), Holder.COMPOSED).forEach(list::add);
+                        });
+                        var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
+                        e.setTooltipSupplier(supplier);
+                        getOrCreateCategoryForField(module, builder).addEntry(e.build());
+                    }
                 } finally {
                     CONTEXT.remove();
                 }
@@ -138,7 +153,7 @@ public class AutoConfigScreen {
     }
 
     private static ConfigCategory getOrCreateCategoryForField(Module<?> info, ConfigBuilder screenBuilder) {
-        Text key = TextUtil.translatable("config.andromeda.category.%s".formatted(info.category()));
+        Text key = TextUtil.translatable("config.andromeda.category.%s".formatted(info.meta().category()));
         return screenBuilder.getOrCreateCategory(key);
     }
 

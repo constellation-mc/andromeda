@@ -13,7 +13,7 @@ import net.minecraft.util.JsonHelper;
 
 import java.util.*;
 
-import static me.melontini.andromeda.registries.ResourceRegistry.parseFromId;
+import static me.melontini.andromeda.common.registries.ResourceRegistry.parseFromId;
 
 public class ItemBehaviorData {
 

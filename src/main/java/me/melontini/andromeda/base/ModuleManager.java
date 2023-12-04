@@ -1,12 +1,11 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.base.Suppliers;
-import me.melontini.andromeda.Andromeda;
+import lombok.CustomLog;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.client.AndromedaClient;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.dark_matter.api.base.util.EntrypointRunner;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
@@ -20,12 +19,11 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
+@CustomLog
 public class ModuleManager {
 
-    private static final Supplier<ModuleManager> INSTANCE = Suppliers.memoize(ModuleManager::new);
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
     private final Set<Module<?>> discoveredModules = new LinkedHashSet<>();
@@ -38,20 +36,31 @@ public class ModuleManager {
         List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
                 .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
 
-        list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
+        EntrypointRunner.run("andromeda:modules", ModuleSupplier.class, s -> list.addAll(s.get()));
+
+        if (list.isEmpty()) {
+            LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
+            return;
+        }
+
+        list.removeIf(m -> (m.meta().environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
 
         Set<String> ids = new HashSet<>();
         for (Module<?> module : list) {
-            if (module.category() == null || module.category().isBlank()) throw new IllegalStateException("Module category can't be null or empty! Module: " + module.getClass());
-            if (module.name() == null || module.name().isBlank()) throw new IllegalStateException("Module name can't be null or empty! Module: " + module.getClass());
+            MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
+            MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
+            MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
 
-            if (ids.contains(module.id())) throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.id(), module.getClass()));
-            ids.add(module.id());
+            if (ids.contains(module.meta().id())) throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
+            ids.add(module.meta().id());
         }
 
-        list.sort(Comparator.comparingInt(m->categories.indexOf(m.category())));
+        list.sort(Comparator.comparingInt(m-> {
+            int i = categories.indexOf(m.meta().category());
+            return i >= 0 ? i : categories.size();
+        }));
         list.forEach(m -> modules.put(m.getClass(), m));
-        list.forEach(m -> moduleNames.put(m.id(), m));
+        list.forEach(m -> moduleNames.put(m.meta().id(), m));
         discoveredModules.addAll(modules.values());
 
         setUpConfigs(list);
@@ -62,11 +71,11 @@ public class ModuleManager {
 
     public void setUpConfigs(List<Module<?>> list) {
         list.forEach(m -> {
-            var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.id());
+            var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.meta().id());
             config.processors((registry, mod) -> {
                 registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
                     if (Config.get().sideOnlyMode) {
-                        return switch (m.environment()) {
+                        return switch (m.meta().environment()) {
                             case ANY -> null;
                             case CLIENT -> FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT ?
                                     null : Map.of("enabled", false);
@@ -90,7 +99,7 @@ public class ModuleManager {
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 if (!paths.contains(file)) {
                     Files.delete(file);
-                    AndromedaLog.info("Removed {} as it doesn't belong to any module!", file);
+                    LOGGER.info("Removed {} as it doesn't belong to any module!", file);
                 }
                 return super.visitFile(file, attrs);
             }
@@ -126,31 +135,12 @@ public class ModuleManager {
     }
 
     public static ModuleManager get() {
-        return INSTANCE.get();
-    }
-
-    public static void onClient() {
-        get().modules.values().forEach(Module::onClient);
-        AndromedaClient.init();
-    }
-
-    public static void onServer() {
-        get().modules.values().forEach(Module::onServer);
-    }
-
-    public static void onMain() {
-        get().modules.values().forEach(Module::onMain);
-        Andromeda.init();
-    }
-
-    public static void onPreLaunch() {
-        MixinProcessor.addMixins();
-        get().modules.values().forEach(Module::onPreLaunch);
+        return MakeSure.notNull(Bootstrap.INSTANCE, "ModuleManager requested too early!");
     }
 
     public void print() {
         Map<String, Set<Module<?>>> categories = Utilities.consume(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
-                map.computeIfAbsent(m.category(), s -> new LinkedHashSet<>()).add(m)));
+                map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 
         StringBuilder builder = new StringBuilder();
         categories.forEach((s, strings) -> {
@@ -158,16 +148,20 @@ public class ModuleManager {
             if (!ModuleManager.categories.contains(s)) builder.append("*");
             builder.append("\n\t  |-- ");
             strings.forEach(m -> {
-                builder.append('\'').append(m.name().replace('/', '.')).append('\'').append("  ");
+                builder.append('\'').append(m.meta().name().replace('/', '.')).append('\'').append("  ");
                 if (!m.getClass().getName().startsWith("me.melontini.andromeda"))
                     builder.append('*');
             });
         });
         if (!categories.isEmpty()) {
-            AndromedaLog.info("Loading modules: {}", builder);
-            AndromedaLog.info("* - custom modules/categories not provided by Andromeda.");
+            LOGGER.info("Loaded modules: {}", builder);
+            LOGGER.info("* - custom modules/categories not provided by Andromeda.");
         } else {
-            AndromedaLog.info("Not loading any modules!");
+            LOGGER.info("No modules loaded!");
         }
+    }
+
+    public interface ModuleSupplier {
+        List<? extends Module<?>> get();
     }
 }

@@ -1,10 +1,10 @@
-package me.melontini.andromeda.client;
+package me.melontini.andromeda.common.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.client.config.AutoConfigScreen;
-import me.melontini.andromeda.registries.AndromedaItemGroup;
+import me.melontini.andromeda.common.client.config.AutoConfigScreen;
+import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -23,7 +23,7 @@ import org.joml.Matrix4f;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.id;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Getter

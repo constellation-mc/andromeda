@@ -1,11 +1,11 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
-import me.melontini.andromeda.registries.Keeper;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.content.RegistryUtil;
@@ -18,7 +18,7 @@ import net.minecraft.entity.SpawnGroup;
 
 import java.util.UUID;
 
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.id;
 
 public class BoatEntities {
 

@@ -1,11 +1,11 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.modules.entities.boats.items.FurnaceBoatItem;
 import me.melontini.andromeda.modules.entities.boats.items.HopperBoatItem;
 import me.melontini.andromeda.modules.entities.boats.items.JukeboxBoatItem;
 import me.melontini.andromeda.modules.entities.boats.items.TNTBoatItem;
-import me.melontini.andromeda.registries.AndromedaItemGroup;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -13,7 +13,7 @@ import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.id;
 
 public class BoatItems {
 

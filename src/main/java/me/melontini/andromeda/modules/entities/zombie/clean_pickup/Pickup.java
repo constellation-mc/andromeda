@@ -4,7 +4,7 @@ import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
-import me.melontini.andromeda.registries.Common;
+import me.melontini.andromeda.common.registries.Common;
 
 @ModuleTooltip(3)
 @ModuleInfo(name = "zombie/clean_pickup", category = "entities", environment = Environment.SERVER)

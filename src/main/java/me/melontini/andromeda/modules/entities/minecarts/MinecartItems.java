@@ -1,19 +1,19 @@
 package me.melontini.andromeda.modules.entities.minecarts;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.registries.AndromedaItemGroup;
+import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.entities.minecarts.items.AnvilMinecartItem;
 import me.melontini.andromeda.modules.entities.minecarts.items.JukeBoxMinecartItem;
 import me.melontini.andromeda.modules.entities.minecarts.items.NoteBlockMinecartItem;
 import me.melontini.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem;
-import me.melontini.andromeda.registries.AndromedaItemGroup;
-import me.melontini.andromeda.registries.Keeper;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 
-import static me.melontini.andromeda.registries.Common.id;
-import static me.melontini.andromeda.registries.Common.start;
+import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.start;
 
 public class MinecartItems {
 
