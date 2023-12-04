@@ -41,18 +41,18 @@ public class AndromedaItemGroup {
                 });
 
                 List<ItemStack> stacks = new ArrayList<>();
-                small.forEach((module, itemStacks) -> {
+                small.forEach((m, itemStacks) -> {
                     ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(module.id().replace('/', '.'))));
+                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
                     stacks.add(sign);
                     stacks.addAll(itemStacks);
                     stacks.add(ItemStack.EMPTY);
                 });
                 appendStacks(entries, stacks);
 
-                big.forEach((module, itemStacks) -> {
+                big.forEach((m, itemStacks) -> {
                     ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(module.id().replace('/', '.'))));
+                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
                     itemStacks.add(0, sign);
                     appendStacks(entries, itemStacks);
                 });

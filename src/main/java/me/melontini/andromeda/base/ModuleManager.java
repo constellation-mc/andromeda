@@ -43,23 +43,24 @@ public class ModuleManager {
             return;
         }
 
-        list.removeIf(m -> (m.environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
+        list.removeIf(m -> (m.meta().environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
 
         Set<String> ids = new HashSet<>();
         for (Module<?> module : list) {
-            MakeSure.notEmpty(module.category(), "Module category can't be null or empty! Module: " + module.getClass());
-            MakeSure.notEmpty(module.name(), "Module name can't be null or empty! Module: " + module.getClass());
+            MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
+            MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
+            MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
 
-            if (ids.contains(module.id())) throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.id(), module.getClass()));
-            ids.add(module.id());
+            if (ids.contains(module.meta().id())) throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
+            ids.add(module.meta().id());
         }
 
         list.sort(Comparator.comparingInt(m-> {
-            int i = categories.indexOf(m.category());
+            int i = categories.indexOf(m.meta().category());
             return i >= 0 ? i : categories.size();
         }));
         list.forEach(m -> modules.put(m.getClass(), m));
-        list.forEach(m -> moduleNames.put(m.id(), m));
+        list.forEach(m -> moduleNames.put(m.meta().id(), m));
         discoveredModules.addAll(modules.values());
 
         setUpConfigs(list);
@@ -70,11 +71,11 @@ public class ModuleManager {
 
     public void setUpConfigs(List<Module<?>> list) {
         list.forEach(m -> {
-            var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.id());
+            var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.meta().id());
             config.processors((registry, mod) -> {
                 registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
                     if (Config.get().sideOnlyMode) {
-                        return switch (m.environment()) {
+                        return switch (m.meta().environment()) {
                             case ANY -> null;
                             case CLIENT -> FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT ?
                                     null : Map.of("enabled", false);
@@ -139,7 +140,7 @@ public class ModuleManager {
 
     public void print() {
         Map<String, Set<Module<?>>> categories = Utilities.consume(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
-                map.computeIfAbsent(m.category(), s -> new LinkedHashSet<>()).add(m)));
+                map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 
         StringBuilder builder = new StringBuilder();
         categories.forEach((s, strings) -> {
@@ -147,7 +148,7 @@ public class ModuleManager {
             if (!ModuleManager.categories.contains(s)) builder.append("*");
             builder.append("\n\t  |-- ");
             strings.forEach(m -> {
-                builder.append('\'').append(m.name().replace('/', '.')).append('\'').append("  ");
+                builder.append('\'').append(m.meta().name().replace('/', '.')).append('\'').append("  ");
                 if (!m.getClass().getName().startsWith("me.melontini.andromeda"))
                     builder.append('*');
             });

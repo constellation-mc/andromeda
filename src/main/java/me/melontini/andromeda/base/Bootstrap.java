@@ -39,7 +39,7 @@ public class Bootstrap {
     public static void onMain() {
         if (Mixins.getUnvisitedCount() > 0) {
             for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
-                if (!config.isVisited() && config.getName().startsWith("andromeda$$"))
+                if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$"))
                     throw new IllegalStateException("Mixin failed to consume Andromeda's late configs!");
             }
         }

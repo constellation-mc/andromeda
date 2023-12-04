@@ -67,13 +67,13 @@ public class MixinProcessor {
         manager.loaded().forEach((module) -> {
             JsonObject config = createConfig(module);
 
-            String cfg = "andromeda$$" + module.id().replace('/', '.') + ".mixins.json";
+            String cfg = "andromeda_dynamic$$" + module.meta().dotted() + ".mixins.json";
             try (ByteArrayInputStream bais = new ByteArrayInputStream(config.toString().getBytes())) {
                 CONFIG.set(bais);
                 Mixins.addConfiguration(cfg);
-                manager.mixinConfigs.put(cfg, module.id());
+                manager.mixinConfigs.put(cfg, module.meta().id());
             } catch (IOException e) {
-                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.id()));
+                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()));
             } finally {
                 CONFIG.remove();
             }
@@ -112,7 +112,7 @@ public class MixinProcessor {
         IMixinService service = (IMixinService) Proxy.newProxyInstance(MixinProcessor.class.getClassLoader(), new Class[]{IMixinService.class}, (proxy, method, args) -> {
             if (method.getName().equals("getResourceAsStream")) {
                 if (args[0] instanceof String s) {
-                    if (s.startsWith("andromeda$$")) {
+                    if (s.startsWith("andromeda_dynamic$$")) {
                         return CONFIG.get();
                     }
                 }
