@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.world.crop_temperature.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperature;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
@@ -21,23 +20,20 @@ class ServerWorldMixin {
     @Unique
     private static final PlantTemperature am$tbpgs = ModuleManager.quick(PlantTemperature.class);
 
-    @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"), method = "tickChunk")
-    private void andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random, Operation<Void> operation) {
+    @WrapWithCondition(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"), method = "tickChunk")
+    private boolean andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (am$tbpgs.config().enabled) {
             if (state.getBlock() instanceof PlantBlock) {
                 PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(state.getBlock());
                 if (data != null) {
                     float temp = ((ServerWorld) (Object) this).getBiome(pos).value().getTemperature();
                     if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
-                        if (MathStuff.threadRandom().nextInt(2) == 0) {
-                            return;
-                        }
-                    } else if ((temp > data.aMax()) || (temp < data.aMin())) {
-                        return;
-                    }
+                        return MathStuff.nextInt(0, 1) != 0;
+                    } else
+                        return (!(temp > data.aMax())) && (!(temp < data.aMin()));
                 }
             }
         }
-        operation.call(state, world, pos, random);
+        return true;
     }
 }

@@ -1,10 +1,10 @@
-package me.melontini.andromeda.client;
+package me.melontini.andromeda.common.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.client.config.AutoConfigScreen;
-import me.melontini.andromeda.registries.ItemGroup;
+import me.melontini.andromeda.common.client.config.AutoConfigScreen;
+import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -23,7 +23,7 @@ import net.minecraft.util.math.Vec3f;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static me.melontini.andromeda.registries.Common.id;
+import static me.melontini.andromeda.common.registries.Common.id;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Getter
@@ -45,7 +45,7 @@ public class AndromedaClient {
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
                 ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
-        ItemGroup.GROUP.ifPresent(group -> group.dm$setIconAnimation((group1, matrices, itemX, itemY, selected, isTopRow) -> {
+        AndromedaItemGroup.GROUP.ifPresent(group -> group.dm$setIconAnimation((group1, matrices, itemX, itemY, selected, isTopRow) -> {
             try {
                 if (!animate) return;
                 drawTexture(matrices, itemX + 8, itemY + 8, stack -> {

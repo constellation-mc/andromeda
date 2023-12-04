@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.client.particles.screen.CustomItemStackParticle;
+import me.melontini.andromeda.common.client.particles.screen.CustomItemStackParticle;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -31,6 +31,7 @@ abstract class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Crea
     private void andromeda$clickDeleteParticles(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci, @Local(ordinal = 2) int index) {
         if (!am$guip.config().creativeScreenParticles) return;
 
+        if (index >= this.handler.slots.size()) return;
         Slot slot1 = this.handler.slots.get(index);
         ScreenParticleHelper.addScreenParticle(new CustomItemStackParticle(this.x + slot1.x + 8, this.y + slot1.y + 8,
                 MathStuff.nextDouble(

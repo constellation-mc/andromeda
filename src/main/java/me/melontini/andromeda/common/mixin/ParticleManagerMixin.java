@@ -1,4 +1,4 @@
-package me.melontini.andromeda.mixin.internal;
+package me.melontini.andromeda.common.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;

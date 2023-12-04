@@ -29,9 +29,9 @@ public class ErrorHandler implements IMixinErrorHandler {
                 CrashHandler.handleCrash(true, th, "Failed to " + phase + " " + mixin.getClassName(), FabricLoader.getInstance().getEnvironmentType());
 
             ModuleManager.get().moduleFromConfig(mixin.getConfig().getName()).ifPresent(module -> {
-                module.manager().set("enabled", false);
+                module.config().enabled = false;
                 module.manager().save();
-                AndromedaLog.info("Disabling module '%s'!".formatted(module.id()));
+                AndromedaLog.info("Disabling module '%s'!".formatted(module.meta().id()));
             });
             return action;
         }

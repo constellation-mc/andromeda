@@ -1,9 +1,9 @@
 package me.melontini.andromeda.base;
 
-import me.melontini.andromeda.base.annotations.MixinConfig;
+import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.config.BasicConfig;
-import me.melontini.andromeda.registries.Common;
+import me.melontini.andromeda.common.registries.Common;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.config.ConfigManager;
@@ -13,10 +13,10 @@ import net.fabricmc.loader.api.ModContainer;
 @SuppressWarnings("UnstableApiUsage")
 public abstract class Module<T extends BasicConfig> {
 
-    private final ModuleInfo info = Utilities.supply(() -> {
+    private final Metadata<T> info = Utilities.supply(() -> {
         ModuleInfo info1 = this.getClass().getAnnotation(ModuleInfo.class);
         if (info1 == null) throw new IllegalStateException("Module has no info!");
-        return info1;
+        return new Metadata<>(this, info1.name(), info1.category(), info1.environment());
     });
 
     private final Lazy<ConfigManager<T>> manager = Lazy.of(() -> () -> Utilities.cast(ModuleManager.get().getConfig(this.getClass())));
@@ -37,36 +37,29 @@ public abstract class Module<T extends BasicConfig> {
     public void onPreLaunch() { }
     public void onProcessors(OptionProcessorRegistry<T> registry, ModContainer mod) { }
 
-    public final Environment environment() {
-        return info.environment();
-    }
-    public final String name() {
-        return info.name();
-    }
-    public final String category() {
-        return info.category();
-    }
-    public final String id() {
-        return category() + "/" + name();
+    public final Metadata<T> meta() {
+        return info;
     }
 
     public String mixins() {
         return this.getClass().getPackageName() + ".mixin";
     }
-    public Class<?> mixinPlugin() {
-        MixinConfig config = this.getClass().getAnnotation(MixinConfig.class);
-        if (config != null) return config.plugin();
-        return MixinProcessor.Plugin.class;
-    }
-    public String refmap() {
-        MixinConfig config = this.getClass().getAnnotation(MixinConfig.class);
-        if (config != null) return config.refmap();
-        return "andromeda-refmap.json";
-    }
+    public void acceptMixinConfig(JsonObject config) { }
 
     public abstract Class<T> configClass();
 
     public final ConfigManager<T> manager() { return manager.get(); }
     public final T config() { return manager().getConfig(); }
     public boolean enabled() { return manager().get(boolean.class, "enabled"); }
+
+    public record Metadata<T extends BasicConfig>(Module<T> module, String name, String category, Environment environment) {
+
+        public String id() {
+            return category() + "/" + name();
+        }
+
+        public String dotted() {
+            return id().replace('/', '.');
+        }
+    }
 }

@@ -1,16 +1,17 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.melontini.andromeda.mixin",
+  "package": "me.melontini.andromeda.common.mixin",
   "compatibilityLevel": "JAVA_17",
   "plugin": "me.melontini.andromeda.util.mixin.AndromedaMixinPlugin",
   "mixins": [
   ],
   "client": [
-    "internal.MinecraftClientMixin",
-    "internal.ParticleManagerMixin"
+    "MinecraftClientMixin",
+    "ParticleManagerMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 1,
+    "maxShiftBy": 3
   }
 }
