@@ -1,11 +1,13 @@
 package me.melontini.andromeda.common.client.config;
 
+import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.config.AndromedaConfig;
 import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -24,13 +26,13 @@ import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 
 @SuppressWarnings("UnstableApiUsage")
 public class AutoConfigScreen {
@@ -43,39 +45,34 @@ public class AutoConfigScreen {
         Holder.OURS.registerPredicateTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
                 gui.setEditable(false);
-                if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    var tuple = CONTEXT.get().manager().getOptionManager().blameProcessors(new FieldOption(field));
-                    Set<Text> texts = new HashSet<>();
-                    for (OptionManager.ProcessorEntry<?> processor : tuple.right()) {
-                        CONTEXT.get().manager().getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
-                            if (textEntry.isTranslatable()) {
-                                texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()));
-                            } else {
-                                texts.add(TextUtil.literal(textEntry.get()));
-                            }
-                        });
-                    }
-                    Text[] texts1 = texts.toArray(Text[]::new);
-                    tooltipGui.setTooltipSupplier(() -> Optional.of(texts1));
-                }
+                if (gui instanceof TooltipListEntry<?> tooltipGui) checkOM(field, tooltipGui);
             });
             return list;
         }, field -> CONTEXT.get() != null && CONTEXT.get().manager()
                 .getOptionManager().isModified(new FieldOption(field)));
 
+        Holder.OURS.registerPredicateTransformer((guis, s, field, o, o1, guiRegistryAccess) -> {
+            guis.forEach(e -> {
+                if (e instanceof TooltipListEntry<?> t) {
+                    if (t.getTooltipSupplier() != null) {
+                        Optional<Text[]> optional = t.getTooltipSupplier().get().map(texts1 -> {
+                            List<Text> list = new ArrayList<>();
+                            for (Text text : texts1) {
+                                list.addAll(Arrays.asList(OrderedTextUtil.wrap(text, 250)));
+                            }
+                            return list.toArray(Text[]::new);
+                        });
+                        t.setTooltipSupplier(() -> optional);
+                    }
+                }
+            });
+            return guis;
+        }, field -> true);
+
         Holder.OURS.registerAnnotationTransformer((list, s, field, o, o1, guiRegistryAccess) -> {
             list.forEach(gui -> {
                 if (gui instanceof TooltipListEntry<?> tooltipGui) {
-                    FeatureEnvironment environment = field.getAnnotation(FeatureEnvironment.class);
-
-                    if (tooltipGui.getTooltipSupplier() != null) {
-                        Optional<Text[]> optional = tooltipGui.getTooltipSupplier().get();
-                        Text[] text = optional.map(texts -> ArrayUtils.add(texts, TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase()))).orElseGet(() -> new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())});
-                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
-                    } else {
-                        Text[] text = new Text[]{TextUtil.translatable("andromeda.config.tooltip.environment." + environment.value().toString().toLowerCase())};
-                        tooltipGui.setTooltipSupplier(() -> Optional.of(text));
-                    }
+                    checkEnv(tooltipGui, field.getAnnotation(FeatureEnvironment.class).value());
                 }
             });
             return list;
@@ -98,30 +95,23 @@ public class AutoConfigScreen {
                     List<Field> fields = Arrays.asList(module.configClass().getFields());
                     fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
-                    Supplier<Optional<Text[]>> supplier = Optional::empty;
-                    if (module.getClass().isAnnotationPresent(ModuleTooltip.class)) {
-                        ModuleTooltip tooltip = module.getClass().getAnnotation(ModuleTooltip.class);
-                        if (tooltip.value() == 1) {
-                            Text[] text = new Text[]{TextUtil.translatable("config.andromeda.%s.@Tooltip".formatted(module.meta().dotted()))};
-                            supplier = () -> Optional.of(text);
-                        } else if (tooltip.value() > 1) {
-                            Text[] text = IntStream.range(0, tooltip.value()).boxed()
-                                    .map(i -> "config.andromeda.%s.@Tooltip[%s]".formatted(module.meta().dotted(), i))
-                                    .map(TextUtil::translatable).toArray(Text[]::new);
-                            supplier = () -> Optional.of(text);
-                        }
-                    }
+                    Optional<Text[]> tooltip = !module.getClass().isAnnotationPresent(ModuleTooltip.class) ? Optional.empty() : Utilities.supply(() -> {
+                        Text[] text = OrderedTextUtil.wrap(TextUtil.translatable("config.andromeda.%s.@Tooltip".formatted(module.meta().dotted())), 250);
+                        return Optional.of(text);
+                    });
+                    Supplier<Optional<Text[]>> supplier = () -> tooltip;
 
                     if (fields.size() == 1) {
                         Field f = fields.get(0);
                         if (!"enabled".equals(f.getName())) throw new IllegalStateException();
 
-                        var e = eb.startBooleanToggle(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.supplyUnchecked(() -> f.getBoolean(module.config())));
-                        e.setTooltipSupplier(supplier);
-                        e.setDefaultValue(() -> Utilities.supplyUnchecked(() -> f.getBoolean(module.manager().getDefaultConfig())));
-                        e.setSaveConsumer(b -> Utilities.runUnchecked(() -> f.setBoolean(module.config(), b)));
-                        e.requireRestart();
-                        getOrCreateCategoryForField(module, builder).addEntry(e.build());
+                        Holder.COMPOSED.getAndTransform("config.andromeda.%s".formatted(module.meta().dotted()), f, module.config(), module.manager().getDefaultConfig(), Holder.COMPOSED).forEach(e -> {
+                            if (e instanceof TooltipListEntry<?> t) {
+                                t.setTooltipSupplier(supplier);
+                                checkEnv(t, module.meta().environment());
+                            }
+                            getOrCreateCategoryForField(module, builder).addEntry(e);
+                        });
                     } else {
                         List<AbstractConfigListEntry<?>> list = new ArrayList<>();
                         fields.forEach((field) -> {
@@ -130,7 +120,7 @@ public class AutoConfigScreen {
                         });
                         var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
                         e.setTooltipSupplier(supplier);
-                        getOrCreateCategoryForField(module, builder).addEntry(e.build());
+                        getOrCreateCategoryForField(module, builder).addEntry(Utilities.consume(e.build(), entry -> checkEnv(entry, module.meta().environment())));
                     }
                 } finally {
                     CONTEXT.remove();
@@ -144,6 +134,36 @@ public class AutoConfigScreen {
             });
             return builder.build();
         });
+    }
+
+    private static void checkEnv(TooltipListEntry<?> tooltipGui, Environment environment) {
+        Text envText = TextUtil.translatable("andromeda.config.tooltip.environment." + environment.toString().toLowerCase()).formatted(Formatting.YELLOW);
+
+        if (tooltipGui.getTooltipSupplier() != null) {
+            Optional<Text[]> optional = tooltipGui.getTooltipSupplier().get();
+            Text[] text = optional.map(texts -> ArrayUtils.add(texts, envText))
+                    .orElseGet(() -> new Text[]{envText});
+            tooltipGui.setTooltipSupplier(() -> Optional.of(text));
+        } else {
+            Text[] text = new Text[]{envText};
+            tooltipGui.setTooltipSupplier(() -> Optional.of(text));
+        }
+    }
+
+    private static void checkOM(Field field, TooltipListEntry<?> tooltipGui) {
+        var tuple = CONTEXT.get().manager().getOptionManager().blameProcessors(new FieldOption(field));
+        Set<Text> texts = new HashSet<>();
+        for (OptionManager.ProcessorEntry<?> processor : tuple.right()) {
+            CONTEXT.get().manager().getOptionManager().getReason(processor.id(), tuple.left()).ifPresent(textEntry -> {
+                if (textEntry.isTranslatable()) {
+                    texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()).formatted(Formatting.RED));
+                } else {
+                    texts.add(TextUtil.literal(textEntry.get()).formatted(Formatting.RED));
+                }
+            });
+        }
+        Text[] texts1 = texts.toArray(Text[]::new);
+        tooltipGui.setTooltipSupplier(() -> Optional.of(texts1));
     }
 
     //TODO
