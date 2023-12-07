@@ -34,7 +34,7 @@ public class ModuleManager {
     private final ImmutableMap<String, Module<?>> moduleNames;
     private final ImmutableMap<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs;
 
-    final Map<String, String> mixinConfigs = new HashMap<>();
+    final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
     ModuleManager(List<Module<?>> discovered) {
         Bootstrap.INSTANCE = this;
@@ -131,7 +131,7 @@ public class ModuleManager {
     }
 
     public Optional<Module<?>> moduleFromConfig(String name) {
-        return Optional.ofNullable(mixinConfigs.get(name)).flatMap(this::getModule);
+        return Optional.ofNullable(mixinConfigs.get(name));
     }
 
     public Collection<Module<?>> all() {
