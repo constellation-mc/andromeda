@@ -90,8 +90,9 @@ public class Bootstrap {
             throw new AndromedaException("Failed to initialize ModuleManager!!!", t);
         }
         m.print();
-
         MixinProcessor.addMixins(m);
+        FabricLoader.getInstance().getObjectShare().put("andromeda:module_manager", m);
+
         for (Module<?> module : m.loaded()) { module.onPreLaunch(); }
     }
 
