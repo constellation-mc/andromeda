@@ -50,7 +50,7 @@ public abstract class Module<T extends BasicConfig> {
 
     public final ConfigManager<T> manager() { return manager.get(); }
     public final T config() { return manager().getConfig(); }
-    public final boolean enabled() { return manager().get(boolean.class, "enabled"); }
+    public final boolean enabled() { return manager().getConfig().enabled; }
 
     public record Metadata<T extends BasicConfig>(Module<T> module, String name, String category, Environment environment) {
 
