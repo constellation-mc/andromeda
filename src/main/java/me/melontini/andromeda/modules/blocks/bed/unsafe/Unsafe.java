@@ -21,7 +21,7 @@ public class Unsafe extends BasicModule {
     @Override
     public void onProcessors(OptionProcessorRegistry<BasicConfig> registry, ModContainer mod) {
         registry.register(CommonValues.MODID + ":module_conflict", manager -> {
-            if (ModuleManager.get().getModule(Safe.class).map(m->m.config().enabled).orElse(false)) {
+            if (ModuleManager.get().getModule(Safe.class).isPresent()) {
                 return Map.of("enabled", false);
             }
             return null;
