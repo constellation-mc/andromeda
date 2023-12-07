@@ -1,12 +1,13 @@
 package me.melontini.andromeda.base;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
@@ -26,27 +27,20 @@ public class ModuleManager {
 
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    private final Set<Module<?>> discoveredModules = new LinkedHashSet<>();
-    private final Map<Class<?>, Module<?>> modules = new LinkedHashMap<>();
-    private final Map<String, Module<?>> moduleNames = new HashMap<>();
-    private final Map<Class<?>, ConfigManager<? extends BasicConfig>> configs = new HashMap<>();
+    private final ImmutableMap<Class<?>, Module<?>> discoveredModules;
+    private final ImmutableMap<String, Module<?>> discoveredModuleNames;
+
+    private final ImmutableMap<Class<?>, Module<?>> modules;
+    private final ImmutableMap<String, Module<?>> moduleNames;
+    private final ImmutableMap<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs;
+
     final Map<String, String> mixinConfigs = new HashMap<>();
 
-    public void prepare() {
-        List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
-                .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
-
-        EntrypointRunner.run("andromeda:modules", ModuleSupplier.class, s -> list.addAll(s.get()));
-
-        if (list.isEmpty()) {
-            LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
-            return;
-        }
-
-        list.removeIf(m -> (m.meta().environment() == Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
+    ModuleManager(List<Module<?>> discovered) {
+        Bootstrap.INSTANCE = this;
 
         Set<String> ids = new HashSet<>();
-        for (Module<?> module : list) {
+        for (Module<?> module : discovered) {
             MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
             MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
             MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
@@ -55,21 +49,33 @@ public class ModuleManager {
             ids.add(module.meta().id());
         }
 
-        list.sort(Comparator.comparingInt(m-> {
+        List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m-> {
             int i = categories.indexOf(m.meta().category());
             return i >= 0 ? i : categories.size();
-        }));
-        list.forEach(m -> modules.put(m.getClass(), m));
-        list.forEach(m -> moduleNames.put(m.meta().id(), m));
-        discoveredModules.addAll(modules.values());
+        })).toList();
 
-        setUpConfigs(list);
-        list.forEach(m -> m.manager().getOptionManager().processOptions());
+        Map<Class<?>, Module<?>> modules = new LinkedHashMap<>();
+        sorted.forEach(m -> modules.put(m.getClass(), m));
+
+        this.discoveredModules = ImmutableMap.copyOf(Utilities.consume(new LinkedHashMap<>(), (map) ->
+                sorted.forEach(m -> map.put(m.getClass(), m))));
+        this.discoveredModuleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), (map) ->
+                sorted.forEach(m -> map.put(m.meta().id(), m))));
+
+        this.configs = ImmutableMap.copyOf(setUpConfigs(sorted));
+
+        sorted.forEach(Module::manager);
         modules.values().removeIf(m -> !m.enabled());
-        list.forEach(m -> m.manager().save());
+
+        this.modules = ImmutableMap.copyOf(modules);
+        this.moduleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), (map) ->
+                sorted.forEach(m -> map.put(m.meta().id(), m))));
+
+        cleanConfigs();
     }
 
-    public void setUpConfigs(List<Module<?>> list) {
+    public Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> setUpConfigs(List<Module<?>> list) {
+        Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs = new HashMap<>();
         list.forEach(m -> {
             var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.meta().id());
             config.processors((registry, mod) -> {
@@ -88,12 +94,15 @@ public class ModuleManager {
                 }, mod);
                 m.onProcessors(Utilities.cast(registry), mod);
             });
-            configs.put(m.getClass(), config.build(false));
+            configs.put(m.getClass(), Lazy.of(() -> () -> config.build(false)));
         });
+        return configs;
+    }
 
+    private void cleanConfigs() {
         Set<Path> paths = new HashSet<>();
         paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
-        configs.values().forEach(m -> paths.add(m.getSerializer().getPath()));
+        configs.values().forEach(m -> paths.add(m.get().getSerializer().getPath()));
         Utilities.runUnchecked(() -> Files.walkFileTree(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -107,24 +116,26 @@ public class ModuleManager {
     }
 
     public ConfigManager<? extends BasicConfig> getConfig(Class<?> cls) {
-        return configs.get(cls);
+        return MakeSure.notNull(configs.get(cls)).get();
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
-        return (Optional<T>) Optional.ofNullable(modules.get(cls)).filter(Module::enabled);
+        return (Optional<T>) Optional.ofNullable(modules!=null?modules.get(cls):discoveredModules.get(cls))
+                .filter(Module::enabled);
     }
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
-        return (Optional<T>) Optional.ofNullable(moduleNames.get(name)).filter(Module::enabled);
+        return (Optional<T>) Optional.ofNullable(moduleNames!=null?moduleNames.get(name):discoveredModuleNames.get(name))
+                .filter(Module::enabled);
     }
 
     public Optional<Module<?>> moduleFromConfig(String name) {
         return Optional.ofNullable(mixinConfigs.get(name)).flatMap(this::getModule);
     }
 
-    public Set<Module<?>> all() {
-        return Collections.unmodifiableSet(discoveredModules);
+    public Collection<Module<?>> all() {
+        return discoveredModules.values();
     }
     public Collection<Module<?>> loaded() {
         return Collections.unmodifiableCollection(modules.values());
