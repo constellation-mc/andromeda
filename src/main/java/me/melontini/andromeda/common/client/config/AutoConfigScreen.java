@@ -8,6 +8,7 @@ import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -16,6 +17,7 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
 import me.shedaniel.autoconfig.gui.DefaultGuiTransformers;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
+import me.shedaniel.clothconfig2.api.AbstractConfigEntry;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -28,9 +30,14 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Consumer;
 
 @SuppressWarnings("UnstableApiUsage")
 public class AutoConfigScreen {
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private static final Optional<Field> saveCallback = Reflect.findField(AbstractConfigEntry.class, "saveCallback");
+    private static final ThreadLocal<Set<Module<?>>> saveQueue = ThreadLocal.withInitial(HashSet::new);
 
     public static void register() {
         AndromedaLog.info("Loading ClothConfig support!");
@@ -63,6 +70,7 @@ public class AutoConfigScreen {
                                     appendEnvInfo(e, module);
                                 }
                                 wrapTooltip(e);
+                                wrapSaveCallback(e, module);
                                 category.addEntry(e);
                             });
                 } else {
@@ -74,6 +82,7 @@ public class AutoConfigScreen {
                                 appendEnvInfo(e, field);
                             }
                             wrapTooltip(e);
+                            wrapSaveCallback(e, module);
                             list.add(e);
                         });
                     });
@@ -88,6 +97,21 @@ public class AutoConfigScreen {
 
             return builder.build();
         });
+    }
+
+    private static void wrapSaveCallback(AbstractConfigEntry<?> e, Module<?> module) {
+        if (saveCallback.isPresent()) {
+            saveCallback.get().setAccessible(true);
+            Consumer<Object> original = (Consumer<Object>) Utilities.supplyUnchecked(() -> saveCallback.get().get(e));
+            if (original != null) {
+                Utilities.runUnchecked(() -> saveCallback.get().set(e, (Consumer<Object>) o -> {
+                    if (e.isEdited()) {
+                        original.accept(o);
+                        saveQueue.get().add(module);
+                    }
+                }));
+            }
+        }
     }
 
     private static boolean checkOptionManager(AbstractConfigListEntry<?> e, Module<?> module, Field field) {
@@ -168,7 +192,12 @@ public class AutoConfigScreen {
     //TODO
     private static void powerSave() {
         Config.save();
-        ModuleManager.get().all().forEach(module -> module.manager().save());
+        if (saveCallback.isPresent()) {
+            saveQueue.get().forEach(module -> module.manager().save());
+            saveQueue.get().clear();
+        } else {
+            ModuleManager.get().all().forEach(module -> module.manager().save());
+        }
     }
 
     private static ConfigCategory getOrCreateCategoryForField(Module<?> info, ConfigBuilder screenBuilder) {
