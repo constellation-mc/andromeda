@@ -109,6 +109,7 @@ public class AutoConfigScreen {
                             if (e instanceof TooltipListEntry<?> t) {
                                 t.setTooltipSupplier(supplier);
                                 checkEnv(t, module.meta().environment());
+                                checkOM(f, t);
                             }
                             getOrCreateCategoryForField(module, builder).addEntry(e);
                         });

@@ -36,7 +36,7 @@ public class OrderedTextUtil {
     //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     //SOFTWARE.
     public static Text orderedToNormal(OrderedText orderedText) {
-        MutableText text = TextUtil.literal("");
+        MutableText text = TextUtil.empty();
         CharacterVisitor characterVisitor = (index, style, codePoint) -> {
             String str = new String(Character.toChars(codePoint));
             text.append(TextUtil.literal(str).setStyle(style));

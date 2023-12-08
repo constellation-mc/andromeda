@@ -45,11 +45,12 @@ public class ModuleManager {
             MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
             MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
 
-            if (ids.contains(module.meta().id())) throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
+            if (ids.contains(module.meta().id()))
+                throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
             ids.add(module.meta().id());
         }
 
-        List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m-> {
+        List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m -> {
             int i = categories.indexOf(m.meta().category());
             return i >= 0 ? i : categories.size();
         })).toList();
@@ -64,7 +65,7 @@ public class ModuleManager {
 
         this.configs = ImmutableMap.copyOf(setUpConfigs(sorted));
 
-        sorted.forEach(Module::manager);
+        sorted.forEach(module -> module.manager().getOptionManager().processOptions());
         modules.values().removeIf(m -> !m.enabled());
 
         this.modules = ImmutableMap.copyOf(modules);
@@ -76,6 +77,7 @@ public class ModuleManager {
 
     public Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> setUpConfigs(List<Module<?>> list) {
         Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs = new HashMap<>();
+
         list.forEach(m -> {
             var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.meta().id());
             config.processors((registry, mod) -> {
@@ -92,8 +94,8 @@ public class ModuleManager {
                     }
                     return null;
                 }, mod);
-                m.onProcessors(Utilities.cast(registry), mod);
             });
+            m.onConfig(Utilities.cast(config));
             configs.put(m.getClass(), Lazy.of(() -> () -> config.build(false)));
         });
         return configs;
@@ -121,12 +123,13 @@ public class ModuleManager {
 
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
-        return (Optional<T>) Optional.ofNullable(modules!=null?modules.get(cls):discoveredModules.get(cls))
+        return (Optional<T>) Optional.ofNullable(discoveredModules.get(cls))
                 .filter(Module::enabled);
     }
+
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
-        return (Optional<T>) Optional.ofNullable(moduleNames!=null?moduleNames.get(name):discoveredModuleNames.get(name))
+        return (Optional<T>) Optional.ofNullable(discoveredModuleNames.get(name))
                 .filter(Module::enabled);
     }
 
@@ -137,11 +140,12 @@ public class ModuleManager {
     public Collection<Module<?>> all() {
         return discoveredModules.values();
     }
+
     public Collection<Module<?>> loaded() {
         return Collections.unmodifiableCollection(modules.values());
     }
 
-    public static  <T extends Module<?>> T quick(Class<T> cls) {
+    public static <T extends Module<?>> T quick(Class<T> cls) {
         return get().getModule(cls).orElseThrow(() -> new IllegalStateException("Module %s requested quickly, but is not loaded.".formatted(cls)));
     }
 
