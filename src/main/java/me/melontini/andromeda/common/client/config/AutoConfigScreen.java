@@ -1,9 +1,11 @@
 package me.melontini.andromeda.common.client.config;
 
+import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.config.AndromedaConfig;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
@@ -12,6 +14,7 @@ import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.config.OptionManager;
 import me.melontini.dark_matter.api.config.interfaces.Option;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
@@ -37,7 +40,7 @@ public class AutoConfigScreen {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static final Optional<Field> saveCallback = Reflect.findField(AbstractConfigEntry.class, "saveCallback");
-    private static final ThreadLocal<Set<Module<?>>> saveQueue = ThreadLocal.withInitial(HashSet::new);
+    private static final ThreadLocal<Set<Runnable>> saveQueue = ThreadLocal.withInitial(HashSet::new);
 
     public static void register() {
         AndromedaLog.info("Loading ClothConfig support!");
@@ -65,12 +68,12 @@ public class AutoConfigScreen {
                 if (fields.size() == 1) {
                     registry.getAndTransform(moduleText, fields.get(0), module.manager().getConfig(), module.manager().getDefaultConfig(), registry)
                             .forEach(e -> {
-                                if (checkOptionManager(e, module, fields.get(0))) {
+                                if (checkOptionManager(e, module.manager().getOptionManager(), fields.get(0))) {
                                     setModuleTooltip(e, module);
-                                    appendEnvInfo(e, module);
+                                    appendEnvInfo(e, module.meta().environment());
                                 }
                                 wrapTooltip(e);
-                                wrapSaveCallback(e, module);
+                                wrapSaveCallback(e, () -> module.manager().save());
                                 category.addEntry(e);
                             });
                 } else {
@@ -78,28 +81,41 @@ public class AutoConfigScreen {
                     fields.forEach((field) -> {
                         String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
                         registry.getAndTransform(opt, field, module.config(), module.manager().getDefaultConfig(), registry).forEach(e -> {
-                            if (checkOptionManager(e, module, field)) {
+                            if (checkOptionManager(e, module.manager().getOptionManager(), field)) {
                                 appendEnvInfo(e, field);
                             }
                             wrapTooltip(e);
-                            wrapSaveCallback(e, module);
+                            wrapSaveCallback(e, () -> module.manager().save());
                             list.add(e);
                         });
                     });
                     var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
                     var built = e.build();
                     setModuleTooltip(built, module);
-                    appendEnvInfo(built, module);
+                    appendEnvInfo(built, module.meta().environment());
                     wrapTooltip(built);
                     category.addEntry(built);
                 }
+            });
+
+            ConfigCategory misc = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.misc"));
+            Arrays.stream(AndromedaConfig.class.getFields()).forEach((field) -> {
+                String opt = "config.andromeda.base.option." + field.getName();
+                registry.getAndTransform(opt, field, Config.get(), Config.getDefault(), registry).forEach(e -> {
+                    if (checkOptionManager(e, Config.getOptionManager(), field)) {
+                        appendEnvInfo(e, field);
+                    }
+                    wrapTooltip(e);
+                    wrapSaveCallback(e, Config::save);
+                    misc.addEntry(e);
+                });
             });
 
             return builder.build();
         });
     }
 
-    private static void wrapSaveCallback(AbstractConfigEntry<?> e, Module<?> module) {
+    private static void wrapSaveCallback(AbstractConfigEntry<?> e, Runnable saveFunc) {
         if (saveCallback.isPresent()) {
             saveCallback.get().setAccessible(true);
             Consumer<Object> original = (Consumer<Object>) Utilities.supplyUnchecked(() -> saveCallback.get().get(e));
@@ -107,15 +123,14 @@ public class AutoConfigScreen {
                 Utilities.runUnchecked(() -> saveCallback.get().set(e, (Consumer<Object>) o -> {
                     if (e.isEdited()) {
                         original.accept(o);
-                        saveQueue.get().add(module);
+                        saveQueue.get().add(saveFunc);
                     }
                 }));
             }
         }
     }
 
-    private static boolean checkOptionManager(AbstractConfigListEntry<?> e, Module<?> module, Field field) {
-        var opManager = module.manager().getOptionManager();
+    private static boolean checkOptionManager(AbstractConfigListEntry<?> e, OptionManager<?> opManager, Field field) {
         Option opt = Option.ofField(field);
         if (opManager.isModified(opt)) {
             e.setEditable(false);
@@ -139,9 +154,9 @@ public class AutoConfigScreen {
         return true;
     }
 
-    private static void appendEnvInfo(AbstractConfigListEntry<?> e, Module<?> module) {
+    private static void appendEnvInfo(AbstractConfigListEntry<?> e, Environment env) {
         if (e instanceof TooltipListEntry<?> t) {
-            Text text = TextUtil.translatable("andromeda.config.tooltip.environment." + module.meta().environment().toString().toLowerCase()).formatted(Formatting.YELLOW);
+            Text text = TextUtil.translatable("andromeda.config.tooltip.environment." + env.toString().toLowerCase()).formatted(Formatting.YELLOW);
             appendText(t, text);
         }
     }
@@ -189,11 +204,10 @@ public class AutoConfigScreen {
         }
     }
 
-    //TODO
     private static void powerSave() {
         Config.save();
         if (saveCallback.isPresent()) {
-            saveQueue.get().forEach(module -> module.manager().save());
+            saveQueue.get().forEach(Runnable::run);
             saveQueue.get().clear();
         } else {
             ModuleManager.get().all().forEach(module -> module.manager().save());
