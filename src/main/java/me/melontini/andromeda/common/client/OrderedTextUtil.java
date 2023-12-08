@@ -7,11 +7,13 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
+import java.util.List;
+
 public class OrderedTextUtil {
 
-    public static Text[] wrap(Text text, int length) {
+    public static List<Text> wrap(Text text, int length) {
         return MinecraftClient.getInstance().textRenderer.wrapLines(text, length)
-                .stream().map(OrderedTextUtil::orderedToNormal).toArray(Text[]::new);
+                .stream().map(OrderedTextUtil::orderedToNormal).toList();
     }
 
     //MIT License
