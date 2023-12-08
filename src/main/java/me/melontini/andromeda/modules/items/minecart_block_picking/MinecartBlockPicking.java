@@ -20,7 +20,7 @@ public class MinecartBlockPicking extends Module<MinecartBlockPicking.Config> {
     @Override
     public void onConfig(ConfigBuilder<Config> builder) {
         builder.processors((registry, mod) -> registry.register(CommonValues.MODID + ":spawner_enabled", manager -> {
-            if (ModuleManager.get().getModule(Minecarts.class)
+            if (ModuleManager.get().getDiscovered(Minecarts.class).filter(Module::enabled)
                     .map(m->!m.config().isSpawnerMinecartOn).orElse(true)) {
                 return Map.of("spawnerPicking", false);
             }

@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.blocks.bed.unsafe;
 
 import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
@@ -21,7 +22,7 @@ public class Unsafe extends BasicModule {
     public void onConfig(ConfigBuilder<BasicConfig> builder) {
         builder.processors((registry, mod) ->
                 registry.register(CommonValues.MODID + ":module_conflict", manager -> {
-                    if (ModuleManager.get().getModule(Safe.class).isPresent()) {
+                    if (ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent()) {
                         return Map.of("enabled", false);
                     }
                     return null;

@@ -30,6 +30,9 @@ public class ModuleManager {
     private final ImmutableMap<Class<?>, Module<?>> discoveredModules;
     private final ImmutableMap<String, Module<?>> discoveredModuleNames;
 
+    private final ImmutableMap<Class<?>, Module<?>> modules;
+    private final ImmutableMap<String, Module<?>> moduleNames;
+
     private final ImmutableMap<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs;
 
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
@@ -62,6 +65,11 @@ public class ModuleManager {
 
         sorted.forEach(Module::postConfig);
         sorted.forEach(module -> module.manager().save());
+
+        this.modules = ImmutableMap.copyOf(Utilities.consume(new LinkedHashMap<>(), map ->
+                sorted.forEach(module -> {if (module.enabled()) map.put(module.getClass(), module);})));
+        this.moduleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), map ->
+                sorted.forEach(module -> {if (module.enabled()) map.put(module.meta().id(), module);})));
 
         cleanConfigs();
     }
@@ -114,14 +122,12 @@ public class ModuleManager {
 
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
-        return (Optional<T>) Optional.ofNullable(discoveredModules.get(cls))
-                .filter(Module::enabled);
+        return (Optional<T>) Optional.ofNullable(modules.get(cls));
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
-        return (Optional<T>) Optional.ofNullable(discoveredModuleNames.get(name))
-                .filter(Module::enabled);
+        return (Optional<T>) Optional.ofNullable(moduleNames.get(name));
     }
 
     @SuppressWarnings("unchecked")
@@ -143,7 +149,7 @@ public class ModuleManager {
     }
 
     public Collection<Module<?>> loaded() {
-        return discoveredModules.values().stream().filter(Module::enabled).toList();
+        return modules.values();
     }
 
     public static <T extends Module<?>> T quick(Class<T> cls) {
