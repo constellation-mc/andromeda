@@ -60,9 +60,9 @@ public class AutoConfigScreen {
                             .forEach(e -> {
                                 if (checkOptionManager(e, module, fields.get(0))) {
                                     setModuleTooltip(e, module);
-                                    wrapTooltip(e);
                                     appendEnvInfo(e, module);
                                 }
+                                wrapTooltip(e);
                                 category.addEntry(e);
                             });
                 } else {
@@ -71,17 +71,17 @@ public class AutoConfigScreen {
                         String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
                         registry.getAndTransform(opt, field, module.config(), module.manager().getDefaultConfig(), registry).forEach(e -> {
                             if (checkOptionManager(e, module, field)) {
-                                wrapTooltip(e);
                                 appendEnvInfo(e, field);
                             }
+                            wrapTooltip(e);
                             list.add(e);
                         });
                     });
                     var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
                     var built = e.build();
                     setModuleTooltip(built, module);
-                    wrapTooltip(built);
                     appendEnvInfo(built, module);
+                    wrapTooltip(built);
                     category.addEntry(built);
                 }
             });
