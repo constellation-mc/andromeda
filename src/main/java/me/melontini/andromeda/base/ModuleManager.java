@@ -30,8 +30,6 @@ public class ModuleManager {
     private final ImmutableMap<Class<?>, Module<?>> discoveredModules;
     private final ImmutableMap<String, Module<?>> discoveredModuleNames;
 
-    private final ImmutableMap<Class<?>, Module<?>> modules;
-    private final ImmutableMap<String, Module<?>> moduleNames;
     private final ImmutableMap<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs;
 
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
@@ -55,9 +53,6 @@ public class ModuleManager {
             return i >= 0 ? i : categories.size();
         })).toList();
 
-        Map<Class<?>, Module<?>> modules = new LinkedHashMap<>();
-        sorted.forEach(m -> modules.put(m.getClass(), m));
-
         this.discoveredModules = ImmutableMap.copyOf(Utilities.consume(new LinkedHashMap<>(), (map) ->
                 sorted.forEach(m -> map.put(m.getClass(), m))));
         this.discoveredModuleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), (map) ->
@@ -65,12 +60,8 @@ public class ModuleManager {
 
         this.configs = ImmutableMap.copyOf(setUpConfigs(sorted));
 
-        sorted.forEach(module -> module.manager().getOptionManager().processOptions());
-        modules.values().removeIf(m -> !m.enabled());
-
-        this.modules = ImmutableMap.copyOf(modules);
-        this.moduleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), (map) ->
-                sorted.forEach(m -> map.put(m.meta().id(), m))));
+        sorted.forEach(Module::postConfig);
+        sorted.forEach(module -> module.manager().save());
 
         cleanConfigs();
     }
@@ -133,6 +124,16 @@ public class ModuleManager {
                 .filter(Module::enabled);
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Module<?>> Optional<T> getDiscovered(Class<T> cls) {
+        return (Optional<T>) Optional.ofNullable(discoveredModules.get(cls));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Module<?>> Optional<T> getDiscovered(String name) {
+        return (Optional<T>) Optional.ofNullable(discoveredModuleNames.get(name));
+    }
+
     public Optional<Module<?>> moduleFromConfig(String name) {
         return Optional.ofNullable(mixinConfigs.get(name));
     }
@@ -142,7 +143,7 @@ public class ModuleManager {
     }
 
     public Collection<Module<?>> loaded() {
-        return Collections.unmodifiableCollection(modules.values());
+        return discoveredModules.values().stream().filter(Module::enabled).toList();
     }
 
     public static <T extends Module<?>> T quick(Class<T> cls) {

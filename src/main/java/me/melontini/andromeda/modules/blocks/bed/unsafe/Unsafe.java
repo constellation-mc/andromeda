@@ -27,4 +27,10 @@ public class Unsafe extends BasicModule {
                     return null;
                 }, mod));
     }
+
+    @Override
+    public void postConfig() {
+        ModuleManager.get().getDiscovered(Safe.class)
+                .ifPresent(m -> m.manager().postSave(manager -> this.manager().save()));
+    }
 }

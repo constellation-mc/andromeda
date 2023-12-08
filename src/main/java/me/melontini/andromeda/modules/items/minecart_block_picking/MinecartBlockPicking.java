@@ -29,6 +29,12 @@ public class MinecartBlockPicking extends Module<MinecartBlockPicking.Config> {
     }
 
     @Override
+    public void postConfig() {
+        ModuleManager.get().getDiscovered(Minecarts.class)
+                .ifPresent(m -> m.manager().postSave(manager -> this.manager().save()));
+    }
+
+    @Override
     public Class<Config> configClass() {
         return Config.class;
     }

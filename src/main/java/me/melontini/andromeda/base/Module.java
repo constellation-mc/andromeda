@@ -36,6 +36,7 @@ public abstract class Module<T extends BasicConfig> {
     public void onPreLaunch() { }
 
     public void onConfig(ConfigBuilder<T> builder) { }
+    public void postConfig() { }
 
     public final Metadata<T> meta() {
         return info;
