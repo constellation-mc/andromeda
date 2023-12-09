@@ -70,7 +70,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                             if (world.getBlockState(pos).getBlock() instanceof AirBlock && flowerBlock.canPlaceAt(flowerState, world, pos)) {
                                 if (world.random.nextInt(12) == 0) {
                                     if (ModuleManager.get().getModule(Unknown.class).isPresent() && world.random.nextInt(100) == 0) {
-                                        world.setBlockState(pos, Content.ROSE_OF_THE_VALLEY_BLOCK.get().getDefaultState());
+                                        world.setBlockState(pos, Content.ROSE_OF_THE_VALLEY_BLOCK.orThrow().getDefaultState());
                                     } else {
                                         world.setBlockState(pos, flowerState);
                                     }
