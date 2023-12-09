@@ -21,7 +21,7 @@ public class DragonFight extends Module<DragonFight.Config> {
         public boolean respawnCrystals = true;
 
         @ConfigEntry.Category("mechanics")
-        @ConfigEntry.Gui.Tooltip(count = 2)
+        @ConfigEntry.Gui.Tooltip
         public boolean scaleHealthByMaxPlayers = false;
 
         @ConfigEntry.Category("mechanics")

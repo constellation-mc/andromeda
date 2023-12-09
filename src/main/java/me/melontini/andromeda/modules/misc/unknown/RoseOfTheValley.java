@@ -27,7 +27,7 @@ public class RoseOfTheValley extends BlockItem {
     }
 
     public static void handleClick(ItemStack stack, ItemStack otherStack, PlayerEntity player) {
-        player.getInventory().offerOrDrop(new ItemStack(Content.ROSE_OF_THE_VALLEY.get()));
+        player.getInventory().offerOrDrop(new ItemStack(Content.ROSE_OF_THE_VALLEY.orThrow()));
         stack.decrement(1);
         otherStack.decrement(1);
         if (player.world.isClient) {

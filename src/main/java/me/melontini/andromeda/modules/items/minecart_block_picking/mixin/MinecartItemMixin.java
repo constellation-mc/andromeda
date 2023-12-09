@@ -181,7 +181,7 @@ abstract class MinecartItemMixin extends Item {
                     if (!world.isClient()) {
                         MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
                         if (!player.isCreative()) stack.decrement(1);
-                        ItemStack spawnerMinecart = new ItemStack(MinecartItems.SPAWNER_MINECART.get(), 1);
+                        ItemStack spawnerMinecart = new ItemStack(MinecartItems.SPAWNER_MINECART.orThrow(), 1);
 
                         spawnerMinecart.setNbt(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build());
 
@@ -196,7 +196,7 @@ abstract class MinecartItemMixin extends Item {
                         NoteBlock noteBlock = (NoteBlock) state.getBlock();
                         if (!player.isCreative()) stack.decrement(1);
                         int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
-                        ItemStack noteBlockMinecart = new ItemStack(MinecartItems.NOTE_BLOCK_MINECART.get());
+                        ItemStack noteBlockMinecart = new ItemStack(MinecartItems.NOTE_BLOCK_MINECART.orThrow());
 
                         noteBlockMinecart.setNbt(NbtBuilder.create().putInt("Note", noteProp).build());
 
@@ -212,7 +212,7 @@ abstract class MinecartItemMixin extends Item {
                         JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
 
                         ItemStack record = jukeboxBlockEntity.getRecord();
-                        ItemStack jukeboxMinecart = new ItemStack(MinecartItems.JUKEBOX_MINECART.get());
+                        ItemStack jukeboxMinecart = new ItemStack(MinecartItems.JUKEBOX_MINECART.orThrow());
 
                         if (!record.isEmpty()) {
                             world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
@@ -229,7 +229,7 @@ abstract class MinecartItemMixin extends Item {
                 if (state.isOf(Blocks.ANVIL) && MinecartItems.ANVIL_MINECART.isPresent()) {
                     if (!world.isClient()) {
                         if (!player.isCreative()) stack.decrement(1);
-                        ItemStack anvilMinecart = new ItemStack(MinecartItems.ANVIL_MINECART.get());
+                        ItemStack anvilMinecart = new ItemStack(MinecartItems.ANVIL_MINECART.orThrow());
                         player.getInventory().offerOrDrop(anvilMinecart);
                         world.breakBlock(pos, false);
                     }

@@ -8,7 +8,7 @@ public class AndromedaConfig {
     @ConfigEntry.Gui.RequiresRestart
     public boolean sideOnlyMode = false;
 
-    @ConfigEntry.Gui.Tooltip(count = 3)
+    @ConfigEntry.Gui.Tooltip
     public boolean sendCrashReports = true;
 
     @ConfigEntry.Gui.Tooltip
