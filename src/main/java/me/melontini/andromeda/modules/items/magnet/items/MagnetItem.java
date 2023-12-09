@@ -115,7 +115,7 @@ public class MagnetItem extends Item {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (!world.isClient()) {
             if (entity instanceof LivingEntity pe) { //selected doesn't account for offhand
-                if (!stack.isItemEqual(pe.getStackInHand(Hand.MAIN_HAND)) && !stack.isItemEqual(pe.getStackInHand(Hand.OFF_HAND)))
+                if (!ItemStack.areItemsEqual(stack, pe.getStackInHand(Hand.MAIN_HAND)) && !ItemStack.areItemsEqual(stack, pe.getStackInHand(Hand.OFF_HAND)))
                     return;
             } else if (!selected) return;
 
