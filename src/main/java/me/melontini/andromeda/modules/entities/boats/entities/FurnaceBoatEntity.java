@@ -29,7 +29,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     }
 
     public FurnaceBoatEntity(World world, double x, double y, double z) {
-        this(BoatEntities.BOAT_WITH_FURNACE.get(), world);
+        this(BoatEntities.BOAT_WITH_FURNACE.orThrow(), world);
         this.setPosition(x, y, z);
         this.prevX = x;
         this.prevY = y;

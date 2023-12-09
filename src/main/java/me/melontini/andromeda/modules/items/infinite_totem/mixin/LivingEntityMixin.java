@@ -42,24 +42,24 @@ abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean andromeda$infiniteFallback(boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
-        return original || itemStack.isOf(Content.INFINITE_TOTEM.get());
+        return original || itemStack.isOf(Content.INFINITE_TOTEM.orThrow());
     }
 
     @WrapWithCondition(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
     private boolean andromeda$infiniteFallback(ItemStack instance, int i) {
-        return !instance.isOf(Content.INFINITE_TOTEM.get());
+        return !instance.isOf(Content.INFINITE_TOTEM.orThrow());
     }
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;sendEntityStatus(Lnet/minecraft/entity/Entity;B)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "tryUseTotem", cancellable = true)
     private void andromeda$useInfiniteTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir, ItemStack itemStack) {
         if (am$itou.config().enabled) {
-            if (itemStack.isOf(Content.INFINITE_TOTEM.get())) {
+            if (itemStack.isOf(Content.INFINITE_TOTEM.orThrow())) {
                 if (!world.isClient()) {
                     PacketByteBuf buf = PacketByteBufs.create()
                             .writeUuid(this.getUuid())
-                            .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.get()));
-                    buf.writeIdentifier(Registry.PARTICLE_TYPE.getId(Content.KNOCKOFF_TOTEM_PARTICLE.get()));
+                            .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.orThrow()));
+                    buf.writeIdentifier(Registry.PARTICLE_TYPE.getId(Content.KNOCKOFF_TOTEM_PARTICLE.orThrow()));
 
                     for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
                         ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);

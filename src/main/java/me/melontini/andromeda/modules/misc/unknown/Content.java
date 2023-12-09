@@ -20,5 +20,5 @@ public class Content {
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON))))
             .register(() -> ModuleManager.quick(Unknown.class).config().enabled));
 
-    public static final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.of(() -> () -> asItem(ROSE_OF_THE_VALLEY_BLOCK.get()));
+    public static final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.of(() -> () -> asItem(ROSE_OF_THE_VALLEY_BLOCK.orThrow()));
 }

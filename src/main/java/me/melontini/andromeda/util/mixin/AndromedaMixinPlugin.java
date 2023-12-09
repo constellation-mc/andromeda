@@ -1,8 +1,8 @@
 package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
+import org.spongepowered.asm.mixin.Mixins;
 
 @SuppressWarnings("UnstableApiUsage")
 @CustomLog
@@ -16,6 +16,6 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
             LOGGER.error("Failed to patch the mixin framework!", e);
         }
 
-        Bootstrap.onPluginLoad();
+        Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
     }
 }

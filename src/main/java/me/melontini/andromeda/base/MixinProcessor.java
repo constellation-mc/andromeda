@@ -71,7 +71,7 @@ public class MixinProcessor {
             try (ByteArrayInputStream bais = new ByteArrayInputStream(config.toString().getBytes())) {
                 CONFIG.set(bais);
                 Mixins.addConfiguration(cfg);
-                manager.mixinConfigs.put(cfg, module.meta().id());
+                manager.mixinConfigs.put(cfg, module);
             } catch (IOException e) {
                 throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()));
             } finally {

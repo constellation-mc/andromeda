@@ -20,7 +20,7 @@ public class BetterFurnaceMinecart extends Module<BetterFurnaceMinecart.Config> 
         @ConfigEntry.Gui.Tooltip
         public int maxFuel = 45000;
 
-        @ConfigEntry.Gui.Tooltip(count = 3)
+        @ConfigEntry.Gui.Tooltip
         public boolean takeFuelWhenLow = true;
     }
 }

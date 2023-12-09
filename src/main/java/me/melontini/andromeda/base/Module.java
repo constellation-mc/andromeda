@@ -6,9 +6,8 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.Lazy;
+import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
-import me.melontini.dark_matter.api.config.OptionProcessorRegistry;
-import net.fabricmc.loader.api.ModContainer;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class Module<T extends BasicConfig> {
@@ -35,7 +34,9 @@ public abstract class Module<T extends BasicConfig> {
         } catch (ClassNotFoundException ignored) { }
     }
     public void onPreLaunch() { }
-    public void onProcessors(OptionProcessorRegistry<T> registry, ModContainer mod) { }
+
+    public void onConfig(ConfigBuilder<T> builder) { }
+    public void postConfig() { }
 
     public final Metadata<T> meta() {
         return info;
@@ -50,7 +51,7 @@ public abstract class Module<T extends BasicConfig> {
 
     public final ConfigManager<T> manager() { return manager.get(); }
     public final T config() { return manager().getConfig(); }
-    public boolean enabled() { return manager().get(boolean.class, "enabled"); }
+    public final boolean enabled() { return manager().getConfig().enabled; }
 
     public record Metadata<T extends BasicConfig>(Module<T> module, String name, String category, Environment environment) {
 
