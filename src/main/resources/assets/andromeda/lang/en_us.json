@@ -11,6 +11,7 @@
   "tooltip.andromeda.compass.recovery": "Distance to last death spot: %s",
   "tooltip.andromeda.frameitem": "Item inside the frame",
   "tooltip.andromeda.throwable_item": "This item can be thrown.",
+  "tooltip.andromeda.magnet.level": "Level %s/5",
   "death.attack.andromeda_agony": "%s died from agony",
   "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
   "andromeda.container.guarded": "Can't open! The container is guarded!",
@@ -33,7 +34,10 @@
   "block.andromeda.incubator": "Incubator",
 
   "item.andromeda.infinite_totem": "Infinite Totem of Undying",
+
   "item.andromeda.lockpick": "Lockpick",
+
+  "item.andromeda.magnet": "Magnet",
 
   "item.andromeda.spawner_minecart": "Minecart with Spawner",
   "item.andromeda.anvil_minecart": "Minecart with Anvil",
@@ -228,6 +232,8 @@
   "config.andromeda.items.lockpick.option.breakAfterUse.@Tooltip": "Breaks the lockpick after a successful break-in",
   "config.andromeda.items.lockpick.option.villagerInventory": "Villager Inventories",
   "config.andromeda.items.lockpick.option.villagerInventory.@Tooltip": "Open villager inventories.",
+  "config.andromeda.items.magnet": "Magnet",
+  "config.andromeda.items.magnet.@Tooltip": "A special magnet which attracts selected items. \nCan be upgraded using Heart of the Sea.",
   "config.andromeda.items.better_names": "Slightly Better Item Names",
   "config.andromeda.items.better_names.@Tooltip": "Shows durability (in %), or item count.",
   "config.andromeda.items.infinite_totem": "Infinite Totem of Undying",
