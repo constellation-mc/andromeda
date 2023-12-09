@@ -20,7 +20,6 @@
 
   "andromeda.config.option_manager.reason.andromeda.module_conflict": "Conflicting module enabled!",
   "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
-  "andromeda.config.option_manager.reason.andromeda.spawner_enabled": "Spawner minecart must be enabled to use this!",
   "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "Module disabled in side-only mode!",
 
   "andromeda.config.tooltip.environment.client": "Client-only feature",
@@ -127,6 +126,8 @@
   "config.andromeda.blocks.guarded_loot": "Guarded Loot",
   "config.andromeda.blocks.guarded_loot.@Tooltip": "Block players from opening unlooted containers if there are any monsters nearby.",
   "config.andromeda.blocks.guarded_loot.option.range": "Range",
+  "config.andromeda.blocks.guarded_loot.option.allowLockPicking": "Allow Lock Picking",
+  "config.andromeda.blocks.guarded_loot.option.allowLockPicking.@Tooltip": "Requires Lockpick to be enabled!",
   "config.andromeda.blocks.falling_propagule": "Falling Propagule",
   "config.andromeda.blocks.falling_propagule.@Tooltip": "Fully grown, hanging propagule will fall after some time.",
   "config.andromeda.blocks.cactus_bottle_filling": "Cactus Bottle Filling",
@@ -245,7 +246,7 @@
   "config.andromeda.items.minecart_block_picking": "Minecart Block Picking",
   "config.andromeda.items.minecart_block_picking.@Tooltip": "Allows players to \"pick\" blocks via minecarts",
   "config.andromeda.items.minecart_block_picking.option.spawnerPicking": "Spawner Picking",
-  "config.andromeda.items.minecart_block_picking.option.spawnerPicking.@Tooltip": "Allows players to \"pick\" spawners",
+  "config.andromeda.items.minecart_block_picking.option.spawnerPicking.@Tooltip": "Allows players to \"pick\" spawners \nSpawner minecart must be enabled to use this!",
 
   "config.andromeda.category.bugfixes": "Bugfixes",
   "config.andromeda.bugfixes.advancement_shadow": "Frame-Independent Advancement Shadow",

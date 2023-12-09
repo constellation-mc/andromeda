@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.guarded_loot.GuardedLoot;
+import me.melontini.andromeda.modules.items.lockpick.Content;
+import me.melontini.andromeda.modules.items.lockpick.Lockpick;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
@@ -43,14 +45,27 @@ abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockE
                     .toList();
 
             if (!monster.isEmpty()) {
-                player.sendMessage(TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
-                player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                player.emitGameEvent(GameEvent.CONTAINER_OPEN);
+                boolean lockpicking = ModuleManager.get().getModule(Lockpick.class).map(m -> {
+                    if (am$guard.config().allowLockPicking) {
+                        if (player.getMainHandStack().isOf(Content.LOCKPICK.get()) && m.rollLockpick()) {
+                            if (!player.getAbilities().creativeMode && m.config().breakAfterUse)
+                                player.getMainHandStack().decrement(1);
+                            return true;
+                        }
+                    }
+                    return false;
+                }).orElse(false);
 
-                for (LivingEntity livingEntity : monster) {
-                    livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 5 * 20, 0, false, false));
+                if (!lockpicking) {
+                    player.sendMessage(TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
+                    player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    player.emitGameEvent(GameEvent.CONTAINER_OPEN);
+
+                    for (LivingEntity livingEntity : monster) {
+                        livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 5 * 20, 0, false, false));
+                    }
+                    return true;
                 }
-                return true;
             }
         }
         return locked;
