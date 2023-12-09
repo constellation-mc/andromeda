@@ -1,7 +1,9 @@
 package me.melontini.andromeda.common.registries;
 
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -12,6 +14,8 @@ public class Keeper<T> {
 
     private Supplier<Callable<T>> supplier;
     private T value;
+    private Field field;
+
     private final Set<Consumer<T>> consumers = new HashSet<>();
 
     public Keeper(Supplier<Callable<T>> supplier) {
@@ -23,30 +27,48 @@ public class Keeper<T> {
     }
 
     public boolean isPresent() {
-        return value != null;
+        return this.value != null;
     }
 
     public void ifPresent(Consumer<T> consumer) {
-        if (value != null) consumer.accept(value);
+        if (this.value != null) consumer.accept(this.value);
     }
 
     public boolean initialized() {
-        return supplier == null;
+        return this.supplier == null;
     }
 
     public Keeper<T> afterInit(Consumer<T> consumer) {
-        consumers.add(consumer);
+        this.consumers.add(consumer);
         return this;
     }
 
-    void init() throws Exception {
-        value = supplier.get().call();
-        supplier = null;
+    public @Nullable Field getField() {
+        return this.field;
+    }
 
-        consumers.forEach(consumer -> consumer.accept(get()));
+    void init(@Nullable Field f) throws Exception {
+        this.value = this.supplier.get().call();
+        this.supplier = null;
+        this.field = f;
+
+        this.consumers.forEach(consumer -> consumer.accept(get()));
     }
 
     public T get() {
-        return value;
+        return this.value;
+    }
+
+    public T orThrow() {
+        return orThrow("No value present! Keeper (%s) not bootstrapped?".formatted(field == null ? "UNKNOWN" : field.getName()));
+    }
+
+    public T orThrow(String msg) {
+        return orThrow(() -> new IllegalStateException(msg));
+    }
+
+    public <X extends Throwable> T orThrow(Supplier<X> e) throws X {
+        if (this.value == null) throw e.get();
+        return this.value;
     }
 }

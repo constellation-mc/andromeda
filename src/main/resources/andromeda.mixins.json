@@ -7,7 +7,8 @@
   "mixins": [
   ],
   "client": [
-    "MinecraftClientMixin"
+    "MinecraftClientMixin",
+    "SubCategoryListEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

@@ -1,6 +1,17 @@
 
 name: publish
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "The type of this version. e.g alpha"
+        type: choice
+        default: beta
+        options:
+          - release
+          - beta
+          - alpha
+        required: false
 
 jobs:
   publish:
@@ -19,14 +30,14 @@ jobs:
         run: chmod +x ./gradlew
       - name: build
         run: ./gradlew build
-      - name: Retrieve Version #https://stackoverflow.com/questions/71089787/how-to-get-version-name-from-android-gradle-file-in-github-actions
+      - name: retrieve version #https://stackoverflow.com/questions/71089787/how-to-get-version-name-from-android-gradle-file-in-github-actions
         run: |
           echo "VERSION_INFORMATION=$(${{github.workspace}}/gradlew -q printVersionName)" >> $GITHUB_ENV
           echo "VERSION_PLAIN=$(${{github.workspace}}/gradlew -q printVersion)" >> $GITHUB_ENV
-      - name: Publish Minecraft Mods
+      - name: publish minecraft mods
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          version-type: alpha
+          version-type: ${{ inputs.version_type }}
           changelog-file: CHANGELOG.md
           name: ${{ env.VERSION_INFORMATION }}
           version: ${{ env.VERSION_PLAIN }}
@@ -40,7 +51,7 @@ jobs:
           java: |
             17
 
-          github-tag: v${{ env.VERSION_PLAIN }}
+          github-tag: ${{ env.VERSION_PLAIN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-commitish: ${{ github.sha }}
           github-prerelease: false

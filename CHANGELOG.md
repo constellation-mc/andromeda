@@ -2,16 +2,21 @@
 
 ## Alpha warning!
 
-- In v1.0.0 Andromeda has been rewritten in a fairly major way. There were a lot of breaking changes!
-- This release does not function properly on Connector and requires some complicated fixes on its side. 
-- I suggest reading the "State of Andromeda" post I made on GitHub for more context and changes in this version!
+* New Feature! Magnet.
+  * This special magnet allows you to select items you want to attract.
+  * Can be upgraded 4 additional times using a Heart of the Sea.
+  * Crafted from Heart of the Sea, 4 Copper Ingots and 2 Redstone.
+* Guarded Loot: Allow Lock Picking!
+  * Allows the Lockpick to bypass chest guards.
 
-### https://github.com/melontini/andromeda/discussions/63
+Other stuff:
 
-Something not mentioned in the post:
-
-- All resources were moved from `am_{something}` to `andromeda/{something}`
-- There's no config migration, so you need to re-configure the mod again, sorry.
-- `throwable_items:blacklist` is now part of the data pack as `"disabled": true`.
-- Added `andromeda:tempting_for_villagers` tag to specify items villagers will follow.
-- Throwable Items can now be dispensed!
+* Improved option tooltips if Cloth-Config is installed.
+* Brightened Incubator's texture.
+* Fixed New Minecarts not working.
+* Configs are now selectively saved instead of all at once.
+* Updated Chinese translation. Courtesy of [Rad233](https://github.com/Rad233).
+* ModuleManager is now shared over ObjectShare.
+* Optimized PNG assets.
+* Fixed some bugs (and probably added more!)
+* Updated DM.

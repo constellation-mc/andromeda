@@ -61,7 +61,7 @@ public class IncubatorBlock extends BlockWithEntity {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        if (ModuleManager.get().getModule(Unknown.class).map(m->m.config().enabled).orElse(false))
+        if (ModuleManager.get().getModule(Unknown.class).isPresent())
             tooltip.add(AndromedaTexts.INCUBATOR_SECRET);
     }
 
