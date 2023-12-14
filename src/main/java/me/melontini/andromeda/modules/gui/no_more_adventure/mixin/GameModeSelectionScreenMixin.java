@@ -24,11 +24,11 @@ abstract class GameModeSelectionScreenMixin extends Screen {
 
     @ModifyExpressionValue(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;VALUES:[Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;"))
     private GameModeSelectionScreen.GameModeSelection[] andromeda$modValues(GameModeSelectionScreen.GameModeSelection[] original) {
-        return !am$noma.config().enabled ? original : andromeda$gameModeSelections;
+        return !am$noma.enabled() ? original : andromeda$gameModeSelections;
     }
 
     @ModifyExpressionValue(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen;UI_WIDTH:I"))
     private int andromeda$modValues(int original) {
-        return !am$noma.config().enabled ? original : andromeda$gameModeSelections.length * 31 - 5;
+        return !am$noma.enabled() ? original : andromeda$gameModeSelections.length * 31 - 5;
     }
 }

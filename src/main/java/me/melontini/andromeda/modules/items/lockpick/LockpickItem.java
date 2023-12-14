@@ -19,7 +19,7 @@ public class LockpickItem extends Item {
     }
 
     public boolean tryUse(Lockpick module, ItemStack stack, LivingEntity user, Hand hand) {
-        if (module.config().enabled) {
+        if (module.enabled()) {
 
             if (!user.world.isClient())
                 user.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);

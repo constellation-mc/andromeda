@@ -24,6 +24,6 @@ class PlayerManagerMixin {
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;", ordinal = 0, shift = At.Shift.BEFORE), method = "onDataPacksReloaded")
     private void andromeda$reload(CallbackInfo ci) {
         //we don't sync until our advancements have been generated
-        if (am$rag.config().enabled) generateRecipeAdvancements(server);
+        if (am$rag.enabled()) generateRecipeAdvancements(server);
     }
 }

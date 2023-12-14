@@ -37,7 +37,7 @@ abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
     @SuppressWarnings("ConstantConditions")
     @Inject(at = @At("TAIL"), method = "onBlockHit")
     private void andromeda$onBeeNestHit(BlockHitResult blockHitResult, CallbackInfo ci) {
-        if (!am$cbnf.config().enabled) return;
+        if (!am$cbnf.enabled()) return;
 
         Entity entity = this;
         BlockPos pos = blockHitResult.getBlockPos();

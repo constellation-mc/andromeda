@@ -24,7 +24,7 @@ class MinecraftClientMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourcePackManager;scanPacks()V", shift = At.Shift.BEFORE), method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;")
     private void andromeda$downloadLangFiles(boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-        if (!am$trans.config().enabled) return;
+        if (!am$trans.enabled()) return;
         TranslationUpdater.onResourceReload(this.options.language);
     }
 }

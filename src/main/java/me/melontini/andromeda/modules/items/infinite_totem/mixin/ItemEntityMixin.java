@@ -72,7 +72,7 @@ abstract class ItemEntityMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!am$itou.config().enableAscension || !am$itou.config().enabled)
+        if (!am$itou.config().enableAscension || !am$itou.enabled())
             return;
         if (!this.dataTracker.get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
 

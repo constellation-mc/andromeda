@@ -36,7 +36,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;tick()V", shift = At.Shift.AFTER), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!am$bfd.config().enabled) return;
+        if (!am$bfd.enabled()) return;
 
         if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
 
@@ -79,7 +79,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                         }
                     }
                 }
-            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && am$bfd.config().enabled) {
+            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && am$bfd.enabled()) {
                 andromeda$plantingCoolDown = world.random.nextBetween(3600, 8000);
                 for (int i = -1; i <= 1; i++) {
                     for (int b = -2; b <= 2; b++) {

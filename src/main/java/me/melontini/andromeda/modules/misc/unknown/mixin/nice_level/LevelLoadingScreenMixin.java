@@ -20,7 +20,7 @@ class LevelLoadingScreenMixin {
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
     private String andromeda$getPercentage(String o) {
-        if (am$unk.config().enabled) {
+        if (am$unk.enabled()) {
             if (Objects.equals(o, "69%")) {
                 return "Nice%";
             }

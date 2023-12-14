@@ -22,7 +22,7 @@ class ItemMixin {
     private static final Unknown am$unk = ModuleManager.quick(Unknown.class);
     @Inject(at = @At("HEAD"), method = "onClicked", cancellable = true)
     private void andromeda$onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir) {
-        if (am$unk.config().enabled)
+        if (am$unk.enabled())
             if (clickType == ClickType.RIGHT && stack.isOf(Items.LILY_OF_THE_VALLEY) && otherStack.isOf(Items.DIAMOND)) {
                 //I mean .....yeah
                 RoseOfTheValley.handleClick(stack, otherStack, player);

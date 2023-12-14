@@ -24,12 +24,12 @@ class BoneMealItemMixin {
 
     @Inject(at = @At("HEAD"), method = "useOnFertilizable", cancellable = true)
     private static void andromeda$useOnFertilizable(ItemStack stack, World world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (!am$bfd.config().enabled || !am$bfd.config().tallFlowers) return;
+        if (!am$bfd.enabled() || !am$bfd.config().tallFlowers) return;
 
         BlockState blockState = world.getBlockState(pos);
         if (blockState.getBlock() instanceof TallFlowerBlock) {
             if (!world.isClient) {
-                if (ModuleManager.get().getModule("misc.unknown").map(m->m.config().enabled).orElse(false) && world.random.nextInt(100) == 0) {
+                if (ModuleManager.get().getModule("misc.unknown").map(m->m.enabled()).orElse(false) && world.random.nextInt(100) == 0) {
                     world.createExplosion(null, DamageSource.explosion((LivingEntity) null), null,
                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 3.0F,
                             false, Explosion.DestructionType.DESTROY);

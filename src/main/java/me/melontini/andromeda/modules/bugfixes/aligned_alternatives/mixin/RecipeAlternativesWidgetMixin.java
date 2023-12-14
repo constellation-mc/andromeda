@@ -20,16 +20,16 @@ class RecipeAlternativesWidgetMixin {
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/recipebook/RecipeAlternativesWidget;renderGrid(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"), index = 3, method = "render")
     private int andromeda$prepareGrid(int i) {
-        return am$para.config().enabled ? 25 : i;
+        return am$para.enabled() ? 25 : i;
     }
 
     @Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/recipebook/RecipeAlternativesWidget;buttonX:I"), method = "renderGrid")
     private int andromeda$renderGridX(RecipeAlternativesWidget instance) {
-        return am$para.config().enabled ? this.buttonX - 2 : this.buttonX;
+        return am$para.enabled() ? this.buttonX - 2 : this.buttonX;
     }
 
     @Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/recipebook/RecipeAlternativesWidget;buttonY:I"), method = "renderGrid")
     private int andromeda$renderGridY(RecipeAlternativesWidget instance) {
-        return am$para.config().enabled ? this.buttonY - 1 : this.buttonY;
+        return am$para.enabled() ? this.buttonY - 1 : this.buttonY;
     }
 }

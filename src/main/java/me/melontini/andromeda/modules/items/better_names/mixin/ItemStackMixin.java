@@ -33,7 +33,7 @@ abstract class ItemStackMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip", locals = LocalCapture.CAPTURE_FAILSOFT)
     private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list, MutableText mutableText) {
-        if (!am$sbin.config().enabled) return;
+        if (!am$sbin.enabled()) return;
 
         if (!this.getItem().isDamageable()) {
             if (this.getCount() > 1)

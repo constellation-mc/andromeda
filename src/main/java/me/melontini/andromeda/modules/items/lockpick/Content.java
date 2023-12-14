@@ -17,7 +17,7 @@ public class Content {
     public static final Keeper<LockpickItem> LOCKPICK = start(() -> ContentBuilder.ItemBuilder
             .create(id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16)))
             .itemGroup(ItemGroup.TOOLS)
-            .register(() -> ModuleManager.quick(Lockpick.class).config().enabled))
+            .register(() -> ModuleManager.quick(Lockpick.class).enabled()))
             .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(ModuleManager.quick(Lockpick.class), item)));
 
     public static final Keeper<ScreenHandlerType<MerchantInventoryScreenHandler>> MERCHANT_INVENTORY = Keeper.of(() -> () ->

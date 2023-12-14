@@ -39,7 +39,7 @@ abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockE
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSpectator()Z"), method = "checkUnlocked")
     private boolean lockedIfMonstersNearby(boolean locked, @Local PlayerEntity player) {
         GuardedLoot module = ModuleManager.quick(GuardedLoot.class);
-        if (module.config().enabled) {
+        if (module.enabled()) {
             List<LivingEntity> monster = player.world.getEntitiesByClass(LivingEntity.class, new Box(this.getPos()).expand(module.config().range), Entity::isAlive).stream().filter(livingEntity -> livingEntity instanceof Monster)
                     .toList();
 

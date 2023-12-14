@@ -34,7 +34,7 @@ class AbstractBlockMixin {
 
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
     private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (!am$cbf.config().enabled) return;
+        if (!am$cbf.enabled()) return;
 
         if (state.getBlock() instanceof CactusBlock) {
             ItemStack stack = player.getStackInHand(hand);

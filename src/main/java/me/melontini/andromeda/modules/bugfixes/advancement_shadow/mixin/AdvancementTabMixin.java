@@ -21,11 +21,11 @@ class AdvancementTabMixin {
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 0), index = 0, method = "drawWidgetTooltip")
     private float andromeda$draw(float value) {
-        return am$fias.config().enabled ? this.alpha + (0.04F * client.getLastFrameDuration()) : value;
+        return am$fias.enabled() ? this.alpha + (0.04F * client.getLastFrameDuration()) : value;
     }
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 1), index = 0, method = "drawWidgetTooltip")
     private float andromeda$draw1(float value) {
-        return am$fias.config().enabled ? this.alpha - (0.06F * client.getLastFrameDuration()) : value;
+        return am$fias.enabled() ? this.alpha - (0.06F * client.getLastFrameDuration()) : value;
     }
 }

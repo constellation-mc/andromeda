@@ -53,7 +53,7 @@ abstract class LivingEntityMixin extends Entity {
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;sendEntityStatus(Lnet/minecraft/entity/Entity;B)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "tryUseTotem", cancellable = true)
     private void andromeda$useInfiniteTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir, ItemStack itemStack) {
-        if (am$itou.config().enabled) {
+        if (am$itou.enabled()) {
             if (itemStack.isOf(Content.INFINITE_TOTEM.orThrow())) {
                 if (!world.isClient()) {
                     PacketByteBuf buf = PacketByteBufs.create()

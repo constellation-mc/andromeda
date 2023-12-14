@@ -14,6 +14,6 @@ class GameModeSelectionMixin {
     private static final NoMoreAdventure am$noma = ModuleManager.quick(NoMoreAdventure.class);
     @ModifyExpressionValue(method = "next", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;ADVENTURE:Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;"))
     private GameModeSelectionScreen.GameModeSelection andromeda$next(GameModeSelectionScreen.GameModeSelection original) {
-        return !am$noma.config().enabled ? original : GameModeSelectionScreen.GameModeSelection.SPECTATOR;
+        return !am$noma.enabled() ? original : GameModeSelectionScreen.GameModeSelection.SPECTATOR;
     }
 }

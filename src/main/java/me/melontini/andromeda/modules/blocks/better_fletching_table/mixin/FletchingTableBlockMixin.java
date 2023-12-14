@@ -33,7 +33,7 @@ class FletchingTableBlockMixin extends CraftingTableBlock {
 
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
     private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (!am$bft.config().enabled) return;
+        if (!am$bft.enabled()) return;
 
         if (state.isOf(Blocks.FLETCHING_TABLE)) {
             if (player.world.isClient) {

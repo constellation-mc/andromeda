@@ -47,7 +47,7 @@ abstract class FallingBlockMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/world/World.getBlockEntity (Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/entity/BlockEntity;", shift = At.Shift.AFTER), method = "tick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (!am$cbnf.config().enabled) return;
+        if (!am$cbnf.enabled()) return;
 
         BlockPos blockPos = this.getBlockPos();
         BlockEntity blockEntity = this.world.getBlockEntity(blockPos);

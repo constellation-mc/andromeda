@@ -21,7 +21,7 @@ class ServerWorldMixin {
 
     @WrapWithCondition(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)V"), method = "tickChunk")
     private boolean andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (am$tbpgs.config().enabled) {
+        if (am$tbpgs.enabled()) {
             if (state.getBlock() instanceof PlantBlock) {
                 PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(state.getBlock());
                 if (data != null) {

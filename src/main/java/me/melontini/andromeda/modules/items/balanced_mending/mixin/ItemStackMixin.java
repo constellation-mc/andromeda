@@ -16,7 +16,7 @@ abstract class ItemStackMixin {
     private static final BalancedMending am$balmend = ModuleManager.quick(BalancedMending.class);
     @ModifyReturnValue(method = "getRepairCost", at = @At("RETURN"))
     private int andromeda$getRepairCost(int original) {
-        if (am$balmend.config().enabled && original >= 52 && EnchantmentHelper.get((ItemStack) (Object) this).containsKey(Enchantments.MENDING)) {
+        if (am$balmend.enabled() && original >= 52 && EnchantmentHelper.get((ItemStack) (Object) this).containsKey(Enchantments.MENDING)) {
             return 52;
         }
         return original;

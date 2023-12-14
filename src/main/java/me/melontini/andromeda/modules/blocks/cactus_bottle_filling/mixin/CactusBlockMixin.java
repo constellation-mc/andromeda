@@ -20,6 +20,6 @@ class CactusBlockMixin {
 
     @Inject(at = @At("TAIL"), method = "appendProperties")
     private void andromeda$appendProperties(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
-        if (am$cbf.config().enabled) builder.add(BlockUtil.WATER_LEVEL_3);
+        if (am$cbf.enabled()) builder.add(BlockUtil.WATER_LEVEL_3);
     }
 }

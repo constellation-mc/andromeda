@@ -28,7 +28,7 @@ abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler> {
 
     @ModifyExpressionValue(method = "drawForeground", at = @At(value = "CONSTANT", args = "intValue=40"))
     private int andromeda$setRepairLimit(int constant) {
-        if (am$balmend.config().enabled)
+        if (am$balmend.enabled())
             if (!this.handler.getSlot(1).getStack().isOf(Items.ENCHANTED_BOOK))
                 if (EnchantmentHelper.get(this.handler.getSlot(0).getStack()).containsKey(Enchantments.MENDING)) {
                     return Integer.MAX_VALUE;

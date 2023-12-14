@@ -26,7 +26,11 @@ public class AndromedaItemGroup {
     public static final Keeper<ItemGroup> GROUP = start(() -> ContentBuilder.ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 Map<Module<?>, List<ItemStack>> stackMap = new LinkedHashMap<>();
-                Acceptor acceptor = (module, stack) -> stackMap.computeIfAbsent(module, module1 -> new ArrayList<>()).add(stack);
+                Acceptor acceptor = (module, stack) -> {
+                    if (!stack.isEmpty()) {
+                        stackMap.computeIfAbsent(module, module1 -> new ArrayList<>()).add(stack);
+                    }
+                };
                 ACCEPTORS.forEach(consumer -> consumer.accept(acceptor));
 
                 Map<Module<?>, List<ItemStack>> small = new LinkedHashMap<>();

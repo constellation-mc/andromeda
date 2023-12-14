@@ -15,6 +15,6 @@ class BedBlockMixin {
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BedBlock;isBedWorking(Lnet/minecraft/world/World;)Z"), method = "onUse")
     private boolean andromeda$explode(boolean original) {
-        return !am$un.config().enabled;
+        return !am$un.enabled();
     }
 }

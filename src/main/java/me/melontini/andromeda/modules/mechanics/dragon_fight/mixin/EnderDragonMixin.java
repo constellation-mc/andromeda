@@ -14,7 +14,7 @@ class EnderDragonMixin {
     private static final DragonFight am$dft = ModuleManager.quick(DragonFight.class);
     @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "doubleValue=32"), method = "tickWithEndCrystals")
     private double andromeda$modConstant(double constant) {
-        if (am$dft.config().enabled && am$dft.config().shorterCrystalTrackRange) return 24.0;
+        if (am$dft.enabled() && am$dft.config().shorterCrystalTrackRange) return 24.0;
         return constant;
     }
 }

@@ -116,7 +116,7 @@ abstract class MinecartItemMixin extends Item {
             }
         }
 
-        if (am$mbp.config().enabled && player.isSneaking()) {
+        if (am$mbp.enabled() && player.isSneaking()) {
             if (stack.getItem() != Items.MINECART) return;
 
             if (state.isOf(Blocks.CHEST)) {

@@ -32,7 +32,7 @@ abstract class PlayerEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
     private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
-        if (!am$unk.config().enabled) return;
+        if (!am$unk.enabled()) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
 
         if (!player.world.isClient) if (Random.create().nextInt(100000) == 0) {

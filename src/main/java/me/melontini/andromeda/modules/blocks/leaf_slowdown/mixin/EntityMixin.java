@@ -35,7 +35,7 @@ abstract class EntityMixin extends Entity {
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (!am$leaf.config().enabled) return;
+        if (!am$leaf.enabled()) return;
 
         EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (!this.world.isClient) {

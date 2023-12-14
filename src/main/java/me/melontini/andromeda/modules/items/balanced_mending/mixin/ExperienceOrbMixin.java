@@ -16,6 +16,6 @@ class ExperienceOrbMixin {
     private static final BalancedMending am$balmend = ModuleManager.quick(BalancedMending.class);
     @Inject(at = @At("HEAD"), method = "repairPlayerGears", cancellable = true)
     private void andromeda$repair(PlayerEntity player, int amount, CallbackInfoReturnable<Integer> cir) {
-        if (am$balmend.config().enabled) cir.setReturnValue(amount);
+        if (am$balmend.enabled()) cir.setReturnValue(amount);
     }
 }

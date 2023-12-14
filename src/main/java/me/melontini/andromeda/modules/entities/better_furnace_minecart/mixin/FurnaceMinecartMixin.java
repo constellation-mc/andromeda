@@ -31,7 +31,7 @@ class FurnaceMinecartMixin {
 
     @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
     public void andromeda$interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (!am$bfm.config().enabled) return;
+        if (!am$bfm.enabled()) return;
         ItemStack stack = player.getStackInHand(hand);
         Item item = stack.getItem();
 
@@ -60,12 +60,12 @@ class FurnaceMinecartMixin {
 
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")
     private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, /* short */ short value, Operation<Void> operation) {
-        if (am$bfm.config().enabled) nbt.putInt(key, this.fuel);
+        if (am$bfm.enabled()) nbt.putInt(key, this.fuel);
         else operation.call(nbt, key, value);
     }
 
     @Inject(at = @At(value = "TAIL"), method = "readCustomDataFromNbt")
     public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (am$bfm.config().enabled) this.fuel = nbt.getInt("Fuel");
+        if (am$bfm.enabled()) this.fuel = nbt.getInt("Fuel");
     }
 }

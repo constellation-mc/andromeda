@@ -36,7 +36,7 @@ abstract class InGameHudMixin {
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
     private void andromeda$renderTooltip(MatrixStack matrices, CallbackInfo ci) {
-        if (!am$tnotn.config().enabled) return;
+        if (!am$tnotn.enabled()) return;
 
         this.client.getProfiler().push("selectedItemName");
 

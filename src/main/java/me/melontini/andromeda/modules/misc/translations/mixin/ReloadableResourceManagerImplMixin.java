@@ -29,7 +29,7 @@ class ReloadableResourceManagerImplMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/LifecycledResourceManager;close()V", shift = At.Shift.AFTER), method = "reload")
     private void andromeda$injectDownloadedTranslations(CallbackInfoReturnable<ResourceReload> cir, @Local(argsOnly = true) LocalRef<List<ResourcePack>> packs) {
         if (this.type != ResourceType.CLIENT_RESOURCES) return;
-        if (!am$trans.config().enabled) return;
+        if (!am$trans.enabled()) return;
 
         packs.set(new ArrayList<>(packs.get()));
         packs.get().add(new DirectoryResourcePack(TranslationUpdater.TRANSLATION_PACK.toFile()) {

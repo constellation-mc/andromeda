@@ -27,7 +27,7 @@ class ItemMixin {
 
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (!am$bft.config().enabled) return;
+        if (!am$bft.enabled()) return;
 
         if (stack.getItem() instanceof BowItem) {
             int a = NbtUtil.getInt(stack.getNbt(), "AM-Tightened", 0);

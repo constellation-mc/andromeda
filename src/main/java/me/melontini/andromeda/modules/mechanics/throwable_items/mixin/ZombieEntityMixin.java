@@ -36,7 +36,7 @@ abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob
 
     @Inject(at = @At("HEAD"), method = "initCustomGoals")
     private void andromeda$initCustomGoals(CallbackInfo ci) {
-        if (am$thritm.config().enabled && am$thritm.config().canZombiesThrowItems)
+        if (am$thritm.enabled() && am$thritm.config().canZombiesThrowItems)
             this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, am$thritm.config().zombieThrowInterval, 4, 16));
     }
 
@@ -47,7 +47,7 @@ abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob
 
     @Override
     public void am$throwItem(LivingEntity target, float pullProgress) {
-        if (!am$thritm.config().enabled || !am$thritm.config().canZombiesThrowItems) return;
+        if (!am$thritm.enabled() || !am$thritm.config().canZombiesThrowItems) return;
 
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 

@@ -20,6 +20,6 @@ abstract class BedBlockMixin extends Block {
 
     @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=5.0F"), method = "onUse")
     public float andromeda$explosionRedirect(float power) {
-        return am$pow.config().enabled ? am$pow.config().power : power;
+        return am$pow.enabled() ? am$pow.config().power : power;
     }
 }

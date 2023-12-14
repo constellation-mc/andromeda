@@ -26,7 +26,7 @@ abstract class ZombieEntityMixin extends HostileEntity {
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/HostileEntity;canPickupItem(Lnet/minecraft/item/ItemStack;)Z"), method = "canPickupItem")
     public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
-        if (am$zpui.config().enabled)
+        if (am$zpui.enabled())
             return original && (stack.isIn(PickupTag.ZOMBIES_PICKUP) || ModuleManager.get().getModule(ThrowableItems.class)
                     .map(m -> handleThrowableItems(m, stack))
                     .orElse(false));

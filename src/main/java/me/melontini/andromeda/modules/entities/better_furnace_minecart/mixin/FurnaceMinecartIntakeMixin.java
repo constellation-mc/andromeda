@@ -33,7 +33,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!am$bfm.config().enabled || !am$bfm.config().takeFuelWhenLow) return;
+        if (!am$bfm.enabled() || !am$bfm.config().takeFuelWhenLow) return;
 
         if (!this.world.isClient() && this.fuel < 100) {
             if (world.getTime() % 20 == 0) {
