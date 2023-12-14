@@ -24,8 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
 abstract class ItemStackMixin {
-    @Unique
-    private static final ThrowableItems am$thritm = ModuleManager.quick(ThrowableItems.class);
 
     @Shadow public abstract Item getItem();
     @Shadow public abstract void decrement(int amount);
@@ -51,7 +49,7 @@ abstract class ItemStackMixin {
 
     @Unique
     private boolean andromeda$runBehaviors(World world, PlayerEntity user) {
-        if (!am$thritm.config().enabled) return false;
+        if (!ModuleManager.quick(ThrowableItems.class).config().enabled) return false;
 
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {
@@ -61,12 +59,12 @@ abstract class ItemStackMixin {
             world.spawnEntity(entity);
         }
 
+        user.getItemCooldownManager().set(getItem(), ItemBehaviorManager.getCooldown(getItem()));
         user.incrementStat(Stats.USED.getOrCreateStat(getItem()));
+
         if (!user.getAbilities().creativeMode) {
             this.decrement(1);
         }
-
-        user.getItemCooldownManager().set(getItem(), ItemBehaviorManager.getCooldown(getItem()));
         return true;
     }
 }
