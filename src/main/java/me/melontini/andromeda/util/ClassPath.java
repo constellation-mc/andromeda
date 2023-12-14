@@ -90,7 +90,7 @@ public final class ClassPath {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 String name = path.relativize(file).toString();
-                if (name.endsWith(".class")) {
+                if (name.endsWith(".class") && !name.contains("$")) {
                     String clsName = name.substring(0, name.length() - ".class".length()).replace('\\', '.').replace('/', '.');
                     ClassPath.this.infos.add(new Info(file, clsName));
                 }
