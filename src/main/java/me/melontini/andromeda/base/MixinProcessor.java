@@ -1,6 +1,5 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.reflect.ClassPath;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.MixinEnvironment;
@@ -150,11 +149,9 @@ public class MixinProcessor {
         }
 
         protected void getMixins(List<String> mixins) {
-            Bootstrap.getKnotClassPath().getTopLevelClassesRecursive(this.mixinPackage).stream()
-                    .map(ClassPath.ClassInfo::asByteSource)
-                    .map(byteSource -> Utilities.supplyUnchecked(byteSource::read))
-                    .map(bytes -> {
-                        ClassReader reader = new ClassReader(bytes);
+            Bootstrap.getModuleClassPath().getTopLevelRecursive(this.mixinPackage).stream()
+                    .map(info -> {
+                        ClassReader reader = new ClassReader(Utilities.supplyUnchecked(info::readAllBytes));
                         ClassNode node = new ClassNode();
                         reader.accept(node,ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
                         return node;
