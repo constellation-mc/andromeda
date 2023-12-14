@@ -10,7 +10,7 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 
 import java.util.Map;
 
-import static me.melontini.andromeda.util.MiscUtil.testModVersion;
+import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
 @SuppressWarnings("UnstableApiUsage")
 @ModuleTooltip

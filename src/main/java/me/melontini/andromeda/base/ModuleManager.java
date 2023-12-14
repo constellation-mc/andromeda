@@ -64,6 +64,8 @@ public class ModuleManager {
         this.configs = ImmutableMap.copyOf(setUpConfigs(sorted));
 
         sorted.forEach(Module::postConfig);
+        if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
+            sorted.forEach(module -> module.config().enabled = true);
         sorted.forEach(module -> module.manager().save());
 
         this.modules = ImmutableMap.copyOf(Utilities.consume(new LinkedHashMap<>(), map ->
@@ -103,6 +105,7 @@ public class ModuleManager {
     private void cleanConfigs() {
         Set<Path> paths = new HashSet<>();
         paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
+        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/debug.json"));
         configs.values().forEach(m -> paths.add(m.get().getSerializer().getPath()));
         Utilities.runUnchecked(() -> Files.walkFileTree(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), new SimpleFileVisitor<>() {
             @Override
@@ -118,6 +121,10 @@ public class ModuleManager {
 
     public ConfigManager<? extends BasicConfig> getConfig(Class<?> cls) {
         return MakeSure.notNull(configs.get(cls)).get();
+    }
+
+    public <T extends Module<?>> boolean isPresent(Class<T> cls) {
+        return getModule(cls).isPresent();
     }
 
     @SuppressWarnings("unchecked")

@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FeatureEnvironment {
-
+public @interface SpecialEnvironment {
     Environment value() default Environment.BOTH;
 }

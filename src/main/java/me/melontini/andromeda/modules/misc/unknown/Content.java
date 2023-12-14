@@ -18,7 +18,7 @@ public class Content {
 
     public static final Keeper<FlowerBlock> ROSE_OF_THE_VALLEY_BLOCK = start(() -> ContentBuilder.BlockBuilder.create(id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY)))
             .item((block, id) -> ContentBuilder.ItemBuilder.create(id, () -> new RoseOfTheValley(block, new FabricItemSettings().rarity(Rarity.UNCOMMON))))
-            .register(() -> ModuleManager.quick(Unknown.class).config().enabled));
+            .register(() -> ModuleManager.get().isPresent(Unknown.class)));
 
     public static final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.of(() -> () -> asItem(ROSE_OF_THE_VALLEY_BLOCK.orThrow()));
 }

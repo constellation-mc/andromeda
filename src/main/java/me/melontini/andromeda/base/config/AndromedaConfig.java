@@ -10,7 +10,4 @@ public class AndromedaConfig {
 
     @ConfigEntry.Gui.Tooltip
     public boolean sendCrashReports = true;
-
-    @ConfigEntry.Gui.Tooltip
-    public boolean debugMessages = false;
 }

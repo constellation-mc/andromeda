@@ -47,7 +47,7 @@ public class DefaultBehaviors implements Runnable {
 
     @Override
     public void run() {
-        ItemBehaviorManager.addBehavior(Items.BONE_MEAL, (stack, flyingItemEntity, world, user, hitResult) -> {
+        ItemBehaviorManager.addBehavior(Items.BONE_MEAL, (stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult result = (BlockHitResult) hitResult;
 
@@ -58,15 +58,15 @@ public class DefaultBehaviors implements Runnable {
             }
         });
 
-        ItemBehaviorManager.addBehavior(Items.INK_SAC, (stack, flyingItemEntity, world, user, hitResult) ->
+        ItemBehaviorManager.addBehavior(Items.INK_SAC, (stack, fie, world, user, hitResult) ->
                 addEffects(hitResult, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0)));
 
-        ItemBehaviorManager.addBehavior(Items.GLOW_INK_SAC, (stack, flyingItemEntity, world, user, hitResult) ->
+        ItemBehaviorManager.addBehavior(Items.GLOW_INK_SAC, (stack, fie, world, user, hitResult) ->
                 addEffects(hitResult, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0),
                 new StatusEffectInstance(StatusEffects.GLOWING, 100, 0)));
 
         for (Item item : DYE_ITEMS) {
-            ItemBehaviorManager.addBehavior(item, (stack, flyingItemEntity, world, user, hitResult) -> {
+            ItemBehaviorManager.addBehavior(item, (stack, fie, world, user, hitResult) -> {
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeItemStack(stack);
 
@@ -86,7 +86,7 @@ public class DefaultBehaviors implements Runnable {
             });
         }
 
-        ItemBehaviorManager.addBehaviors((stack, flyingItemEntity, world, user, hitResult) -> {
+        ItemBehaviorManager.addBehaviors((stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) hitResult).getEntity();
                 entity.damage(Content.bricked(user), 2);
@@ -97,10 +97,11 @@ public class DefaultBehaviors implements Runnable {
                     angerable.setTarget(livingEntity);
                 }
             }
-            world.spawnEntity(new ItemEntity(world, flyingItemEntity.getX(), flyingItemEntity.getY(), flyingItemEntity.getZ(), stack));
+            world.playSound(null, fie.getX(), fie.getY(), fie.getZ(), SoundEvents.BLOCK_STONE_FALL, SoundCategory.AMBIENT, (float) (fie.getVelocity().normalize().length() * 1.5), 1, world.getRandom().nextLong());
+            world.spawnEntity(new ItemEntity(world, fie.getX(), fie.getY(), fie.getZ(), stack));
         }, Items.BRICK, Items.NETHER_BRICK);
 
-        ItemBehaviorManager.addBehavior(Items.FIRE_CHARGE, (stack, flyingItemEntity, world, user, hitResult) -> {
+        ItemBehaviorManager.addBehavior(Items.FIRE_CHARGE, (stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult result = (BlockHitResult) hitResult;
                 BlockPos blockPos = result.getBlockPos();
@@ -118,19 +119,19 @@ public class DefaultBehaviors implements Runnable {
                 }
 
                 Random random = world.getRandom();
-                world.playSound(null, flyingItemEntity.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                world.playSound(null, fie.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
             } else if (hitResult.getType() == HitResult.Type.ENTITY) {
                 EntityHitResult result = (EntityHitResult) hitResult;
                 Entity entity = result.getEntity();
                 if (entity instanceof LivingEntity livingEntity)
-                    livingEntity.takeKnockback(0.4, -flyingItemEntity.getVelocity().getX(), -flyingItemEntity.getVelocity().getZ());
+                    livingEntity.takeKnockback(0.4, -fie.getVelocity().getX(), -fie.getVelocity().getZ());
                 entity.setOnFireFor(8);
                 Random random = world.getRandom();
-                world.playSound(null, flyingItemEntity.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                world.playSound(null, fie.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
             }
         });
 
-        ItemBehaviorManager.addBehavior(Items.GUNPOWDER, (stack, flyingItemEntity, world, user, hitResult) -> world.createExplosion(user, flyingItemEntity.getX(), flyingItemEntity.getY(), flyingItemEntity.getZ(), 1, World.ExplosionSourceType.TNT));
+        ItemBehaviorManager.addBehavior(Items.GUNPOWDER, (stack, fie, world, user, hitResult) -> world.createExplosion(user, fie.getX(), fie.getY(), fie.getZ(), 1, World.ExplosionSourceType.TNT));
     }
 
     public static void addEffects(HitResult hitResult, Entity user, StatusEffectInstance... instances) {

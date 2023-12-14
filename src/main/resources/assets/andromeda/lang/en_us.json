@@ -16,16 +16,6 @@
   "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
   "andromeda.container.guarded": "Can't open! The container is guarded!",
 
-  "andromeda.disconnected.module_mismatch": "Andromeda module mismatch!\nDisable: %s\n Enable: %s\nTo join this server!",
-
-  "andromeda.config.option_manager.reason.andromeda.module_conflict": "Conflicting module enabled!",
-  "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
-  "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "Module disabled in side-only mode!",
-
-  "andromeda.config.tooltip.environment.client": "Client-only feature",
-  "andromeda.config.tooltip.environment.server": "Server-only feature.",
-  "andromeda.config.tooltip.environment.both": "Required on both Client and Server.",
-
   "commands.andromeda.damage.invulnerable": "Target is invulnerable to the given damage type",
   "commands.andromeda.damage.success": "Applied %s damage to %s",
 
@@ -104,13 +94,24 @@
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",
 
+  "andromeda.disconnected.module_mismatch": "Andromeda module mismatch!\nDisable: %s\n Enable: %s\nTo join this server!",
+
+  "andromeda.config.option_manager.reason.andromeda.module_conflict": "Conflicting module enabled!",
+  "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
+  "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "Module disabled in side-only mode!",
+
+  "andromeda.config.tooltip.environment.client": "Client-only feature",
+  "andromeda.config.tooltip.environment.server": "Server-only feature.",
+  "andromeda.config.tooltip.environment.both": "Required on both Client and Server.",
+  "andromeda.config.tooltip.origin": "Taken from or based on %s by %s",
+
   "config.andromeda.blocks.campfire_effects.option.Effect": "Effect",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "Identifier",
   "config.andromeda.blocks.campfire_effects.option.Effect.amplifier": "Amplifier",
 
   "config.andromeda.category.world": "World",
   "config.andromeda.world.auto_planting": "Self Planting Crops",
-  "config.andromeda.world.auto_planting.@Tooltip": "If possible, crops will plant themselves after some time. \nTaken from TinyTweaks by HephaestusDev",
+  "config.andromeda.world.auto_planting.@Tooltip": "If possible, crops will plant themselves after some time.",
   "config.andromeda.world.auto_planting.option.blacklistMode": "Blacklist Mode",
   "config.andromeda.world.auto_planting.option.blacklistMode.@Tooltip": "Should the list below act as blacklist",
   "config.andromeda.world.auto_planting.option.idList": "Item List",
