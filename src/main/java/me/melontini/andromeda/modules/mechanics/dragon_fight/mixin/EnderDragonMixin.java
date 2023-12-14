@@ -5,16 +5,14 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(EnderDragonEntity.class)
 class EnderDragonMixin {
-    @Unique
-    private static final DragonFight am$dft = ModuleManager.quick(DragonFight.class);
+
     @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "doubleValue=32"), method = "tickWithEndCrystals")
     private double andromeda$modConstant(double constant) {
-        if (am$dft.enabled() && am$dft.config().shorterCrystalTrackRange) return 24.0;
+        if (ModuleManager.quick(DragonFight.class).config().shorterCrystalTrackRange) return 24.0;
         return constant;
     }
 }

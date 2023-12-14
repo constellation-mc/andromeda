@@ -1,7 +1,5 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.andromeda.util.ItemStackUtil;
 import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -25,7 +23,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -35,8 +32,6 @@ import java.util.Optional;
 
 @Mixin(FallingBlockEntity.class)
 abstract class FallingBlockMixin extends Entity {
-    @Unique
-    private static final CanBeeNestsFall am$cbnf = ModuleManager.quick(CanBeeNestsFall.class);
 
     @Shadow @Nullable public NbtCompound blockEntityData;
     @Shadow private BlockState block;
@@ -47,8 +42,6 @@ abstract class FallingBlockMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/world/World.getBlockEntity (Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/entity/BlockEntity;", shift = At.Shift.AFTER), method = "tick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (!am$cbnf.enabled()) return;
-
         BlockPos blockPos = this.getBlockPos();
         BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
         if (blockEntity != null) {

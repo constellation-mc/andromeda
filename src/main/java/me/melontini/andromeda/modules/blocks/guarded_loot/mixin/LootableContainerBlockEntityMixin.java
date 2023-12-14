@@ -39,30 +39,28 @@ abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockE
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSpectator()Z"), method = "checkUnlocked")
     private boolean lockedIfMonstersNearby(boolean locked, @Local PlayerEntity player) {
         GuardedLoot module = ModuleManager.quick(GuardedLoot.class);
-        if (module.enabled()) {
-            List<LivingEntity> monster = player.world.getEntitiesByClass(LivingEntity.class, new Box(this.getPos()).expand(module.config().range), Entity::isAlive).stream().filter(livingEntity -> livingEntity instanceof Monster)
-                    .toList();
+        List<LivingEntity> monster = player.world.getEntitiesByClass(LivingEntity.class, new Box(this.getPos()).expand(module.config().range), Entity::isAlive).stream().filter(livingEntity -> livingEntity instanceof Monster)
+                .toList();
 
-            if (!monster.isEmpty()) {
-                boolean lockpicking = ModuleManager.get().getModule(Lockpick.class).map(m -> {
-                    if (module.config().allowLockPicking) {
-                        if (player.getMainHandStack().isOf(Content.LOCKPICK.orThrow())) {
-                            return Content.LOCKPICK.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
-                        }
+        if (!monster.isEmpty()) {
+            boolean lockpicking = ModuleManager.get().getModule(Lockpick.class).map(m -> {
+                if (module.config().allowLockPicking) {
+                    if (player.getMainHandStack().isOf(Content.LOCKPICK.orThrow())) {
+                        return Content.LOCKPICK.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
                     }
-                    return false;
-                }).orElse(false);
-
-                if (!lockpicking) {
-                    player.sendMessage(TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
-                    player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                    player.emitGameEvent(GameEvent.CONTAINER_OPEN);
-
-                    for (LivingEntity livingEntity : monster) {
-                        livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 5 * 20, 0, false, false));
-                    }
-                    return true;
                 }
+                return false;
+            }).orElse(false);
+
+            if (!lockpicking) {
+                player.sendMessage(TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
+                player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                player.emitGameEvent(GameEvent.CONTAINER_OPEN);
+
+                for (LivingEntity livingEntity : monster) {
+                    livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 5 * 20, 0, false, false));
+                }
+                return true;
             }
         }
         return locked;

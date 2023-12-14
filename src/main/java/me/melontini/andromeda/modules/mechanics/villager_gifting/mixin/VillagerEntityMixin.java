@@ -1,8 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.villager_gifting.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
-import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -23,8 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VillagerEntity.class)
 abstract class VillagerEntityMixin extends MerchantEntity {
-    @Unique
-    private static final VillagerGifting am$villgifts = ModuleManager.quick(VillagerGifting.class);
 
     @Shadow @Final private VillagerGossips gossip;
     @Shadow protected abstract void sayNo();
@@ -35,7 +31,6 @@ abstract class VillagerEntityMixin extends MerchantEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;getOffers()Lnet/minecraft/village/TradeOfferList;", shift = At.Shift.BEFORE), cancellable = true, method = "interactMob")
     private void andromeda$useGifts(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (!am$villgifts.enabled()) return;
         if (hand != Hand.MAIN_HAND || world.isClient()) return;
         ItemStack stack = player.getStackInHand(hand);
 

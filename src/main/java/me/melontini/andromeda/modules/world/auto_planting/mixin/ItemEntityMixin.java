@@ -35,8 +35,6 @@ abstract class ItemEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void andromeda$tryPlant(CallbackInfo ci) {
-        if (!am$tbpgs.enabled()) return;
-
         Entity entity = (Entity) (Object) this;
         ItemStack stack = this.getStack();
         BlockPos pos = entity.getBlockPos();

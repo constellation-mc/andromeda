@@ -1,8 +1,6 @@
 package me.melontini.andromeda.modules.world.crop_temperature.mixin;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperature;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.minecraft.block.BlockState;
@@ -11,17 +9,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ServerWorld.class)
 class ServerWorldMixin {
-    @Unique
-    private static final PlantTemperature am$tbpgs = ModuleManager.quick(PlantTemperature.class);
 
     @WrapWithCondition(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)V"), method = "tickChunk")
     private boolean andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (am$tbpgs.enabled()) {
             if (state.getBlock() instanceof PlantBlock) {
                 PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(state.getBlock());
                 if (data != null) {
@@ -32,7 +26,6 @@ class ServerWorldMixin {
                         return (!(temp > data.aMax())) && (!(temp < data.aMin()));
                 }
             }
-        }
         return true;
     }
 }

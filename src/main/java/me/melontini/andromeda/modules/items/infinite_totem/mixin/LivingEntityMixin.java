@@ -3,9 +3,7 @@ package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.infinite_totem.Content;
-import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -23,7 +21,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -31,10 +28,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
-    @Unique
-    private static final InfiniteTotem am$itou = ModuleManager.quick(InfiniteTotem.class);
 
-    @Shadow public abstract ItemStack getStackInHand(Hand hand);
+    @Shadow
+    public abstract ItemStack getStackInHand(Hand hand);
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -53,20 +49,18 @@ abstract class LivingEntityMixin extends Entity {
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;sendEntityStatus(Lnet/minecraft/entity/Entity;B)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "tryUseTotem", cancellable = true)
     private void andromeda$useInfiniteTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir, ItemStack itemStack) {
-        if (am$itou.enabled()) {
-            if (itemStack.isOf(Content.INFINITE_TOTEM.orThrow())) {
-                if (!world.isClient()) {
-                    PacketByteBuf buf = PacketByteBufs.create()
-                            .writeUuid(this.getUuid())
-                            .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.orThrow()));
-                    buf.writeRegistryValue(Registry.PARTICLE_TYPE, Content.KNOCKOFF_TOTEM_PARTICLE.orThrow());
+        if (itemStack.isOf(Content.INFINITE_TOTEM.orThrow())) {
+            if (!world.isClient()) {
+                PacketByteBuf buf = PacketByteBufs.create()
+                        .writeUuid(this.getUuid())
+                        .writeItemStack(new ItemStack(Content.INFINITE_TOTEM.orThrow()));
+                buf.writeRegistryValue(Registry.PARTICLE_TYPE, Content.KNOCKOFF_TOTEM_PARTICLE.orThrow());
 
-                    for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
-                        ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);
-                    }
+                for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
+                    ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);
                 }
-                cir.setReturnValue(true);
             }
+            cir.setReturnValue(true);
         }
     }
 }
