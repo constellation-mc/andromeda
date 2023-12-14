@@ -1,6 +1,6 @@
 package me.melontini.andromeda.util;
 
-import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.base.Debug;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.melontini.dark_matter.api.base.util.Utilities;
 
@@ -28,17 +28,17 @@ public class AndromedaLog {
     }
 
     public static void devInfo(String msg) {
-        if (Config.get().debugMessages) {
+        if (Debug.hasKey(Debug.Keys.PRINT_DEBUG_MESSAGES)) {
             LOGGER.info(msg);
         }
     }
     public static void devInfo(Object object) {
-        if (Config.get().debugMessages) {
+        if (Debug.hasKey(Debug.Keys.PRINT_DEBUG_MESSAGES)) {
             LOGGER.info(object);
         }
     }
     public static void devInfo(String msg, Object... params) {
-        if (Config.get().debugMessages) {
+        if (Debug.hasKey(Debug.Keys.PRINT_DEBUG_MESSAGES)) {
             LOGGER.info(msg, params);
         }
     }

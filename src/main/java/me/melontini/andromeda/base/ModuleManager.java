@@ -67,9 +67,9 @@ public class ModuleManager {
         sorted.forEach(module -> module.manager().save());
 
         this.modules = ImmutableMap.copyOf(Utilities.consume(new LinkedHashMap<>(), map ->
-                sorted.forEach(module -> {if (module.enabled()) map.put(module.getClass(), module);})));
+                sorted.forEach(module -> {if (module.enabled() || Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES)) map.put(module.getClass(), module);})));
         this.moduleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), map ->
-                sorted.forEach(module -> {if (module.enabled()) map.put(module.meta().id(), module);})));
+                sorted.forEach(module -> {if (module.enabled() || Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES)) map.put(module.meta().id(), module);})));
 
         cleanConfigs();
     }
@@ -103,6 +103,7 @@ public class ModuleManager {
     private void cleanConfigs() {
         Set<Path> paths = new HashSet<>();
         paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
+        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/debug.json"));
         configs.values().forEach(m -> paths.add(m.get().getSerializer().getPath()));
         Utilities.runUnchecked(() -> Files.walkFileTree(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), new SimpleFileVisitor<>() {
             @Override

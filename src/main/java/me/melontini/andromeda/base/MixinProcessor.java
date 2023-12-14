@@ -12,7 +12,6 @@ import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -49,7 +48,7 @@ public class MixinProcessor {
             }
         }
 
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) verifyMixin(n, n.name);
+        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS)) verifyMixin(n, n.name);
 
         return load;
     }

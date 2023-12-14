@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
+import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.Config;
@@ -35,6 +36,8 @@ public class Andromeda {
 
         if (!Config.get().sideOnlyMode) {
             ServerLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
+                if (Debug.hasKey(Debug.Keys.SKIP_SERVER_MODULE_CHECK)) return;
+
                 Set<String> modules = ModuleManager.get().loaded().stream().filter(m -> m.meta().environment() == Environment.BOTH).map(m -> m.meta().id()).collect(Collectors.toSet());
                 if (!understood) {
                     if (!modules.isEmpty())
