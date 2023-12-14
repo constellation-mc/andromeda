@@ -5,6 +5,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.annotations.Origin;
 import me.melontini.andromeda.base.config.AndromedaConfig;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
@@ -72,6 +73,7 @@ public class AutoConfigScreen {
                                     setModuleTooltip(e, module);
                                     appendEnvInfo(e, module.meta().environment());
                                 }
+                                appendOrigin(e, module);
                                 wrapTooltip(e);
                                 wrapSaveCallback(e, () -> module.manager().save());
                                 category.addEntry(e);
@@ -92,6 +94,7 @@ public class AutoConfigScreen {
                     var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
                     var built = e.build();
                     setModuleTooltip(built, module);
+                    appendOrigin(built, module);
                     appendEnvInfo(built, module.meta().environment());
                     wrapTooltip(built);
                     category.addEntry(built);
@@ -152,6 +155,15 @@ public class AutoConfigScreen {
             return false;
         }
         return true;
+    }
+
+    private static void appendOrigin(AbstractConfigListEntry<?> e, Module<?> module) {
+        if (module.getClass().isAnnotationPresent(Origin.class)) {
+            Origin origin = module.getClass().getAnnotation(Origin.class);
+            if (e instanceof TooltipListEntry<?> t) {
+                appendText(t, TextUtil.translatable("andromeda.config.tooltip.origin", origin.mod(), origin.author()).formatted(Formatting.DARK_AQUA));
+            }
+        }
     }
 
     private static void appendEnvInfo(AbstractConfigListEntry<?> e, Environment env) {
