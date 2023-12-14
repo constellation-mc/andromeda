@@ -20,19 +20,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.event.GameEvent;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.List;
 
 @Mixin(LootableContainerBlockEntity.class)
 abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockEntity {
-    @Unique
-    private static final GuardedLoot am$guard = ModuleManager.quick(GuardedLoot.class);
 
     protected LootableContainerBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -40,17 +38,16 @@ abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockE
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSpectator()Z"), method = "checkUnlocked")
     private boolean lockedIfMonstersNearby(boolean locked, @Local PlayerEntity player) {
-        if (am$guard.config().enabled) {
-            List<LivingEntity> monster = player.world.getEntitiesByClass(LivingEntity.class, new Box(this.getPos()).expand(am$guard.config().range), Entity::isAlive).stream().filter(livingEntity -> livingEntity instanceof Monster)
+        GuardedLoot module = ModuleManager.quick(GuardedLoot.class);
+        if (module.config().enabled) {
+            List<LivingEntity> monster = player.world.getEntitiesByClass(LivingEntity.class, new Box(this.getPos()).expand(module.config().range), Entity::isAlive).stream().filter(livingEntity -> livingEntity instanceof Monster)
                     .toList();
 
             if (!monster.isEmpty()) {
                 boolean lockpicking = ModuleManager.get().getModule(Lockpick.class).map(m -> {
-                    if (am$guard.config().allowLockPicking) {
-                        if (player.getMainHandStack().isOf(Content.LOCKPICK.get()) && m.rollLockpick()) {
-                            if (!player.getAbilities().creativeMode && m.config().breakAfterUse)
-                                player.getMainHandStack().decrement(1);
-                            return true;
+                    if (module.config().allowLockPicking) {
+                        if (player.getMainHandStack().isOf(Content.LOCKPICK.orThrow())) {
+                            return Content.LOCKPICK.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
                         }
                     }
                     return false;
