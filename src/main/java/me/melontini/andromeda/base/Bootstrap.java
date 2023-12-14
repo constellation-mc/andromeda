@@ -1,11 +1,11 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.reflect.ClassPath;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.ClassPath;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
@@ -13,22 +13,21 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 
-@SuppressWarnings("UnstableApiUsage")
 @CustomLog
 public class Bootstrap {
 
     static ModuleManager INSTANCE;
-    private static final ClassPath CLASS_PATH = Utilities.supplyUnchecked(() -> ClassPath.from(MixinProcessor.class.getClassLoader()));
+    private static final ClassPath CLASS_PATH = Utilities.supplyUnchecked(ClassPath::from);
 
     @Environment(EnvType.CLIENT)
     public static void onClient() {
@@ -90,13 +89,28 @@ public class Bootstrap {
             throw new AndromedaException("Failed to initialize ModuleManager!!!", t);
         }
         m.print();
+        //Scan for mixins.
+        m.loaded().forEach(module -> getModuleClassPath().addUrl(module.getClass().getProtectionDomain().getCodeSource().getLocation()));
         MixinProcessor.addMixins(m);
         FabricLoader.getInstance().getObjectShare().put("andromeda:module_manager", m);
 
         for (Module<?> module : m.loaded()) { module.onPreLaunch(); }
     }
 
-    public static ClassPath getKnotClassPath() {
+    public static ClassPath getModuleClassPath() {
         return CLASS_PATH;
+    }
+
+    public static boolean testModVersion(String modId, String predicate) {
+        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
+        if (mod.isPresent()) {
+            try {
+                VersionPredicate version = VersionPredicate.parse(predicate);
+                return version.test(mod.get().getMetadata().getVersion());
+            } catch (VersionParsingException e) {
+                return false;
+            }
+        }
+        return false;
     }
 }

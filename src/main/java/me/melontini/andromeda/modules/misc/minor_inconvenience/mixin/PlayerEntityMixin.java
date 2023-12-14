@@ -11,7 +11,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -22,15 +21,14 @@ import static me.melontini.andromeda.modules.misc.minor_inconvenience.Agony.AGON
 
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin extends LivingEntity {
-    @Unique
-    private static final MinorInconvenience am$mininc = ModuleManager.quick(MinorInconvenience.class);
+
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/LivingEntity.damage (Lnet/minecraft/entity/damage/DamageSource;F)Z", shift = At.Shift.BEFORE), method = "damage", cancellable = true)
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (am$mininc.config().enabled && !getWorld().isClient && !source.isOf(AGONY)) {
+        if (!getWorld().isClient && !source.isOf(AGONY)) {
             Optional<RegistryEntry.Reference<DamageType>> type = this.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).getEntry(AGONY);
             DamageSource damagesource = new DamageSource(type.orElseThrow(), this);
             super.damage(damagesource, Float.MAX_VALUE);

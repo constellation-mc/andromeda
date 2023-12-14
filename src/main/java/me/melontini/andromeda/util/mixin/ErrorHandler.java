@@ -1,6 +1,7 @@
 package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CrashHandler;
@@ -24,6 +25,8 @@ public class ErrorHandler implements IMixinErrorHandler {
     }
 
     private static ErrorAction handleMixinError(String phase, Throwable th, IMixinInfo mixin, ErrorAction action) {
+        if (Debug.hasKey(Debug.Keys.SKIP_MIXIN_ERROR_HANDLER)) return action;
+
         if (action == ErrorAction.ERROR) {
             if (mixin.getClassName().startsWith("me.melontini.andromeda") && !(th instanceof MixinVerifyError))
                 CrashHandler.handleCrash(true, th, "Failed to " + phase + " " + mixin.getClassName(), FabricLoader.getInstance().getEnvironmentType());

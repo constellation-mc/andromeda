@@ -14,7 +14,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,21 +23,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FurnaceMinecartEntity.class)
 class FurnaceMinecartMixin {
-    @Unique
-    private static final BetterFurnaceMinecart am$bfm = ModuleManager.quick(BetterFurnaceMinecart.class);
 
     @Shadow public int fuel;
 
     @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
     public void andromeda$interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (!am$bfm.config().enabled) return;
         ItemStack stack = player.getStackInHand(hand);
         Item item = stack.getItem();
 
         FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
         if (FuelRegistry.INSTANCE.get(item) != null) {
             int itemFuel = FuelRegistry.INSTANCE.get(item);
-            if ((this.fuel + (itemFuel * 2.25)) <= am$bfm.config().maxFuel) {
+            if ((this.fuel + (itemFuel * 2.25)) <= ModuleManager.quick(BetterFurnaceMinecart.class).config().maxFuel) {
                 if (!player.getAbilities().creativeMode) {
                     ItemStack reminder = stack.getRecipeRemainder();
                     if (!reminder.isEmpty())
@@ -60,12 +56,11 @@ class FurnaceMinecartMixin {
 
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")
     private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, /* short */ short value, Operation<Void> operation) {
-        if (am$bfm.config().enabled) nbt.putInt(key, this.fuel);
-        else operation.call(nbt, key, value);
+        nbt.putInt(key, this.fuel);
     }
 
     @Inject(at = @At(value = "TAIL"), method = "readCustomDataFromNbt")
     public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (am$bfm.config().enabled) this.fuel = nbt.getInt("Fuel");
+        this.fuel = nbt.getInt("Fuel");
     }
 }

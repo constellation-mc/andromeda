@@ -17,7 +17,7 @@ public class Content {
     public static final Keeper<MagnetItem> MAGNET = Common.start(() -> ContentBuilder.ItemBuilder
             .create(id("magnet"), () -> new MagnetItem(new FabricItemSettings().maxCount(1)))
             .itemGroup(Registries.ITEM_GROUP.get(ItemGroups.TOOLS))
-            .register(() -> ModuleManager.quick(Magnet.class).enabled()))
+            .register(() -> ModuleManager.get().isPresent(Magnet.class)))
             .afterInit(m -> AndromedaItemGroup.accept(a -> a.item(ModuleManager.quick(Magnet.class), m)));
 
 }

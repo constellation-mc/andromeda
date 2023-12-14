@@ -1,7 +1,5 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.andromeda.util.WorldUtil;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
@@ -25,8 +23,6 @@ import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
 
 @Mixin(BeehiveBlockEntity.class)
 abstract class BeehiveBlockEntityMixin extends BlockEntity {
-    @Unique
-    private static final CanBeeNestsFall am$cbnf = ModuleManager.quick(CanBeeNestsFall.class);
 
     @Unique
     private boolean andromeda$FromFallen;
@@ -37,8 +33,6 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
     @Inject(at = @At("HEAD"), method = "serverTick")
     private static void andromeda$fallingHive(@NotNull World world, BlockPos pos, BlockState state, BeehiveBlockEntity beehiveBlockEntity, CallbackInfo ci) {
-        if (!am$cbnf.config().enabled) return;
-
         if (world.getBlockState(pos).getBlock() == Blocks.BEE_NEST) {
             if (world.random.nextInt(32000) == 0) {
                 if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {

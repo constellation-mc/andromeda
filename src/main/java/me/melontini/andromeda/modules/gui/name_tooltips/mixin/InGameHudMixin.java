@@ -1,8 +1,6 @@
 package me.melontini.andromeda.modules.gui.name_tooltips.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.modules.gui.name_tooltips.NameTooltips;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
@@ -18,7 +16,6 @@ import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -28,8 +25,6 @@ import java.util.stream.Collectors;
 
 @Mixin(InGameHud.class)
 abstract class InGameHudMixin {
-    @Unique
-    private static final NameTooltips am$tnotn = ModuleManager.quick(NameTooltips.class);
     @Shadow @Final private MinecraftClient client;
     @Shadow private int heldItemTooltipFade;
     @Shadow private ItemStack currentStack;
@@ -38,8 +33,6 @@ abstract class InGameHudMixin {
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
     private void andromeda$renderTooltip(DrawContext context, CallbackInfo ci) {
-        if (!am$tnotn.config().enabled) return;
-
         this.client.getProfiler().push("selectedItemName");
 
         if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty() && MinecraftClient.getInstance().currentScreen == null) {

@@ -52,7 +52,7 @@ public class Keeper<T> {
         this.supplier = null;
         this.field = f;
 
-        this.consumers.forEach(consumer -> consumer.accept(get()));
+        if (isPresent()) this.consumers.forEach(consumer -> consumer.accept(get()));
     }
 
     public T get() {
