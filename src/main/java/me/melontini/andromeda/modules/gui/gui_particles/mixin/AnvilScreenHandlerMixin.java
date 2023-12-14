@@ -2,7 +2,9 @@ package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
+import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
+import net.fabricmc.api.EnvType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -19,15 +21,12 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AnvilScreenHandler.class)
 abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
-    @Unique
-    private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);
 
     public AnvilScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(type, syncId, playerInventory, context);
@@ -35,9 +34,9 @@ abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V", ordinal = 0), method = "onTakeOutput")
     private void andromeda$particles(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        if (!am$guip.config().anvilScreenParticles) return;
+        if (!ModuleManager.quick(GuiParticles.class).config().anvilScreenParticles) return;
 
-        try {
+        Support.run(EnvType.CLIENT, () -> () -> {
             if (MinecraftClient.getInstance().isOnThread() && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {
                 BlockState state = Blocks.ANVIL.getDefaultState();
                 var slot = this.slots.get(2);
@@ -47,8 +46,6 @@ abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
                         anvilScreen.x + slot.x + 8, anvilScreen.y + slot.y + 8,
                         0.5, 0.5, !enchant ? 0.5 : 0.07, 5);
             }
-        } catch (Exception e) {
-            //client-server handling 101
-        }
+        });
     }
 }
