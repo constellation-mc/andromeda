@@ -2,7 +2,7 @@ package me.melontini.andromeda.base;
 
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
-import me.melontini.andromeda.base.annotations.MixinEnvironment;
+import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;
@@ -36,11 +36,16 @@ public class MixinProcessor {
 
     public static boolean checkNode(ClassNode n) {
         boolean load = true;
-        AnnotationNode envNode = Annotations.getVisible(n, MixinEnvironment.class);
+        AnnotationNode envNode = Annotations.getVisible(n, SpecialEnvironment.class);
         if (envNode != null) {
-            EnvType value = AsmUtil.getAnnotationValue(envNode, "value", null);
+            Environment value = AsmUtil.getAnnotationValue(envNode, "value", Environment.BOTH);
             if (value != null) {
-                if (value != CommonValues.environment()) return false;
+                return switch (value) {
+                    case SERVER -> CommonValues.environment().equals(EnvType.SERVER);
+                    case CLIENT -> CommonValues.environment().equals(EnvType.CLIENT);
+                    case ANY -> true;
+                    default -> throw new IllegalStateException(value.toString());
+                };
             }
         }
 
@@ -135,7 +140,7 @@ public class MixinProcessor {
     @SuppressWarnings("UnstableApiUsage")
     public static class Plugin extends ExtendablePlugin {
 
-        private static final String MIXIN_ENVIRONMENT_ANNOTATION = "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
+        private static final String MIXIN_ENVIRONMENT_ANNOTATION = "L" + SpecialEnvironment.class.getName().replace(".", "/") + ";";
 
         private String mixinPackage;
 

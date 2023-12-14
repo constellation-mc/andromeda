@@ -2,9 +2,9 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
@@ -27,14 +27,14 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip
-        @FeatureEnvironment(Environment.SERVER)
+        @SpecialEnvironment(Environment.SERVER)
         public boolean canZombiesThrowItems = true;
 
         @ConfigEntry.Gui.Tooltip
-        @FeatureEnvironment(Environment.SERVER)
+        @SpecialEnvironment(Environment.SERVER)
         public int zombieThrowInterval = 40;
 
-        @FeatureEnvironment(Environment.BOTH)
+        @SpecialEnvironment(Environment.BOTH)
         public boolean tooltip = true;
     }
 }

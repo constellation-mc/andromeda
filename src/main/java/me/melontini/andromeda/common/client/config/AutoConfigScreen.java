@@ -3,9 +3,9 @@ package me.melontini.andromeda.common.client.config;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.annotations.Origin;
+import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.config.AndromedaConfig;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
@@ -174,8 +174,8 @@ public class AutoConfigScreen {
     }
 
     private static void appendEnvInfo(AbstractConfigListEntry<?> e, Field f) {
-        if (f.isAnnotationPresent(FeatureEnvironment.class) && e instanceof TooltipListEntry<?> t) {
-            FeatureEnvironment env = f.getAnnotation(FeatureEnvironment.class);
+        if (f.isAnnotationPresent(SpecialEnvironment.class) && e instanceof TooltipListEntry<?> t) {
+            SpecialEnvironment env = f.getAnnotation(SpecialEnvironment.class);
             Text text = TextUtil.translatable("andromeda.config.tooltip.environment." + env.value().toString().toLowerCase()).formatted(Formatting.YELLOW);
             appendText(t, text);
         }
