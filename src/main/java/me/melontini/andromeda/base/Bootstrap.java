@@ -13,15 +13,15 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 
 @CustomLog
 public class Bootstrap {
@@ -99,5 +99,18 @@ public class Bootstrap {
 
     public static ClassPath getModuleClassPath() {
         return CLASS_PATH;
+    }
+
+    public static boolean testModVersion(String modId, String predicate) {
+        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
+        if (mod.isPresent()) {
+            try {
+                VersionPredicate version = VersionPredicate.parse(predicate);
+                return version.test(mod.get().getMetadata().getVersion());
+            } catch (VersionParsingException e) {
+                return false;
+            }
+        }
+        return false;
     }
 }
