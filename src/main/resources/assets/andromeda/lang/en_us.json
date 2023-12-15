@@ -292,6 +292,7 @@
   "config.andromeda.gui.gui_particles.option.creativeScreenParticles": "Creative Screen Particles",
   "config.andromeda.gui.gui_particles.option.creativeScreenParticlesVelX": "X velocity of Creative Screen Particles",
   "config.andromeda.gui.gui_particles.option.gameModeSwitcherParticles": "Gamemode Switcher Particles",
+  "config.andromeda.gui.gui_particles.option.bundleInputParticles": "Bundle Input Particles",
   "config.andromeda.gui.item_frame_tooltips": "Item Frame Tooltips",
   "config.andromeda.gui.item_frame_tooltips.@Tooltip": "Enables in-world tooltips for item frames.",
 
