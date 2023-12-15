@@ -1,13 +1,13 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
+import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -17,7 +17,7 @@ public class ChestBoatEntity extends StorageBoatEntity {
     }
 
     public ChestBoatEntity(World world, double x, double y, double z) {
-        this(BoatEntities.BOAT_WITH_CHEST.get(), world);
+        this(BoatEntities.BOAT_WITH_CHEST.orThrow(), world);
         this.setPosition(x, y, z);
         this.prevX = x;
         this.prevY = y;
@@ -36,6 +36,6 @@ public class ChestBoatEntity extends StorageBoatEntity {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(Identifier.tryParse("andromeda:" + this.getBoatType().getName() + "_boat_with_chest"));
+        return Registry.ITEM.get(BoatItems.boatId(this.getBoatType(), "chest"));
     }
 }

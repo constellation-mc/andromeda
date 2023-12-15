@@ -97,7 +97,7 @@ public class DefaultBehaviors implements Runnable {
                     angerable.setTarget(livingEntity);
                 }
             }
-            world.playSound(null, fie.getX(), fie.getY(), fie.getZ(), SoundEvents.BLOCK_STONE_FALL, SoundCategory.AMBIENT, (float) (fie.getVelocity().normalize().length() * 1.5), 1, world.getRandom().nextLong());
+            world.playSound(null, fie.getX(), fie.getY(), fie.getZ(), SoundEvents.BLOCK_STONE_FALL, SoundCategory.AMBIENT, (float) (fie.getVelocity().normalize().length() * 1.5), 1);
             world.spawnEntity(new ItemEntity(world, fie.getX(), fie.getY(), fie.getZ(), stack));
         }, Items.BRICK, Items.NETHER_BRICK);
 

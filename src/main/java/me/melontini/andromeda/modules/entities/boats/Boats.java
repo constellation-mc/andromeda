@@ -42,7 +42,7 @@ public class Boats extends Module<Boats.Config> {
         public boolean isHopperBoatOn = false;
 
         @ConfigEntry.Gui.Tooltip
-        @FeatureEnvironment(Environment.BOTH)
+        @SpecialEnvironment(Environment.BOTH)
         public boolean isChestBoatOn = false;
     }
 }
