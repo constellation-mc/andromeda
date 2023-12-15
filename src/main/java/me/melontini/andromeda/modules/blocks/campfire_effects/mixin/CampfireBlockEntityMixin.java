@@ -30,8 +30,6 @@ class CampfireBlockEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "litServerTick")
     private static void andromeda$litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
-        if (!am$ceff.config().enabled) return;
-
         if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
                     List<LivingEntity> entities = new ArrayList<>();

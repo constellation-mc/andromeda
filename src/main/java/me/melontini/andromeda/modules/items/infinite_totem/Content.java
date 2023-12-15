@@ -20,10 +20,10 @@ public class Content {
     public static final Keeper<Item> INFINITE_TOTEM = start(() -> ContentBuilder.ItemBuilder
             .create(id("infinite_totem"), () -> new Item(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)))
             .itemGroup(ItemGroup.COMBAT)
-            .register(() -> ModuleManager.quick(InfiniteTotem.class).config().enabled))
+            .register(() -> ModuleManager.get().isPresent(InfiniteTotem.class)))
             .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(ModuleManager.quick(InfiniteTotem.class), item)));
 
     public static Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.of(() -> () ->
-            RegistryUtil.create(() -> ModuleManager.quick(InfiniteTotem.class).config().enabled,
+            RegistryUtil.create(() -> ModuleManager.get().isPresent(InfiniteTotem.class),
                     id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple));
 }

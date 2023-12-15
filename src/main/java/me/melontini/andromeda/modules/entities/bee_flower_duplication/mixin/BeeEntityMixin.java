@@ -22,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BeeEntity.class)
 abstract class BeeEntityMixin extends AnimalEntity {
-    @Unique
-    private static final BeeFlowerDuplication am$bfd = ModuleManager.quick(BeeFlowerDuplication.class);
 
     @Shadow @Nullable BlockPos flowerPos;
     @Shadow BeeEntity.PollinateGoal pollinateGoal;
@@ -37,8 +35,6 @@ abstract class BeeEntityMixin extends AnimalEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;tick()V", shift = At.Shift.AFTER), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!am$bfd.config().enabled) return;
-
         if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
 
         if (this.pollinateGoal != null) {
@@ -80,7 +76,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                         }
                     }
                 }
-            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && am$bfd.config().enabled) {
+            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && ModuleManager.quick(BeeFlowerDuplication.class).config().tallFlowers) {
                 andromeda$plantingCoolDown = MathStuff.nextInt(world.random, 3600, 8000);
                 for (int i = -1; i <= 1; i++) {
                     for (int b = -2; b <= 2; b++) {

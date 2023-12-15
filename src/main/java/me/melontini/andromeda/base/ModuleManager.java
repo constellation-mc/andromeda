@@ -42,13 +42,10 @@ public class ModuleManager {
 
         Set<String> ids = new HashSet<>();
         for (Module<?> module : discovered) {
-            MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
-            MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
-            MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
+            validateModule(module);
 
-            if (ids.contains(module.meta().id()))
+            if (!ids.add(module.meta().id()))
                 throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
-            ids.add(module.meta().id());
         }
 
         List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m -> {
@@ -56,22 +53,28 @@ public class ModuleManager {
             return i >= 0 ? i : categories.size();
         })).toList();
 
-        this.discoveredModules = ImmutableMap.copyOf(Utilities.consume(new LinkedHashMap<>(), (map) ->
-                sorted.forEach(m -> map.put(m.getClass(), m))));
-        this.discoveredModuleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), (map) ->
-                sorted.forEach(m -> map.put(m.meta().id(), m))));
+        this.discoveredModules = sorted.stream().collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
+        this.discoveredModuleNames = sorted.stream().collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
         this.configs = ImmutableMap.copyOf(setUpConfigs(sorted));
 
         sorted.forEach(Module::postConfig);
+        if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
+            sorted.forEach(module -> module.config().enabled = true);
         sorted.forEach(module -> module.manager().save());
 
-        this.modules = ImmutableMap.copyOf(Utilities.consume(new LinkedHashMap<>(), map ->
-                sorted.forEach(module -> {if (module.enabled()) map.put(module.getClass(), module);})));
-        this.moduleNames = ImmutableMap.copyOf(Utilities.consume(new HashMap<>(), map ->
-                sorted.forEach(module -> {if (module.enabled()) map.put(module.meta().id(), module);})));
+        this.modules = sorted.stream().filter(Module::enabled)
+                .collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
+        this.moduleNames = sorted.stream().filter(Module::enabled)
+                .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
         cleanConfigs();
+    }
+
+    void validateModule(Module<?> module) {
+        MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
+        MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
+        MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
     }
 
     public Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> setUpConfigs(List<Module<?>> list) {
@@ -101,9 +104,7 @@ public class ModuleManager {
     }
 
     private void cleanConfigs() {
-        Set<Path> paths = new HashSet<>();
-        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
-        configs.values().forEach(m -> paths.add(m.get().getSerializer().getPath()));
+        Set<Path> paths = collectPaths();
         Utilities.runUnchecked(() -> Files.walkFileTree(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -116,8 +117,23 @@ public class ModuleManager {
         }));
     }
 
+    private Set<Path> collectPaths() {
+        Set<Path> paths = new HashSet<>();
+
+        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
+        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/debug.json"));
+
+        configs.values().forEach(m -> paths.add(m.get().getSerializer().getPath()));
+
+        return paths;
+    }
+
     public ConfigManager<? extends BasicConfig> getConfig(Class<?> cls) {
         return MakeSure.notNull(configs.get(cls)).get();
+    }
+
+    public <T extends Module<?>> boolean isPresent(Class<T> cls) {
+        return getModule(cls).isPresent();
     }
 
     @SuppressWarnings("unchecked")
@@ -169,11 +185,11 @@ public class ModuleManager {
             builder.append("\n\t - ").append(s);
             if (!ModuleManager.categories.contains(s)) builder.append("*");
             builder.append("\n\t  |-- ");
-            strings.forEach(m -> {
-                builder.append('\'').append(m.meta().name().replace('/', '.')).append('\'').append("  ");
-                if (!m.getClass().getName().startsWith("me.melontini.andromeda"))
-                    builder.append('*');
-            });
+
+            StringJoiner joiner = new StringJoiner(", ");
+            strings.forEach(m -> joiner.add(m.meta().name().replace('/', '.') +
+                    (!m.getClass().getName().startsWith("me.melontini.andromeda") ? '*' : "")));
+            builder.append(joiner);
         });
         if (!categories.isEmpty()) {
             LOGGER.info("Loaded modules: {}", builder);

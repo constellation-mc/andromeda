@@ -46,8 +46,6 @@ import java.util.Objects;
 
 @Mixin(MinecartItem.class)
 abstract class MinecartItemMixin extends Item {
-    @Unique
-    private static final MinecartBlockPicking am$mbp = ModuleManager.quick(MinecartBlockPicking.class);
 
     @Shadow @Final public AbstractMinecartEntity.Type type;
 
@@ -116,7 +114,7 @@ abstract class MinecartItemMixin extends Item {
             }
         }
 
-        if (am$mbp.config().enabled && player.isSneaking()) {
+        if (player.isSneaking()) {
             if (stack.getItem() != Items.MINECART) return;
 
             if (state.isOf(Blocks.CHEST)) {
@@ -177,7 +175,7 @@ abstract class MinecartItemMixin extends Item {
 
             if (ModuleManager.get().getModule(Minecarts.class).isPresent()) {
 
-                if (state.isOf(Blocks.SPAWNER) && am$mbp.config().spawnerPicking && MinecartItems.SPAWNER_MINECART.isPresent()) {
+                if (state.isOf(Blocks.SPAWNER) && ModuleManager.quick(MinecartBlockPicking.class).config().spawnerPicking && MinecartItems.SPAWNER_MINECART.isPresent()) {
                     if (!world.isClient()) {
                         MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
                         if (!player.isCreative()) stack.decrement(1);

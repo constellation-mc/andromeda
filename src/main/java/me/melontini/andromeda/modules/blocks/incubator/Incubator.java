@@ -2,9 +2,9 @@ package me.melontini.andromeda.modules.blocks.incubator;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.FeatureEnvironment;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
@@ -27,7 +27,7 @@ public class Incubator extends Module<Incubator.Config> {
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip
-        @FeatureEnvironment(Environment.SERVER)
+        @SpecialEnvironment(Environment.SERVER)
         public boolean randomness = true;
     }
 }

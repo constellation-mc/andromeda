@@ -1,9 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
-import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -24,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
 abstract class ItemStackMixin {
-    @Unique
-    private static final ThrowableItems am$thritm = ModuleManager.quick(ThrowableItems.class);
 
     @Shadow public abstract Item getItem();
     @Shadow public abstract void decrement(int amount);
@@ -51,8 +47,6 @@ abstract class ItemStackMixin {
 
     @Unique
     private boolean andromeda$runBehaviors(World world, PlayerEntity user) {
-        if (!am$thritm.config().enabled) return false;
-
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {
             var entity = new FlyingItemEntity((ItemStack) (Object) this, user, world);
@@ -61,12 +55,12 @@ abstract class ItemStackMixin {
             world.spawnEntity(entity);
         }
 
+        user.getItemCooldownManager().set(getItem(), ItemBehaviorManager.getCooldown(getItem()));
         user.incrementStat(Stats.USED.getOrCreateStat(getItem()));
+
         if (!user.getAbilities().creativeMode) {
             this.decrement(1);
         }
-
-        user.getItemCooldownManager().set(getItem(), ItemBehaviorManager.getCooldown(getItem()));
         return true;
     }
 }

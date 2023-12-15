@@ -1,9 +1,5 @@
 package me.melontini.andromeda.util;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.VersionParsingException;
-import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
@@ -18,22 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-import java.util.Optional;
-
 public class MiscUtil {
-
-    public static boolean testModVersion(String modId, String predicate) {
-        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
-        if (mod.isPresent()) {
-            try {
-                VersionPredicate version = VersionPredicate.parse(predicate);
-                return version.test(mod.get().getMetadata().getVersion());
-            } catch (VersionParsingException e) {
-                return false;
-            }
-        }
-        return false;
-    }
 
     public static Optional<RegistryKey<World>> getLodestoneDimension(NbtCompound nbt) {
         return World.CODEC.parse(NbtOps.INSTANCE, nbt.get("LodestoneDimension")).result();

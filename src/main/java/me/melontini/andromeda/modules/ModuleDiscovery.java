@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules;
 
-import com.google.common.reflect.ClassPath;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -13,13 +12,13 @@ import org.spongepowered.asm.util.Annotations;
 
 import java.util.List;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
     @Override
     public List<? extends Module<?>> get() {
-        return Bootstrap.getKnotClassPath().getTopLevelClassesRecursive("me.melontini.andromeda.modules")
-                .stream().filter(ci -> !ci.getPackageName().endsWith("mixin") && !ci.getPackageName().endsWith("client"))
-                .map(ClassPath.ResourceInfo::asByteSource).map(bs -> Utilities.supplyUnchecked(bs::read))
+        Bootstrap.getModuleClassPath().addUrl(ModuleDiscovery.class.getProtectionDomain().getCodeSource().getLocation());
+        return Bootstrap.getModuleClassPath().getTopLevelRecursive("me.melontini.andromeda.modules")
+                .stream().filter(ci -> !ci.packageName().endsWith("mixin") && !ci.packageName().endsWith("client"))
+                .map(bs -> Utilities.supplyUnchecked(bs::readAllBytes))
                 .map(bytes -> {
                     ClassReader reader = new ClassReader(bytes);
                     ClassNode node = new ClassNode();
