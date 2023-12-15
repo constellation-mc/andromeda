@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.blocks.incubator;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,7 +27,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
-    private static final Lazy<Incubator> module = Lazy.of(() -> () -> ModuleManager.quick(Incubator.class));
 
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     public int processingTime = -1;
@@ -64,7 +62,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             if (!stack.isEmpty() && this.processingTime == -1) {
                 EggProcessingData data = EggProcessingData.EGG_DATA.get(stack.getItem());
                 if (data != null) {
-                    this.processingTime = module.get().config().randomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
+                    this.processingTime = ModuleManager.quick(Incubator.class).config().randomness ? (int) (data.time() + (Math.random() * (data.time() * 0.3) * 2) - data.time() * 0.3) : data.time();
                     world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
                     markDirty();
                 }

@@ -28,8 +28,8 @@ public class CrashHandler {
     @SuppressWarnings("deprecation")
     public static void nukeProfile() {
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            Analytics.oldUUID().ifPresent(uuid -> HANDLER.send((mixpanel, analytics) -> mixpanel.delete(uuid.toString())));
             if (CommonValues.updated() && !ANALYTICS.getDefaultUUID().equals(ANALYTICS.getUUID())) {
+                Analytics.oldUUID().ifPresent(uuid -> HANDLER.send((mixpanel, analytics) -> mixpanel.delete(uuid.toString())));
                 HANDLER.send((mixpanel, analytics) -> mixpanel.delete(analytics.getUUIDString()));
             }
         }
