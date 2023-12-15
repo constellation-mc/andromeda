@@ -28,5 +28,7 @@ public class GuiParticles extends Module<GuiParticles.Config> {
         public double creativeScreenParticlesVelX = 0.7d;
 
         public boolean gameModeSwitcherParticles = true;
+
+        public boolean bundleInputParticles = true;
     }
 }

@@ -21,19 +21,22 @@ public abstract class Module<T extends BasicConfig> {
     private final Lazy<ConfigManager<T>> manager = Lazy.of(() -> () -> Utilities.cast(ModuleManager.get().getConfig(this.getClass())));
 
     public void onClient() {
-        try {
-            Class<?> cls = Class.forName(this.getClass().getPackageName() + ".client.Client");
-            Common.bootstrap(cls);
-        } catch (ClassNotFoundException ignored) { }
+        initClasses("client.Client");
     }
     public void onServer() { }
     public void onMain() {
-        try {
-            Class<?> cls = Class.forName(this.getClass().getPackageName() + ".Content");
-            Common.bootstrap(cls);
-        } catch (ClassNotFoundException ignored) { }
+        initClasses("Main", "Content");
     }
     public void onPreLaunch() { }
+
+    protected void initClasses(String... classes) {
+        for (String cls : classes) {
+            try {
+                Common.bootstrap(Class.forName(this.getClass().getPackageName() + "." + cls));
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+    }
 
     public void onConfig(ConfigBuilder<T> builder) { }
     public void postConfig() { }
