@@ -1,11 +1,13 @@
 package me.melontini.andromeda.modules.world.crop_temperature;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.JsonDataLoader;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -29,7 +31,7 @@ import java.util.concurrent.Executor;
 import static me.melontini.andromeda.common.registries.ResourceRegistry.parseFromId;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public record PlantTemperatureData(Block block, float min, float max, float aMin, float aMax) {
+public record PlantTemperatureData(Set<Block> blocks, float min, float max, float aMin, float aMax) {
 
     public static final Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
 
@@ -42,16 +44,27 @@ public record PlantTemperatureData(Block block, float min, float max, float aMin
                 return CompletableFuture.supplyAsync(() -> {
                     Map<Identifier, PlantTemperatureData> map = new HashMap<>();
 
-                    data.forEach((identifier, object) -> map.put(identifier, new PlantTemperatureData(parseFromId(object.get("identifier").getAsString(), CommonRegistries.blocks()),
-                            object.get("min").getAsFloat(),
-                            object.get("max").getAsFloat(),
-                            object.get("aMin").getAsFloat(),
-                            object.get("aMax").getAsFloat())));
+                    data.forEach((identifier, object) -> {
+                        JsonElement ids = MakeSure.notNull(object.get("identifier"));
+
+                        Set<Block> blocks = new HashSet<>();
+                        if (ids.isJsonArray()) {
+                            ids.getAsJsonArray().forEach(element -> blocks.add(parseFromId(element.getAsString(), CommonRegistries.blocks())));
+                        } else {
+                            blocks.add(parseFromId(ids.getAsString(), CommonRegistries.blocks()));
+                        }
+
+                        map.put(identifier, new PlantTemperatureData(blocks,
+                                object.get("min").getAsFloat(),
+                                object.get("max").getAsFloat(),
+                                object.get("aMin").getAsFloat(),
+                                object.get("aMax").getAsFloat()));
+                    });
 
                     return map;
                 }, executor).thenAcceptAsync(map -> {
                     map.forEach((identifier, temperatureData) ->
-                            PLANT_DATA.put(temperatureData.block, temperatureData));
+                            temperatureData.blocks.forEach((block) -> PLANT_DATA.put(block, temperatureData)));
 
                     if (Debug.hasKey(Debug.Keys.PRINT_MISSING_ASSIGNED_DATA))
                         verifyPostLoad();
