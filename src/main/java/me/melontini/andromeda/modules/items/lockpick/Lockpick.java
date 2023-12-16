@@ -11,11 +11,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @ModuleInfo(name = "lockpick", category = "items")
 public class Lockpick extends Module<Lockpick.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public boolean rollLockpick() {
         return this.config().chance - 1 == 0 || MathStuff.threadRandom().nextInt(this.config().chance - 1) == 0;
     }

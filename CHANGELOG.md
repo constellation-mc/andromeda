@@ -2,17 +2,14 @@
 
 ## Alpha warning!
 
-* GUI Particles: New Bundle Input Particles!
+* Temperature-Based Crop Growth Speed: Lots of fixes!
+  * Added an option to affect bonemealing of plants.
+  * Added Nether Wart and Mushroom configs.
+  * Fixed Nether Vines ignoring configs.
+  * Configs now support ID arrays.
 
 ***
 
-* Modules no longer pretend to be disabled at runtime. With the current state of affairs, this could cause some issues.
-* Fixed module discovery on Quilt and Connector. (Connector is still broken due to other issues)
-* Fixed empty categories in the item group.
-* [Lockpick] Added Lockpick break sounds and particles.
-* [Throwable Items] Added brick hit particles.
-* [Throwable Items] Fixed item cooldown not being set on stacks of one.
-* Moved debug options to their own mini config.
-  See [Debug.java](https://github.com/melontini/andromeda/blob/1.19-fabric/src/main/java/me/melontini/andromeda/base/Debug.java)
-  if you're interested.
-* Fixed some other issues.
+* (Hopefully) fixed ModuleDiscovery crash on linux.
+* Fixed Dragon Fight data not initializing.
+* Config class is now parsed from module's generic type.

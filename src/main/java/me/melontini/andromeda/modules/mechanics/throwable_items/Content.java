@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
@@ -24,7 +25,6 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -86,7 +86,7 @@ public class Content {
         var items = ItemBehaviorManager.itemsWithBehaviors();
         packet.writeVarInt(items.size());
         for (Item item : items) {
-            packet.writeIdentifier(Registries.ITEM.getId(item));
+            packet.writeIdentifier(CommonRegistries.items().getId(item));
         }
         return packet;
     }

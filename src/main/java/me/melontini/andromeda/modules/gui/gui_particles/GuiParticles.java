@@ -10,11 +10,6 @@ import me.melontini.andromeda.base.config.BasicConfig;
 @ModuleInfo(name = "gui_particles", category = "gui", environment = Environment.CLIENT)
 public class GuiParticles extends Module<GuiParticles.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         public boolean anvilScreenParticles = true;

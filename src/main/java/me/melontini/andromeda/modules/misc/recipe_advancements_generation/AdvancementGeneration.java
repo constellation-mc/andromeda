@@ -20,11 +20,6 @@ public class AdvancementGeneration extends Module<AdvancementGeneration.Config> 
         Common.bootstrap(Helper.class);
     }
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

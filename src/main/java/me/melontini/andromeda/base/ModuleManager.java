@@ -14,6 +14,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,7 +83,7 @@ public class ModuleManager {
         Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs = new HashMap<>();
 
         list.forEach(m -> {
-            var config = ConfigBuilder.create(m.configClass(), CommonValues.mod(), "andromeda/" + m.meta().id());
+            var config = ConfigBuilder.create(getConfigClass(m.getClass()), CommonValues.mod(), "andromeda/" + m.meta().id());
             config.processors((registry, mod) -> {
                 registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
                     if (Config.get().sideOnlyMode) {
@@ -101,6 +103,17 @@ public class ModuleManager {
             configs.put(m.getClass(), Lazy.of(() -> () -> config.build(false)));
         });
         return configs;
+    }
+
+    public Class<? extends BasicConfig> getConfigClass(Class<?> m) {
+        if (m.getGenericSuperclass() instanceof ParameterizedType pt) {
+            for (Type ta : pt.getActualTypeArguments()) {
+                if (ta instanceof Class<?> cls && BasicConfig.class.isAssignableFrom(cls)) {
+                    return Utilities.cast(cls);
+                }
+            }
+        }
+        return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : BasicConfig.class;
     }
 
     private void cleanConfigs() {

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -14,7 +15,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 import java.util.HashSet;
@@ -40,7 +40,7 @@ public class Client {
             for (int i = 0; i < length; i++) ids.add(buf.readIdentifier());
             client.execute(() -> {
                 showTooltip.clear();
-                for (Identifier id : ids) showTooltip.add(Registries.ITEM.get(id));
+                for (Identifier id : ids) showTooltip.add(CommonRegistries.items().get(id));
             });
         });
 

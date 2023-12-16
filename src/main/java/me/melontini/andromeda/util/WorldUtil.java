@@ -1,5 +1,6 @@
 package me.melontini.andromeda.util;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
@@ -19,7 +20,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -45,7 +45,7 @@ public class WorldUtil {
     public static void addParticle(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         if (!world.isClient) {
             PacketByteBuf packetByteBuf = PacketByteBufs.create();
-            packetByteBuf.writeRegistryValue(Registries.PARTICLE_TYPE, parameters.getType());
+            packetByteBuf.writeRegistryValue(CommonRegistries.particleTypes(), parameters.getType());
             packetByteBuf.writeDouble(x);
             packetByteBuf.writeDouble(y);
             packetByteBuf.writeDouble(z);

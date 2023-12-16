@@ -2,11 +2,11 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
@@ -46,9 +46,9 @@ public class ItemBehaviorData {
 
         JsonElement element = object.get("item_id");
         if (element.isJsonArray()) {
-            element.getAsJsonArray().forEach(e -> items.add(parseFromId(e.getAsString(), Registries.ITEM)));
+            element.getAsJsonArray().forEach(e -> items.add(parseFromId(e.getAsString(), CommonRegistries.items())));
         } else {
-            items.add(parseFromId(element.getAsString(), Registries.ITEM));
+            items.add(parseFromId(element.getAsString(), CommonRegistries.items()));
         }
         if (items.isEmpty()) return Tuple.of(Collections.emptySet(), ItemBehaviorData.DEFAULT);
 

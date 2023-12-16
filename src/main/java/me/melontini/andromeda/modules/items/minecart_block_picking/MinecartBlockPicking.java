@@ -10,11 +10,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @ModuleInfo(name = "minecart_block_picking", category = "items")
 public class MinecartBlockPicking extends Module<MinecartBlockPicking.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

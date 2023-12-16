@@ -1,0 +1,10 @@
+{
+  "identifier": [
+    "minecraft:red_mushroom",
+    "minecraft:brown_mushroom"
+  ],
+  "min": "0.8",
+  "max": "1.0",
+  "aMin": "0.6",
+  "aMax": "1.2"
+}

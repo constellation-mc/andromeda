@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.world.auto_planting.mixin;
 
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.world.auto_planting.AutoPlanting;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.Entity;
@@ -9,7 +10,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -44,7 +44,8 @@ abstract class ItemEntityMixin {
                 if (stack.getItem() instanceof BlockItem) {
                     if (((BlockItem) stack.getItem()).getBlock() instanceof PlantBlock) {
                         if (world.getFluidState(pos).isEmpty()) {
-                            if (am$tbpgs.config().blacklistMode == am$tbpgs.config().idList.contains(Registries.ITEM.getId(stack.getItem()).toString())) return;
+                            if (am$tbpgs.config().blacklistMode == am$tbpgs.config().idList.contains(CommonRegistries.items().getId(stack.getItem()).toString()))
+                                return;
 
                             ((BlockItem) stack.getItem()).place(new ItemPlacementContext(world, null, null, stack, world.raycast(
                                     new RaycastContext(

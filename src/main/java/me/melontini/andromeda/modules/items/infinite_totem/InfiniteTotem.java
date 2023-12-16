@@ -10,11 +10,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @ModuleInfo(name = "infinite_totem", category = "items")
 public class InfiniteTotem extends Module<InfiniteTotem.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip
