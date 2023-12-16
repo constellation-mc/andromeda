@@ -80,8 +80,6 @@ public final class ClassPath {
         });
 
         scan(fs.getRootDirectories().iterator().next());
-
-        fs.close();
     }
 
     @SneakyThrows
