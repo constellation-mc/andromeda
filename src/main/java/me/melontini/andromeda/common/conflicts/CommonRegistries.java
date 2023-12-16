@@ -28,6 +28,6 @@ public class CommonRegistries {
     }
 
     public static Registry<StatusEffect> statusEffects() {
-        return Registry.STATUS_EFFECT;
+        return Registries.STATUS_EFFECT;
     }
 }
