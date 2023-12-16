@@ -120,6 +120,7 @@
   "config.andromeda.world.falling_beenests.@Tooltip": "Pretty self-explanatory. Makes Bee Nests fall after some time, \nyou can also shoot them with an arrow",
   "config.andromeda.world.crop_temperature": "Temperature-Based Crop Growth Speed",
   "config.andromeda.world.crop_temperature.@Tooltip": "TODO: give this perfectly complete feature a proper description",
+  "config.andromeda.world.crop_temperature.option.affectBoneMeal": "Affect Bone Meal",
   "config.andromeda.world.quick_fire": "Fast Fire Spread",
   "config.andromeda.world.quick_fire.@Tooltip": "Makes fire spread a lot faster and wider.",
 
