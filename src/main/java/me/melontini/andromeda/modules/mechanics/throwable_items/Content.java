@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.andromeda.util.AndromedaLog;
@@ -27,7 +28,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Position;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +80,7 @@ public class Content {
         var items = ItemBehaviorManager.itemsWithBehaviors();
         packet.writeVarInt(items.size());
         for (Item item : items) {
-            packet.writeIdentifier(Registry.ITEM.getId(item));
+            packet.writeIdentifier(CommonRegistries.items().getId(item));
         }
         return packet;
     }

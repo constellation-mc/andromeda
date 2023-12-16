@@ -9,11 +9,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @ModuleInfo(name = "tooltips", category = "items", environment = Environment.CLIENT)
 public class Tooltips extends Module<Tooltips.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

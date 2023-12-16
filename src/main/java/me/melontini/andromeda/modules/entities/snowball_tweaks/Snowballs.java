@@ -9,11 +9,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @ModuleInfo(name = "snowball_tweaks", category = "entities", environment = Environment.SERVER)
 public class Snowballs extends Module<Snowballs.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

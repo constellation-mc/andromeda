@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import com.google.common.collect.Lists;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -14,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -41,7 +41,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
 
     @Unique
     private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>> ANDROMEDA$GAME_MODE_STACKS = Utilities.consume(new HashMap<>(), map -> {
-        map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> Registry.ITEM.getRandom(Utilities.RANDOM).orElseThrow().value().getDefaultStack());
+        map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> CommonRegistries.items().getRandom(MathStuff.random()).orElseThrow().value().getDefaultStack());
         map.put(GameModeSelectionScreen.GameModeSelection.ADVENTURE, () -> Utilities.pickAtRandom(ANDROMEDA$ADVENTURE));
         map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));
         map.put(GameModeSelectionScreen.GameModeSelection.SPECTATOR, () -> Utilities.pickAtRandom(ANDROMEDA$SPECTATOR));

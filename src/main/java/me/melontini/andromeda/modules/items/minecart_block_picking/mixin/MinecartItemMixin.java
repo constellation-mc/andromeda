@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.items.minecart_block_picking.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.andromeda.modules.entities.minecarts.Minecarts;
@@ -28,7 +29,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import org.apache.commons.lang3.StringUtils;
@@ -243,11 +243,11 @@ abstract class MinecartItemMixin extends Item {
         String identifier = mobSpawnerBlockEntity.getLogic().spawnEntry.getNbt().getString("id");
 
         try {
-            return StringUtils.isEmpty(identifier) ? Registry.ENTITY_TYPE.getDefaultId() : new Identifier(identifier);
+            return StringUtils.isEmpty(identifier) ? CommonRegistries.entityTypes().getDefaultId() : new Identifier(identifier);
         } catch (InvalidIdentifierException e) {
             BlockPos blockPos = mobSpawnerBlockEntity.getPos();
             AndromedaLog.error(String.format("Invalid entity id '%s' at spawner %s:[%s,%s,%s]", identifier, Objects.requireNonNull(mobSpawnerBlockEntity.getWorld()).getRegistryKey().getValue(), blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-            return Registry.ENTITY_TYPE.getDefaultId();
+            return CommonRegistries.entityTypes().getDefaultId();
         }
     }
 }

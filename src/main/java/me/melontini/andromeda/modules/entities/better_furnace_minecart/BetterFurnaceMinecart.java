@@ -11,11 +11,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @ModuleInfo(name = "better_furnace_minecart", category = "entities", environment = Environment.SERVER)
 public class BetterFurnaceMinecart extends Module<BetterFurnaceMinecart.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
         @ConfigEntry.Gui.Tooltip
         public int maxFuel = 45000;

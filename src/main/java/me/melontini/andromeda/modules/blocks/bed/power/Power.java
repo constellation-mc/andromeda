@@ -10,11 +10,6 @@ import me.melontini.andromeda.base.config.BasicConfig;
 @ModuleInfo(name = "bed/power", category = "blocks", environment = Environment.SERVER)
 public class Power extends Module<Power.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
         public float power = 5.0F;
     }

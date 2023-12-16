@@ -16,11 +16,6 @@ import java.util.List;
 @ModuleInfo(name = "campfire_effects", category = "blocks", environment = Environment.SERVER)
 public class CampfireEffects extends Module<CampfireEffects.Config> {
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

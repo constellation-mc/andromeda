@@ -1,28 +1,54 @@
 package me.melontini.andromeda.modules.world.crop_temperature;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.melontini.andromeda.base.Debug;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.JsonDataLoader;
+import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.Mapper;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.block.Block;
+import net.minecraft.block.*;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.invoke.MethodType;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import static me.melontini.andromeda.common.registries.ResourceRegistry.parseFromId;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public record PlantTemperatureData(Block block, float min, float max, float aMin, float aMax) {
+public record PlantTemperatureData(Set<Block> blocks, float min, float max, float aMin, float aMax) {
 
     public static final Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
+
+    public static boolean roll(Block block, float temp) {
+        if (isPlant(block)) {
+            PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(block);
+            if (data != null) {
+                if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
+                    return MathStuff.nextInt(0, 1) != 0;
+                } else
+                    return (!(temp > data.aMax())) && (!(temp < data.aMin()));
+            }
+        }
+        return true;
+    }
+
+    public static boolean isPlant(Block block) {
+        return block instanceof PlantBlock || block instanceof AbstractPlantPartBlock;
+    }
 
     public static void init() {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> PlantTemperatureData.PLANT_DATA.clear());
@@ -33,15 +59,31 @@ public record PlantTemperatureData(Block block, float min, float max, float aMin
                 return CompletableFuture.supplyAsync(() -> {
                     Map<Identifier, PlantTemperatureData> map = new HashMap<>();
 
-                    data.forEach((identifier, object) -> map.put(identifier, new PlantTemperatureData(parseFromId(object.get("identifier").getAsString(), Registry.BLOCK),
-                            object.get("min").getAsFloat(),
-                            object.get("max").getAsFloat(),
-                            object.get("aMin").getAsFloat(),
-                            object.get("aMax").getAsFloat())));
+                    data.forEach((identifier, object) -> {
+                        JsonElement ids = MakeSure.notNull(object.get("identifier"));
+
+                        Set<Block> blocks = new HashSet<>();
+                        if (ids.isJsonArray()) {
+                            ids.getAsJsonArray().forEach(element -> blocks.add(parseFromId(element.getAsString(), CommonRegistries.blocks())));
+                        } else {
+                            blocks.add(parseFromId(ids.getAsString(), CommonRegistries.blocks()));
+                        }
+
+                        map.put(identifier, new PlantTemperatureData(blocks,
+                                object.get("min").getAsFloat(),
+                                object.get("max").getAsFloat(),
+                                object.get("aMin").getAsFloat(),
+                                object.get("aMax").getAsFloat()));
+                    });
 
                     return map;
-                }, executor).thenAcceptAsync(map -> map.forEach((identifier, temperatureData) ->
-                        PLANT_DATA.put(temperatureData.block, temperatureData)), executor);
+                }, executor).thenAcceptAsync(map -> {
+                    map.forEach((identifier, temperatureData) ->
+                            temperatureData.blocks.forEach((block) -> PLANT_DATA.put(block, temperatureData)));
+
+                    if (Debug.hasKey(Debug.Keys.PRINT_MISSING_ASSIGNED_DATA))
+                        verifyPostLoad();
+                }, executor);
             }
 
             @Override
@@ -49,5 +91,32 @@ public record PlantTemperatureData(Block block, float min, float max, float aMin
                 return new Identifier(MODID, "crop_temperatures");
             }
         });
+    }
+
+    private static void verifyPostLoad() {
+        String mapped = Mapper.mapMethod(AbstractBlock.class, "method_9514", MethodType.methodType(void.class, BlockState.class, ServerWorld.class, BlockPos.class, Random.class));
+
+        List<Block> override = new ArrayList<>();
+        List<Block> blocks = new ArrayList<>();
+
+        CommonRegistries.blocks().forEach(block -> {
+            if (isPlant(block) && !PLANT_DATA.containsKey(block)) {
+                if (methodInHierarchyUntil(block.getClass(), mapped, PlantBlock.class)) {
+                    override.add(block);
+                    return;
+                }
+                blocks.add(block);
+            }
+        });
+
+        if (!override.isEmpty()) AndromedaLog.warn("Missing crop temperatures: " + override);
+        if (!blocks.isEmpty()) AndromedaLog.warn("Possible missing crop temperatures: " + blocks);
+    }
+
+    private static boolean methodInHierarchyUntil(Class<?> cls, String name, Class<?> stopClass) {
+        if (Arrays.stream(cls.getDeclaredMethods()).anyMatch(method -> method.getName().equals(name)))
+            return true;
+
+        return !stopClass.equals(cls.getSuperclass()) && methodInHierarchyUntil(cls.getSuperclass(), name, stopClass);
     }
 }
