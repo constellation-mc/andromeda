@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.andromeda.util.AndromedaPackets;
@@ -23,7 +24,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
@@ -122,7 +122,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(BoatItems.boatId(this.getBoatType(), "tnt"));
+        return CommonRegistries.items().get(BoatItems.boatId(this.getBoatType(), "tnt"));
     }
 
     @Override

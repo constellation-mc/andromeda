@@ -3,6 +3,7 @@ package me.melontini.andromeda.common.client;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.client.sound.PersistentMovingSoundInstance;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.util.AndromedaPackets;
@@ -19,7 +20,6 @@ import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
 import java.util.UUID;
@@ -64,7 +64,7 @@ public class ClientSideNetworking {
         }
 
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.ADD_ONE_PARTICLE, (client, handler, packetByteBuf, responseSender) -> {
-            DefaultParticleType particle = (DefaultParticleType) MakeSure.notNull(packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE));
+            DefaultParticleType particle = (DefaultParticleType) MakeSure.notNull(packetByteBuf.readRegistryValue(CommonRegistries.particleTypes()));
             double x = packetByteBuf.readDouble(), y = packetByteBuf.readDouble(), z = packetByteBuf.readDouble();
             double velocityX = packetByteBuf.readDouble(), velocityY = packetByteBuf.readDouble(), velocityZ = packetByteBuf.readDouble();
             client.execute(() -> client.worldRenderer.addParticle(particle, particle.shouldAlwaysSpawn(), x, y, z, velocityX, velocityY, velocityZ));

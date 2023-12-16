@@ -1,5 +1,6 @@
 package me.melontini.andromeda.util;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
@@ -27,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +44,7 @@ public class WorldUtil {
     public static void addParticle(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         if (!world.isClient) {
             PacketByteBuf packetByteBuf = PacketByteBufs.create();
-            packetByteBuf.writeRegistryValue(Registry.PARTICLE_TYPE, parameters.getType());
+            packetByteBuf.writeRegistryValue(CommonRegistries.particleTypes(), parameters.getType());
             packetByteBuf.writeDouble(x);
             packetByteBuf.writeDouble(y);
             packetByteBuf.writeDouble(z);

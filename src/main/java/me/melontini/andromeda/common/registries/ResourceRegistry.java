@@ -2,6 +2,7 @@ package me.melontini.andromeda.common.registries;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -18,7 +19,7 @@ public class ResourceRegistry {
 
             for (JsonElement element : array) {
                 if (element.isJsonPrimitive()) {
-                    if (!Registry.ITEM.containsId(Identifier.tryParse(element.getAsString()))) return false;
+                    if (!CommonRegistries.items().containsId(Identifier.tryParse(element.getAsString()))) return false;
                 }
             }
 

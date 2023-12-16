@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.world.crop_temperature;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.Debug;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.Mapper;
@@ -19,7 +20,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 
 import java.lang.invoke.MethodType;
 import java.util.*;
@@ -42,7 +42,7 @@ public record PlantTemperatureData(Block block, float min, float max, float aMin
                 return CompletableFuture.supplyAsync(() -> {
                     Map<Identifier, PlantTemperatureData> map = new HashMap<>();
 
-                    data.forEach((identifier, object) -> map.put(identifier, new PlantTemperatureData(parseFromId(object.get("identifier").getAsString(), Registry.BLOCK),
+                    data.forEach((identifier, object) -> map.put(identifier, new PlantTemperatureData(parseFromId(object.get("identifier").getAsString(), CommonRegistries.blocks()),
                             object.get("min").getAsFloat(),
                             object.get("max").getAsFloat(),
                             object.get("aMin").getAsFloat(),
@@ -71,7 +71,7 @@ public record PlantTemperatureData(Block block, float min, float max, float aMin
         List<Block> override = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
 
-        Registry.BLOCK.forEach(block1 -> {
+        CommonRegistries.blocks().forEach(block1 -> {
             if (block1 instanceof PlantBlock && !PLANT_DATA.containsKey(block1)) {
                 if (methodInHierarchyUntil(block1.getClass(), mapped, PlantBlock.class)) {
                     override.add(block1);

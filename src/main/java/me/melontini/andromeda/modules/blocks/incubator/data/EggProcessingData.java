@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.blocks.incubator.data;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.util.JsonDataLoader;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -13,7 +14,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,8 +43,8 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
                     Map<Identifier, EggProcessingData> map = new HashMap<>();
 
                     data.forEach((identifier, object) -> {
-                        EntityType<?> entity = parseFromId(object.get("entity").getAsString(), Registry.ENTITY_TYPE);
-                        Item item = parseFromId(object.get("identifier").getAsString(), Registry.ITEM);
+                        EntityType<?> entity = parseFromId(object.get("entity").getAsString(), CommonRegistries.entityTypes());
+                        Item item = parseFromId(object.get("identifier").getAsString(), CommonRegistries.items());
 
                         map.put(identifier, new EggProcessingData(item, entity, object.get("time").getAsInt()));
                     });
@@ -53,7 +53,7 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
                 }, executor).thenAcceptAsync(map -> {
                     EggProcessingData.EGG_DATA.clear();
                     //well...
-                    for (Item item : Registry.ITEM) {
+                    for (Item item : CommonRegistries.items()) {
                         if (item instanceof SpawnEggItem spawnEggItem) {
                             EggProcessingData.EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(spawnEggItem, spawnEggItem.getEntityType(new NbtCompound()), 8000));
                         }

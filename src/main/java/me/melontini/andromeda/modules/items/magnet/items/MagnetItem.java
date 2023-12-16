@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.magnet.items;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -33,7 +34,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -166,7 +166,7 @@ public class MagnetItem extends Item {
         }
 
         NbtList list = nbt.getList("Items", NbtElement.STRING_TYPE);
-        NbtString id = NbtString.of(Registry.ITEM.getId(other.getItem()).toString());
+        NbtString id = NbtString.of(CommonRegistries.items().getId(other.getItem()).toString());
         if (list.contains(id)) return;
         list.add(0, id);
     }
@@ -189,7 +189,7 @@ public class MagnetItem extends Item {
         } else {
             NbtList nbtList = nbt.getList("Items", NbtElement.STRING_TYPE);
             return nbtList.stream().map(NbtString.class::cast)
-                    .map(s -> Registry.ITEM.get(new Identifier(s.asString())))
+                    .map(s -> CommonRegistries.items().get(new Identifier(s.asString())))
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
     }

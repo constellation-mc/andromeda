@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import net.minecraft.block.entity.Hopper;
@@ -14,7 +15,6 @@ import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -86,7 +86,7 @@ public class HopperBoatEntity extends StorageBoatEntity implements Hopper {
 
     @Override
     public Item asItem() {
-        return Registry.ITEM.get(BoatItems.boatId(this.getBoatType(), "hopper"));
+        return CommonRegistries.items().get(BoatItems.boatId(this.getBoatType(), "hopper"));
     }
 
     public boolean canOperate() {
