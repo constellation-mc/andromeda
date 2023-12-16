@@ -34,7 +34,7 @@ public record PlantTemperatureData(Set<Block> blocks, float min, float max, floa
     public static final Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
 
     public static boolean roll(Block block, float temp) {
-        if (block instanceof PlantBlock || block instanceof AbstractPlantPartBlock) {
+        if (isPlant(block)) {
             PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(block);
             if (data != null) {
                 if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
@@ -44,6 +44,10 @@ public record PlantTemperatureData(Set<Block> blocks, float min, float max, floa
             }
         }
         return true;
+    }
+
+    public static boolean isPlant(Block block) {
+        return block instanceof PlantBlock || block instanceof AbstractPlantPartBlock;
     }
 
     public static void init() {
@@ -95,13 +99,13 @@ public record PlantTemperatureData(Set<Block> blocks, float min, float max, floa
         List<Block> override = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
 
-        CommonRegistries.blocks().forEach(block1 -> {
-            if (block1 instanceof PlantBlock && !PLANT_DATA.containsKey(block1)) {
-                if (methodInHierarchyUntil(block1.getClass(), mapped, PlantBlock.class)) {
-                    override.add(block1);
+        CommonRegistries.blocks().forEach(block -> {
+            if (isPlant(block) && !PLANT_DATA.containsKey(block)) {
+                if (methodInHierarchyUntil(block.getClass(), mapped, PlantBlock.class)) {
+                    override.add(block);
                     return;
                 }
-                blocks.add(block1);
+                blocks.add(block);
             }
         });
 
