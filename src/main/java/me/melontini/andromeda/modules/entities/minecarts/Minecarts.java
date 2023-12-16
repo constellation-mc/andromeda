@@ -18,11 +18,6 @@ public class Minecarts extends Module<Minecarts.Config> {
         Common.bootstrap(MinecartItems.class, MinecartEntities.class);
     }
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

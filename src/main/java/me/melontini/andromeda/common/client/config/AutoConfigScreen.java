@@ -60,7 +60,7 @@ public class AutoConfigScreen {
             GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
 
             ModuleManager.get().all().forEach(module -> {
-                List<Field> fields = MakeSure.notEmpty(Arrays.asList(module.configClass().getFields()));
+                List<Field> fields = MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields()));
                 fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
                 var category = getOrCreateCategoryForField(module, builder);

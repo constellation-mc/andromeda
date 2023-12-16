@@ -19,11 +19,6 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
         Common.bootstrap(Content.class, ItemBehaviorData.class);
     }
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

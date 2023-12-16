@@ -19,11 +19,6 @@ public class Incubator extends Module<Incubator.Config> {
         Common.bootstrap(Content.class, EggProcessingData.class);
     }
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

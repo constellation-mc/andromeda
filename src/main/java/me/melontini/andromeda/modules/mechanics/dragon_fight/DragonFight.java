@@ -15,11 +15,6 @@ public class DragonFight extends Module<DragonFight.Config> {
         Common.bootstrap(EnderDragonManager.class);
     }
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Category("mechanics")
