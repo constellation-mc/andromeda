@@ -34,7 +34,7 @@ public class BoatItems {
                     .ifPresent(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(module, item)));
 
             ContentBuilder.ItemBuilder.create(boatId(value, "chest"), () -> new ChestBoatItem(value, new FabricItemSettings().maxCount(1)))
-                    .itemGroup(ItemGroup.TRANSPORTATION).register(module.config().isChestBoatOn).optional()
+                    .itemGroup(CommonItemGroups.transport()).register(module.config().isChestBoatOn).optional()
                     .ifPresent(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(module, item)));
         }
     }

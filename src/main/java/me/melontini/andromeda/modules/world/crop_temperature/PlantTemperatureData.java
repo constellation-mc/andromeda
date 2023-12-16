@@ -18,7 +18,6 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 
 import java.lang.invoke.MethodType;
