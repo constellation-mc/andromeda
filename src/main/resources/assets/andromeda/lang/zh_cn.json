@@ -103,7 +103,7 @@
   "andromeda.config.tooltip.environment.client": "仅客户端特性",
   "andromeda.config.tooltip.environment.server": "仅服务端特性。",
   "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
-  "andromeda.config.tooltip.origin": "灵感源于%s，由%s创作",
+  "andromeda.config.tooltip.origin": "灵感源于%2$s创作的%1$s",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "状态效果",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "名称",
