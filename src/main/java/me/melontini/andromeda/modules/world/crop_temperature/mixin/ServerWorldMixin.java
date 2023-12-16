@@ -16,16 +16,16 @@ class ServerWorldMixin {
 
     @WrapWithCondition(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)V"), method = "tickChunk")
     private boolean andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-            if (state.getBlock() instanceof PlantBlock) {
-                PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(state.getBlock());
-                if (data != null) {
-                    float temp = ((ServerWorld) (Object) this).getBiome(pos).value().getTemperature();
-                    if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
-                        return MathStuff.nextInt(0, 1) != 0;
-                    } else
-                        return (!(temp > data.aMax())) && (!(temp < data.aMin()));
-                }
+        if (state.getBlock() instanceof PlantBlock) {
+            PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(state.getBlock());
+            if (data != null) {
+                float temp = ((ServerWorld) (Object) this).getBiome(pos).value().getTemperature();
+                if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
+                    return MathStuff.nextInt(0, 1) != 0;
+                } else
+                    return (!(temp > data.aMax())) && (!(temp < data.aMin()));
             }
+        }
         return true;
     }
 }

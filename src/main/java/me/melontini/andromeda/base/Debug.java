@@ -41,6 +41,7 @@ public class Debug {
                 this.keys.add(Keys.PRINT_DEBUG_MESSAGES);
                 this.keys.add(Keys.VERIFY_MIXINS);
                 this.keys.add(Keys.DISPLAY_TRACKED_VALUES);
+                this.keys.add(Keys.PRINT_MISSING_ASSIGNED_DATA);
             }
         }
     }
@@ -53,5 +54,6 @@ public class Debug {
         public static final String SKIP_SERVER_MODULE_CHECK = "skipServerModuleCheck";
         public static final String DISPLAY_TRACKED_VALUES = "displayTrackedValues";
         public static final String ENABLE_ALL_MODULES = "enableAllModules";
+        public static final String PRINT_MISSING_ASSIGNED_DATA = "printMissingAssignedData";
     }
 }
