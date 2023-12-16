@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.Registries;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;

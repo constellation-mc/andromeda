@@ -1,22 +1,23 @@
 package me.melontini.andromeda.common.conflicts;
 
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 
 public class CommonItemGroups {
 
     public static ItemGroup tools() {
-        return ItemGroup.TOOLS;
+        return ItemGroups.TOOLS;
     }
 
     public static ItemGroup combat() {
-        return ItemGroup.COMBAT;
+        return ItemGroups.COMBAT;
     }
 
     public static ItemGroup redstone() {
-        return ItemGroup.REDSTONE;
+        return ItemGroups.REDSTONE;
     }
 
     public static ItemGroup transport() {
-        return ItemGroup.TRANSPORTATION;
+        return ItemGroups.TOOLS;
     }
 }

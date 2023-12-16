@@ -99,7 +99,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return CommonRegistries.items().get(BoatItems.boatId(this.getBoatType(), "furnace"));
+        return CommonRegistries.items().get(BoatItems.boatId(this.getVariant(), "furnace"));
     }
 
     public int getFuel() {

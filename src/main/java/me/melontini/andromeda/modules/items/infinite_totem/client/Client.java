@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundEvents;
 
 import java.util.UUID;

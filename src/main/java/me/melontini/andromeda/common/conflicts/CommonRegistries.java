@@ -4,24 +4,25 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.DefaultedRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class CommonRegistries {
 
     public static DefaultedRegistry<Item> items() {
-        return Registry.ITEM;
+        return Registries.ITEM;
     }
 
     public static DefaultedRegistry<Block> blocks() {
-        return Registry.BLOCK;
+        return Registries.BLOCK;
     }
 
     public static DefaultedRegistry<EntityType<?>> entityTypes() {
-        return Registry.ENTITY_TYPE;
+        return Registries.ENTITY_TYPE;
     }
 
     public static Registry<ParticleType<?>> particleTypes() {
-        return Registry.PARTICLE_TYPE;
+        return Registries.PARTICLE_TYPE;
     }
 }
