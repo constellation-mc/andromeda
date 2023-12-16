@@ -9,12 +9,10 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Mapper;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.PlantBlock;
+import net.minecraft.block.*;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.world.ServerWorld;
@@ -34,6 +32,19 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public record PlantTemperatureData(Set<Block> blocks, float min, float max, float aMin, float aMax) {
 
     public static final Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
+
+    public static boolean roll(Block block, float temp) {
+        if (block instanceof PlantBlock || block instanceof AbstractPlantPartBlock) {
+            PlantTemperatureData data = PlantTemperatureData.PLANT_DATA.get(block);
+            if (data != null) {
+                if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
+                    return MathStuff.nextInt(0, 1) != 0;
+                } else
+                    return (!(temp > data.aMax())) && (!(temp < data.aMin()));
+            }
+        }
+        return true;
+    }
 
     public static void init() {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> PlantTemperatureData.PLANT_DATA.clear());

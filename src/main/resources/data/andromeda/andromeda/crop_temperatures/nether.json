@@ -2,7 +2,9 @@
   "identifier": [
     "minecraft:nether_wart",
     "minecraft:twisting_vines",
-    "minecraft:weeping_vines"
+    "minecraft:twisting_vines_plant",
+    "minecraft:weeping_vines",
+    "minecraft:weeping_vines_plant"
   ],
   "min": "1.8",
   "max": "2.0",
