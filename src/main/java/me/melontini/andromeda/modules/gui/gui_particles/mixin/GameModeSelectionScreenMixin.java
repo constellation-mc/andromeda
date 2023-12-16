@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import com.google.common.collect.Lists;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -42,7 +43,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
 
     @Unique
     private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>> ANDROMEDA$GAME_MODE_STACKS = Utilities.consume(new HashMap<>(), map -> {
-        map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> Registries.ITEM.getRandom(Random.create()).orElseThrow().value().getDefaultStack());
+        map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> CommonRegistries.items().getRandom(Random.create()).orElseThrow().value().getDefaultStack());
         map.put(GameModeSelectionScreen.GameModeSelection.ADVENTURE, () -> Utilities.pickAtRandom(ANDROMEDA$ADVENTURE));
         map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));
         map.put(GameModeSelectionScreen.GameModeSelection.SPECTATOR, () -> Utilities.pickAtRandom(ANDROMEDA$SPECTATOR));

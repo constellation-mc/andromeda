@@ -18,11 +18,6 @@ public class Boats extends Module<Boats.Config> {
         Common.bootstrap(BoatItems.class, BoatEntities.class);
     }
 
-    @Override
-    public Class<Config> configClass() {
-        return Config.class;
-    }
-
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Gui.Tooltip

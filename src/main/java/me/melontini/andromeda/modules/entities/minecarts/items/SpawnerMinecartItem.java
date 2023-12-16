@@ -1,11 +1,11 @@
 package me.melontini.andromeda.modules.entities.minecarts.items;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -24,7 +24,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) if (nbt.getString("Entity") != null) {
-            tooltip.add(TextUtil.translatable("tooltip.andromeda.spawner_minecart.filled", Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("Entity"))).getName()).formatted(Formatting.GRAY));
+            tooltip.add(TextUtil.translatable("tooltip.andromeda.spawner_minecart.filled", CommonRegistries.entityTypes().get(Identifier.tryParse(nbt.getString("Entity"))).getName()).formatted(Formatting.GRAY));
         }
     }
 
@@ -32,7 +32,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
     protected void onCreate(ItemStack stack, SpawnerMinecartEntity entity) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) if (nbt.getString("Entity") != null) {
-            entity.getLogic().setEntityId(Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("Entity"))), entity.world, entity.world.random, entity.getBlockPos());
+            entity.getLogic().setEntityId(CommonRegistries.entityTypes().get(Identifier.tryParse(nbt.getString("Entity"))));
         }
     }
 

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import net.minecraft.block.entity.Hopper;
@@ -86,7 +87,7 @@ public class HopperBoatEntity extends StorageBoatEntity implements Hopper {
 
     @Override
     public Item asItem() {
-        return Registries.ITEM.get(BoatItems.boatId(this.getVariant(), "hopper"));
+        return CommonRegistries.items().get(BoatItems.boatId(this.getVariant(), "hopper"));
     }
 
     public boolean canOperate() {
