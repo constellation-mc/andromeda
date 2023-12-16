@@ -16,16 +16,6 @@
   "death.attack.andromeda_bricked": "%1$s被%2$s用砖块砸晕了",
   "andromeda.container.guarded": "这个箱子被守护着，无法打开！",
 
-  "andromeda.disconnected.module_mismatch": "群星模组配置不同步！\n请禁用%s\n启用%s\n以加入此服务器！",
-
-  "andromeda.config.option_manager.reason.andromeda.module_conflict": "启用了冲突的特性！",
-  "andromeda.config.option_manager.reason.andromeda.iceberg": "与低于1.1.13的Iceberg前置冲突。",
-  "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "此特性因启用了“客户端模式”被禁用！",
-
-  "andromeda.config.tooltip.environment.client": "仅客户端特性",
-  "andromeda.config.tooltip.environment.server": "仅服务端特性。",
-  "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
-
   "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
   "commands.andromeda.damage.success": "已将%s伤害施加于%s",
 
@@ -104,6 +94,17 @@
   "config.andromeda.title": "群星（%s）",
   "config.andromeda.option.enabled": "启用",
 
+  "andromeda.disconnected.module_mismatch": "群星模组配置不同步！\n请禁用%s\n启用%s\n以加入此服务器！",
+
+  "andromeda.config.option_manager.reason.andromeda.module_conflict": "启用了冲突的特性！",
+  "andromeda.config.option_manager.reason.andromeda.iceberg": "与低于1.1.13的Iceberg前置冲突。",
+  "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "此特性因启用了“客户端模式”被禁用！",
+
+  "andromeda.config.tooltip.environment.client": "仅客户端特性",
+  "andromeda.config.tooltip.environment.server": "仅服务端特性。",
+  "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
+  "andromeda.config.tooltip.origin": "灵感源于%2$s创作的%1$s",
+
   "config.andromeda.blocks.campfire_effects.option.Effect": "状态效果",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "名称",
   "config.andromeda.blocks.campfire_effects.option.Effect.amplifier": "倍率",
@@ -119,6 +120,7 @@
   "config.andromeda.world.falling_beenests.@Tooltip": "正如此项目字面所言，它能够让蜂巢在一段时间后自然掉落，\n此外，你还能通过向蜂巢射箭来使它们掉落",
   "config.andromeda.world.crop_temperature": "基于温度的作物生长速度",
   "config.andromeda.world.crop_temperature.@Tooltip": "在这里给这个项目添加简介吧~",
+  "config.andromeda.world.crop_temperature.option.affectBoneMeal": "影响骨粉",
   "config.andromeda.world.quick_fire": "更快的火焰蔓延",
   "config.andromeda.world.quick_fire.@Tooltip": "使得火势能够蔓延得更快更广",
 
@@ -273,10 +275,10 @@
   "config.andromeda.mechanics.throwable_items.option.canZombiesThrowItems": "僵尸能否投掷物品？",
   "config.andromeda.mechanics.throwable_items.option.canZombiesThrowItems.@Tooltip": "使僵尸也能够投掷物品",
   "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval": "僵尸投掷冷却",
-  "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval.@Tooltip": "在原本冷却的基础上，额外加算的僵尸投掷冷却时间。",
+  "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval.@Tooltip": "在原本冷却的基础上，额外增加的投掷冷却时间。",
   "config.andromeda.mechanics.throwable_items.option.tooltip": "显示“可投掷”工具提示",
   "config.andromeda.mechanics.trading_goat_horn": "流浪商人号角",
-  "config.andromeda.mechanics.trading_goat_horn.@Tooltip": "每两天，你都能使用这个号角来召唤一位流浪商人。\n值得注意的是，流浪商人仍然会自然生成。\n你可以通过禁用\"doTraderSpawning\"的游戏规则来禁用流浪商人自然生成。",
+  "config.andromeda.mechanics.trading_goat_horn.@Tooltip": "每两天，你都能使用“歌颂”号角来召唤一位流浪商人。\n值得注意的是，流浪商人仍然会自然生成。\n你可以通过禁用\"doTraderSpawning\"的游戏规则来禁用流浪商人自然生成。",
 
   "config.andromeda.category.gui": "GUI",
   "config.andromeda.gui.name_tooltips": "工具提示样式",
@@ -291,6 +293,7 @@
   "config.andromeda.gui.gui_particles.option.creativeScreenParticles": "销毁物品粒子效果",
   "config.andromeda.gui.gui_particles.option.creativeScreenParticlesVelX": "销毁物品粒子下落速度",
   "config.andromeda.gui.gui_particles.option.gameModeSwitcherParticles": "游戏模式切换界面粒子效果",
+  "config.andromeda.gui.gui_particles.option.bundleInputParticles": "收纳袋装入粒子效果",
   "config.andromeda.gui.item_frame_tooltips": "物品展示框提示",
   "config.andromeda.gui.item_frame_tooltips.@Tooltip": "在游戏内为物品展示框添加物品提示",
 
