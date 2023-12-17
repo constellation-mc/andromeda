@@ -60,7 +60,7 @@ public class Keeper<T> {
     }
 
     public T orThrow() {
-        return orThrow("No value present! Keeper (%s) not bootstrapped?".formatted(field == null ? "UNKNOWN" : field.getName()));
+        return orThrow("No value present! Keeper (%s) not bootstrapped?".formatted(getField() == null ? "UNKNOWN" : getField().getName()));
     }
 
     public T orThrow(String msg) {

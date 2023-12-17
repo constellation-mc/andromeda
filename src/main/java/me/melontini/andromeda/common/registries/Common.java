@@ -3,7 +3,6 @@ package me.melontini.andromeda.common.registries;
 import me.melontini.andromeda.base.Module;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.base.util.classes.ThrowingSupplier;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -55,13 +54,5 @@ public class Common {
 
     public static void bootstrap() {
         bootstrap(AndromedaItemGroup.class, ResourceRegistry.class);
-    }
-
-    public static <T> T run(ThrowingSupplier<T, Throwable> callable, String... features) {
-        try {
-            return callable.get();
-        } catch (Throwable e) {
-            throw new RuntimeException("Something went very wrong!", e);
-        }
     }
 }
