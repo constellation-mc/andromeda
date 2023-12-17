@@ -2,6 +2,7 @@ package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import net.minecraft.util.Identifier;
@@ -14,12 +15,21 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Common {
 
+    //DO NOT CALL THIS FROM THE WRONG MODULE!!!
     public static void bootstrap(Module<?> module, Class<?>... classes) {
+        MakeSure.notNull(module);
+
         for (Class<?> cls : classes) {
-            Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
-            Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
+            Reflect.findField(cls, "MODULE").ifPresent(field -> Utilities.runUnchecked(() -> {
+                MakeSure.isTrue(field.getType() == module.getClass(), "Illegal module field type '%s'! Must be '%s'".formatted(field.getType(), module.getClass()));
+                field.setAccessible(true);
+                field.set(null, module);
+            }));
 
             initKeepers(cls);
+
+            Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
+            Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
         }
     }
 

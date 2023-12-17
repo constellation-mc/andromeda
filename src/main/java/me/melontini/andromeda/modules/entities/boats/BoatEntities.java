@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.boats;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
@@ -22,26 +21,28 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class BoatEntities {
 
+    private static Boats MODULE;
+
     public static final Keeper<EntityType<TNTBoatEntity>> BOAT_WITH_TNT = Keeper.of(() -> () ->
-            RegistryUtil.createEntityType(() -> ModuleManager.quick(Boats.class).config().isTNTBoatOn,
+            RegistryUtil.createEntityType(() -> MODULE.config().isTNTBoatOn,
                     id("tnt_boat"),
                     FabricEntityTypeBuilder.<TNTBoatEntity>create(SpawnGroup.MISC, TNTBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
     public static final Keeper<EntityType<FurnaceBoatEntity>> BOAT_WITH_FURNACE = Keeper.of(() -> () ->
-            RegistryUtil.createEntityType(() -> ModuleManager.quick(Boats.class).config().isFurnaceBoatOn,
+            RegistryUtil.createEntityType(() -> MODULE.config().isFurnaceBoatOn,
                     id("furnace_boat"),
                     FabricEntityTypeBuilder.<FurnaceBoatEntity>create(SpawnGroup.MISC, FurnaceBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
     public static final Keeper<EntityType<JukeboxBoatEntity>> BOAT_WITH_JUKEBOX = Keeper.of(() -> () ->
-            RegistryUtil.createEntityType(() -> ModuleManager.quick(Boats.class).config().isJukeboxBoatOn,
+            RegistryUtil.createEntityType(() -> MODULE.config().isJukeboxBoatOn,
                     id("jukebox_boat"),
                     FabricEntityTypeBuilder.<JukeboxBoatEntity>create(SpawnGroup.MISC, JukeboxBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
     public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.of(() -> () ->
-            RegistryUtil.createEntityType(() -> ModuleManager.quick(Boats.class).config().isHopperBoatOn,
+            RegistryUtil.createEntityType(() -> MODULE.config().isHopperBoatOn,
                     id("hopper_boat"),
                     FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
