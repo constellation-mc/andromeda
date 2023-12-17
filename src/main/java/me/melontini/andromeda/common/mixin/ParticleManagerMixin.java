@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(ParticleManager.class)
-public class ParticleManagerMixin {
+class ParticleManagerMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/Map;containsKey(Ljava/lang/Object;)Z", shift = At.Shift.BY, by = 2), method = "loadTextureList", cancellable = true)
     private void andromeda$skipRedundant(ResourceManager resourceManager, Identifier id, Map<Identifier, List<Identifier>> result, CallbackInfo ci, @Local List<Identifier> list, @Local LocalBooleanRef bl, @Local Reader reader) {

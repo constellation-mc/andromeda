@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(SubCategoryListEntry.class)
-public class SubCategoryListEntryMixin {
+class SubCategoryListEntryMixin {
 
     //Why am I fixing CC bugs?
     @WrapOperation(method = "isRequiresRestart", at = @At(value = "INVOKE", target = "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"))

@@ -90,6 +90,7 @@
   "gui.andromeda.merchant": "Merchant Inventory",
 
   "action.andromeda.safebeds": "You can't sleep here!",
+  "andromeda.game_rule.category": "Andromeda",
 
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",
@@ -123,6 +124,9 @@
   "config.andromeda.world.crop_temperature.option.affectBoneMeal": "Affect Bone Meal",
   "config.andromeda.world.quick_fire": "Fast Fire Spread",
   "config.andromeda.world.quick_fire.@Tooltip": "Makes fire spread a lot faster and wider.",
+  "config.andromeda.world.moist_control": "Moisture Control",
+  "config.andromeda.world.moist_control.@Tooltip": "Enables some control over farmland moisture.",
+  "config.andromeda.world.moist_control.option.customMoisture": "Custom Moisture Range",
 
   "config.andromeda.category.blocks": "Blocks",
   "config.andromeda.blocks.guarded_loot": "Guarded Loot",
