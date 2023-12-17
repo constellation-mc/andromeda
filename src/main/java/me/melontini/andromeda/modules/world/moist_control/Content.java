@@ -12,7 +12,7 @@ public class Content {
     public static void init() {
         var m = ModuleManager.quick(MoistControl.class);
 
-        CUSTOM_MOISTURE = GameRuleRegistry.register(GameRuleBuilder.name(m, "customMoisture"), GameRuleBuilder.CATEGORY, GameRuleBuilder.intRule(() ->
+        CUSTOM_MOISTURE = GameRuleRegistry.register(GameRuleBuilder.name(m, "customMoisture"), GameRuleBuilder.category(m), GameRuleBuilder.intRule(() ->
                 m.config().customMoisture));
     }
 }

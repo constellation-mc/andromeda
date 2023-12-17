@@ -90,7 +90,7 @@
   "gui.andromeda.merchant": "Merchant Inventory",
 
   "action.andromeda.safebeds": "You can't sleep here!",
-  "andromeda.game_rule.category": "Andromeda",
+  "andromeda.game_rule.category": " (Andromeda)",
 
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",

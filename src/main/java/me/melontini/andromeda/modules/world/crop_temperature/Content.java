@@ -9,7 +9,7 @@ public class Content {
     public static GameRules.Key<GameRules.BooleanRule> AFFECT_BONE_MEAL;
 
     public static void init(PlantTemperature m) {
-        AFFECT_BONE_MEAL = GameRuleRegistry.register(GameRuleBuilder.name(m, "affectBoneMeal"), GameRuleBuilder.CATEGORY, GameRuleBuilder.booleanRule(() ->
+        AFFECT_BONE_MEAL = GameRuleRegistry.register(GameRuleBuilder.name(m, "affectBoneMeal"), GameRuleBuilder.category(m), GameRuleBuilder.booleanRule(() ->
                 m.config().affectBoneMeal));
     }
 }
