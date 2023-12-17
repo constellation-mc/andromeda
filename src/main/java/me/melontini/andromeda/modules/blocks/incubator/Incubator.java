@@ -16,7 +16,7 @@ public class Incubator extends Module<Incubator.Config> {
 
     @Override
     public void onMain() {
-        Common.bootstrap(Content.class, EggProcessingData.class);
+        Common.bootstrap(this, Content.class, EggProcessingData.class);
     }
 
     public static class Config extends BasicConfig {

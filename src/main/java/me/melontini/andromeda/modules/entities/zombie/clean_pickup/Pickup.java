@@ -12,6 +12,6 @@ public class Pickup extends BasicModule {
 
     @Override
     public void onMain() {
-        Common.bootstrap(PickupTag.class);
+        Common.bootstrap(this, PickupTag.class);
     }
 }

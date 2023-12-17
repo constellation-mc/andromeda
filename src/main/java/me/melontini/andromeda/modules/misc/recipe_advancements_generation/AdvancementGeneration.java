@@ -17,7 +17,7 @@ public class AdvancementGeneration extends Module<AdvancementGeneration.Config> 
 
     @Override
     public void onMain() {
-        Common.bootstrap(Helper.class);
+        Common.bootstrap(this, Helper.class);
     }
 
     public static class Config extends BasicConfig {

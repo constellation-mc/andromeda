@@ -15,7 +15,7 @@ public class Boats extends Module<Boats.Config> {
 
     @Override
     public void onMain() {
-        Common.bootstrap(BoatItems.class, BoatEntities.class);
+        Common.bootstrap(this, BoatItems.class, BoatEntities.class);
     }
 
     public static class Config extends BasicConfig {

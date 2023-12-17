@@ -12,6 +12,6 @@ public class VillagersFollowEmeralds extends BasicModule {
 
     @Override
     public void onMain() {
-        Common.bootstrap(VillagerTemptGoal.class);
+        Common.bootstrap(this, VillagerTemptGoal.class);
     }
 }

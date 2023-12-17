@@ -15,7 +15,7 @@ public class Minecarts extends Module<Minecarts.Config> {
 
     @Override
     public void onMain() {
-        Common.bootstrap(MinecartItems.class, MinecartEntities.class);
+        Common.bootstrap(this, MinecartItems.class, MinecartEntities.class);
     }
 
     public static class Config extends BasicConfig {

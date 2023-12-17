@@ -12,6 +12,6 @@ public class DamageBackport extends BasicModule {
 
     @Override
     public void onMain() {
-        Common.bootstrap(DamageCommand.class);
+        Common.bootstrap(this, DamageCommand.class);
     }
 }

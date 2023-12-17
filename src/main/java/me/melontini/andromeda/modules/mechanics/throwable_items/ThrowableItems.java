@@ -16,7 +16,7 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
 
     @Override
     public void onMain() {
-        Common.bootstrap(Content.class, ItemBehaviorData.class);
+        Common.bootstrap(this, Content.class, ItemBehaviorData.class);
     }
 
     public static class Config extends BasicConfig {

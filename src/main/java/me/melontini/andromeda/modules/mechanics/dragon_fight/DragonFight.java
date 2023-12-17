@@ -12,7 +12,7 @@ public class DragonFight extends Module<DragonFight.Config> {
 
     @Override
     public void onMain() {
-        Common.bootstrap(EnderDragonManager.class);
+        Common.bootstrap(this, EnderDragonManager.class);
     }
 
     public static class Config extends BasicConfig {

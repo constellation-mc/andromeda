@@ -14,18 +14,13 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Common {
 
-    public static void bootstrap(Class<?>... classes) {
+    public static void bootstrap(Module<?> module, Class<?>... classes) {
         for (Class<?> cls : classes) {
+            Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
             Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
+
             initKeepers(cls);
         }
-    }
-
-    public static void bootstrap(Module<?> module, Class<?>... classes) {
-        for (Class<?> aClass : classes) {
-            Reflect.findMethod(aClass, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
-        }
-        bootstrap(classes);
     }
 
     private static void initKeepers(@NotNull Class<?> reg) {
@@ -54,5 +49,12 @@ public class Common {
 
     public static void bootstrap() {
         bootstrap(AndromedaItemGroup.class, ResourceRegistry.class);
+    }
+
+    private static void bootstrap(Class<?>... classes) {
+        for (Class<?> cls : classes) {
+            Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
+            initKeepers(cls);
+        }
     }
 }

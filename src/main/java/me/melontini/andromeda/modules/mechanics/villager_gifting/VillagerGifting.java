@@ -12,6 +12,6 @@ public class VillagerGifting extends BasicModule {
 
     @Override
     public void onMain() {
-        Common.bootstrap(GiftTags.class);
+        Common.bootstrap(this, GiftTags.class);
     }
 }
