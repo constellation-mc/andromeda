@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common.registries;
 
+import me.melontini.andromeda.base.Module;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingSupplier;
@@ -16,9 +17,16 @@ public class Common {
 
     public static void bootstrap(Class<?>... classes) {
         for (Class<?> cls : classes) {
-            initKeepers(cls);
             Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
+            initKeepers(cls);
         }
+    }
+
+    public static void bootstrap(Module<?> module, Class<?>... classes) {
+        for (Class<?> aClass : classes) {
+            Reflect.findMethod(aClass, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
+        }
+        bootstrap(classes);
     }
 
     private static void initKeepers(@NotNull Class<?> reg) {

@@ -31,10 +31,10 @@ public abstract class Module<T extends BasicConfig> {
     }
     public void onPreLaunch() { }
 
-    protected void initClasses(String... classes) {
+    protected final void initClasses(String... classes) {
         for (String cls : classes) {
             try {
-                Common.bootstrap(Class.forName(this.getClass().getPackageName() + "." + cls));
+                Common.bootstrap(this, Class.forName(this.getClass().getPackageName() + "." + cls));
             } catch (ClassNotFoundException ignored) {
             }
         }
