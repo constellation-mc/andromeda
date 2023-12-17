@@ -105,6 +105,7 @@
   "andromeda.config.tooltip.environment.server": "Server-only feature.",
   "andromeda.config.tooltip.environment.both": "Required on both Client and Server.",
   "andromeda.config.tooltip.origin": "Taken from or based on %s by %s",
+  "andromeda.config.tooltip.game_rule": "This option is a default for a game rule!",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "Effect",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "Identifier",
