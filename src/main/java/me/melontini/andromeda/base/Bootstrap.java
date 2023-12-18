@@ -1,5 +1,7 @@
 package me.melontini.andromeda.base;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.Andromeda;
@@ -55,6 +57,16 @@ public class Bootstrap {
     public static void onPreLaunch() {
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
+        JsonObject oldCfg = null;
+        var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
+        if (Files.exists(oldCfgPath)) {
+            try {
+                oldCfg = JsonParser.parseReader(Files.newBufferedReader(oldCfgPath)).getAsJsonObject();
+            } catch (IOException e) {
+                AndromedaLog.error("Couldn't read pre-1.0.0 config!");
+            }
+        }
+
         if (CommonValues.platform() == CommonValues.Platform.CONNECTOR) {
             LOGGER.warn("Andromeda may not work on Connector! (If #557 is open on Connector's GitHub)");
         }
@@ -84,7 +96,7 @@ public class Bootstrap {
 
         ModuleManager m;
         try {
-            m = new ModuleManager(list);
+            m = new ModuleManager(list, oldCfg);
         } catch (Throwable t) {
             throw new AndromedaException("Failed to initialize ModuleManager!!!", t);
         }

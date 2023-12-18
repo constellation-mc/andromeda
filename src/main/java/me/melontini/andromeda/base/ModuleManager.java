@@ -1,6 +1,7 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
@@ -12,6 +13,7 @@ import me.melontini.dark_matter.api.config.ConfigBuilder;
 import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -39,7 +41,7 @@ public class ModuleManager {
 
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
-    ModuleManager(List<Module<?>> discovered) {
+    ModuleManager(List<Module<?>> discovered, @Nullable JsonObject oldCfg) {
         Bootstrap.INSTANCE = this;
 
         Set<String> ids = new HashSet<>();
@@ -61,8 +63,13 @@ public class ModuleManager {
         this.configs = ImmutableMap.copyOf(setUpConfigs(sorted));
 
         sorted.forEach(Module::postConfig);
+
+        if (oldCfg != null)
+            sorted.forEach(module -> module.acceptLegacyConfig(oldCfg));
+
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
             sorted.forEach(module -> module.config().enabled = true);
+
         sorted.forEach(module -> module.manager().save());
 
         this.modules = sorted.stream().filter(Module::enabled)

@@ -4,7 +4,9 @@ import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.annotations.OldConfigKey;
 
+@OldConfigKey("tradingGoatHorn")
 @ModuleTooltip(3)
 @ModuleInfo(name = "trading_goat_horn", category = "mechanics", environment = Environment.SERVER)
 public class GoatHorn extends BasicModule {
