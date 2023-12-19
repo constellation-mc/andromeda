@@ -19,7 +19,7 @@ class FarmlandMixin {
     @Inject(at = @At("HEAD"), method = "isWaterNearby")
     private static void andromeda$prepareRule(WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir, @Share("value") LocalIntRef ref) {
         if (world instanceof ServerWorld sw) {
-            ref.set(sw.getGameRules().getInt(Content.CUSTOM_MOISTURE));
+            ref.set(sw.getGameRules().getInt(Content.customMoisture));
         }
     }
 

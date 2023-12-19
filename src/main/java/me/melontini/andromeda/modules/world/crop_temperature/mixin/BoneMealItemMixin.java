@@ -21,7 +21,7 @@ class BoneMealItemMixin {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getBlockPos();
 
-        if (world.getGameRules().getBoolean(Content.AFFECT_BONE_MEAL) && !world.isClient()) {
+        if (world.getGameRules().getBoolean(Content.affectBoneMeal) && !world.isClient()) {
             Block block = world.getBlockState(pos).getBlock();
             if (!PlantTemperatureData.roll(block, world.getBiome(pos).value().getTemperature())) {
                 cir.setReturnValue(ActionResult.FAIL);

@@ -1,18 +1,25 @@
 package me.melontini.andromeda.common.registries;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.annotations.GameRule;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.content.ContentBuilder;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.function.Supplier;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
+@CustomLog
 public class Common {
 
     //DO NOT CALL THIS FROM THE WRONG MODULE!!!
@@ -23,24 +30,47 @@ public class Common {
             Reflect.findField(cls, "MODULE").ifPresent(field -> Utilities.runUnchecked(() -> {
                 MakeSure.isTrue(field.getType() == module.getClass(), "Illegal module field type '%s'! Must be '%s'".formatted(field.getType(), module.getClass()));
                 field.setAccessible(true);
+                LOGGER.debug("Setting module field for class '{}' to module '{}'", cls, module.meta().id());
                 field.set(null, module);
             }));
 
             initKeepers(cls);
+            initGameRules(cls, module);
 
             Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
             Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
+    private static void initGameRules(Class<?> reg, Module<?> m) {
+        for (Field field : reg.getFields()) {
+            if (field.getType() != GameRules.Key.class || !Modifier.isStatic(field.getModifiers())) continue;
+            if (!field.isAnnotationPresent(GameRule.class)) continue;
+            ;
+
+            Reflect.findField(ModuleManager.get().getConfigClass(m.getClass()), field.getName()).ifPresent(cf -> {
+                if (cf.isAnnotationPresent(GameRule.class)) {
+                    GameRules.Key<?> key = GameRuleRegistry.register(GameRuleBuilder.name(m, field.getName()), GameRuleBuilder.category(m),
+                            GameRuleBuilder.forOption(m.manager(), m.manager().getField(field.getName())));
+
+                    field.setAccessible(true);
+                    LOGGER.debug("Setting game rule '{}' to '{}'", field.getName(), key);
+                    Utilities.runUnchecked(() -> field.set(null, key));
+                }
+            });
+        }
+    }
+
     private static void initKeepers(@NotNull Class<?> reg) {
         for (Field field : reg.getFields()) {
-            if (field.getType() != Keeper.class) continue;
+            if (field.getType() != Keeper.class || !Modifier.isStatic(field.getModifiers())) continue;
 
             Keeper<?> keeper = (Keeper<?>) Utilities.supplyUnchecked(() -> field.get(reg));
             if (keeper.initialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
 
             try {
+                LOGGER.debug("Initializing Keeper {} for class {}", field.getName(), reg.getName());
                 keeper.init(field);
             } catch (Throwable t) {
                 throw new IllegalStateException("Failed to bootstrap registry object %s!".formatted(field.getName()), t);

@@ -3,6 +3,8 @@ package me.melontini.andromeda.common.registries;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import me.melontini.andromeda.base.Module;
+import me.melontini.dark_matter.api.config.ConfigManager;
+import me.melontini.dark_matter.api.config.interfaces.Option;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.gamerule.v1.CustomGameRuleCategory;
 import net.minecraft.util.Formatting;
@@ -27,6 +29,19 @@ public class GameRuleBuilder {
 
     public static String name(Module<?> m, String rule) {
         return "andromeda:" + m.meta().dotted() + ":" + rule;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static GameRules.Type<?> forOption(ConfigManager<?> manager, Option option) {
+        if (option.type() == int.class || option.type() == Integer.class) {
+            return intRule(() -> (int) option.get(manager.getConfig()));
+        }
+
+        if (option.type() == boolean.class || option.type() == Boolean.class) {
+            return booleanRule(() -> (boolean) option.get(manager.getConfig()));
+        }
+
+        throw new IllegalStateException("Illegal option type! %s (%s)".formatted(option.name(), option.type()));
     }
 
     public static GameRules.Type<GameRules.IntRule> intRule(IntSupplier defaultValue) {
