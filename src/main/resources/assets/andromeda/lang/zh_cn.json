@@ -90,6 +90,7 @@
   "gui.andromeda.merchant": "商人",
 
   "action.andromeda.safebeds": "你不能在这儿休息！",
+  "andromeda.game_rule.category": "（群星）",
 
   "config.andromeda.title": "群星（%s）",
   "config.andromeda.option.enabled": "启用",
@@ -104,6 +105,7 @@
   "andromeda.config.tooltip.environment.server": "仅服务端特性。",
   "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
   "andromeda.config.tooltip.origin": "灵感源于%2$s创作的%1$s",
+  "andromeda.config.tooltip.game_rule": "此选项是游戏规则的默认值！",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "状态效果",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "名称",
@@ -123,6 +125,9 @@
   "config.andromeda.world.crop_temperature.option.affectBoneMeal": "影响骨粉",
   "config.andromeda.world.quick_fire": "更快的火焰蔓延",
   "config.andromeda.world.quick_fire.@Tooltip": "使得火势能够蔓延得更快更广",
+  "config.andromeda.world.moist_control": "湿润机制调整",
+  "config.andromeda.world.moist_control.@Tooltip": "一些与耕地湿润机制有关的选项",
+  "config.andromeda.world.moist_control.option.customMoisture": "湿润范围",
 
   "config.andromeda.category.blocks": "方块",
   "config.andromeda.blocks.guarded_loot": "宝藏守卫",
