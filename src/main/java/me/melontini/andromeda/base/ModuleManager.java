@@ -65,6 +65,8 @@ public class ModuleManager {
             }
         });
 
+        sorted.forEach(Module::postConfig);
+
         if (oldCfg != null)
             sorted.forEach(module -> module.acceptLegacyConfig(oldCfg));
 
