@@ -15,6 +15,7 @@ import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -29,6 +30,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.World;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -53,16 +55,25 @@ public class Andromeda {
         if (Files.exists(manager.resolve(root))) {
             return manager.load(root);
         }
+        T config = manager.load(FabricLoader.getInstance().getConfigDir());
         if (id != null) {
             var data = DataConfigs.CONFIGS.get(id);
             if (data != null) {
                 var forModule = data.get(module);
                 if (forModule != null) {
-                    return (T) forModule;
+                    for (Tuple<Set<Field>, ? extends BasicConfig> tuple : forModule) {
+                        tuple.left().forEach((field) -> {
+                            try {
+                                field.set(config, field.get(tuple.right()));
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException("Failed to apply config data for module '%s'".formatted(module.meta().id()), e);
+                            }
+                        });
+                    }
                 }
             }
         }
-        return manager.load(FabricLoader.getInstance().getConfigDir());
+        return config;
     }
 
     private static void prepareForWorld(ServerWorld world, Module<?> module, Path p) {
