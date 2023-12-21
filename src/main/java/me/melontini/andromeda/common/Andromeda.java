@@ -1,19 +1,30 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
+import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.World;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
@@ -30,9 +41,54 @@ public class Andromeda {
         FabricLoader.getInstance().getObjectShare().put("andromeda:main", INSTANCE);
     }
 
+    @SneakyThrows
+    private static <T extends BasicConfig> T loadScoped(Path root, Module<T> module) {
+        var manager = module.manager();
+        if (Files.exists(manager.resolve(root))) {
+            return manager.load(root);
+        }
+        return manager.load(FabricLoader.getInstance().getConfigDir());
+    }
+
+    private static void prepareForWorld(ServerWorld world, Module<?> module, Path p) {
+        ScopedConfigs.State state = ScopedConfigs.get(world);
+        BasicConfig config = loadScoped(p, module);
+        state.addConfig(module, config);
+        try {
+            module.manager().save(p, Utilities.cast(config));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void onInitialize() {
         CrashHandler.initCrashHandler();
         Common.bootstrap();
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("config/andromeda")));
+            ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"));
+
+            server.getWorlds().forEach(ScopedConfigs::get);
+
+            for (Module<?> module : ModuleManager.get().all()) {
+                if (module.meta().environment() == Environment.CLIENT) continue; //Those are always GLOBAL.
+
+                switch (module.config().scope) {
+                    case WORLD -> {
+                        ServerWorld world = server.getWorld(World.OVERWORLD);
+                        Path p = server.session.getDirectory(WorldSavePath.ROOT).resolve("config");
+                        prepareForWorld(world, module, p);
+                    }
+                    case DIMENSION -> {
+                        for (ServerWorld world : server.getWorlds()) {
+                            Path p = server.session.getWorldDirectory(world.getRegistryKey()).resolve("config");
+                            prepareForWorld(world, module, p);
+                        }
+                    }
+                }
+            }
+        });
 
         if (!Config.get().sideOnlyMode) {
             ServerLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {

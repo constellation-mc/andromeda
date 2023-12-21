@@ -1,5 +1,7 @@
 accessWidener  v2	named
 
+accessible field net/minecraft/server/MinecraftServer session Lnet/minecraft/world/level/storage/LevelStorage$Session;
+
 # game rule factory
 accessible class net/minecraft/world/GameRules$Acceptor
 accessible method net/minecraft/world/GameRules$Type <init> (Ljava/util/function/Supplier;Ljava/util/function/Function;Ljava/util/function/BiConsumer;Lnet/minecraft/world/GameRules$Acceptor;)V

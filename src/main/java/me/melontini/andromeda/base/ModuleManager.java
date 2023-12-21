@@ -78,7 +78,7 @@ public class ModuleManager {
         this.moduleNames = sorted.stream().filter(Module::enabled)
                 .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
-        cleanConfigs();
+        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"));
     }
 
     void validateModule(Module<?> module) {
@@ -121,27 +121,29 @@ public class ModuleManager {
         return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : BasicConfig.class;
     }
 
-    private void cleanConfigs() {
-        Set<Path> paths = collectPaths();
-        Utilities.runUnchecked(() -> Files.walkFileTree(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (!paths.contains(file)) {
-                    Files.delete(file);
-                    LOGGER.info("Removed {} as it doesn't belong to any module!", file);
+    public void cleanConfigs(Path root) {
+        Set<Path> paths = collectPaths(root.getParent());
+        if (Files.exists(root)) {
+            Utilities.runUnchecked(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (!paths.contains(file)) {
+                        Files.delete(file);
+                        LOGGER.info("Removed {} as it doesn't belong to any module!", file);
+                    }
+                    return super.visitFile(file, attrs);
                 }
-                return super.visitFile(file, attrs);
-            }
-        }));
+            }));
+        }
     }
 
-    private Set<Path> collectPaths() {
+    private Set<Path> collectPaths(Path root) {
         Set<Path> paths = new HashSet<>();
 
-        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
-        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/debug.json"));
+        paths.add(root.resolve("andromeda/mod.json"));
+        paths.add(root.resolve("andromeda/debug.json"));
 
-        all().forEach(module -> paths.add(module.manager().resolve(FabricLoader.getInstance().getConfigDir())));
+        all().forEach(module -> paths.add(module.manager().resolve(root)));
 
         return paths;
     }
