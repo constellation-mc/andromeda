@@ -13,8 +13,8 @@ public class PotionUtil {
         StatusEffect effect = CommonRegistries.statusEffects().get(id);
         if (effect == null) {
             ModuleManager.get().getModule(CampfireEffects.class).ifPresent(effects -> {
-                effects.manager().resetToDefault("effectList");
-                effects.manager().save();
+                effects.config().effectList = effects.defaultConfig().effectList;
+                effects.save();
             });
             throw new AndromedaException(false, "(Andromeda) Couldn't get StatusEffect from identifier: " + id);
         }

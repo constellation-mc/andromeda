@@ -7,13 +7,13 @@ import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
+import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
-import me.melontini.dark_matter.api.config.ConfigBuilder;
-import me.melontini.dark_matter.api.config.ConfigManager;
+import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.IOException;
 
 @CustomLog
-@SuppressWarnings("UnstableApiUsage")
 public abstract class Module<T extends BasicConfig> {
 
     private final Metadata info = Utilities.supply(() -> {
@@ -22,7 +22,9 @@ public abstract class Module<T extends BasicConfig> {
         return new Metadata(info1.name(), info1.category(), info1.environment());
     });
 
-    private final Lazy<ConfigManager<T>> manager = Lazy.of(() -> () -> Utilities.cast(ModuleManager.get().getConfig(this.getClass())));
+    ConfigManager<T> manager;
+    T config;
+    T defaultConfig;
 
     public void onClient() {
         initClasses("client.Client");
@@ -42,7 +44,8 @@ public abstract class Module<T extends BasicConfig> {
         }
     }
 
-    public void onConfig(ConfigBuilder<T> builder) { }
+    public void onConfig(ConfigManager<T> manager) {
+    }
     public void postConfig() { }
 
     public final Metadata meta() {
@@ -54,9 +57,29 @@ public abstract class Module<T extends BasicConfig> {
     }
     public void acceptMixinConfig(JsonObject config) { }
 
-    public final ConfigManager<T> manager() { return manager.get(); }
-    public final T config() { return manager().getConfig(); }
-    public final boolean enabled() { return manager().getConfig().enabled; }
+    public final void save() {
+        try {
+            manager.save(FabricLoader.getInstance().getConfigDir(), config());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save module config!", e);
+        }
+    }
+
+    public final ConfigManager<T> manager() {
+        return manager;
+    }
+
+    public final T config() {
+        return config;
+    }
+
+    public final T defaultConfig() {
+        return defaultConfig;
+    }
+
+    public final boolean enabled() {
+        return config.enabled;
+    }
 
     public void acceptLegacyConfig(JsonObject config) {
         if (this.getClass().isAnnotationPresent(OldConfigKey.class)) {

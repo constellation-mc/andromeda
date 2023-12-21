@@ -33,7 +33,7 @@ public class ErrorHandler implements IMixinErrorHandler {
 
             ModuleManager.get().moduleFromConfig(mixin.getConfig().getName()).ifPresent(module -> {
                 module.config().enabled = false;
-                module.manager().save();
+                module.save();
                 AndromedaLog.info("Disabling module '%s'!".formatted(module.meta().id()));
             });
             return action;

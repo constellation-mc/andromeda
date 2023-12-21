@@ -16,8 +16,6 @@ import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.config.OptionManager;
-import me.melontini.dark_matter.api.config.interfaces.Option;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
 import me.shedaniel.autoconfig.gui.DefaultGuiTransformers;
@@ -37,7 +35,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
 
-@SuppressWarnings("UnstableApiUsage")
 public class AutoConfigScreen {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -68,28 +65,28 @@ public class AutoConfigScreen {
                 String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
 
                 if (fields.size() == 1) {
-                    registry.getAndTransform(moduleText, fields.get(0), module.manager().getConfig(), module.manager().getDefaultConfig(), registry)
+                    registry.getAndTransform(moduleText, fields.get(0), module.config(), module.defaultConfig(), registry)
                             .forEach(e -> {
-                                if (checkOptionManager(e, module.manager().getOptionManager(), fields.get(0))) {
+                                //if (checkOptionManager(e, module.manager().getOptionManager(), fields.get(0))) {
                                     setModuleTooltip(e, module);
                                     appendEnvInfo(e, module.meta().environment());
-                                }
+                                //}
                                 appendOrigin(e, module);
                                 wrapTooltip(e);
-                                wrapSaveCallback(e, () -> module.manager().save());
+                                wrapSaveCallback(e, module::save);
                                 category.addEntry(e);
                             });
                 } else {
                     List<AbstractConfigListEntry<?>> list = new ArrayList<>();
                     fields.forEach((field) -> {
                         String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
-                        registry.getAndTransform(opt, field, module.config(), module.manager().getDefaultConfig(), registry).forEach(e -> {
-                            if (checkOptionManager(e, module.manager().getOptionManager(), field)) {
+                        registry.getAndTransform(opt, field, module.config(), module.defaultConfig(), registry).forEach(e -> {
+                            //if (checkOptionManager(e, module.manager().getOptionManager(), field)) {
                                 appendGameRuleInfo(e, field);
                                 appendEnvInfo(e, field);
-                            }
+                            // }
                             wrapTooltip(e);
-                            wrapSaveCallback(e, () -> module.manager().save());
+                            wrapSaveCallback(e, module::save);
                             list.add(e);
                         });
                     });
@@ -107,9 +104,9 @@ public class AutoConfigScreen {
             Arrays.stream(AndromedaConfig.class.getFields()).forEach((field) -> {
                 String opt = "config.andromeda.base.option." + field.getName();
                 registry.getAndTransform(opt, field, Config.get(), Config.getDefault(), registry).forEach(e -> {
-                    if (checkOptionManager(e, Config.getOptionManager(), field)) {
+                    //if (checkOptionManager(e, Config.getOptionManager(), field)) {
                         appendEnvInfo(e, field);
-                    }
+                    //}
                     wrapTooltip(e);
                     wrapSaveCallback(e, Config::save);
                     misc.addEntry(e);
@@ -135,7 +132,7 @@ public class AutoConfigScreen {
         }
     }
 
-    private static boolean checkOptionManager(AbstractConfigListEntry<?> e, OptionManager<?> opManager, Field field) {
+    /*private static boolean checkOptionManager(AbstractConfigListEntry<?> e, OptionManager<?> opManager, Field field) {
         Option opt = Option.ofField(field);
         if (opManager.isModified(opt)) {
             e.setEditable(false);
@@ -157,7 +154,7 @@ public class AutoConfigScreen {
             return false;
         }
         return true;
-    }
+    }*/
 
     private static void appendGameRuleInfo(AbstractConfigListEntry<?> e, Field f) {
         if (f.isAnnotationPresent(GameRule.class)) {
@@ -232,7 +229,7 @@ public class AutoConfigScreen {
             saveQueue.get().forEach(Runnable::run);
             saveQueue.get().clear();
         } else {
-            ModuleManager.get().all().forEach(module -> module.manager().save());
+            ModuleManager.get().all().forEach(Module::save);
         }
     }
 

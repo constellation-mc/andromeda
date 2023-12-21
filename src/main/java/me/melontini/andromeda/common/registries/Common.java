@@ -2,15 +2,11 @@ package me.melontini.andromeda.common.registries;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.annotations.GameRule;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.content.ContentBuilder;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -35,30 +31,9 @@ public class Common {
             }));
 
             initKeepers(cls);
-            initGameRules(cls, module);
 
             Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
             Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
-        }
-    }
-
-    @SuppressWarnings("UnstableApiUsage")
-    private static void initGameRules(Class<?> reg, Module<?> m) {
-        for (Field field : reg.getFields()) {
-            if (field.getType() != GameRules.Key.class || !Modifier.isStatic(field.getModifiers())) continue;
-            if (!field.isAnnotationPresent(GameRule.class)) continue;
-            ;
-
-            Reflect.findField(ModuleManager.get().getConfigClass(m.getClass()), field.getName()).ifPresent(cf -> {
-                if (cf.isAnnotationPresent(GameRule.class)) {
-                    GameRules.Key<?> key = GameRuleRegistry.register(GameRuleBuilder.name(m, field.getName()), GameRuleBuilder.category(m),
-                            GameRuleBuilder.forOption(m.manager(), m.manager().getField(field.getName())));
-
-                    field.setAccessible(true);
-                    LOGGER.debug("Setting game rule '{}' to '{}'", field.getName(), key);
-                    Utilities.runUnchecked(() -> field.set(null, key));
-                }
-            });
         }
     }
 

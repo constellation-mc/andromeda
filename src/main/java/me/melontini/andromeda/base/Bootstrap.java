@@ -55,6 +55,7 @@ public class Bootstrap {
     }
 
     public static void onPreLaunch() {
+        Config.load();
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
         JsonObject oldCfg = null;
@@ -80,8 +81,6 @@ public class Bootstrap {
                 AndromedaLog.error("Couldn't rename old m-tweaks config!", e);
             }
         }
-
-        Config.get();
 
         List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
                 .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
