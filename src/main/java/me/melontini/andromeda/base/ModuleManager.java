@@ -70,6 +70,8 @@ public class ModuleManager {
 
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
             sorted.forEach(module -> module.config().enabled = true);
+        if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
+            sorted.forEach(module -> module.config().scope = BasicConfig.Scope.DIMENSION);
 
         sorted.forEach(Module::save);
 
