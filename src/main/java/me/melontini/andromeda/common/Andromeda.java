@@ -7,19 +7,24 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.World;
 
@@ -43,17 +48,26 @@ public class Andromeda {
     }
 
     @SneakyThrows
-    private static <T extends BasicConfig> T loadScoped(Path root, Module<T> module) {
+    private static <T extends BasicConfig> T loadScoped(Path root, Identifier id, Module<T> module) {
         var manager = module.manager();
         if (Files.exists(manager.resolve(root))) {
             return manager.load(root);
+        }
+        if (id != null) {
+            var data = DataConfigs.CONFIGS.get(id);
+            if (data != null) {
+                var forModule = data.get(module);
+                if (forModule != null) {
+                    return (T) forModule;
+                }
+            }
         }
         return manager.load(FabricLoader.getInstance().getConfigDir());
     }
 
     private static void prepareForWorld(ServerWorld world, Module<?> module, Path p) {
         ScopedConfigs.State state = ScopedConfigs.get(world);
-        BasicConfig config = loadScoped(p, module);
+        BasicConfig config = loadScoped(p, module.config().scope != BasicConfig.Scope.DIMENSION ? null : world.getRegistryKey().getValue(), module);
         state.addConfig(module, config);
         try {
             module.manager().save(p, Utilities.cast(config));
@@ -66,7 +80,14 @@ public class Andromeda {
         CrashHandler.initCrashHandler();
         Common.bootstrap();
 
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DataConfigs());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            if (DataConfigs.CONFIGS != null) DataConfigs.CONFIGS = null;
+        });
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            MakeSure.notNull(DataConfigs.CONFIGS);
+
             server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda")));
             ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"));
 

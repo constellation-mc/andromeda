@@ -19,7 +19,7 @@ import java.util.concurrent.Executor;
 
 public abstract class JsonDataLoader implements SimpleResourceReloadListener<Map<Identifier, JsonObject>> {
 
-    private final Gson gson;
+    protected final Gson gson;
     private final String dataType;
 
     public JsonDataLoader(Gson gson, String dataType) {
