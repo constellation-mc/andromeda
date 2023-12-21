@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
+import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.andromeda.util.WorldUtil;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
@@ -41,7 +42,7 @@ abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
             if (block == Blocks.BEE_NEST) {
                 BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) world.getBlockEntity(pos);
                 if (beehiveBlockEntity != null) {
-                    if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {
+                    if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock && world.am$get(CanBeeNestsFall.class).enabled) {
                         BlockState up = world.getBlockState(pos.offset(Direction.UP));
                         if (up.isIn(BlockTags.LOGS) || up.isIn(BlockTags.LEAVES)) {
                             for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {

@@ -7,6 +7,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
@@ -66,7 +67,7 @@ public class Andromeda {
         Common.bootstrap();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("config/andromeda")));
+            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda")));
             ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"));
 
             server.getWorlds().forEach(ScopedConfigs::get);
@@ -82,7 +83,7 @@ public class Andromeda {
                     }
                     case DIMENSION -> {
                         for (ServerWorld world : server.getWorlds()) {
-                            Path p = server.session.getWorldDirectory(world.getRegistryKey()).resolve("config");
+                            Path p = server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config");
                             prepareForWorld(world, module, p);
                         }
                     }

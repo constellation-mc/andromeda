@@ -10,7 +10,8 @@
     "GameRuleKeyMixin",
     "MinecraftClientMixin",
     "ParticleManagerMixin",
-    "SubCategoryListEntryMixin"
+    "SubCategoryListEntryMixin",
+    "WorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

@@ -16,7 +16,7 @@ public class PlantTemperature extends Module<PlantTemperature.Config> {
 
     @Override
     public void onMain() {
-        Common.bootstrap(this, PlantTemperatureData.class, Content.class);
+        Common.bootstrap(this, PlantTemperatureData.class);
     }
 
     public static class Config extends BasicConfig {

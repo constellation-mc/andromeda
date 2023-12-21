@@ -1,4 +1,4 @@
-package me.melontini.andromeda.common;
+package me.melontini.andromeda.common.config;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -11,7 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 //TODO:
@@ -19,7 +19,10 @@ import java.util.Map;
 public class ScopedConfigs {
 
     public static <T extends BasicConfig> T get(World world, Class<? extends Module<T>> cls) {
-        Module<T> module = ModuleManager.quick(cls);
+        return get(world, ModuleManager.quick(cls));
+    }
+
+    public static <T extends BasicConfig> T get(World world, Module<T> module) {
         if (world instanceof ServerWorld sw) {
             return switch (module.config().scope) {
                 case GLOBAL -> module.config();
@@ -27,7 +30,7 @@ public class ScopedConfigs {
                 case DIMENSION -> get(sw).get(module);
             };
         }
-        AndromedaLog.error("Scoped configs requested on client! Returning un-scoped!");
+        AndromedaLog.error("Scoped configs requested on client! Returning un-scoped! Module: %s".formatted(module.meta().id()));
         return module.config();
     }
 
@@ -35,15 +38,31 @@ public class ScopedConfigs {
         return PersistentStateHelper.getOrCreate(world, State::new, "andromeda_configs_dummy");
     }
 
+    public interface WorldExtension {
+        default <T extends BasicConfig> T am$get(Class<? extends Module<T>> cls) {
+            if (this instanceof World w) {
+                return ScopedConfigs.get(w, cls);
+            }
+            throw new IllegalStateException();
+        }
+
+        default <T extends BasicConfig> T am$get(Module<T> module) {
+            if (this instanceof World w) {
+                return ScopedConfigs.get(w, module);
+            }
+            throw new IllegalStateException();
+        }
+    }
+
     public static class State extends PersistentState implements DeserializableState {
 
-        private final Map<Module<?>, BasicConfig> configs = new HashMap<>();
+        private final Map<Module<?>, BasicConfig> configs = new IdentityHashMap<>();
 
         public <T extends BasicConfig> T get(Module<T> module) {
             return (T) configs.get(module);
         }
 
-        void addConfig(Module<?> module, BasicConfig config) {
+        public void addConfig(Module<?> module, BasicConfig config) {
             configs.put(module, config);
         }
 

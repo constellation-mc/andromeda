@@ -48,9 +48,15 @@ abstract class ItemEntityMixin extends Entity {
     @Unique
     private static final InfiniteTotem am$itou = ModuleManager.quick(InfiniteTotem.class);
 
-    @Shadow public abstract void setPickupDelayInfinite();
-    @Shadow public abstract void setToDefaultPickupDelay();
-    @Shadow @Final private static TrackedData<ItemStack> STACK;
+    @Shadow
+    public abstract void setPickupDelayInfinite();
+
+    @Shadow
+    public abstract void setToDefaultPickupDelay();
+
+    @Shadow
+    @Final
+    private static TrackedData<ItemStack> STACK;
 
     @Unique
     private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
@@ -72,7 +78,8 @@ abstract class ItemEntityMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!am$itou.config().enableAscension) return;
+        if (this.world.isClient()) return;
+        if (!world.am$get(InfiniteTotem.class).enableAscension) return;
         if (!this.dataTracker.get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
 
         if (age % 35 == 0 && andromeda$ascensionTicks == 0) {
@@ -83,69 +90,67 @@ abstract class ItemEntityMixin extends Entity {
         }
 
         if (andromeda$beacon.left() != null && andromeda$beacon.right() >= 4) {
-            if (!world.isClient) {
-                if (andromeda$itemEntity == null) {
-                    if (andromeda$ascensionTicks > 0) --andromeda$ascensionTicks;
+            if (andromeda$itemEntity == null) {
+                if (andromeda$ascensionTicks > 0) --andromeda$ascensionTicks;
 
-                    if (age % 10 == 0) {
-                        Optional<ItemEntity> optional = world.getEntitiesByClass(ItemEntity.class, getBoundingBox().expand(0.5), itemEntity -> itemEntity.getDataTracker().get(STACK).isOf(Items.NETHER_STAR) && !ANDROMEDA$ITEMS.contains(itemEntity)).stream().findAny();
+                if (age % 10 == 0) {
+                    Optional<ItemEntity> optional = world.getEntitiesByClass(ItemEntity.class, getBoundingBox().expand(0.5), itemEntity -> itemEntity.getDataTracker().get(STACK).isOf(Items.NETHER_STAR) && !ANDROMEDA$ITEMS.contains(itemEntity)).stream().findAny();
 
-                        if (optional.isPresent()) {
-                            andromeda$itemEntity = optional.get();
+                    if (optional.isPresent()) {
+                        andromeda$itemEntity = optional.get();
 
-                            if (ANDROMEDA$ITEMS.contains(andromeda$itemEntity)) {
-                                andromeda$itemEntity = null;
-                                return;
-                            }
-
-                            ItemStack targetStack = andromeda$itemEntity.getDataTracker().get(STACK);
-                            int count = targetStack.getCount() - 1;
-                            if (count > 0) {
-                                ItemStack newStack = targetStack.copy();
-                                newStack.setCount(count);
-                                targetStack.setCount(1);
-
-                                andromeda$itemEntity.getDataTracker().set(STACK, targetStack);
-
-                                ItemEntity entity = new ItemEntity(world, andromeda$itemEntity.getX(), andromeda$itemEntity.getY(), andromeda$itemEntity.getZ(), newStack);
-                                world.spawnEntity(entity);
-
-                                PacketByteBuf buf = PacketByteBufs.create();
-                                buf.writeVarInt(andromeda$itemEntity.getId());
-                                buf.writeItemStack(targetStack);
-                                for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
-                                    ServerPlayNetworking.send(serverPlayerEntity, new Identifier(MODID, "notify_client_about_stuff_please"), buf);
-                                }
-                            }
-
-                            ANDROMEDA$ITEMS.add(andromeda$itemEntity);
-                            andromeda$itemEntity.setPickupDelayInfinite();
-                            this.setPickupDelayInfinite();
+                        if (ANDROMEDA$ITEMS.contains(andromeda$itemEntity)) {
+                            andromeda$itemEntity = null;
+                            return;
                         }
+
+                        ItemStack targetStack = andromeda$itemEntity.getDataTracker().get(STACK);
+                        int count = targetStack.getCount() - 1;
+                        if (count > 0) {
+                            ItemStack newStack = targetStack.copy();
+                            newStack.setCount(count);
+                            targetStack.setCount(1);
+
+                            andromeda$itemEntity.getDataTracker().set(STACK, targetStack);
+
+                            ItemEntity entity = new ItemEntity(world, andromeda$itemEntity.getX(), andromeda$itemEntity.getY(), andromeda$itemEntity.getZ(), newStack);
+                            world.spawnEntity(entity);
+
+                            PacketByteBuf buf = PacketByteBufs.create();
+                            buf.writeVarInt(andromeda$itemEntity.getId());
+                            buf.writeItemStack(targetStack);
+                            for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
+                                ServerPlayNetworking.send(serverPlayerEntity, new Identifier(MODID, "notify_client_about_stuff_please"), buf);
+                            }
+                        }
+
+                        ANDROMEDA$ITEMS.add(andromeda$itemEntity);
+                        andromeda$itemEntity.setPickupDelayInfinite();
+                        this.setPickupDelayInfinite();
+                    }
+                }
+            } else {
+                if (andromeda$beaconCheck()) {
+                    andromeda$ascensionTicks++;
+
+                    WorldUtil.crudeSetVelocity(this, 0, 0.07, 0);
+                    WorldUtil.crudeSetVelocity(andromeda$itemEntity, 0, 0.07, 0);
+
+                    if (andromeda$ascensionTicks == 180) {
+                        andromeda$ascensionTicks = 0;
+
+                        ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
+
+                        ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(Content.INFINITE_TOTEM.orThrow()));
+                        this.discard();
+                        andromeda$itemEntity.discard();
+                        world.spawnEntity(entity);
                     }
                 } else {
-                    if (andromeda$beaconCheck()) {
-                        andromeda$ascensionTicks++;
+                    this.setToDefaultPickupDelay();
+                    andromeda$itemEntity.setToDefaultPickupDelay();
 
-                        WorldUtil.crudeSetVelocity(this, 0, 0.07, 0);
-                        WorldUtil.crudeSetVelocity(andromeda$itemEntity, 0, 0.07, 0);
-
-                        if (andromeda$ascensionTicks == 180) {
-                            andromeda$ascensionTicks = 0;
-
-                            ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
-
-                            ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(Content.INFINITE_TOTEM.orThrow()));
-                            this.discard();
-                            andromeda$itemEntity.discard();
-                            world.spawnEntity(entity);
-                        }
-                    } else {
-                        this.setToDefaultPickupDelay();
-                        andromeda$itemEntity.setToDefaultPickupDelay();
-
-                        andromeda$itemEntity = null;
-                    }
+                    andromeda$itemEntity = null;
                 }
             }
         }

@@ -36,7 +36,10 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
     @ConstructDummy(owner = "net.minecraft.class_1297", name = "method_5773", desc = "()V")
     @Inject(at = @At("TAIL"), method = "tick()V")
     public void andromeda$onBlockHit(CallbackInfo ci) {
-        if (!am$snow.config().layers || world.isClient()) return;
+        if (world.isClient()) return;
+
+        Snowballs.Config config = world.am$get(am$snow);
+        if (!config.enabled || !config.layers) return;
 
         Vec3d pos = this.getPos();
         Vec3d vec3d = pos.add(this.getVelocity());

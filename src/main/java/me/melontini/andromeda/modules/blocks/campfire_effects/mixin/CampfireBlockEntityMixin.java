@@ -32,13 +32,16 @@ class CampfireBlockEntityMixin {
     private static void andromeda$litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
         if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
+                    var config = world.am$get(CampfireEffects.class);
+                    if (!config.enabled) return;
+
                     List<LivingEntity> entities = new ArrayList<>();
-                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(am$ceff.config().effectsRange), entity -> {
-                        if ((entity instanceof PassiveEntity && am$ceff.config().affectsPassive) || entity instanceof PlayerEntity) {
+                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(config.effectsRange), entity -> {
+                        if ((entity instanceof PassiveEntity && config.affectsPassive) || entity instanceof PlayerEntity) {
                             entities.add((LivingEntity) entity);
                         }
                     });
-                    List<CampfireEffects.Config.Effect> effects = am$ceff.config().effectList;
+                    List<CampfireEffects.Config.Effect> effects = config.effectList;
 
                     for (LivingEntity player : entities) {
                         for (CampfireEffects.Config.Effect effect : effects) {

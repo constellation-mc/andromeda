@@ -20,6 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.World;
 
 import java.lang.invoke.MethodType;
 import java.util.*;
@@ -32,6 +33,10 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public record PlantTemperatureData(Set<Block> blocks, float min, float max, float aMin, float aMax) {
 
     public static final Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
+
+    public static boolean roll(Block block, float temp, World world) {
+        return world.am$get(PlantTemperature.class).enabled && roll(block, temp);
+    }
 
     public static boolean roll(Block block, float temp) {
         if (isPlant(block)) {
