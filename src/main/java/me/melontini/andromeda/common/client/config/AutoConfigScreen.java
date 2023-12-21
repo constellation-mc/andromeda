@@ -65,7 +65,7 @@ public class AutoConfigScreen {
                 var category = getOrCreateCategoryForField(module, builder);
                 String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
 
-                if (fields.size() == 1) {
+                if (fields.size() <= 2) {
                     registry.getAndTransform(moduleText, fields.get(0), module.config(), module.defaultConfig(), registry)
                             .forEach(e -> {
                                 if (checkOptionManager(e, module, fields.get(0))) {
