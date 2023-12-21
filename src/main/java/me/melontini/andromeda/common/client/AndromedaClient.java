@@ -2,8 +2,11 @@ package me.melontini.andromeda.common.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
+import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.client.config.AutoConfigScreen;
+import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
@@ -15,6 +18,7 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
@@ -42,6 +46,19 @@ public class AndromedaClient {
     public void onInitializeClient() {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
         if (!Config.get().sideOnlyMode) ClientSideNetworking.register();
+        else {
+            for (Module<?> module : ModuleManager.get().all()) {
+                switch (module.meta().environment()) {
+                    case ANY, CLIENT -> {
+                    }
+                    default ->
+                            FeatureBlockade.get().explain(module, "enabled", () -> true, Text.translatable("andromeda.config.option_manager.reason.andromeda.side_only_enabled"));
+                }
+            }
+        }
+        for (Module<?> module : ModuleManager.get().all()) {
+            module.collectBlockades();
+        }
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
                 ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));

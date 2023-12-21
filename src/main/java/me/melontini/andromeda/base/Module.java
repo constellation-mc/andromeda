@@ -35,6 +35,9 @@ public abstract class Module<T extends BasicConfig> {
     }
     public void onPreLaunch() { }
 
+    public void collectBlockades() {
+    }
+
     protected final void initClasses(String... classes) {
         for (String cls : classes) {
             try {

@@ -26,6 +26,7 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -67,10 +68,10 @@ public class AutoConfigScreen {
                 if (fields.size() == 1) {
                     registry.getAndTransform(moduleText, fields.get(0), module.config(), module.defaultConfig(), registry)
                             .forEach(e -> {
-                                //if (checkOptionManager(e, module.manager().getOptionManager(), fields.get(0))) {
+                                if (checkOptionManager(e, module, fields.get(0))) {
                                     setModuleTooltip(e, module);
                                     appendEnvInfo(e, module.meta().environment());
-                                //}
+                                }
                                 appendOrigin(e, module);
                                 wrapTooltip(e);
                                 wrapSaveCallback(e, module::save);
@@ -81,10 +82,10 @@ public class AutoConfigScreen {
                     fields.forEach((field) -> {
                         String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
                         registry.getAndTransform(opt, field, module.config(), module.defaultConfig(), registry).forEach(e -> {
-                            //if (checkOptionManager(e, module.manager().getOptionManager(), field)) {
+                            if (checkOptionManager(e, module, field)) {
                                 appendGameRuleInfo(e, field);
                                 appendEnvInfo(e, field);
-                            // }
+                            }
                             wrapTooltip(e);
                             wrapSaveCallback(e, module::save);
                             list.add(e);
@@ -104,7 +105,7 @@ public class AutoConfigScreen {
             Arrays.stream(AndromedaConfig.class.getFields()).forEach((field) -> {
                 String opt = "config.andromeda.base.option." + field.getName();
                 registry.getAndTransform(opt, field, Config.get(), Config.getDefault(), registry).forEach(e -> {
-                    //if (checkOptionManager(e, Config.getOptionManager(), field)) {
+                    //if (checkOptionManager(e, m, field)) {
                         appendEnvInfo(e, field);
                     //}
                     wrapTooltip(e);
@@ -132,29 +133,21 @@ public class AutoConfigScreen {
         }
     }
 
-    /*private static boolean checkOptionManager(AbstractConfigListEntry<?> e, OptionManager<?> opManager, Field field) {
-        Option opt = Option.ofField(field);
-        if (opManager.isModified(opt)) {
+    private static boolean checkOptionManager(AbstractConfigListEntry<?> e, Module<?> module, Field field) {
+        var opt = FeatureBlockade.get().explain(module, field.getName());
+        if (opt.isPresent()) {
             e.setEditable(false);
-
             if (e instanceof TooltipListEntry<?> t) {
-                var tuple = opManager.blameProcessors(opt);
-                Set<Text> texts = new LinkedHashSet<>();
-                tuple.right().forEach(entry -> opManager.getReason(entry.id(), tuple.left()).ifPresent(textEntry -> {
-                    if (textEntry.isTranslatable()) {
-                        texts.add(TextUtil.translatable(textEntry.get(), textEntry.args()).formatted(Formatting.RED));
-                    } else {
-                        texts.add(TextUtil.literal(textEntry.get()).formatted(Formatting.RED));
-                    }
-                }));
-
-                Optional<Text[]> optional = Optional.of(texts.toArray(Text[]::new));
+                Optional<Text[]> optional = Optional.of(opt.get().stream().map(text -> {
+                    if (text instanceof MutableText mt) return mt.formatted(Formatting.RED);
+                    return text.copy().formatted(Formatting.RED);
+                }).toArray(Text[]::new));
                 t.setTooltipSupplier(() -> optional);
             }
             return false;
         }
         return true;
-    }*/
+    }
 
     private static void appendGameRuleInfo(AbstractConfigListEntry<?> e, Field f) {
         if (f.isAnnotationPresent(GameRule.class)) {
