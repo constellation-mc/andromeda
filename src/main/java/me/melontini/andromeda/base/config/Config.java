@@ -14,6 +14,7 @@ public class Config {
     public static void load() {
         try {
             CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir());
+            MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
             DEFAULT = MANAGER.createDefault();
         } catch (IOException e) {
             throw new RuntimeException("Failed to load main Andromeda config (mod.json)!");
