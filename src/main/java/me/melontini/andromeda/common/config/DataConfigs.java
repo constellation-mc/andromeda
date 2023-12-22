@@ -60,7 +60,7 @@ public class DataConfigs extends JsonDataLoader {
                             }
                         });
                         return Tuple.of(config, instance);
-                    }));
+                    }, executor));
                 });
             });
             return CompletableFuture.allOf(configs.values().stream().flatMap(map -> map.values().stream())
