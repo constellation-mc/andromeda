@@ -11,7 +11,7 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
-import net.minecraft.text.Text;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 
 @OldConfigKey("bedsExplodeEverywhere")
 @ModuleTooltip(2)
@@ -30,6 +30,6 @@ public class Unsafe extends BasicModule {
     @Override
     public void collectBlockades() {
         FeatureBlockade.get().explain(this, "enabled", () -> ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent(),
-                Text.translatable("andromeda.config.option_manager.reason.andromeda.module_conflict"));
+                TextUtil.translatable("andromeda.config.option_manager.reason.andromeda.module_conflict"));
     }
 }

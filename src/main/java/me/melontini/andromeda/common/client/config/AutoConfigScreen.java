@@ -17,6 +17,7 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
 import me.shedaniel.autoconfig.gui.DefaultGuiTransformers;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
@@ -60,12 +61,13 @@ public class AutoConfigScreen {
 
             ModuleManager.get().all().forEach(module -> {
                 List<Field> fields = MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields()));
+                fields.removeIf(field -> field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class));
                 fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
                 var category = getOrCreateCategoryForField(module, builder);
                 String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
 
-                if (fields.size() <= 2) {
+                if (fields.size() <= 1) {
                     registry.getAndTransform(moduleText, fields.get(0), module.config(), module.defaultConfig(), registry)
                             .forEach(e -> {
                                 if (checkOptionManager(e, module, fields.get(0))) {

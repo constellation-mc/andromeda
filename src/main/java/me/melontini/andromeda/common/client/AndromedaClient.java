@@ -11,6 +11,7 @@ import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.dark_matter.api.base.util.Support;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -18,7 +19,6 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
@@ -51,8 +51,8 @@ public class AndromedaClient {
                 switch (module.meta().environment()) {
                     case ANY, CLIENT -> {
                     }
-                    default ->
-                            FeatureBlockade.get().explain(module, "enabled", () -> true, Text.translatable("andromeda.config.option_manager.reason.andromeda.side_only_enabled"));
+                    default -> FeatureBlockade.get().explain(module, "enabled", () -> true,
+                            TextUtil.translatable("andromeda.config.option_manager.reason.andromeda.side_only_enabled"));
                 }
             }
         }

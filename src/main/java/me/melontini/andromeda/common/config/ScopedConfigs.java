@@ -14,8 +14,6 @@ import net.minecraft.world.World;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-//TODO:
-// a not-so-painful way to edit those configs. (Outside of KubeJS)
 public class ScopedConfigs {
 
     public static <T extends BasicConfig> T get(World world, Class<? extends Module<T>> cls) {
@@ -34,6 +32,7 @@ public class ScopedConfigs {
         return module.config();
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     public static State get(ServerWorld world) {
         return PersistentStateHelper.getOrCreate(world, State::new, "andromeda_configs_dummy");
     }
@@ -62,7 +61,7 @@ public class ScopedConfigs {
             return (T) configs.get(module);
         }
 
-        public void addConfig(Module<?> module, BasicConfig config) {
+        public synchronized void addConfig(Module<?> module, BasicConfig config) {
             configs.put(module, config);
         }
 
