@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.blocks.better_fletching_table;
 
 import com.google.common.collect.Sets;
+import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.dark_matter.api.content.RegistryUtil;
@@ -25,16 +26,18 @@ public class Content {
     public static void init(BetterFletchingTable module) {
         Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 
-        CommonRegistries.items().getOrEmpty(Identifier.tryParse("additionaladditions:crossbow_with_spyglass"))
-                .ifPresent(item -> {
-                    tightable.add(item);
-                    FletchingScreenHandler.addRecipe(stack -> {
-                                var result = new ItemStack(item, 1);
-                                if (stack.getNbt() != null) result.setNbt(stack.getNbt());
-                                return result;
-                            },
-                            Ingredient.ofItems(Items.SPYGLASS), Ingredient.ofItems(Items.CROSSBOW));
-                });
+        if (Bootstrap.isModLoaded(module, "additionaladditions")) {
+            CommonRegistries.items().getOrEmpty(Identifier.tryParse("additionaladditions:crossbow_with_spyglass"))
+                    .ifPresent(item -> {
+                        tightable.add(item);
+                        FletchingScreenHandler.addRecipe(stack -> {
+                                    var result = new ItemStack(item, 1);
+                                    if (stack.getNbt() != null) result.setNbt(stack.getNbt());
+                                    return result;
+                                },
+                                Ingredient.ofItems(Items.SPYGLASS), Ingredient.ofItems(Items.CROSSBOW));
+                    });
+        }
 
         FletchingScreenHandler.addRecipe(stack -> {
             NbtCompound nbt = stack.getOrCreateNbt();

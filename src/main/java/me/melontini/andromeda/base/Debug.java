@@ -6,24 +6,21 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.intellij.lang.annotations.MagicConstant;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @CustomLog
 public class Debug {
 
-    private static final ConfigManager<Holder> MANAGER = ConfigManager.of(Holder.class, "andromeda/debug", Holder::new)
-            .onSave(ConfigManager.State.POST, config -> {
-                if (config.keys.contains(Keys.PRINT_DEBUG_KEYS)) {
-                    LOGGER.info(Arrays.toString(config.keys.toArray()));
-                }
-            });
+    private static final ConfigManager<Holder> MANAGER = ConfigManager.of(Holder.class, "andromeda/debug", Holder::new);
 
     private static Holder CONFIG;
 
     public static boolean hasKey(@MagicConstant(valuesFromClass = Keys.class) String key) {
         return CONFIG.keys.contains(key);
+    }
+
+    public static boolean skipIntegration(String m, String key) {
+        return CONFIG.skipModIntegration.getOrDefault(m, Collections.emptySet()).contains(key);
     }
 
     public static void load() {
@@ -37,6 +34,7 @@ public class Debug {
 
     private static class Holder {
         Set<String> keys = new LinkedHashSet<>();
+        Map<String, Set<String>> skipModIntegration = new HashMap<>();
 
         Holder() {
             if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
@@ -49,7 +47,6 @@ public class Debug {
     }
 
     public static class Keys {
-        public static final String PRINT_DEBUG_KEYS = "printDebugKeys";
         public static final String VERIFY_MIXINS = "verifyMixins";
         public static final String PRINT_DEBUG_MESSAGES = "printDebugMessages";
         public static final String SKIP_MIXIN_ERROR_HANDLER = "skipMixinErrorHandler";

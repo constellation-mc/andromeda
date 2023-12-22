@@ -124,4 +124,8 @@ public class Bootstrap {
         }
         return false;
     }
+
+    public static boolean isModLoaded(Module<?> m, String modId) {
+        return !Debug.skipIntegration(m.meta().id(), modId) && FabricLoader.getInstance().isModLoaded(modId);
+    }
 }
