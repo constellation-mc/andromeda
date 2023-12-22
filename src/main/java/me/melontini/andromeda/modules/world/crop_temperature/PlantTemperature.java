@@ -5,7 +5,6 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.config.BasicConfig;
-import me.melontini.andromeda.common.annotations.GameRule;
 import me.melontini.andromeda.common.registries.Common;
 
 @OldConfigKey("temperatureBasedCropGrowthSpeed")
@@ -18,7 +17,6 @@ public class PlantTemperature extends Module<PlantTemperature.Config> {
     }
 
     public static class Config extends BasicConfig {
-        @GameRule
         public boolean affectBoneMeal = true;
     }
 }

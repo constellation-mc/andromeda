@@ -29,7 +29,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -85,7 +85,7 @@ public class AndromedaClient {
     }
 
     private static void printMissingTooltips() {
-        Set<String> missing = new HashSet<>();
+        Set<String> missing = new LinkedHashSet<>();
         for (Module<?> module : ModuleManager.get().all()) {
             String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
             if (!I18n.hasTranslation(m)) missing.add(m);

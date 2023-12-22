@@ -7,7 +7,6 @@ import me.melontini.andromeda.base.annotations.Origin;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.config.AndromedaConfig;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.common.annotations.GameRule;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
@@ -86,7 +85,6 @@ public class AutoConfigScreen {
                         registry.getAndTransform(opt, field, module.config(), module.defaultConfig(), registry).forEach(e -> {
                             if (checkOptionManager(e, module, field)) {
                                 setOptionTooltip(e, opt + ".@Tooltip");
-                                appendGameRuleInfo(e, field);
                                 appendEnvInfo(e, field);
                             }
                             wrapTooltip(e);
@@ -149,14 +147,6 @@ public class AutoConfigScreen {
             return false;
         }
         return true;
-    }
-
-    private static void appendGameRuleInfo(AbstractConfigListEntry<?> e, Field f) {
-        if (f.isAnnotationPresent(GameRule.class)) {
-            if (e instanceof TooltipListEntry<?> t) {
-                appendText(t, TextUtil.translatable("andromeda.config.tooltip.game_rule").formatted(Formatting.YELLOW));
-            }
-        }
     }
 
     private static void appendOrigin(AbstractConfigListEntry<?> e, Module<?> module) {
