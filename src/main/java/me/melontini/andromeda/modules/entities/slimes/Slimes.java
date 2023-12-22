@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.util.JsonOps;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleInfo(name = "slimes", category = "entities", environment = Environment.SERVER)
 public class Slimes extends Module<Slimes.Config> {
@@ -25,16 +24,12 @@ public class Slimes extends Module<Slimes.Config> {
 
     public static class Config extends BasicConfig {
 
-        @ConfigEntry.Gui.Tooltip
         public boolean flee = true;
 
-        @ConfigEntry.Gui.Tooltip
         public boolean merge = true;
 
-        @ConfigEntry.Gui.Tooltip
         public int maxMerge = 4;
 
-        @ConfigEntry.Gui.Tooltip
         public boolean slowness = false;
     }
 }

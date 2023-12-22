@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.util.JsonOps;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleInfo(name = "tooltips", category = "items", environment = Environment.CLIENT)
 public class Tooltips extends Module<Tooltips.Config> {
@@ -25,13 +24,10 @@ public class Tooltips extends Module<Tooltips.Config> {
 
     public static class Config extends BasicConfig {
 
-        @ConfigEntry.Gui.Tooltip
         public boolean clock = true;
 
-        @ConfigEntry.Gui.Tooltip
         public boolean compass = true;
 
-        @ConfigEntry.Gui.Tooltip
         public boolean recoveryCompass = true;
     }
 }

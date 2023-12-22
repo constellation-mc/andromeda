@@ -55,5 +55,6 @@ public class Debug {
         public static final String ENABLE_ALL_MODULES = "enableAllModules";
         public static final String FORCE_DIMENSION_SCOPE = "forceDimensionScope";
         public static final String PRINT_MISSING_ASSIGNED_DATA = "printMissingAssignedData";
+        public static final String PRINT_MISSING_TOOLTIPS = "printMissingTooltips";
     }
 }

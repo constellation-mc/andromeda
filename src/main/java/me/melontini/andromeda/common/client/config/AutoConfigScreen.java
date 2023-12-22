@@ -3,7 +3,6 @@ package me.melontini.andromeda.common.client.config;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.annotations.Origin;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.config.AndromedaConfig;
@@ -27,6 +26,7 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -60,7 +60,7 @@ public class AutoConfigScreen {
             GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
 
             ModuleManager.get().all().forEach(module -> {
-                List<Field> fields = MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields()));
+                List<Field> fields = new ArrayList<>(MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields())));
                 fields.removeIf(field -> field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class));
                 fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
@@ -85,6 +85,7 @@ public class AutoConfigScreen {
                         String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
                         registry.getAndTransform(opt, field, module.config(), module.defaultConfig(), registry).forEach(e -> {
                             if (checkOptionManager(e, module, field)) {
+                                setOptionTooltip(e, opt + ".@Tooltip");
                                 appendGameRuleInfo(e, field);
                                 appendEnvInfo(e, field);
                             }
@@ -107,9 +108,8 @@ public class AutoConfigScreen {
             Arrays.stream(AndromedaConfig.class.getFields()).forEach((field) -> {
                 String opt = "config.andromeda.base.option." + field.getName();
                 registry.getAndTransform(opt, field, Config.get(), Config.getDefault(), registry).forEach(e -> {
-                    //if (checkOptionManager(e, m, field)) {
-                        appendEnvInfo(e, field);
-                    //}
+                    setOptionTooltip(e, opt + ".@Tooltip");
+                    appendEnvInfo(e, field);
                     wrapTooltip(e);
                     wrapSaveCallback(e, Config::save);
                     misc.addEntry(e);
@@ -195,10 +195,24 @@ public class AutoConfigScreen {
         t.setTooltipSupplier(() -> tooltip);
     }
 
+    private static void setOptionTooltip(AbstractConfigListEntry<?> e, String option) {
+        if (e instanceof TooltipListEntry<?> t) {
+            if (I18n.hasTranslation(option)) {
+                var opt = Optional.of(new Text[]{TextUtil.translatable(option)});
+                t.setTooltipSupplier(() -> opt);
+            } else {
+                t.setTooltipSupplier(Optional::empty);
+            }
+        }
+    }
+
     private static void setModuleTooltip(AbstractConfigListEntry<?> e, Module<?> module) {
-        if (module.getClass().isAnnotationPresent(ModuleTooltip.class) && e instanceof TooltipListEntry<?> t) {
-            var opt = Optional.of(new Text[]{TextUtil.translatable("config.andromeda.%s.@Tooltip".formatted(module.meta().dotted()))});
-            t.setTooltipSupplier(() -> opt);
+        if (e instanceof TooltipListEntry<?> t) {
+            String s = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
+            if (I18n.hasTranslation(s)) {
+                var opt = Optional.of(new Text[]{TextUtil.translatable(s)});
+                t.setTooltipSupplier(() -> opt);
+            }
         }
     }
 

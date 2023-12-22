@@ -32,19 +32,15 @@ public class DragonFight extends Module<DragonFight.Config> {
     public static class Config extends BasicConfig {
 
         @ConfigEntry.Category("mechanics")
-        @ConfigEntry.Gui.Tooltip
         public boolean respawnCrystals = true;
 
         @ConfigEntry.Category("mechanics")
-        @ConfigEntry.Gui.Tooltip
         public boolean scaleHealthByMaxPlayers = false;
 
         @ConfigEntry.Category("mechanics")
-        @ConfigEntry.Gui.Tooltip
         public boolean shorterCrystalTrackRange = true;
 
         @ConfigEntry.Category("mechanics")
-        @ConfigEntry.Gui.Tooltip
         public boolean shorterSpikes = false;
     }
 }

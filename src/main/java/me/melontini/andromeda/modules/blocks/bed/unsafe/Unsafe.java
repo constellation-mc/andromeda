@@ -5,7 +5,6 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.ModuleTooltip;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
@@ -14,7 +13,6 @@ import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 
 @OldConfigKey("bedsExplodeEverywhere")
-@ModuleTooltip(2)
 @ModuleInfo(name = "bed/unsafe", category = "blocks", environment = Environment.SERVER)
 public class Unsafe extends BasicModule {
 
