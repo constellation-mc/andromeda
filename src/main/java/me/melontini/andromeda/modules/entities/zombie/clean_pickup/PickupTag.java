@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.entities.zombie.clean_pickup;
 
-import me.melontini.andromeda.util.TagUtil;
+import me.melontini.andromeda.common.util.TagUtil;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 

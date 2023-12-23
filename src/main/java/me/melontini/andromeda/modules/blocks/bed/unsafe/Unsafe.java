@@ -1,37 +1,32 @@
 package me.melontini.andromeda.modules.blocks.bed.unsafe;
 
-import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.config.BasicConfig;
+import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
-import me.melontini.andromeda.util.CommonValues;
-import me.melontini.dark_matter.api.config.ConfigBuilder;
+import me.melontini.dark_matter.api.base.config.ConfigManager;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 
-import java.util.Map;
-
-@SuppressWarnings("UnstableApiUsage")
-@ModuleTooltip(2)
+@OldConfigKey("bedsExplodeEverywhere")
 @ModuleInfo(name = "bed/unsafe", category = "blocks", environment = Environment.SERVER)
-public class Unsafe extends BasicModule {
+public class Unsafe extends Module<BasicConfig> {
 
     @Override
-    public void onConfig(ConfigBuilder<BasicConfig> builder) {
-        builder.processors((registry, mod) ->
-                registry.register(CommonValues.MODID + ":module_conflict", manager -> {
-                    if (ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent()) {
-                        return Map.of("enabled", false);
-                    }
-                    return null;
-                }, mod));
+    public void onConfig(ConfigManager<BasicConfig> manager) {
+        manager.onSave(config -> {
+            if (ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent()) {
+                config.enabled = false;
+            }
+        });
     }
 
     @Override
-    public void postConfig() {
-        ModuleManager.get().getDiscovered(Safe.class)
-                .ifPresent(m -> m.manager().postSave(manager -> this.manager().save()));
+    public void collectBlockades() {
+        FeatureBlockade.get().explain(this, "enabled", () -> ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent(),
+                TextUtil.translatable("andromeda.config.option_manager.reason.andromeda.module_conflict"));
     }
 }

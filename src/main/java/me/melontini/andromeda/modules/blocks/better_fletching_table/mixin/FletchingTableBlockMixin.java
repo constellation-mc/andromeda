@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.blocks.better_fletching_table.mixin;
 
 import me.melontini.andromeda.modules.blocks.better_fletching_table.FletchingScreenHandler;
-import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
@@ -34,7 +34,7 @@ class FletchingTableBlockMixin extends CraftingTableBlock {
                 return;
             }
 
-            player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player1) -> new FletchingScreenHandler(syncId, inv, ScreenHandlerContext.create(world, pos)), AndromedaTexts.FLETCHING_SCREEN));
+            player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player1) -> new FletchingScreenHandler(syncId, inv, ScreenHandlerContext.create(world, pos)), TextUtil.translatable("block.minecraft.fletching_table")));
             cir.setReturnValue(ActionResult.SUCCESS);
         }
     }

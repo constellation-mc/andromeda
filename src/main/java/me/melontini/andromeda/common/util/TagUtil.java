@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.common.util;
 
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registry;

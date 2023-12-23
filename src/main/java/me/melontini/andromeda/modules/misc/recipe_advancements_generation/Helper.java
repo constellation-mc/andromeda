@@ -3,10 +3,8 @@ package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenCustomHashSet;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementManager;
@@ -36,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 public class Helper {
-    private static final Lazy<AdvancementGeneration> module = Lazy.of(() -> () -> ModuleManager.quick(AdvancementGeneration.class));
+    private static AdvancementGeneration MODULE;
 
     public static final Hash.Strategy<ItemStack> STRATEGY = new Hash.Strategy<>() {//Vanilla ItemStackSet is good, but it uses canCombine() and not areEqual(). It also doesn't exist on 1.18.2-1.19.2
         @Override
@@ -94,11 +92,11 @@ public class Helper {
         for (List<Recipe<?>> list : lists) {
             futures.add(CompletableFuture.runAsync(() -> {
                 for (Recipe<?> recipe : list) {
-                    if (module.get().config().namespaceBlacklist.contains(recipe.getId().getNamespace()))
+                    if (MODULE.config().namespaceBlacklist.contains(recipe.getId().getNamespace()))
                         continue;
-                    if (module.get().config().recipeBlacklist.contains(recipe.getId().toString()))
+                    if (MODULE.config().recipeBlacklist.contains(recipe.getId().toString()))
                         continue;
-                    if (recipe.isIgnoredInRecipeBook() && module.get().config().ignoreRecipesHiddenInTheRecipeBook)
+                    if (recipe.isIgnoredInRecipeBook() && MODULE.config().ignoreRecipesHiddenInTheRecipeBook)
                         continue;
 
                     if (RECIPE_TYPE_HANDLERS.get(recipe.getType()) != null) {
@@ -171,7 +169,7 @@ public class Helper {
         builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.create(), id));
 
         String[][] reqs;
-        if (module.get().config().requireAllItems) {
+        if (MODULE.config().requireAllItems) {
             reqs = new String[names.size()][2];
             for (int i = 0; i < names.size(); i++) {
                 String s = names.get(i);

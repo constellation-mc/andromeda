@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.items.infinite_totem.client;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.modules.items.infinite_totem.Content;
-import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;

@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.entities.villagers_follow_emeralds;
 
-import me.melontini.andromeda.util.TagUtil;
+import me.melontini.andromeda.common.util.TagUtil;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -20,6 +20,9 @@ public class VillagerTemptGoal extends TemptGoal {
 
     @Override
     public boolean canStart() {
+        if (this.mob.world.isClient()) return false;
+        if (!this.mob.world.am$get(VillagersFollowEmeralds.class).enabled) return false;
+
         if (this.cooldown > 0) {
             --this.cooldown;
             return false;

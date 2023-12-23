@@ -1,18 +1,23 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
-import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.util.AndromedaPackets;
+import me.melontini.andromeda.common.util.AndromedaPackets;
+import me.melontini.andromeda.common.util.CrashHandler;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.andromeda.util.Debug;
+import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
-import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.WorldSavePath;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,12 +32,26 @@ public class Andromeda {
     public static void init() {
         INSTANCE = new Andromeda();
         INSTANCE.onInitialize();
-        FabricLoader.getInstance().getObjectShare().put("andromeda:main", INSTANCE);
+        Support.share("andromeda:main", INSTANCE);
     }
 
     private void onInitialize() {
         CrashHandler.initCrashHandler();
         Common.bootstrap();
+
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DataConfigs());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            if (DataConfigs.CONFIGS != null) DataConfigs.CONFIGS = null;
+        });
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda")));
+            ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"));
+        });
+
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+            if (success) DataConfigs.apply(server);
+        });
 
         if (!Config.get().sideOnlyMode) {
             ServerLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {

@@ -1,5 +1,7 @@
 package me.melontini.andromeda.base;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.Andromeda;
@@ -7,9 +9,10 @@ import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ClassPath;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -27,7 +30,6 @@ import java.util.*;
 public class Bootstrap {
 
     static ModuleManager INSTANCE;
-    private static final ClassPath CLASS_PATH = Utilities.supplyUnchecked(ClassPath::from);
 
     @Environment(EnvType.CLIENT)
     public static void onClient() {
@@ -53,7 +55,18 @@ public class Bootstrap {
     }
 
     public static void onPreLaunch() {
+        Config.load();
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
+
+        JsonObject oldCfg = null;
+        var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
+        if (Files.exists(oldCfgPath)) {
+            try {
+                oldCfg = JsonParser.parseReader(Files.newBufferedReader(oldCfgPath)).getAsJsonObject();
+            } catch (IOException e) {
+                AndromedaLog.error("Couldn't read pre-1.0.0 config!");
+            }
+        }
 
         if (CommonValues.platform() == CommonValues.Platform.CONNECTOR) {
             LOGGER.warn("Andromeda may not work on Connector! (If #557 is open on Connector's GitHub)");
@@ -69,8 +82,6 @@ public class Bootstrap {
             }
         }
 
-        Config.get();
-
         List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
                 .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
 
@@ -84,7 +95,7 @@ public class Bootstrap {
 
         ModuleManager m;
         try {
-            m = new ModuleManager(list);
+            m = new ModuleManager(list, oldCfg);
         } catch (Throwable t) {
             throw new AndromedaException("Failed to initialize ModuleManager!!!", t);
         }
@@ -98,7 +109,7 @@ public class Bootstrap {
     }
 
     public static ClassPath getModuleClassPath() {
-        return CLASS_PATH;
+        return AndromedaMixins.getClassPath();
     }
 
     public static boolean testModVersion(String modId, String predicate) {
@@ -112,5 +123,9 @@ public class Bootstrap {
             }
         }
         return false;
+    }
+
+    public static boolean isModLoaded(Module<?> m, String modId) {
+        return !Debug.skipIntegration(m.meta().id(), modId) && FabricLoader.getInstance().isModLoaded(modId);
     }
 }

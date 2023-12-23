@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.items.tooltips.mixin.recovery_compass;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
-import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.MinecraftClient;

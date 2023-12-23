@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.zombie.all_pick_up.mixin;
 
+import me.melontini.andromeda.modules.entities.zombie.all_pick_up.Pickup;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -23,6 +24,8 @@ abstract class ZombieEntityMixin extends HostileEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombieEntity;setCanPickUpLoot(Z)V", shift = At.Shift.AFTER), method = "initialize")
     private void andromeda$initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, NbtCompound entityNbt, CallbackInfoReturnable<EntityData> cir) {
-        this.setCanPickUpLoot(true);
+        if (world.isClient()) return;
+
+        if (world.toServerWorld().am$get(Pickup.class).enabled) this.setCanPickUpLoot(true);
     }
 }

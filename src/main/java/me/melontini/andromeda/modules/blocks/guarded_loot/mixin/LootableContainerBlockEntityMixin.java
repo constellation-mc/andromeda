@@ -38,13 +38,15 @@ abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockE
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSpectator()Z"), method = "checkUnlocked")
     private boolean lockedIfMonstersNearby(boolean locked, @Local PlayerEntity player) {
-        GuardedLoot module = ModuleManager.quick(GuardedLoot.class);
-        List<LivingEntity> monster = player.world.getEntitiesByClass(LivingEntity.class, new Box(this.getPos()).expand(module.config().range), Entity::isAlive).stream().filter(livingEntity -> livingEntity instanceof Monster)
+        var config = world.am$get(GuardedLoot.class);
+        if (!config.enabled) return locked;
+
+        List<LivingEntity> monster = player.world.getEntitiesByClass(LivingEntity.class, new Box(this.getPos()).expand(config.range), Entity::isAlive).stream().filter(livingEntity -> livingEntity instanceof Monster)
                 .toList();
 
         if (!monster.isEmpty()) {
             boolean lockpicking = ModuleManager.get().getModule(Lockpick.class).map(m -> {
-                if (module.config().allowLockPicking) {
+                if (config.allowLockPicking) {
                     if (player.getMainHandStack().isOf(Content.LOCKPICK.orThrow())) {
                         return Content.LOCKPICK.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
                     }

@@ -1,12 +1,13 @@
 package me.melontini.andromeda.modules.misc.minor_inconvenience;
 
-import me.melontini.andromeda.base.BasicModule;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.ModuleTooltip;
+import me.melontini.andromeda.base.annotations.OldConfigKey;
+import me.melontini.andromeda.base.config.BasicConfig;
 
-@ModuleTooltip
+@OldConfigKey("minorInconvenience")
 @ModuleInfo(name = "minor_inconvenience", category = "misc")
-public class MinorInconvenience extends BasicModule {
+public class MinorInconvenience extends Module<BasicConfig> {
 
     @Override
     public void onMain() {

@@ -3,62 +3,28 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
-import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.exceptions.MixinVerifyError;
+import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericMethod;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
-import net.fabricmc.api.EnvType;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.FabricUtil;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.service.IMixinService;
 import org.spongepowered.asm.service.MixinService;
-import org.spongepowered.asm.util.Annotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Set;
 
 @CustomLog
 public class MixinProcessor {
-
-    public static boolean checkNode(ClassNode n) {
-        boolean load = true;
-        AnnotationNode envNode = Annotations.getVisible(n, SpecialEnvironment.class);
-        if (envNode != null) {
-            Environment value = AsmUtil.getAnnotationValue(envNode, "value", Environment.BOTH);
-            if (value != null) {
-                return switch (value) {
-                    case SERVER -> CommonValues.environment().equals(EnvType.SERVER);
-                    case CLIENT -> CommonValues.environment().equals(EnvType.CLIENT);
-                    case ANY -> true;
-                    default -> throw new IllegalStateException(value.toString());
-                };
-            }
-        }
-
-        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS)) verifyMixin(n, n.name);
-
-        return load;
-    }
-
-    private static void verifyMixin(ClassNode mixinNode, String mixinClassName) {
-        LOGGER.debug("Verifying access flags!");
-        if ((mixinNode.access & Modifier.PUBLIC) == Modifier.PUBLIC) {
-            throw new MixinVerifyError("Public Mixin! " + mixinClassName);
-        }
-    }
 
     private static final ThreadLocal<InputStream> CONFIG = ThreadLocal.withInitial(() -> null);
     private static boolean done = false;
@@ -153,16 +119,7 @@ public class MixinProcessor {
         }
 
         protected void getMixins(List<String> mixins) {
-            Bootstrap.getModuleClassPath().getTopLevelRecursive(this.mixinPackage).stream()
-                    .map(info -> {
-                        ClassReader reader = new ClassReader(Utilities.supplyUnchecked(info::readAllBytes));
-                        ClassNode node = new ClassNode();
-                        reader.accept(node,ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-                        return node;
-                    })
-                    .filter(MixinProcessor::checkNode)
-                    .map((n) -> n.name.replace('/', '.').substring((this.mixinPackage + ".").length()))
-                    .forEach(mixins::add);
+            mixins.addAll(AndromedaMixins.discoverInPackage(this.mixinPackage));
         }
 
         @Override

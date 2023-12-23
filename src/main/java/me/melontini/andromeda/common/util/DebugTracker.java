@@ -1,6 +1,6 @@
-package me.melontini.andromeda.common;
+package me.melontini.andromeda.common.util;
 
-import me.melontini.andromeda.base.Debug;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.debug.ValueTracker;
 import net.fabricmc.api.EnvType;

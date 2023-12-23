@@ -16,16 +16,6 @@
   "death.attack.andromeda_bricked": "%1$s被%2$s用砖块砸晕了",
   "andromeda.container.guarded": "这个箱子被守护着，无法打开！",
 
-  "andromeda.disconnected.module_mismatch": "群星模组配置不同步！\n请禁用%s\n启用%s\n以加入此服务器！",
-
-  "andromeda.config.option_manager.reason.andromeda.module_conflict": "启用了冲突的特性！",
-  "andromeda.config.option_manager.reason.andromeda.iceberg": "与低于1.1.13的Iceberg前置冲突。",
-  "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "此特性因启用了“客户端模式”被禁用！",
-
-  "andromeda.config.tooltip.environment.client": "仅客户端特性",
-  "andromeda.config.tooltip.environment.server": "仅服务端特性。",
-  "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
-
   "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
   "commands.andromeda.damage.success": "已将%s伤害施加于%s",
 
@@ -100,9 +90,22 @@
   "gui.andromeda.merchant": "商人",
 
   "action.andromeda.safebeds": "你不能在这儿休息！",
+  "andromeda.game_rule.category": "（群星）",
 
   "config.andromeda.title": "群星（%s）",
   "config.andromeda.option.enabled": "启用",
+
+  "andromeda.disconnected.module_mismatch": "群星模组配置不同步！\n请禁用%s\n启用%s\n以加入此服务器！",
+
+  "andromeda.config.option_manager.reason.andromeda.module_conflict": "启用了冲突的特性！",
+  "andromeda.config.option_manager.reason.andromeda.iceberg": "与低于1.1.13的Iceberg前置冲突。",
+  "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "此特性因启用了“客户端模式”被禁用！",
+
+  "andromeda.config.tooltip.environment.client": "仅客户端特性",
+  "andromeda.config.tooltip.environment.server": "仅服务端特性。",
+  "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
+  "andromeda.config.tooltip.origin": "灵感源于%2$s创作的%1$s",
+  "andromeda.config.tooltip.game_rule": "此选项是游戏规则的默认值！",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "状态效果",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "名称",
@@ -118,9 +121,13 @@
   "config.andromeda.world.falling_beenests": "蜂巢是否能够自然掉落？",
   "config.andromeda.world.falling_beenests.@Tooltip": "正如此项目字面所言，它能够让蜂巢在一段时间后自然掉落，\n此外，你还能通过向蜂巢射箭来使它们掉落",
   "config.andromeda.world.crop_temperature": "基于温度的作物生长速度",
-  "config.andromeda.world.crop_temperature.@Tooltip": "在这里给这个项目添加简介吧~",
+  "config.andromeda.world.crop_temperature.@Tooltip": "植物不再能够在所有群系生长，它们现在需要合适的气温。\n比如说，仙人掌没法在冰原生长。",
+  "config.andromeda.world.crop_temperature.option.affectBoneMeal": "影响骨粉",
   "config.andromeda.world.quick_fire": "更快的火焰蔓延",
   "config.andromeda.world.quick_fire.@Tooltip": "使得火势能够蔓延得更快更广",
+  "config.andromeda.world.moist_control": "湿润机制调整",
+  "config.andromeda.world.moist_control.@Tooltip": "一些与耕地湿润机制有关的选项",
+  "config.andromeda.world.moist_control.option.customMoisture": "湿润范围",
 
   "config.andromeda.category.blocks": "方块",
   "config.andromeda.blocks.guarded_loot": "宝藏守卫",
@@ -141,7 +148,7 @@
   "config.andromeda.blocks.bed.unsafe": "床无处不炸",
   "config.andromeda.blocks.bed.unsafe.@Tooltip": "让床无视维度，一睡就炸\n与”安眠之榻“不兼容！",
   "config.andromeda.blocks.bed.power": "床的爆炸强度",
-  "config.andromeda.blocks.bed.power.@Tooltip": "启用下列设置项。",
+  "config.andromeda.blocks.bed.power.@Tooltip": "使你能够修改床的爆炸强度",
   "config.andromeda.blocks.bed.power.option.power": "爆炸强度",
   "config.andromeda.blocks.bed.power.option.power.@Tooltip": "可配置的床的爆炸强度，默认为5.0",
   "config.andromeda.blocks.bed.safe": "安眠之榻",
@@ -273,10 +280,10 @@
   "config.andromeda.mechanics.throwable_items.option.canZombiesThrowItems": "僵尸能否投掷物品？",
   "config.andromeda.mechanics.throwable_items.option.canZombiesThrowItems.@Tooltip": "使僵尸也能够投掷物品",
   "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval": "僵尸投掷冷却",
-  "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval.@Tooltip": "在原本冷却的基础上，额外加算的僵尸投掷冷却时间。",
+  "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval.@Tooltip": "在原本冷却的基础上，额外增加的投掷冷却时间。",
   "config.andromeda.mechanics.throwable_items.option.tooltip": "显示“可投掷”工具提示",
   "config.andromeda.mechanics.trading_goat_horn": "流浪商人号角",
-  "config.andromeda.mechanics.trading_goat_horn.@Tooltip": "每两天，你都能使用这个号角来召唤一位流浪商人。\n值得注意的是，流浪商人仍然会自然生成。\n你可以通过禁用\"doTraderSpawning\"的游戏规则来禁用流浪商人自然生成。",
+  "config.andromeda.mechanics.trading_goat_horn.@Tooltip": "每两天，你都能使用“歌颂”号角来召唤一位流浪商人。\n值得注意的是，流浪商人仍然会自然生成。\n你可以通过禁用\"doTraderSpawning\"的游戏规则来禁用流浪商人自然生成。",
 
   "config.andromeda.category.gui": "GUI",
   "config.andromeda.gui.name_tooltips": "工具提示样式",
@@ -291,6 +298,7 @@
   "config.andromeda.gui.gui_particles.option.creativeScreenParticles": "销毁物品粒子效果",
   "config.andromeda.gui.gui_particles.option.creativeScreenParticlesVelX": "销毁物品粒子下落速度",
   "config.andromeda.gui.gui_particles.option.gameModeSwitcherParticles": "游戏模式切换界面粒子效果",
+  "config.andromeda.gui.gui_particles.option.bundleInputParticles": "收纳袋装入粒子效果",
   "config.andromeda.gui.item_frame_tooltips": "物品展示框提示",
   "config.andromeda.gui.item_frame_tooltips.@Tooltip": "在游戏内为物品展示框添加物品提示",
 

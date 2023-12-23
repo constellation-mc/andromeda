@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
@@ -40,8 +39,7 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public class Content {
 
     public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.of(() -> () ->
-            RegistryUtil.createEntityType(() -> ModuleManager.get().isPresent(ThrowableItems.class),
-                    id("flying_item"),
+            RegistryUtil.createEntityType(id("flying_item"),
                     FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                             .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10)));
 
