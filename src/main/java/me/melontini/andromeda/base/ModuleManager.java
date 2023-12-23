@@ -57,12 +57,7 @@ public class ModuleManager {
         this.setUpConfigs(sorted);
 
         sorted.forEach(module -> {
-            try {
-                module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
-            } catch (IOException e) {
-                LOGGER.error("Failed to load config for module: %s".formatted(module.meta().id()), e);
-                module.config = Utilities.cast(module.manager.createDefault());
-            }
+            module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
         });
 
@@ -126,6 +121,7 @@ public class ModuleManager {
                     }
                 }
             });
+            config.exceptionHandler((e, stage) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
             m.manager = Utilities.cast(config);
             m.onConfig(Utilities.cast(config));
         });

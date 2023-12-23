@@ -21,7 +21,6 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -148,10 +147,6 @@ public class DataConfigs extends JsonDataLoader {
             applyDataPacks(config, module, world.getRegistryKey().getValue());
         }
         state.addConfig(module, config);
-        try {
-            module.manager().save(p, Utilities.cast(config));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        module.manager().save(p, Utilities.cast(config));
     }
 }

@@ -18,7 +18,7 @@ public class Unsafe extends BasicModule {
 
     @Override
     public void onConfig(ConfigManager<BasicConfig> manager) {
-        manager.onSave(ConfigManager.State.PRE, config -> {
+        manager.onSave(config -> {
             if (ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent()) {
                 config.enabled = false;
             }

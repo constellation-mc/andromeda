@@ -11,8 +11,6 @@ import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.IOException;
-
 @CustomLog
 public abstract class Module<T extends BasicConfig> {
 
@@ -61,11 +59,7 @@ public abstract class Module<T extends BasicConfig> {
     public void acceptMixinConfig(JsonObject config) { }
 
     public final void save() {
-        try {
-            manager.save(FabricLoader.getInstance().getConfigDir(), config());
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save module config!", e);
-        }
+        manager.save(FabricLoader.getInstance().getConfigDir(), config());
     }
 
     public final ConfigManager<T> manager() {

@@ -5,13 +5,13 @@ import me.melontini.dark_matter.api.base.config.ConfigManager;
 import net.fabricmc.loader.api.FabricLoader;
 import org.intellij.lang.annotations.MagicConstant;
 
-import java.io.IOException;
 import java.util.*;
 
 @CustomLog
 public class Debug {
 
-    private static final ConfigManager<Holder> MANAGER = ConfigManager.of(Holder.class, "andromeda/debug", Holder::new);
+    private static final ConfigManager<Holder> MANAGER = ConfigManager.of(Holder.class, "andromeda/debug", Holder::new)
+            .exceptionHandler((e, stage) -> LOGGER.error("Failed to %s debug config!".formatted(stage.toString().toLowerCase()), e));
 
     private static Holder CONFIG;
 
@@ -24,17 +24,8 @@ public class Debug {
     }
 
     public static void load() {
-        try {
-            CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir());
-        } catch (IOException e) {
-            LOGGER.error("Failed to load debug keys!");
-            CONFIG = MANAGER.createDefault();
-        }
-        try {
-            MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
-        } catch (IOException e) {
-            LOGGER.error("Failed to save debug keys!");
-        }
+        CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir());
+        MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
     }
 
     private static class Holder {

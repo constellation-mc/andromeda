@@ -9,13 +9,13 @@ import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceType;
 
 import java.util.Arrays;
@@ -31,7 +31,7 @@ public class Andromeda {
     public static void init() {
         INSTANCE = new Andromeda();
         INSTANCE.onInitialize();
-        FabricLoader.getInstance().getObjectShare().put("andromeda:main", INSTANCE);
+        Support.share("andromeda:main", INSTANCE);
     }
 
     private void onInitialize() {
