@@ -4,11 +4,13 @@ import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
+@Unscoped
 @ModuleInfo(name = "dragon_fight", category = "mechanics", environment = Environment.SERVER)
 public class DragonFight extends Module<DragonFight.Config> {
 

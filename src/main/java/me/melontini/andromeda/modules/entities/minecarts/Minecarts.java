@@ -5,10 +5,12 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
 
+@Unscoped
 @ModuleInfo(name = "minecarts", category = "entities")
 public class Minecarts extends Module<Minecarts.Config> {
 

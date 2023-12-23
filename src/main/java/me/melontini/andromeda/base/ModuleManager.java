@@ -3,6 +3,7 @@ package me.melontini.andromeda.base;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
+import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
@@ -87,11 +88,17 @@ public class ModuleManager {
                         m.meta().environment(), m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
                 m.config().scope = BasicConfig.Scope.GLOBAL;
             }
+
+            if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != BasicConfig.Scope.GLOBAL) {
+                LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                        "Unscoped", m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
+                m.config().scope = BasicConfig.Scope.GLOBAL;
+            }
         });
 
         if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
             list.forEach(m -> {
-                if (m.meta().environment() != Environment.CLIENT) {
+                if (m.meta().environment() != Environment.CLIENT && !m.getClass().isAnnotationPresent(Unscoped.class)) {
                     m.config().scope = BasicConfig.Scope.DIMENSION;
                 }
             });

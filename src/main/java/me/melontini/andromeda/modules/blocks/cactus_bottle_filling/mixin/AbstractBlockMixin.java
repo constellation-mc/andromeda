@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
+import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
 import me.melontini.andromeda.util.BlockUtil;
 import me.melontini.andromeda.util.ItemStackUtil;
 import net.minecraft.block.AbstractBlock;
@@ -42,7 +43,7 @@ class AbstractBlockMixin {
                     }
                 }
 
-                if (!world.isClient()) {
+                if (!world.isClient() && world.am$get(CactusFiller.class).enabled) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
                     player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 
