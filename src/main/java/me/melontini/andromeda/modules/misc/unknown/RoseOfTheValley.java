@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.misc.unknown;
 
-import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;

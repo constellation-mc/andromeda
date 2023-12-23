@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import me.melontini.andromeda.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.minecraft.item.Item;

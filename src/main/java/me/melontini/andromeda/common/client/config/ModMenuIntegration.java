@@ -2,8 +2,8 @@ package me.melontini.andromeda.common.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.api.EnvType;

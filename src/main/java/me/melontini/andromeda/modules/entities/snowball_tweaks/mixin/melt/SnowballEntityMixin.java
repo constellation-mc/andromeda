@@ -28,9 +28,12 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
     @ConstructDummy(owner = "net.minecraft.class_1297", name = "method_5773", desc = "()V")
     @Inject(at = @At("HEAD"), method = "tick()V")
     public void andromeda$melt(CallbackInfo ci) {
-        if (!am$snow.config().melt || !this.isOnFire()) return;
+        if (world.isClient() || !this.isOnFire()) return;
 
-        if (!world.isClient()) ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.4);
+        Snowballs.Config config = world.am$get(am$snow);
+        if (!config.enabled || !config.melt) return;
+
+        ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.4);
         this.discard();
     }
 }

@@ -15,6 +15,6 @@ class ServerWorldMixin {
 
     @WrapWithCondition(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"), method = "tickChunk")
     private boolean andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        return PlantTemperatureData.roll(state.getBlock(), world.getBiome(pos).value().getTemperature());
+        return PlantTemperatureData.roll(state.getBlock(), world.getBiome(pos).value().getTemperature(), world);
     }
 }

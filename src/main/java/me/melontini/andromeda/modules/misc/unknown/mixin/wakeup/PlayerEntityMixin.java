@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.wakeup;
 
-import me.melontini.andromeda.util.WorldUtil;
+import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.entity.EquipmentSlot;

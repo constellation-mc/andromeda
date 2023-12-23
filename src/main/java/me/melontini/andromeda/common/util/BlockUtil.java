@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.common.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.state.property.IntProperty;

@@ -58,6 +58,9 @@ abstract class BeeEntityMixin extends AnimalEntity {
     private void andromeda$growFlower() {
         if (this.flowerPos != null) {
             BlockState flowerState = world.getBlockState(flowerPos);
+            BeeFlowerDuplication.Config config = world.am$get(BeeFlowerDuplication.class);
+            if (!config.enabled) return;
+
             if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
                 andromeda$plantingCoolDown = MathStuff.nextInt(world.random, 3600, 6490);
                 for (int i = -2; i <= 2; i++) {
@@ -76,7 +79,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                         }
                     }
                 }
-            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && ModuleManager.quick(BeeFlowerDuplication.class).config().tallFlowers) {
+            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && config.tallFlowers) {
                 andromeda$plantingCoolDown = MathStuff.nextInt(world.random, 3600, 8000);
                 for (int i = -1; i <= 1; i++) {
                     for (int b = -2; b <= 2; b++) {
