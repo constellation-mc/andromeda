@@ -7,9 +7,6 @@
   "mixins": [
   ],
   "client": [
-    "MinecraftClientMixin",
-    "ParticleManagerMixin",
-    "SubCategoryListEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

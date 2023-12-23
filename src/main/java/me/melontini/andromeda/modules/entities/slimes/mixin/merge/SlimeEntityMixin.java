@@ -35,19 +35,21 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "initGoals")
     private void andromeda$newGoal(CallbackInfo ci) {
-        if (!am$slimes.config().merge) return;
+        Slimes.Config config = this.world.am$get(am$slimes);
+        if (!config.enabled || !config.merge) return;
 
         this.targetSelector.add(2, new ActiveTargetGoal<>((SlimeEntity) (Object) this, SlimeEntity.class, 5, true, false, livingEntity -> {
-            if (!am$slimes.config().merge) return false;
+            if (!config.enabled || !config.merge) return false;
             if (this.andromeda$mergeCD > 0) return false;
             float d = livingEntity.distanceTo((SlimeEntity) (Object) this);
-            return d <= 6 && (getSize() <= am$slimes.config().maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
+            return d <= 6 && (getSize() <= config.maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
         }));
     }
 
     @Inject(at = @At("TAIL"), method = "pushAwayFrom")
     private void andromeda$push(Entity entity, CallbackInfo ci) {
-        if (!am$slimes.config().merge) return;
+        Slimes.Config config = this.world.am$get(am$slimes);
+        if (!config.enabled || !config.merge) return;
 
         if (getTarget() instanceof SlimeEntity slime && slime == entity && this.andromeda$mergeCD == 0) {
             int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);
@@ -60,16 +62,16 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (am$slimes.config().merge) if (this.andromeda$mergeCD > 0) --this.andromeda$mergeCD;
+        if (this.andromeda$mergeCD > 0) --this.andromeda$mergeCD;
     }
 
     @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
     private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (am$slimes.config().merge) nbt.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
+        nbt.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (am$slimes.config().merge) this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(700, 2000));
+        this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(700, 2000));
     }
 }

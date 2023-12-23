@@ -1,11 +1,9 @@
 package me.melontini.andromeda.modules.mechanics.dragon_fight;
 
 import lombok.Getter;
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
 import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
 import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;
 import me.melontini.dark_matter.api.minecraft.world.interfaces.TickableState;
@@ -36,7 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class EnderDragonManager extends PersistentState implements DeserializableState, TickableState {
-    private static final Lazy<DragonFight> module = Lazy.of(() -> () -> ModuleManager.quick(DragonFight.class));
+
+    private static DragonFight MODULE;
 
     public static final String ID = "andromeda_ender_dragon_fight";
 
@@ -79,7 +78,7 @@ public class EnderDragonManager extends PersistentState implements Deserializabl
                 }
             }
             markDirty();
-            if (module.get().config().scaleHealthByMaxPlayers) {
+            if (MODULE.config().scaleHealthByMaxPlayers) {
                 for (EnderDragonEntity dragon : dragons) {
                     EntityAttributeInstance inst = dragon.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
                     MakeSure.notNull(inst, "Ender Dragon has no attributes?").setBaseValue(Math.floor((Math.sqrt(500 * i)) * 10));

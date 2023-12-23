@@ -2,9 +2,12 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
+import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -15,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.HashSet;
@@ -30,7 +34,7 @@ public class Client {
         return showTooltip.contains(item);
     }
 
-    public static void init() {
+    public static void init(ThrowableItems module) {
         Content.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
@@ -42,6 +46,12 @@ public class Client {
                 showTooltip.clear();
                 for (Identifier id : ids) showTooltip.add(CommonRegistries.items().get(id));
             });
+        });
+
+        ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
+            if (module.config().tooltip && hasTooltip(stack.getItem())) {
+                lines.add(TextUtil.translatable("tooltip.andromeda.throwable_item").formatted(Formatting.GRAY));
+            }
         });
 
         ClientPlayNetworking.registerGlobalReceiver(Content.FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {

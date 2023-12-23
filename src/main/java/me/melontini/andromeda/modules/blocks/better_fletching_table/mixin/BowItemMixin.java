@@ -30,7 +30,6 @@ abstract class BowItemMixin extends RangedWeaponItem {
         if (a > 0) {
             persistentProjectileEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, f * 3.0F, 0.2F);
             stackNbt.putInt("AM-Tightened", a - 1);
-            stack.setNbt(stackNbt);
         }
     }
 }

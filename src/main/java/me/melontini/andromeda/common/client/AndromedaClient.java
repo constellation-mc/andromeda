@@ -2,25 +2,36 @@ package me.melontini.andromeda.common.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
+import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.client.config.AutoConfigScreen;
+import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
+import me.melontini.andromeda.common.util.CrashHandler;
+import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.*;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
+import java.lang.reflect.Field;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.registries.Common.id;
@@ -42,6 +53,19 @@ public class AndromedaClient {
     public void onInitializeClient() {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
         if (!Config.get().sideOnlyMode) ClientSideNetworking.register();
+        else {
+            for (Module<?> module : ModuleManager.get().all()) {
+                switch (module.meta().environment()) {
+                    case ANY, CLIENT -> {
+                    }
+                    default -> FeatureBlockade.get().explain(module, "enabled", () -> true,
+                            TextUtil.translatable("andromeda.config.option_manager.reason.andromeda.side_only_enabled"));
+                }
+            }
+        }
+        for (Module<?> module : ModuleManager.get().all()) {
+            module.collectBlockades();
+        }
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
                 ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
@@ -60,7 +84,29 @@ public class AndromedaClient {
         Support.runWeak(EnvType.CLIENT, () -> CrashHandler::nukeProfile);
     }
 
+    private static void printMissingTooltips() {
+        Set<String> missing = new LinkedHashSet<>();
+        for (Module<?> module : ModuleManager.get().all()) {
+            String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
+            if (!I18n.hasTranslation(m)) missing.add(m);
+
+            for (Field field : ModuleManager.get().getConfigClass(module.getClass()).getFields()) {
+                if ("enabled".equals(field.getName()) || field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
+                    continue;
+
+                String f = "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName());
+                if (!I18n.hasTranslation(f)) missing.add(f);
+            }
+        }
+        StringBuilder b = new StringBuilder();
+        for (String s : missing) {
+            b.append('\t').append(s).append('\n');
+        }
+        AndromedaLog.info("Missing tooltips:\n{}", b);
+    }
+
     public void lateInit() {
+        if (Debug.hasKey(Debug.Keys.PRINT_MISSING_TOOLTIPS)) printMissingTooltips();
     }
 
     @Override

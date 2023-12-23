@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
-import me.melontini.andromeda.util.WorldUtil;
+import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
+import static me.melontini.andromeda.common.util.WorldUtil.trySpawnFallingBeeNest;
 
 @Mixin(PersistentProjectileEntity.class)
 abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
@@ -41,7 +42,7 @@ abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
             if (block == Blocks.BEE_NEST) {
                 BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) world.getBlockEntity(pos);
                 if (beehiveBlockEntity != null) {
-                    if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock) {
+                    if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() instanceof AirBlock && world.am$get(CanBeeNestsFall.class).enabled) {
                         BlockState up = world.getBlockState(pos.offset(Direction.UP));
                         if (up.isIn(BlockTags.LOGS) || up.isIn(BlockTags.LEAVES)) {
                             for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {

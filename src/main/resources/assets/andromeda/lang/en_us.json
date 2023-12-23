@@ -90,6 +90,7 @@
   "gui.andromeda.merchant": "Merchant Inventory",
 
   "action.andromeda.safebeds": "You can't sleep here!",
+  "andromeda.game_rule.category": " (Andromeda)",
 
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",
@@ -104,6 +105,7 @@
   "andromeda.config.tooltip.environment.server": "Server-only feature.",
   "andromeda.config.tooltip.environment.both": "Required on both Client and Server.",
   "andromeda.config.tooltip.origin": "Taken from or based on %s by %s",
+  "andromeda.config.tooltip.game_rule": "This option is a default for a game rule!",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "Effect",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "Identifier",
@@ -119,10 +121,13 @@
   "config.andromeda.world.falling_beenests": "Can Bee Nests Fall?",
   "config.andromeda.world.falling_beenests.@Tooltip": "Pretty self-explanatory. Makes Bee Nests fall after some time, \nyou can also shoot them with an arrow",
   "config.andromeda.world.crop_temperature": "Temperature-Based Crop Growth Speed",
-  "config.andromeda.world.crop_temperature.@Tooltip": "TODO: give this perfectly complete feature a proper description",
+  "config.andromeda.world.crop_temperature.@Tooltip": "Plants will no longer grow in every biome, and instead require their native temperatures.\nSo desert cacti will no longer grow in ice sheets, etc.",
   "config.andromeda.world.crop_temperature.option.affectBoneMeal": "Affect Bone Meal",
   "config.andromeda.world.quick_fire": "Fast Fire Spread",
   "config.andromeda.world.quick_fire.@Tooltip": "Makes fire spread a lot faster and wider.",
+  "config.andromeda.world.moist_control": "Moisture Control",
+  "config.andromeda.world.moist_control.@Tooltip": "Enables some control over farmland moisture.",
+  "config.andromeda.world.moist_control.option.customMoisture": "Custom Moisture Range",
 
   "config.andromeda.category.blocks": "Blocks",
   "config.andromeda.blocks.guarded_loot": "Guarded Loot",
@@ -143,7 +148,7 @@
   "config.andromeda.blocks.bed.unsafe": "Beds Explode Everywhere",
   "config.andromeda.blocks.bed.unsafe.@Tooltip": "Makes beds explode in every dimension. \nConflicts with Safe Beds!",
   "config.andromeda.blocks.bed.power": "Bed Explosion Power",
-  "config.andromeda.blocks.bed.power.@Tooltip": "Enables the setting below.",
+  "config.andromeda.blocks.bed.power.@Tooltip": "Allows changing bed's explosion power.",
   "config.andromeda.blocks.bed.power.option.power": "Power",
   "config.andromeda.blocks.bed.power.option.power.@Tooltip": "Configurable bed explosion power. Default is 5.0",
   "config.andromeda.blocks.bed.safe": "Safe Beds",

@@ -29,7 +29,8 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/SlimeEntity;getSize()I", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$onPlayerCollision(LivingEntity target, CallbackInfo ci) {
-        if (!am$slimes.config().slowness) return;
+        Slimes.Config config = this.world.am$get(am$slimes);
+        if (!config.enabled || !config.slowness) return;
 
         StatusEffectInstance effectInstance = new StatusEffectInstance(StatusEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);
         target.addStatusEffect(effectInstance);

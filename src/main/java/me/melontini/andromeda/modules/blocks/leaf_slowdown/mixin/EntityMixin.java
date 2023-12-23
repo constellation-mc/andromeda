@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.blocks.leaf_slowdown.mixin;
 
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.Content;
+import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,8 +31,8 @@ abstract class EntityMixin extends Entity {
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {
-        EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-        if (!this.world.isClient) {
+        if (!this.world.isClient && this.world.am$get(LeafSlowdown.class).enabled) {
+            EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
             if (this.world.getBlockState(getBlockPos().down()).isIn(BlockTags.LEAVES)
                     || (this.world.getBlockState(new BlockPos(getBlockPos().down(2))).isIn(BlockTags.LEAVES) && this.world.getBlockState(new BlockPos(getBlockPos().down())).isOf(Blocks.AIR))) {
                 if (((LivingEntity) (Object) this) instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))

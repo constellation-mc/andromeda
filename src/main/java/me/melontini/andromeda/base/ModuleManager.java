@@ -1,17 +1,18 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
 import lombok.CustomLog;
+import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.Debug;
+import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.base.util.classes.Lazy;
-import me.melontini.dark_matter.api.config.ConfigBuilder;
-import me.melontini.dark_matter.api.config.ConfigManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -23,7 +24,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-@SuppressWarnings("UnstableApiUsage")
 @CustomLog
 public class ModuleManager {
 
@@ -35,11 +35,9 @@ public class ModuleManager {
     private final ImmutableMap<Class<?>, Module<?>> modules;
     private final ImmutableMap<String, Module<?>> moduleNames;
 
-    private final ImmutableMap<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs;
-
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
-    ModuleManager(List<Module<?>> discovered) {
+    ModuleManager(List<Module<?>> discovered, @Nullable JsonObject oldCfg) {
         Bootstrap.INSTANCE = this;
 
         Set<String> ids = new HashSet<>();
@@ -58,19 +56,53 @@ public class ModuleManager {
         this.discoveredModules = sorted.stream().collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
         this.discoveredModuleNames = sorted.stream().collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
-        this.configs = ImmutableMap.copyOf(setUpConfigs(sorted));
+        this.setUpConfigs(sorted);
+
+        sorted.forEach(module -> {
+            module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
+            module.defaultConfig = Utilities.cast(module.manager.createDefault());
+        });
 
         sorted.forEach(Module::postConfig);
+
+        if (oldCfg != null)
+            sorted.forEach(module -> module.acceptLegacyConfig(oldCfg));
+
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
             sorted.forEach(module -> module.config().enabled = true);
-        sorted.forEach(module -> module.manager().save());
+        fixScopes(sorted);
+
+        sorted.forEach(Module::save);
 
         this.modules = sorted.stream().filter(Module::enabled)
                 .collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
         this.moduleNames = sorted.stream().filter(Module::enabled)
                 .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
-        cleanConfigs();
+        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"));
+    }
+
+    private void fixScopes(List<Module<?>> list) {
+        list.forEach(m -> {
+            if (m.meta().environment() == Environment.CLIENT && m.config().scope != BasicConfig.Scope.GLOBAL) {
+                LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                        m.meta().environment(), m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
+                m.config().scope = BasicConfig.Scope.GLOBAL;
+            }
+
+            if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != BasicConfig.Scope.GLOBAL) {
+                LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                        "Unscoped", m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
+                m.config().scope = BasicConfig.Scope.GLOBAL;
+            }
+        });
+
+        if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
+            list.forEach(m -> {
+                if (m.meta().environment() != Environment.CLIENT && !m.getClass().isAnnotationPresent(Unscoped.class)) {
+                    m.config().scope = BasicConfig.Scope.DIMENSION;
+                }
+            });
     }
 
     void validateModule(Module<?> module) {
@@ -79,30 +111,28 @@ public class ModuleManager {
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
     }
 
-    public Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> setUpConfigs(List<Module<?>> list) {
-        Map<Class<?>, Lazy<ConfigManager<? extends BasicConfig>>> configs = new HashMap<>();
-
+    private void setUpConfigs(List<Module<?>> list) {
         list.forEach(m -> {
-            var config = ConfigBuilder.create(getConfigClass(m.getClass()), CommonValues.mod(), "andromeda/" + m.meta().id());
-            config.processors((registry, mod) -> {
-                registry.register(CommonValues.MODID + ":side_only_enabled", manager -> {
-                    if (Config.get().sideOnlyMode) {
-                        return switch (m.meta().environment()) {
-                            case ANY -> null;
-                            case CLIENT -> FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT ?
-                                    null : Map.of("enabled", false);
-                            case SERVER -> FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER ?
-                                    null : Map.of("enabled", false);
-                            default -> Map.of("enabled", false);
-                        };
+            var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
+            config.onLoad(config1 -> {
+                if (Config.get().sideOnlyMode) {
+                    switch (m.meta().environment()) {
+                        case BOTH -> config1.enabled = false;
+                        case CLIENT -> {
+                            if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT)
+                                config1.enabled = false;
+                        }
+                        case SERVER -> {
+                            if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER)
+                                config1.enabled = false;
+                        }
                     }
-                    return null;
-                }, mod);
+                }
             });
+            config.exceptionHandler((e, stage) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
+            m.manager = Utilities.cast(config);
             m.onConfig(Utilities.cast(config));
-            configs.put(m.getClass(), Lazy.of(() -> () -> config.build(false)));
         });
-        return configs;
     }
 
     public Class<? extends BasicConfig> getConfigClass(Class<?> m) {
@@ -116,33 +146,31 @@ public class ModuleManager {
         return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : BasicConfig.class;
     }
 
-    private void cleanConfigs() {
-        Set<Path> paths = collectPaths();
-        Utilities.runUnchecked(() -> Files.walkFileTree(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (!paths.contains(file)) {
-                    Files.delete(file);
-                    LOGGER.info("Removed {} as it doesn't belong to any module!", file);
+    public void cleanConfigs(Path root) {
+        Set<Path> paths = collectPaths(root.getParent());
+        if (Files.exists(root)) {
+            Utilities.runUnchecked(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (!paths.contains(file)) {
+                        Files.delete(file);
+                        LOGGER.info("Removed {} as it doesn't belong to any module!", file);
+                    }
+                    return super.visitFile(file, attrs);
                 }
-                return super.visitFile(file, attrs);
-            }
-        }));
+            }));
+        }
     }
 
-    private Set<Path> collectPaths() {
+    private Set<Path> collectPaths(Path root) {
         Set<Path> paths = new HashSet<>();
 
-        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/mod.json"));
-        paths.add(FabricLoader.getInstance().getConfigDir().resolve("andromeda/debug.json"));
+        paths.add(root.resolve("andromeda/mod.json"));
+        paths.add(root.resolve("andromeda/debug.json"));
 
-        configs.values().forEach(m -> paths.add(m.get().getSerializer().getPath()));
+        all().forEach(module -> paths.add(module.manager().resolve(root)));
 
         return paths;
-    }
-
-    public ConfigManager<? extends BasicConfig> getConfig(Class<?> cls) {
-        return MakeSure.notNull(configs.get(cls)).get();
     }
 
     public <T extends Module<?>> boolean isPresent(Class<T> cls) {

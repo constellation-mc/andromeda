@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.common.util;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;

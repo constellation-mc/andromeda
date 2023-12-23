@@ -57,6 +57,11 @@
   "custom": {
     "lithium:options": {
       "mixin.world.block_entity_ticking.sleeping.campfire": false
+    },
+    "loom:injected_interfaces": {
+      "net/minecraft/class_1937": [
+        "me/melontini/andromeda/common/config/ScopedConfigs\u0024WorldExtension"
+      ]
     }
   }
 }

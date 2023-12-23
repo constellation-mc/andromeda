@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.boats;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.conflicts.CommonItemGroups;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.modules.entities.boats.items.FurnaceBoatItem;
@@ -16,9 +15,7 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class BoatItems {
 
-    public static void init() {
-        Boats module = ModuleManager.quick(Boats.class);
-
+    public static void init(Boats module) {
         for (BoatEntity.Type value : BoatEntity.Type.values()) {
             ContentBuilder.ItemBuilder.create(boatId(value, "furnace"), () -> new FurnaceBoatItem(value, new FabricItemSettings().maxCount(1)))
                     .itemGroup(CommonItemGroups.transport()).register(module.config().isFurnaceBoatOn).optional()

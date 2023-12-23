@@ -3,10 +3,10 @@ package me.melontini.andromeda.modules.world.crop_temperature;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.JsonDataLoader;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -20,6 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.World;
 
 import java.lang.invoke.MethodType;
 import java.util.*;
@@ -32,6 +33,10 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public record PlantTemperatureData(Set<Block> blocks, float min, float max, float aMin, float aMax) {
 
     public static final Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
+
+    public static boolean roll(Block block, float temp, World world) {
+        return world.am$get(PlantTemperature.class).enabled && roll(block, temp);
+    }
 
     public static boolean roll(Block block, float temp) {
         if (isPlant(block)) {

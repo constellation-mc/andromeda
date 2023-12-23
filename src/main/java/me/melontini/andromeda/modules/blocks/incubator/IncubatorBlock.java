@@ -1,9 +1,9 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
-import me.melontini.andromeda.util.AndromedaTexts;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
