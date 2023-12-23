@@ -72,8 +72,7 @@ public class ModuleManager {
 
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
             sorted.forEach(module -> module.config().enabled = true);
-        if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
-            sorted.forEach(module -> module.config().scope = BasicConfig.Scope.DIMENSION);
+        fixScopes(sorted);
 
         sorted.forEach(Module::save);
 
@@ -83,6 +82,23 @@ public class ModuleManager {
                 .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
         cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"));
+    }
+
+    private void fixScopes(List<Module<?>> list) {
+        list.forEach(m -> {
+            if (m.meta().environment() == Environment.CLIENT && m.config().scope != BasicConfig.Scope.GLOBAL) {
+                LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                        m.meta().environment(), m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
+                m.config().scope = BasicConfig.Scope.GLOBAL;
+            }
+        });
+
+        if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
+            list.forEach(m -> {
+                if (m.meta().environment() != Environment.CLIENT) {
+                    m.config().scope = BasicConfig.Scope.DIMENSION;
+                }
+            });
     }
 
     void validateModule(Module<?> module) {
