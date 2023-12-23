@@ -9,9 +9,10 @@ import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.ClassPath;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -29,7 +30,6 @@ import java.util.*;
 public class Bootstrap {
 
     static ModuleManager INSTANCE;
-    private static final ClassPath CLASS_PATH = Utilities.supplyUnchecked(ClassPath::from);
 
     @Environment(EnvType.CLIENT)
     public static void onClient() {
@@ -109,7 +109,7 @@ public class Bootstrap {
     }
 
     public static ClassPath getModuleClassPath() {
-        return CLASS_PATH;
+        return AndromedaMixins.getClassPath();
     }
 
     public static boolean testModVersion(String modId, String predicate) {

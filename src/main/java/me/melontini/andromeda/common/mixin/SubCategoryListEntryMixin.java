@@ -2,11 +2,14 @@ package me.melontini.andromeda.common.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.gui.entries.SubCategoryListEntry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@SpecialEnvironment(Environment.CLIENT)
 @Mixin(SubCategoryListEntry.class)
 class SubCategoryListEntryMixin {
 

@@ -1,6 +1,5 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
-import me.melontini.andromeda.base.Debug;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.Config;
@@ -9,6 +8,7 @@ import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;

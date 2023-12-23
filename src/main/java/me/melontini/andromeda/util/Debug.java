@@ -1,4 +1,4 @@
-package me.melontini.andromeda.base;
+package me.melontini.andromeda.util;
 
 import lombok.CustomLog;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
