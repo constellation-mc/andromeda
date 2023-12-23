@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.items;
 
-import me.melontini.andromeda.util.MiscUtil;
+import me.melontini.andromeda.common.util.MiscUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;

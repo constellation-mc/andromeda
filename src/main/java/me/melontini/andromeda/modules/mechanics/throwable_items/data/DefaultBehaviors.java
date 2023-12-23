@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
+import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
-import me.melontini.andromeda.util.MiscUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.AbstractFireBlock;

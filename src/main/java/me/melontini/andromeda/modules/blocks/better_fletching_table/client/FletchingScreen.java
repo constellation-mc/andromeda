@@ -28,8 +28,8 @@ public class FletchingScreen extends ForgingScreen<FletchingScreenHandler> {
 
     @Override
     protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
-        if ((handler.getSlot(0).hasStack() && !handler.getSlot(1).hasStack()) || (!handler.getSlot(0).hasStack() && handler.getSlot(1).hasStack())) {
-            context.drawTexture(TEXTURE, x + 65, y + 46, this.backgroundWidth, 0, 28, 21);
+        if (handler.getSlot(0).hasStack() && handler.getSlot(1).hasStack() && !handler.getSlot(2).hasStack()) {
+            context.drawTexture(TEXTURE, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
         }
     }
 }

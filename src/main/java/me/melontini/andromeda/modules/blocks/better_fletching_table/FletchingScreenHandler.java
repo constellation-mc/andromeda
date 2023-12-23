@@ -12,10 +12,10 @@ import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.screen.slot.Slot;
 
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.List;
 
 public class FletchingScreenHandler extends ForgingScreenHandler {
 
@@ -74,13 +74,12 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
         getSlot(2).setStack(recipe.get().getValue().apply(stack));
     }
 
-    //FIXME
     @Override
     protected ForgingSlotsManager getForgingSlotsManager() {
         return ForgingSlotsManager.create()
-                .input(0, 8, 48, stack -> stack.getItem() instanceof BowItem)
-                .input(1, 26, 48, stack -> stack.getItem() == Items.STRING)
-                .output(0, 98, 48).build();
+                .input(0, 27, 47, stack -> true)
+                .input(1, 76, 47, stack -> true)
+                .output(0, 134, 47).build();
     }
 
     @Override

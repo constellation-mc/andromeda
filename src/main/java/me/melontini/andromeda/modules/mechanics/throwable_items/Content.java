@@ -33,7 +33,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import static me.melontini.andromeda.common.registries.Common.id;
-import static me.melontini.andromeda.common.registries.Common.run;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Content {
@@ -65,7 +64,7 @@ public class Content {
             AndromedaLog.error("DispenserBlock.BEHAVIORS is not Object2ObjectMap! Can't override default dispense behavior!");
         }
 
-        BRICKED = run(() -> RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked")));
+        BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked"));
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             var packet = sendItemsS2CPacket();
