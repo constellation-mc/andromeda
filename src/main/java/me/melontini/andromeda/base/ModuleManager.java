@@ -59,10 +59,11 @@ public class ModuleManager {
         sorted.forEach(module -> {
             try {
                 module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
-                module.defaultConfig = Utilities.cast(module.manager.createDefault());
             } catch (IOException e) {
-                throw new RuntimeException("Failed to load config data!", e);
+                LOGGER.error("Failed to load config for module: %s".formatted(module.meta().id()), e);
+                module.config = Utilities.cast(module.manager.createDefault());
             }
+            module.defaultConfig = Utilities.cast(module.manager.createDefault());
         });
 
         sorted.forEach(Module::postConfig);

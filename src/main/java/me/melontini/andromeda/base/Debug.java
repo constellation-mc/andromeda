@@ -26,9 +26,14 @@ public class Debug {
     public static void load() {
         try {
             CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir());
-            MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
         } catch (IOException e) {
             LOGGER.error("Failed to load debug keys!");
+            CONFIG = MANAGER.createDefault();
+        }
+        try {
+            MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
+        } catch (IOException e) {
+            LOGGER.error("Failed to save debug keys!");
         }
     }
 

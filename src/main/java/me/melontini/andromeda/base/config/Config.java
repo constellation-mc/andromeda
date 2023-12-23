@@ -1,10 +1,12 @@
 package me.melontini.andromeda.base.config;
 
+import lombok.CustomLog;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 
+@CustomLog
 public class Config {
 
     private static final ConfigManager<AndromedaConfig> MANAGER = ConfigManager.of(AndromedaConfig.class, "andromeda/mod", AndromedaConfig::new);
@@ -14,10 +16,15 @@ public class Config {
     public static void load() {
         try {
             CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir());
-            MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
-            DEFAULT = MANAGER.createDefault();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load main Andromeda config (mod.json)!");
+            LOGGER.error("Failed to load main Andromeda config (mod.json)!", e);
+            CONFIG = MANAGER.createDefault();
+        }
+        DEFAULT = MANAGER.createDefault();
+        try {
+            MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
+        } catch (IOException e) {
+            LOGGER.error("Failed to save main Andromeda config (mod.json)!", e);
         }
     }
 
@@ -33,7 +40,7 @@ public class Config {
         try {
             MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save main Andromeda config (mod.json)!", e);
+            LOGGER.error("Failed to save main Andromeda config (mod.json)!", e);
         }
     }
 }
