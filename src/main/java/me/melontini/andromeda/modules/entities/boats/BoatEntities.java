@@ -45,7 +45,7 @@ public class BoatEntities {
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
     public static final Keeper<EntityType<ChestBoatEntity>> BOAT_WITH_CHEST = Keeper.of(() -> () ->
-            RegistryUtil.createEntityType(() -> ModuleManager.quick(Boats.class).config().isChestBoatOn,
+            RegistryUtil.createEntityType(() -> MODULE.config().isChestBoatOn,
                     id("chest_boat"),
                     FabricEntityTypeBuilder.<ChestBoatEntity>create(SpawnGroup.MISC, ChestBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));

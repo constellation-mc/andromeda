@@ -18,7 +18,6 @@ public class Tooltips extends Module<Tooltips.Config> {
             this.config().enabled = true;
             JsonOps.ifPresent(tooltips, "clock", e -> this.config().clock = e.getAsBoolean());
             JsonOps.ifPresent(tooltips, "compass", e -> this.config().compass = e.getAsBoolean());
-            JsonOps.ifPresent(tooltips, "recoveryCompass", e -> this.config().recoveryCompass = e.getAsBoolean());
         }
     }
 
