@@ -17,6 +17,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.WorldSavePath;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,7 +44,11 @@ public class Andromeda {
             if (DataConfigs.CONFIGS != null) DataConfigs.CONFIGS = null;
         });
 
-        ServerLifecycleEvents.SERVER_STARTED.register(DataConfigs::apply);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda")));
+            ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"));
+        });
+
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
             if (success) DataConfigs.apply(server);
         });

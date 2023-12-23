@@ -15,7 +15,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
@@ -79,11 +78,28 @@ public class DataConfigs extends JsonDataLoader {
         return Common.id("data_configs");
     }
 
+    public static void apply(ServerWorld world) {
+        MakeSure.notNull(DataConfigs.CONFIGS);
+        ScopedConfigs.get(world);
+
+        Set<CompletableFuture<?>> futures = new HashSet<>();
+        for (Module<?> module : ModuleManager.get().all()) {
+            if (module.meta().environment() == Environment.CLIENT) continue; //Those are always GLOBAL.
+
+            switch (module.config().scope) {
+                case WORLD -> futures.add(CompletableFuture.runAsync(() -> {
+                    if (world.getRegistryKey().equals(World.OVERWORLD))
+                        ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
+                }));
+                case DIMENSION ->
+                        CompletableFuture.runAsync(() -> ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module)));
+            }
+        }
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+    }
+
     public static void apply(MinecraftServer server) {
         MakeSure.notNull(DataConfigs.CONFIGS);
-
-        server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda")));
-        ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"));
 
         server.getWorlds().forEach(ScopedConfigs::get);
 

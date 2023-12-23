@@ -22,10 +22,6 @@ import java.util.Map;
 
 public class ScopedConfigs {
 
-    public static <T extends BasicConfig> T get(World world, Class<? extends Module<T>> cls) {
-        return get(world, ModuleManager.quick(cls));
-    }
-
     public static <T extends BasicConfig> T get(World world, Module<T> module) {
         if (world instanceof ServerWorld sw) {
             return switch (module.config().scope) {
@@ -78,38 +74,39 @@ public class ScopedConfigs {
 
     public interface WorldExtension {
         default <T extends BasicConfig> T am$get(Class<? extends Module<T>> cls) {
-            if (this instanceof ServerWorld w) {
-                return ScopedConfigs.get(w, cls);
-            }
-            throw new IllegalStateException();
+            return am$get(ModuleManager.quick(cls));
         }
 
         default BasicConfig am$get(String module) {
-            if (this instanceof ServerWorld w) {
-                return ScopedConfigs.get(w, ModuleManager.get().getModule(module).orElseThrow(() -> new IllegalStateException("Module %s not found".formatted(module))));
-            }
-            throw new IllegalStateException();
+            return am$get(ModuleManager.get().getModule(module).orElseThrow(() -> new IllegalStateException("Module %s not found".formatted(module))));
         }
 
         default <T extends BasicConfig> T am$get(Module<T> module) {
             if (this instanceof ServerWorld w) {
                 return ScopedConfigs.get(w, module);
             }
-            throw new IllegalStateException();
+            return module.config();
+        }
+
+        default <T extends BasicConfig> void am$save(Class<? extends Module<T>> cls) {
+            am$save(ModuleManager.quick(cls));
+        }
+
+        default void am$save(String module) {
+            am$save(ModuleManager.get().getModule(module).orElseThrow(() -> new IllegalStateException("Module %s not found".formatted(module))));
         }
 
         default <T extends BasicConfig> void am$save(Module<T> module) {
             if (this instanceof ServerWorld w) {
                 module.manager().save(getPath(w, module), am$get(module));
             }
-            throw new IllegalStateException();
         }
 
         default boolean am$isReady() {
             if (this instanceof ServerWorld w) {
                 return PersistentStateHelper.isStateLoaded(w, "andromeda_configs_dummy");
             }
-            throw new IllegalStateException();
+            return false;
         }
     }
 
