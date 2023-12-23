@@ -36,6 +36,11 @@ public class AndromedaItemGroup {
                 Map<Module<?>, List<ItemStack>> small = new LinkedHashMap<>();
                 Map<Module<?>, List<ItemStack>> big = new LinkedHashMap<>();
 
+                if (stackMap.isEmpty()) {
+                    entries.add(Items.BARRIER);
+                    return;
+                }
+
                 stackMap.forEach((module, itemStacks) -> {
                     if (itemStacks.size() > 2) {
                         big.put(module, itemStacks);
@@ -43,6 +48,11 @@ public class AndromedaItemGroup {
                         small.put(module, itemStacks);
                     }
                 });
+
+                if (small.isEmpty() && big.isEmpty()) {
+                    entries.add(Items.BARRIER);
+                    return;
+                }
 
                 List<ItemStack> stacks = new ArrayList<>();
                 small.forEach((m, itemStacks) -> {
