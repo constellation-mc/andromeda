@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.gui.item_frame_tooltips;
 
-import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.config.BasicConfig;
@@ -13,7 +13,7 @@ import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
 @OldConfigKey("itemFrameTooltips")
 @ModuleInfo(name = "item_frame_tooltips", category = "gui", environment = Environment.CLIENT)
-public class ItemFrameTooltips extends BasicModule {
+public class ItemFrameTooltips extends Module<BasicConfig> {
 
     @Override
     public void onConfig(ConfigManager<BasicConfig> manager) {

@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.blocks.bed.unsafe;
 
-import me.melontini.andromeda.base.BasicModule;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -14,7 +13,7 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 
 @OldConfigKey("bedsExplodeEverywhere")
 @ModuleInfo(name = "bed/unsafe", category = "blocks", environment = Environment.SERVER)
-public class Unsafe extends BasicModule {
+public class Unsafe extends Module<BasicConfig> {
 
     @Override
     public void onConfig(ConfigManager<BasicConfig> manager) {
