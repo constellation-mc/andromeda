@@ -2,14 +2,13 @@
 
 ## Alpha warning!
 
-* Temperature-Based Crop Growth Speed: Lots of fixes!
-  * Added an option to affect bonemealing of plants.
-  * Added Nether Wart and Mushroom configs.
-  * Fixed Nether Vines ignoring configs.
-  * Configs now support ID arrays.
+* New module: Moist Control!
+  * Allows you to control farmland hydration range. As simple as that!
+* Major change: Scoped configs!
+  * I recommend checking out the wiki for more info, as there's quite a lot.
 
 ***
 
-* (Hopefully) fixed ModuleDiscovery crash on linux.
-* Fixed Dragon Fight data not initializing.
-* Config class is now parsed from module's generic type.
+* Added legacy config (<=0.9.4) migration!
+* Added Additional Additions support to Useful Fletching Table.
+* Updated Chinese translation. Courtesy of [Rad586](https://github.com/Rad586).
