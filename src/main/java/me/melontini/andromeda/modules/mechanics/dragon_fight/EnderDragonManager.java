@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.mechanics.dragon_fight;
 
 import lombok.Getter;
+import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.MiscUtil;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
 import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.util.AndromedaTexts;
+import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.interfaces.DarkMatterEntries;

@@ -2,8 +2,8 @@ package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.CrashHandler;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import net.fabricmc.loader.api.FabricLoader;

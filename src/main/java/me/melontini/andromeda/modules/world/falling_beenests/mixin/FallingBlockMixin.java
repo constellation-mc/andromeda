@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
+import me.melontini.andromeda.common.util.ItemStackUtil;
+import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
-import me.melontini.andromeda.util.ItemStackUtil;
-import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.minecraft.block.BlockState;

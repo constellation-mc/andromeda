@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;

@@ -1,10 +1,10 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.BlockUtil;
+import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.Content;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
-import me.melontini.andromeda.util.BlockUtil;
-import me.melontini.andromeda.util.WorldUtil;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;

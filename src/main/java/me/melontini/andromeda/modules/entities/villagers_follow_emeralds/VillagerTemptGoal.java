@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.entities.villagers_follow_emeralds;
 
-import me.melontini.andromeda.util.TagUtil;
+import me.melontini.andromeda.common.util.TagUtil;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.passive.VillagerEntity;

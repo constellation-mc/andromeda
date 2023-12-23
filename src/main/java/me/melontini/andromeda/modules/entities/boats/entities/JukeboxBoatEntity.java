@@ -1,11 +1,11 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.util.AndromedaPackets;
+import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.AndromedaPackets;
-import me.melontini.andromeda.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;

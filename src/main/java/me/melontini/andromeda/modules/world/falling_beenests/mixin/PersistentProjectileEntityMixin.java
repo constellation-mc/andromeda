@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
+import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
-import me.melontini.andromeda.util.WorldUtil;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.melontini.andromeda.util.WorldUtil.trySpawnFallingBeeNest;
+import static me.melontini.andromeda.common.util.WorldUtil.trySpawnFallingBeeNest;
 
 @Mixin(PersistentProjectileEntity.class)
 abstract class PersistentProjectileEntityMixin extends ProjectileEntity {

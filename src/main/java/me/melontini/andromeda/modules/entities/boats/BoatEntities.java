@@ -1,11 +1,11 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
-import me.melontini.andromeda.util.AndromedaPackets;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;

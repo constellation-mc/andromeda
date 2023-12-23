@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.villager_gifting;
 
-import me.melontini.andromeda.util.TagUtil;
+import me.melontini.andromeda.common.util.TagUtil;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
 

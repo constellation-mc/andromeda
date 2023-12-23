@@ -1,9 +1,10 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.common.util;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import me.melontini.andromeda.util.AndromedaLog;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.resource.ResourceManager;

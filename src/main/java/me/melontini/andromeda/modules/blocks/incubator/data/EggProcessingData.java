@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.blocks.incubator.data;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.JsonDataLoader;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.entity.EntityType;
