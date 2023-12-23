@@ -2,7 +2,6 @@ package me.melontini.andromeda.common.config;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -12,7 +11,6 @@ import me.melontini.andromeda.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -22,8 +20,6 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -98,13 +94,11 @@ public class DataConfigs extends JsonDataLoader {
             switch (module.config().scope) {
                 case WORLD -> futures.add(CompletableFuture.runAsync(() -> {
                     ServerWorld world = server.getWorld(World.OVERWORLD);
-                    Path p = server.session.getDirectory(WorldSavePath.ROOT).resolve("config");
-                    prepareForWorld(world, module, p);
+                    ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
                 }));
                 case DIMENSION -> CompletableFuture.runAsync(() -> {
                     for (ServerWorld world : server.getWorlds()) {
-                        Path p = server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config");
-                        prepareForWorld(world, module, p);
+                        ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
                     }
                 });
             }
@@ -112,16 +106,7 @@ public class DataConfigs extends JsonDataLoader {
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
 
-    @SneakyThrows
-    private static BasicConfig loadScoped(Path root, Module<?> module) {
-        var manager = module.manager();
-        if (Files.exists(manager.resolve(root))) {
-            return manager.load(root);
-        }
-        return manager.load(FabricLoader.getInstance().getConfigDir());
-    }
-
-    private static void applyDataPacks(BasicConfig config, Module<?> m, Identifier id) {
+    static void applyDataPacks(BasicConfig config, Module<?> m, Identifier id) {
         var data = DataConfigs.CONFIGS.get(id);
         if (data != null) {
             var forModule = data.get(m);
@@ -137,17 +122,5 @@ public class DataConfigs extends JsonDataLoader {
                 }
             }
         }
-    }
-
-    private static void prepareForWorld(ServerWorld world, Module<?> module, Path p) {
-        ScopedConfigs.State state = ScopedConfigs.get(world);
-        BasicConfig config = loadScoped(p, module);
-
-        module.manager().save(p, Utilities.cast(config));
-
-        if (module.config().scope == BasicConfig.Scope.DIMENSION) {
-            applyDataPacks(config, module, world.getRegistryKey().getValue());
-        }
-        state.addConfig(module, config);
     }
 }

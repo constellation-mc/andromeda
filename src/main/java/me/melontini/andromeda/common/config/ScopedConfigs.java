@@ -1,16 +1,22 @@
 package me.melontini.andromeda.common.config;
 
+import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
 import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -37,6 +43,39 @@ public class ScopedConfigs {
         return PersistentStateHelper.getOrCreate(world, State::new, "andromeda_configs_dummy");
     }
 
+    public static Path getPath(World world, Module<?> m) {
+        if (world instanceof ServerWorld w) {
+            return switch (m.config().scope) {
+                case GLOBAL -> FabricLoader.getInstance().getConfigDir();
+                case WORLD -> w.getServer().session.getDirectory(WorldSavePath.ROOT).resolve("config");
+                case DIMENSION ->
+                        w.getServer().session.getWorldDirectory(world.getRegistryKey()).resolve("world_config");
+            };
+        }
+        throw new IllegalStateException();
+    }
+
+    @SneakyThrows
+    private static BasicConfig loadScoped(Path root, Module<?> module) {
+        var manager = module.manager();
+        if (Files.exists(manager.resolve(root))) {
+            return manager.load(root);
+        }
+        return manager.load(FabricLoader.getInstance().getConfigDir());
+    }
+
+    static void prepareForWorld(ServerWorld world, Module<?> module, Path p) {
+        ScopedConfigs.State state = ScopedConfigs.get(world);
+        BasicConfig config = ScopedConfigs.loadScoped(p, module);
+
+        module.manager().save(p, Utilities.cast(config));
+
+        if (module.config().scope == BasicConfig.Scope.DIMENSION) {
+            DataConfigs.applyDataPacks(config, module, world.getRegistryKey().getValue());
+        }
+        state.addConfig(module, config);
+    }
+
     public interface WorldExtension {
         default <T extends BasicConfig> T am$get(Class<? extends Module<T>> cls) {
             if (this instanceof World w) {
@@ -48,6 +87,13 @@ public class ScopedConfigs {
         default <T extends BasicConfig> T am$get(Module<T> module) {
             if (this instanceof World w) {
                 return ScopedConfigs.get(w, module);
+            }
+            throw new IllegalStateException();
+        }
+
+        default <T extends BasicConfig> void am$save(Module<T> module) {
+            if (this instanceof World w) {
+                module.manager().save(getPath(w, module), am$get(module));
             }
             throw new IllegalStateException();
         }
