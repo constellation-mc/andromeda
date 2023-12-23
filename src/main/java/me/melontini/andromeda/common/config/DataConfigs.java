@@ -143,10 +143,11 @@ public class DataConfigs extends JsonDataLoader {
         ScopedConfigs.State state = ScopedConfigs.get(world);
         BasicConfig config = loadScoped(p, module);
 
+        module.manager().save(p, Utilities.cast(config));
+
         if (module.config().scope == BasicConfig.Scope.DIMENSION) {
             applyDataPacks(config, module, world.getRegistryKey().getValue());
         }
         state.addConfig(module, config);
-        module.manager().save(p, Utilities.cast(config));
     }
 }
