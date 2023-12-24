@@ -12,17 +12,19 @@ import java.util.function.Supplier;
 
 public class Keeper<T> {
 
-    private Supplier<Callable<T>> supplier;
+    private volatile Callable<T> supplier;
+    private volatile boolean initialized;
+
     private T value;
     private Field field;
 
     private final Set<Consumer<T>> consumers = new HashSet<>();
 
-    public Keeper(Supplier<Callable<T>> supplier) {
+    public Keeper(Callable<T> supplier) {
         this.supplier = MakeSure.notNull(supplier);
     }
 
-    public static <T> Keeper<T> of(Supplier<Callable<T>> supplier) {
+    public static <T> Keeper<T> of(Callable<T> supplier) {
         return new Keeper<>(supplier);
     }
 
@@ -48,11 +50,18 @@ public class Keeper<T> {
     }
 
     void init(@Nullable Field f) throws Exception {
-        this.value = this.supplier.get().call();
-        this.supplier = null;
-        this.field = f;
+        if (!initialized) {
+            synchronized (this) {
+                if (!initialized) {
+                    this.value = supplier.call();
+                    this.supplier = null;
+                    this.field = f;
+                    this.initialized = true;
 
-        if (isPresent()) this.consumers.forEach(consumer -> consumer.accept(get()));
+                    if (isPresent()) this.consumers.forEach(c -> c.accept(this.value));
+                }
+            }
+        }
     }
 
     public T get() {

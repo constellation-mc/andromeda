@@ -118,8 +118,10 @@ public class ScopedConfigs {
             return (T) configs.get(module);
         }
 
-        public synchronized void addConfig(Module<?> module, BasicConfig config) {
-            configs.put(module, config);
+        public void addConfig(Module<?> module, BasicConfig config) {
+            synchronized (this.configs) {
+                this.configs.put(module, config);
+            }
         }
 
         @Override
