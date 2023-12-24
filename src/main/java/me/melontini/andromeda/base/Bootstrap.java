@@ -57,10 +57,6 @@ public class Bootstrap {
     public static void onPreLaunch() {
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
-        if (CommonValues.platform() == CommonValues.Platform.CONNECTOR) {
-            LOGGER.warn("Andromeda may not work on Connector! (If #557 is open on Connector's GitHub)");
-        }
-
         AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
         var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
         if (Files.exists(oldCfgPath)) {
