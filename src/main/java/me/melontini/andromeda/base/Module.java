@@ -20,9 +20,9 @@ public abstract class Module<T extends BasicConfig> {
         return new Metadata(info1.name(), info1.category(), info1.environment());
     });
 
-    ConfigManager<T> manager;
-    T config;
-    T defaultConfig;
+    volatile ConfigManager<T> manager;
+    volatile T config;
+    volatile T defaultConfig;
 
     public void onClient() {
         initClasses("client.Client");

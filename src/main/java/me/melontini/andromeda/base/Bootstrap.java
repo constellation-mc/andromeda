@@ -12,6 +12,7 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,13 +24,20 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
 
 @CustomLog
 public class Bootstrap {
 
     static ModuleManager INSTANCE;
+
+    private static ExecutorService SERVICE;
 
     @Environment(EnvType.CLIENT)
     public static void onClient() {
@@ -55,6 +63,9 @@ public class Bootstrap {
     }
 
     public static void onPreLaunch() {
+        int i = MathStuff.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 4);
+        SERVICE = new ForkJoinPool(i, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true);
+
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
         AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
@@ -73,8 +84,8 @@ public class Bootstrap {
 
         Config.load();
 
-        List<Module<?>> list = new ArrayList<>(Arrays.asList(ServiceLoader.load(Module.class)
-                .stream().map(ServiceLoader.Provider::get).toArray(Module<?>[]::new)));
+        List<Module<?>> list = new ArrayList<>(40);
+        ServiceLoader.load(Module.class).stream().map(ServiceLoader.Provider::get).forEach(list::add);
 
         EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
 
@@ -97,6 +108,9 @@ public class Bootstrap {
         FabricLoader.getInstance().getObjectShare().put("andromeda:module_manager", m);
 
         for (Module<?> module : m.loaded()) { module.onPreLaunch(); }
+
+        SERVICE.shutdownNow().forEach(Runnable::run);
+        SERVICE = null;
     }
 
     static void wrapIO(ThrowingRunnable<IOException> runnable, String msg) {
@@ -109,6 +123,10 @@ public class Bootstrap {
 
     public static ClassPath getModuleClassPath() {
         return AndromedaMixins.getClassPath();
+    }
+
+    public static ExecutorService getPreLaunchService() {
+        return SERVICE;
     }
 
     public static boolean testModVersion(Module<?> m, String modId, String predicate) {

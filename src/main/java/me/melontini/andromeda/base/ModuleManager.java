@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @CustomLog
 public class ModuleManager {
@@ -60,10 +61,12 @@ public class ModuleManager {
 
         this.setUpConfigs(sorted);
 
-        sorted.forEach(module -> {
+        Set<CompletableFuture<?>> futures = new HashSet<>();
+        sorted.forEach(module -> futures.add(CompletableFuture.runAsync(() -> {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
-        });
+        })));
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
 
         sorted.forEach(Module::postConfig);
 
@@ -114,7 +117,8 @@ public class ModuleManager {
     }
 
     private void setUpConfigs(List<Module<?>> list) {
-        list.forEach(m -> {
+        Set<CompletableFuture<?>> futures = new HashSet<>();
+        list.forEach(m -> futures.add(CompletableFuture.runAsync(() -> {
             var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
             config.onLoad(config1 -> {
                 if (Config.get().sideOnlyMode) {
@@ -134,7 +138,8 @@ public class ModuleManager {
             config.exceptionHandler((e, stage) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
             m.manager = Utilities.cast(config);
             m.onConfig(Utilities.cast(config));
-        });
+        })));
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
 
     public Class<? extends BasicConfig> getConfigClass(Class<?> m) {
