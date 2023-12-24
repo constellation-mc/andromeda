@@ -22,6 +22,6 @@ public class Content {
             .itemGroup(CommonItemGroups.combat()))
             .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(ModuleManager.quick(InfiniteTotem.class), item)));
 
-    public static Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.of(() -> () ->
+    public static Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.of(() ->
             RegistryUtil.create(id("knockoff_totem_particles"), "particle_type", FabricParticleTypes::simple));
 }

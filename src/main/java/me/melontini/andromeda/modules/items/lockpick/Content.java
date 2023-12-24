@@ -21,7 +21,7 @@ public class Content {
             .itemGroup(CommonItemGroups.tools()))
             .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(ModuleManager.quick(Lockpick.class), item)));
 
-    public static final Keeper<ScreenHandlerType<MerchantInventoryScreenHandler>> MERCHANT_INVENTORY = Keeper.of(() -> () ->
+    public static final Keeper<ScreenHandlerType<MerchantInventoryScreenHandler>> MERCHANT_INVENTORY = Keeper.of(() ->
             RegistryUtil.createScreenHandler(() -> MODULE.config().villagerInventory,
                     id("merchant_inventory"), () -> MerchantInventoryScreenHandler::new));
 }

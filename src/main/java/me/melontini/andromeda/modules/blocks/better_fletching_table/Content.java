@@ -20,7 +20,7 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class Content {
 
-    public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.of(() -> () ->
+    public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.of(() ->
             RegistryUtil.createScreenHandler(id("fletching"), () -> FletchingScreenHandler::new));
 
     public static void init(BetterFletchingTable module) {
