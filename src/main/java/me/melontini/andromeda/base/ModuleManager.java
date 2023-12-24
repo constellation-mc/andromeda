@@ -38,6 +38,8 @@ public class ModuleManager {
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
     ModuleManager(List<Module<?>> discovered, @Nullable JsonObject oldCfg) {
+        if (Bootstrap.INSTANCE != null)
+            throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
         Set<String> ids = new HashSet<>();
@@ -149,7 +151,7 @@ public class ModuleManager {
     public void cleanConfigs(Path root) {
         Set<Path> paths = collectPaths(root.getParent());
         if (Files.exists(root)) {
-            Utilities.runUnchecked(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
+            Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (!paths.contains(file)) {
@@ -158,7 +160,7 @@ public class ModuleManager {
                     }
                     return super.visitFile(file, attrs);
                 }
-            }));
+            }), "Failed to clean up configs!");
         }
     }
 
