@@ -54,8 +54,7 @@ public class Common {
     }
 
     public static <T, R extends ContentBuilder.CommonBuilder<T>> Keeper<T> start(Supplier<R> supplier) {
-        R builder = supplier.get();
-        return new Keeper<>(() -> builder::build);
+        return new Keeper<>(() -> supplier.get().build());
     }
 
     public static Identifier id(String path) {

@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @CustomLog
 public class ModuleManager {
@@ -38,6 +39,8 @@ public class ModuleManager {
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
     ModuleManager(List<Module<?>> discovered, @Nullable JsonObject oldCfg) {
+        if (Bootstrap.INSTANCE != null)
+            throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
         Set<String> ids = new HashSet<>();
@@ -58,10 +61,12 @@ public class ModuleManager {
 
         this.setUpConfigs(sorted);
 
-        sorted.forEach(module -> {
+        Set<CompletableFuture<?>> futures = new HashSet<>();
+        sorted.forEach(module -> futures.add(CompletableFuture.runAsync(() -> {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
-        });
+        })));
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
 
         sorted.forEach(Module::postConfig);
 
@@ -79,7 +84,7 @@ public class ModuleManager {
         this.moduleNames = sorted.stream().filter(Module::enabled)
                 .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
-        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"));
+        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
     }
 
     private void fixScopes(List<Module<?>> list) {
@@ -112,7 +117,8 @@ public class ModuleManager {
     }
 
     private void setUpConfigs(List<Module<?>> list) {
-        list.forEach(m -> {
+        Set<CompletableFuture<?>> futures = new HashSet<>();
+        list.forEach(m -> futures.add(CompletableFuture.runAsync(() -> {
             var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
             config.onLoad(config1 -> {
                 if (Config.get().sideOnlyMode) {
@@ -132,7 +138,8 @@ public class ModuleManager {
             config.exceptionHandler((e, stage) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
             m.manager = Utilities.cast(config);
             m.onConfig(Utilities.cast(config));
-        });
+        })));
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
 
     public Class<? extends BasicConfig> getConfigClass(Class<?> m) {
@@ -146,29 +153,29 @@ public class ModuleManager {
         return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : BasicConfig.class;
     }
 
-    public void cleanConfigs(Path root) {
-        Set<Path> paths = collectPaths(root.getParent());
+    public void cleanConfigs(Path root, Collection<Module<?>> modules) {
+        Set<Path> paths = collectPaths(root.getParent(), modules);
         if (Files.exists(root)) {
-            Utilities.runUnchecked(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
+            Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (!paths.contains(file)) {
+                    if (file.toString().endsWith(".json") && !Files.isHidden(file) && !paths.contains(file)) {
                         Files.delete(file);
-                        LOGGER.info("Removed {} as it doesn't belong to any module!", file);
+                        LOGGER.info("Removed {} as it doesn't belong to any module!", FabricLoader.getInstance().getGameDir().relativize(file));
                     }
                     return super.visitFile(file, attrs);
                 }
-            }));
+            }), "Failed to clean up configs!");
         }
     }
 
-    private Set<Path> collectPaths(Path root) {
+    private Set<Path> collectPaths(Path root, Collection<Module<?>> modules) {
         Set<Path> paths = new HashSet<>();
 
         paths.add(root.resolve("andromeda/mod.json"));
         paths.add(root.resolve("andromeda/debug.json"));
 
-        all().forEach(module -> paths.add(module.manager().resolve(root)));
+        modules.forEach(module -> paths.add(module.manager().resolve(root)));
 
         return paths;
     }

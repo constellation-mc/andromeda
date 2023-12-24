@@ -13,8 +13,8 @@ import java.util.*;
 
 public final class ClassPath {
 
-    Set<Path> scanned = new HashSet<>();
-    Set<Info> infos = new TreeSet<>(Comparator.comparing(info -> info.name));
+    private final Set<Path> scanned = new HashSet<>();
+    private final Set<Info> infos = new TreeSet<>(Comparator.comparing(info -> info.name));
 
     private ClassPath() {
 
@@ -48,7 +48,7 @@ public final class ClassPath {
         String s = pckg.replace('/', '.');
         Set<Info> set = new TreeSet<>(Comparator.comparing(info -> info.name));
 
-        for (Info info : infos) {
+        for (Info info : this.infos) {
             if (info.getName().startsWith(s)) set.add(info);
         }
 
@@ -60,12 +60,16 @@ public final class ClassPath {
 
         Path path = Utilities.supplyUnchecked(() -> Path.of(url.toURI()));
 
-        if (scanned.contains(path)) return;
+        if (this.scanned.contains(path)) return;
 
         if (Files.isDirectory(path)) {
             scan(path);
         } else {
             scanJar(path);
+        }
+
+        synchronized (this.scanned) {
+            this.scanned.add(path);
         }
     }
 
@@ -90,7 +94,9 @@ public final class ClassPath {
                 String name = path.relativize(file).toString();
                 if (name.endsWith(".class") && !name.contains("$")) {
                     String clsName = name.substring(0, name.length() - ".class".length()).replace('\\', '.').replace('/', '.');
-                    ClassPath.this.infos.add(new Info(file, clsName));
+                    synchronized (ClassPath.this.infos) {
+                        ClassPath.this.infos.add(new Info(file, clsName));
+                    }
                 }
                 return FileVisitResult.CONTINUE;
             }

@@ -9,27 +9,26 @@ import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 
+import java.util.function.BooleanSupplier;
+
 import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
 @OldConfigKey("itemFrameTooltips")
 @ModuleInfo(name = "item_frame_tooltips", category = "gui", environment = Environment.CLIENT)
 public class ItemFrameTooltips extends Module<BasicConfig> {
 
+    private final BooleanSupplier iceberg = () -> testModVersion(this, "minecraft", ">=1.20") && testModVersion(this, "iceberg", "<1.1.13");
+
     @Override
     public void onConfig(ConfigManager<BasicConfig> manager) {
         manager.onLoad(config -> {
-            if (testModVersion("minecraft", ">=1.20") &&
-                    testModVersion("iceberg", "<1.1.13")) {
-                config.enabled = false;
-            }
+            if (iceberg.getAsBoolean()) config.enabled = false;
         });
     }
 
     @Override
     public void collectBlockades() {
-        FeatureBlockade.get().explain(this, "enabled", () ->
-                        testModVersion("minecraft", ">=1.20") &&
-                                testModVersion("iceberg", "<1.1.13"),
+        FeatureBlockade.get().explain(this, "enabled", iceberg,
                 TextUtil.translatable("andromeda.config.option_manager.reason.andromeda.iceberg"));
     }
 }

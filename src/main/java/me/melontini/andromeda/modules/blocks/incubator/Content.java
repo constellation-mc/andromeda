@@ -23,8 +23,8 @@ public class Content {
             .blockEntity((block, id) -> ContentBuilder.BlockEntityBuilder.create(id, IncubatorBlockEntity::new, block)))
             .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(ModuleManager.quick(Incubator.class), item)));
 
-    public static final Keeper<BlockItem> INCUBATOR = Keeper.of(() -> () -> asItem(INCUBATOR_BLOCK.get()));
+    public static final Keeper<BlockItem> INCUBATOR = Keeper.of(() -> asItem(INCUBATOR_BLOCK.get()));
 
-    public static final Keeper<BlockEntityType<IncubatorBlockEntity>> INCUBATOR_BLOCK_ENTITY = Keeper.of(() -> () ->
+    public static final Keeper<BlockEntityType<IncubatorBlockEntity>> INCUBATOR_BLOCK_ENTITY = Keeper.of(() ->
             INCUBATOR_BLOCK.get() == null ? null : RegistryUtil.asBlockEntity(INCUBATOR_BLOCK.get()));
 }
