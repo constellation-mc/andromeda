@@ -15,13 +15,13 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 
 public class DataConfigs extends JsonDataLoader {
@@ -36,7 +36,7 @@ public class DataConfigs extends JsonDataLoader {
         return CompletableFuture.supplyAsync(() -> {
             Map<Identifier, Map<Module<?>, Set<CompletableFuture<Tuple<Set<Field>, ? extends BasicConfig>>>>> configs = new HashMap<>();
             data.forEach((id, object) -> {
-                var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'!".formatted(id.getPath())));
+                var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
                 if (m.config().scope != BasicConfig.Scope.DIMENSION)
                     throw new IllegalStateException("Invalid module scope `%s` for '%s'! Must be '%s'".formatted(m.config().scope, m.meta().id(), BasicConfig.Scope.DIMENSION));
 
@@ -44,17 +44,21 @@ public class DataConfigs extends JsonDataLoader {
                 object.entrySet().forEach(entry -> {
                     var map = configs.computeIfAbsent(Identifier.tryParse(entry.getKey()), string -> new HashMap<>());
                     map.computeIfAbsent(m, module -> new LinkedHashSet<>()).add(CompletableFuture.supplyAsync(() -> {
-                        var instance = this.gson.fromJson(entry.getValue(), cls);
-                        Set<Field> config = new HashSet<>();
-                        entry.getValue().getAsJsonObject().entrySet().forEach(entry2 -> {
-                            try {
-                                config.add(cls.getField(entry2.getKey()));
-                            } catch (NoSuchFieldException e) {
-                                throw new CompletionException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
-                            }
-                        });
-                        return Tuple.of(config, instance);
-                    }, executor));
+                        try {
+                            var instance = this.gson.fromJson(entry.getValue(), cls);
+                            Set<Field> config = new HashSet<>();
+                            entry.getValue().getAsJsonObject().entrySet().forEach(entry2 -> {
+                                try {
+                                    config.add(cls.getField(entry2.getKey()));
+                                } catch (NoSuchFieldException e) {
+                                    throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
+                                }
+                            });
+                            return Tuple.of(config, instance);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
+                        }
+                    }, Util.getMainWorkerExecutor()));
                 });
             });
             return CompletableFuture.allOf(configs.values().stream().flatMap(map -> map.values().stream())
@@ -83,16 +87,16 @@ public class DataConfigs extends JsonDataLoader {
         ScopedConfigs.get(world);
 
         Set<CompletableFuture<?>> futures = new HashSet<>();
-        for (Module<?> module : ModuleManager.get().all()) {
+        for (Module<?> module : ModuleManager.get().loaded()) {
             if (module.meta().environment() == Environment.CLIENT) continue; //Those are always GLOBAL.
 
             switch (module.config().scope) {
                 case WORLD -> futures.add(CompletableFuture.runAsync(() -> {
                     if (world.getRegistryKey().equals(World.OVERWORLD))
                         ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
-                }));
+                }, Util.getMainWorkerExecutor()));
                 case DIMENSION ->
-                        CompletableFuture.runAsync(() -> ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module)));
+                        CompletableFuture.runAsync(() -> ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module)), Util.getMainWorkerExecutor());
             }
         }
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
@@ -104,19 +108,19 @@ public class DataConfigs extends JsonDataLoader {
         server.getWorlds().forEach(ScopedConfigs::get);
 
         Set<CompletableFuture<?>> futures = new HashSet<>();
-        for (Module<?> module : ModuleManager.get().all()) {
+        for (Module<?> module : ModuleManager.get().loaded()) {
             if (module.meta().environment() == Environment.CLIENT) continue; //Those are always GLOBAL.
 
             switch (module.config().scope) {
                 case WORLD -> futures.add(CompletableFuture.runAsync(() -> {
                     ServerWorld world = server.getWorld(World.OVERWORLD);
                     ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
-                }));
+                }, Util.getMainWorkerExecutor()));
                 case DIMENSION -> CompletableFuture.runAsync(() -> {
                     for (ServerWorld world : server.getWorlds()) {
                         ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
                     }
-                });
+                }, Util.getMainWorkerExecutor());
             }
         }
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();

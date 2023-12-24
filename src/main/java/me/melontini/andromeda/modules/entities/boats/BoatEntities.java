@@ -23,25 +23,25 @@ public class BoatEntities {
 
     private static Boats MODULE;
 
-    public static final Keeper<EntityType<TNTBoatEntity>> BOAT_WITH_TNT = Keeper.of(() -> () ->
+    public static final Keeper<EntityType<TNTBoatEntity>> BOAT_WITH_TNT = Keeper.of(() ->
             RegistryUtil.createEntityType(() -> MODULE.config().isTNTBoatOn,
                     id("tnt_boat"),
                     FabricEntityTypeBuilder.<TNTBoatEntity>create(SpawnGroup.MISC, TNTBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
-    public static final Keeper<EntityType<FurnaceBoatEntity>> BOAT_WITH_FURNACE = Keeper.of(() -> () ->
+    public static final Keeper<EntityType<FurnaceBoatEntity>> BOAT_WITH_FURNACE = Keeper.of(() ->
             RegistryUtil.createEntityType(() -> MODULE.config().isFurnaceBoatOn,
                     id("furnace_boat"),
                     FabricEntityTypeBuilder.<FurnaceBoatEntity>create(SpawnGroup.MISC, FurnaceBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
-    public static final Keeper<EntityType<JukeboxBoatEntity>> BOAT_WITH_JUKEBOX = Keeper.of(() -> () ->
+    public static final Keeper<EntityType<JukeboxBoatEntity>> BOAT_WITH_JUKEBOX = Keeper.of(() ->
             RegistryUtil.createEntityType(() -> MODULE.config().isJukeboxBoatOn,
                     id("jukebox_boat"),
                     FabricEntityTypeBuilder.<JukeboxBoatEntity>create(SpawnGroup.MISC, JukeboxBoatEntity::new)
                             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
 
-    public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.of(() -> () ->
+    public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.of(() ->
             RegistryUtil.createEntityType(() -> MODULE.config().isHopperBoatOn,
                     id("hopper_boat"),
                     FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new)

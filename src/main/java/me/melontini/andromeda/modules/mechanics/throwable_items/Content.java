@@ -36,7 +36,7 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Content {
 
-    public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.of(() -> () ->
+    public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.of(() ->
             RegistryUtil.createEntityType(id("flying_item"),
                     FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                             .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10)));
