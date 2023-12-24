@@ -111,9 +111,9 @@ public class Bootstrap {
         return AndromedaMixins.getClassPath();
     }
 
-    public static boolean testModVersion(String modId, String predicate) {
+    public static boolean testModVersion(Module<?> m, String modId, String predicate) {
         Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
-        if (mod.isPresent()) {
+        if (mod.isPresent() && !Debug.skipIntegration(m.meta().id(), modId)) {
             try {
                 VersionPredicate version = VersionPredicate.parse(predicate);
                 return version.test(mod.get().getMetadata().getVersion());
