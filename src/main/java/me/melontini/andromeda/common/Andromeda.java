@@ -2,6 +2,7 @@ package me.melontini.andromeda.common;//common between modules, not environments
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.registries.Common;
@@ -45,8 +46,10 @@ public class Andromeda {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda")));
-            ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"));
+            var list = ModuleManager.get().loaded().stream().filter(module -> module.config().scope == BasicConfig.Scope.DIMENSION).toList();
+            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda"), list));
+            ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"),
+                    ModuleManager.get().loaded().stream().filter(module -> module.config().scope == BasicConfig.Scope.WORLD).toList());
         });
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {

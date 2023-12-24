@@ -83,7 +83,7 @@ public class DataConfigs extends JsonDataLoader {
         ScopedConfigs.get(world);
 
         Set<CompletableFuture<?>> futures = new HashSet<>();
-        for (Module<?> module : ModuleManager.get().all()) {
+        for (Module<?> module : ModuleManager.get().loaded()) {
             if (module.meta().environment() == Environment.CLIENT) continue; //Those are always GLOBAL.
 
             switch (module.config().scope) {
@@ -104,7 +104,7 @@ public class DataConfigs extends JsonDataLoader {
         server.getWorlds().forEach(ScopedConfigs::get);
 
         Set<CompletableFuture<?>> futures = new HashSet<>();
-        for (Module<?> module : ModuleManager.get().all()) {
+        for (Module<?> module : ModuleManager.get().loaded()) {
             if (module.meta().environment() == Environment.CLIENT) continue; //Those are always GLOBAL.
 
             switch (module.config().scope) {

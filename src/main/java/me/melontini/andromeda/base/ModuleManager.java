@@ -81,7 +81,7 @@ public class ModuleManager {
         this.moduleNames = sorted.stream().filter(Module::enabled)
                 .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
 
-        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"));
+        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
     }
 
     private void fixScopes(List<Module<?>> list) {
@@ -148,15 +148,15 @@ public class ModuleManager {
         return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : BasicConfig.class;
     }
 
-    public void cleanConfigs(Path root) {
-        Set<Path> paths = collectPaths(root.getParent());
+    public void cleanConfigs(Path root, Collection<Module<?>> modules) {
+        Set<Path> paths = collectPaths(root.getParent(), modules);
         if (Files.exists(root)) {
             Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (!paths.contains(file)) {
+                    if (file.toString().endsWith(".json") && !Files.isHidden(file) && !paths.contains(file)) {
                         Files.delete(file);
-                        LOGGER.info("Removed {} as it doesn't belong to any module!", file);
+                        LOGGER.info("Removed {} as it doesn't belong to any module!", FabricLoader.getInstance().getGameDir().relativize(file));
                     }
                     return super.visitFile(file, attrs);
                 }
@@ -164,13 +164,13 @@ public class ModuleManager {
         }
     }
 
-    private Set<Path> collectPaths(Path root) {
+    private Set<Path> collectPaths(Path root, Collection<Module<?>> modules) {
         Set<Path> paths = new HashSet<>();
 
         paths.add(root.resolve("andromeda/mod.json"));
         paths.add(root.resolve("andromeda/debug.json"));
 
-        all().forEach(module -> paths.add(module.manager().resolve(root)));
+        modules.forEach(module -> paths.add(module.manager().resolve(root)));
 
         return paths;
     }
