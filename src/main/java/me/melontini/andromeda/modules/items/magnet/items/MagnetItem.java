@@ -71,7 +71,7 @@ public class MagnetItem extends Item {
                 this.playRemoveOneSound(player);
             } else {
                 addFirst(stack, otherStack);
-                itemParticles(otherStack, player);
+                Support.run(EnvType.CLIENT, () -> () -> itemParticles(otherStack, player));
                 this.playInsertSound(player);
             }
             return true;
