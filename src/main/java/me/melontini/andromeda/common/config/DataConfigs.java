@@ -24,12 +24,15 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import static me.melontini.andromeda.util.CommonValues.MODID;
+
 public class DataConfigs extends JsonDataLoader {
     public DataConfigs() {
         super(new Gson(), "andromeda/scoped_config");
     }
 
     public static Map<Identifier, Map<Module<?>, Set<Tuple<Set<Field>, ? extends BasicConfig>>>> CONFIGS;
+    private static final Identifier DEFAULT = new Identifier(MODID, "default");
 
     @Override
     public CompletableFuture<Void> apply(Map<Identifier, JsonObject> data, ResourceManager manager, Profiler profiler, Executor executor) {
@@ -127,6 +130,21 @@ public class DataConfigs extends JsonDataLoader {
     }
 
     static void applyDataPacks(BasicConfig config, Module<?> m, Identifier id) {
+        var defaultData = DataConfigs.CONFIGS.get(DEFAULT);
+        if (defaultData != null) {
+            var forModule = defaultData.get(m);
+            if (forModule != null) {
+                for (Tuple<Set<Field>, ? extends BasicConfig> tuple : forModule) {
+                    tuple.left().forEach((field) -> {
+                        try {
+                            field.set(config, field.get(tuple.right()));
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException("Failed to apply config data for module '%s'".formatted(m.meta().id()), e);
+                        }
+                    });
+                }
+            }
+        }
         var data = DataConfigs.CONFIGS.get(id);
         if (data != null) {
             var forModule = data.get(m);
