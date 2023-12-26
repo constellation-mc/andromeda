@@ -5,7 +5,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.CrashHandler;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.Debug;
-import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import net.fabricmc.loader.api.FabricLoader;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
 import org.spongepowered.asm.mixin.extensibility.IMixinErrorHandler;
@@ -28,7 +27,7 @@ public class ErrorHandler implements IMixinErrorHandler {
         if (Debug.hasKey(Debug.Keys.SKIP_MIXIN_ERROR_HANDLER)) return action;
 
         if (action == ErrorAction.ERROR) {
-            if (mixin.getClassName().startsWith("me.melontini.andromeda") && !(th instanceof MixinVerifyError))
+            if (mixin.getClassName().startsWith("me.melontini.andromeda"))
                 CrashHandler.handleCrash(true, th, "Failed to " + phase + " " + mixin.getClassName(), FabricLoader.getInstance().getEnvironmentType());
 
             ModuleManager.get().moduleFromConfig(mixin.getConfig().getName()).ifPresent(module -> {

@@ -7,22 +7,28 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Client {
 
-    private static ItemStack frameStack = ItemStack.EMPTY;
+    private static Supplier<List<TooltipComponent>> action;
     private static float tooltipFlow;
     private static float oldTooltipFlow;
 
@@ -33,10 +39,14 @@ public class Client {
             var cast = client.crosshairTarget;
             getCast(cast);
             oldTooltipFlow = tooltipFlow;
-            tooltipFlow = !frameStack.isEmpty() ? MathHelper.lerp(0.25f, tooltipFlow, 1) :
+            tooltipFlow = action != null ? MathHelper.lerp(0.25f, tooltipFlow, 1) :
                     MathHelper.lerp(0.1f, tooltipFlow, 0);
             if (Math.abs(tooltipFlow) < 1.0E-5F) tooltipFlow = 0;
         });
+    }
+
+    public static void registerEntityTooltip(Predicate<EntityHitResult> predicate, Function<EntityHitResult, List<TooltipComponent>> function) {
+        ENTITY_LOOKUP.put(predicate, function);
     }
 
     private static void inGameTooltips() {
@@ -44,47 +54,64 @@ public class Client {
             if (MinecraftClient.getInstance().currentScreen == null) {
                 var client = MinecraftClient.getInstance();
 
-                if (!frameStack.isEmpty()) {
-                    MatrixStack matrices = context.getMatrices();
-                    float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
-                    matrices.push();
-                    matrices.translate(0, 0, -450);
-                    matrices.scale(1, 1, 1);
-                    RenderSystem.enableBlend();
-                    RenderSystem.defaultBlendFunc();
-                    RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
-                    var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), frameStack);
-                    //list.add(AndromedaTexts.ITEM_IN_FRAME);
-                    List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
-
-                    frameStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
-                        TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
-                        if (component == null) component = TooltipComponent.of(datax);
-                        return component;
-                    })));
-
-                    int j = 0;
-                    for (TooltipComponent tooltipComponent : list1) {
-                        j += tooltipComponent.getHeight();
-                    }
-
-                    DrawUtil.renderTooltipFromComponents(context, list1, ((client.getWindow().getScaledWidth() / 2f) - (flow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
-                    RenderSystem.setShaderColor(1, 1, 1, 1);
-                    RenderSystem.disableBlend();
-                    matrices.pop();
+                if (action != null) {
+                    renderFromComponents(client, context, action.get());
                 }
             }
         });
+
+        registerEntityTooltip(entityHitResult -> entityHitResult.getEntity() instanceof ItemFrameEntity ife && !ife.getHeldItemStack().isEmpty(), entityHitResult -> {
+            var frameStack = ((ItemFrameEntity) entityHitResult.getEntity()).getHeldItemStack();
+            if (frameStack.isEmpty()) return Collections.emptyList();
+
+            var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), frameStack);
+            List<TooltipComponent> components = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
+
+            frameStack.getTooltipData().ifPresent(datax -> components.add(1, Utilities.supply(() -> {
+                TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
+                if (component == null) component = TooltipComponent.of(datax);
+                return component;
+            })));
+            return components;
+        });
     }
 
+    private static final Map<Predicate<EntityHitResult>, Function<EntityHitResult, List<TooltipComponent>>> ENTITY_LOOKUP = new HashMap<>();
+
     private static void getCast(HitResult cast) {
+
         if (cast != null) if (cast.getType() == HitResult.Type.ENTITY) {
             EntityHitResult hitResult = (EntityHitResult) cast;
-            if (hitResult.getEntity() instanceof ItemFrameEntity itemFrameEntity) {
-                frameStack = itemFrameEntity.getHeldItemStack();
+            var opt = ENTITY_LOOKUP.entrySet().stream().filter(p -> p.getKey().test(hitResult)).findFirst();
+            if (opt.isPresent()) {
+                action = () -> opt.get().getValue().apply(hitResult);
                 return;
             }
         }
-        frameStack = ItemStack.EMPTY;
+        action = null;
+    }
+
+    private static void renderFromComponents(MinecraftClient client, DrawContext context, List<TooltipComponent> components) {
+        if (components.isEmpty()) return;
+
+        float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
+        MatrixStack matrices = context.getMatrices();
+
+        matrices.push();
+        matrices.translate(0, 0, -450);
+        matrices.scale(1, 1, 1);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
+
+        int j = 0;
+        for (TooltipComponent tooltipComponent : components) {
+            j += tooltipComponent.getHeight();
+        }
+
+        DrawUtil.renderTooltipFromComponents(context, components, ((client.getWindow().getScaledWidth() / 2f) - (flow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.disableBlend();
+        matrices.pop();
     }
 }
