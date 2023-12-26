@@ -15,6 +15,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,8 @@ public class Client {
 
         registerEntityTooltip(entityHitResult -> entityHitResult.getEntity() instanceof ItemFrameEntity ife && !ife.getHeldItemStack().isEmpty(), entityHitResult -> {
             var frameStack = ((ItemFrameEntity) entityHitResult.getEntity()).getHeldItemStack();
+            if (frameStack.isEmpty()) return Collections.emptyList();
+
             var list = DrawUtil.getFakeScreen().getTooltipFromItem(frameStack);
             List<TooltipComponent> components = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
@@ -87,6 +90,8 @@ public class Client {
     }
 
     private static void renderFromComponents(MinecraftClient client, MatrixStack matrices, List<TooltipComponent> components) {
+        if (components.isEmpty()) return;
+
         float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
 
         matrices.push();
