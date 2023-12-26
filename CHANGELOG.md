@@ -2,8 +2,7 @@
 
 ## Alpha warning!
 
-* Fixed legacy config migration when both config versions are present.
-* Scoped config are no longer created or stored for disabled modules.
-* Module setup and Scoped Configs setup should be a bit faster now.
-* Removed Connector notice.
-* Updated Chinese translation. Courtesy of [Rad586](https://github.com/Rad586).
+* Added `andromeda:default` to data pack configs. This will be applied to all dimensions before dimension specific
+  configs. Can be used to set `enabled` to `false` on all dimensions.
+* Data pack configs now support `WORLD` scopes.
+* Fixed right-clicking the magnet crashing the dedicated server.

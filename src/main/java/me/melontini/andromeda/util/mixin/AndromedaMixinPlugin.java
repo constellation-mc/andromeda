@@ -19,11 +19,6 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
         AndromedaMixins.getClassPath().addUrl(this.getClass().getProtectionDomain().getCodeSource().getLocation());
 
         Debug.load();
-        try {
-            FrameworkPatch.patch();
-        } catch (Throwable e) {
-            LOGGER.error("Failed to patch the mixin framework!", e);
-        }
 
         Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
     }
