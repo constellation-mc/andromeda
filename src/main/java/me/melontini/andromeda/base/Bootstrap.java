@@ -12,7 +12,6 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,8 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Bootstrap {
 
     static ModuleManager INSTANCE;
-
-    private static ExecutorService SERVICE;
 
     @Environment(EnvType.CLIENT)
     public static void onClient() {
@@ -63,9 +60,6 @@ public class Bootstrap {
     }
 
     public static void onPreLaunch() {
-        int i = MathStuff.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 4);
-        SERVICE = new ForkJoinPool(i, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true);
-
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
         AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
@@ -108,9 +102,6 @@ public class Bootstrap {
         FabricLoader.getInstance().getObjectShare().put("andromeda:module_manager", m);
 
         for (Module<?> module : m.loaded()) { module.onPreLaunch(); }
-
-        SERVICE.shutdownNow().forEach(Runnable::run);
-        SERVICE = null;
     }
 
     static void wrapIO(ThrowingRunnable<IOException> runnable, String msg) {
@@ -126,7 +117,7 @@ public class Bootstrap {
     }
 
     public static ExecutorService getPreLaunchService() {
-        return SERVICE;
+        return ForkJoinPool.commonPool();
     }
 
     public static boolean testModVersion(Module<?> m, String modId, String predicate) {
