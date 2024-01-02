@@ -42,6 +42,8 @@ public class AndromedaMixins {
     }
 
     public static boolean checkNode(ClassNode n) {
+        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS)) verifyMixin(n, n.name);
+
         boolean load = true;
         AnnotationNode envNode = Annotations.getVisible(n, SpecialEnvironment.class);
         if (envNode != null) {
@@ -56,15 +58,20 @@ public class AndromedaMixins {
             }
         }
 
-        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS)) verifyMixin(n, n.name);
-
         return load;
     }
 
     private static void verifyMixin(ClassNode mixinNode, String mixinClassName) {
-        LOGGER.debug("Verifying access flags!");
+        var builder = new MixinVerifyError.Builder(mixinClassName);
+
         if ((mixinNode.access & Modifier.PUBLIC) == Modifier.PUBLIC) {
-            throw new MixinVerifyError("Public Mixin! " + mixinClassName);
+            builder.complaint("Invalid class modifier '%s'! remove 'public'".formatted(Modifier.toString(mixinNode.access & ~Modifier.SYNCHRONIZED)));
         }
+        if ((mixinNode.access & Modifier.ABSTRACT) != Modifier.ABSTRACT) {
+            builder.complaint("Invalid class modifier '%s'! add 'abstract'".formatted(Modifier.toString(mixinNode.access & ~Modifier.SYNCHRONIZED)));
+        }
+
+        if (!builder.isEmpty()) throw builder.build();
+        LOGGER.debug("Mixin {} passed verification!", mixinClassName);
     }
 }

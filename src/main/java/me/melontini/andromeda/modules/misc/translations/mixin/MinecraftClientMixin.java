@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(MinecraftClient.class)
-class MinecraftClientMixin {
+abstract class MinecraftClientMixin {
 
     @Shadow @Final public GameOptions options;
 

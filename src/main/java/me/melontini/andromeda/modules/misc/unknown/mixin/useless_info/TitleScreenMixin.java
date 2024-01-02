@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SpecialEnvironment(Environment.CLIENT)
 @Mixin(TitleScreen.class)
-class TitleScreenMixin extends Screen {
+abstract class TitleScreenMixin extends Screen {
     protected TitleScreenMixin(Text title) {
         super(title);
     }

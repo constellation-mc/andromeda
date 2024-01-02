@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(RecipeAlternativesWidget.class)
-class RecipeAlternativesWidgetMixin {
+abstract class RecipeAlternativesWidgetMixin {
 
     @Shadow private int buttonX;
     @Shadow private int buttonY;

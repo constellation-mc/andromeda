@@ -19,6 +19,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.IOException;
@@ -41,6 +42,9 @@ public class Bootstrap {
     public static void onClient() {
         updateStatus(Status.CLIENT);
 
+        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
+            MixinEnvironment.getCurrentEnvironment().audit();
+
         for (Module<?> module : ModuleManager.get().loaded()) {
             AndromedaException.run(module::onClient, () ->
                     new AndromedaException.Builder().message("Failed to execute Module.onClient!").add("module", module.meta().id()));
@@ -51,6 +55,9 @@ public class Bootstrap {
     @Environment(EnvType.SERVER)
     public static void onServer() {
         updateStatus(Status.SERVER);
+
+        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
+            MixinEnvironment.getCurrentEnvironment().audit();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             AndromedaException.run(module::onServer, () ->

@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FletchingTableBlock.class)
-class FletchingTableBlockMixin extends CraftingTableBlock {
+abstract class FletchingTableBlockMixin extends CraftingTableBlock {
 
     public FletchingTableBlockMixin(Settings settings) {
         super(settings);

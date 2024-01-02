@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(targets = "net/minecraft/world/gen/feature/EndSpikeFeature$SpikeCache")
-class SpikeCacheMixin {
+abstract class SpikeCacheMixin {
 
     @ModifyExpressionValue(method = "load(Ljava/lang/Long;)Ljava/util/List;", at = @At(value = "CONSTANT", args = "intValue=76"))
     private int andromeda$modifySpikeSize(int size) {

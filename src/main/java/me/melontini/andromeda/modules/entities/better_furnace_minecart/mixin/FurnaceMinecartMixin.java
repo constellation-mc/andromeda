@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 ;
 
 @Mixin(FurnaceMinecartEntity.class)
-class FurnaceMinecartMixin {
+abstract class FurnaceMinecartMixin {
 
     @Shadow public int fuel;
 

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(AdvancementTab.class)
-class AdvancementTabMixin {
+abstract class AdvancementTabMixin {
 
     @Shadow private float alpha;
     @Shadow @Final private MinecraftClient client;
