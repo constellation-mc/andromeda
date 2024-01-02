@@ -105,7 +105,9 @@ public class TranslationUpdater {
                     return languageCode;
                 }
             }
-            throw new AndromedaException(false, "Invalid language option!");
+            throw new AndromedaException.Builder()
+                    .report(false).message("Mo valid language option found!")
+                    .build();
         } catch (Throwable e) {
             AndromedaLog.error("Couldn't determine selected language!", e);
             return "";

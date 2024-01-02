@@ -3,6 +3,7 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericMethod;
@@ -41,7 +42,9 @@ public class MixinProcessor {
                 Mixins.addConfiguration(cfg);
                 manager.mixinConfigs.put(cfg, module);
             } catch (IOException e) {
-                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()));
+                throw new AndromedaException.Builder()
+                        .message("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()))
+                        .add("mixin_config", cfg).add("module", module.meta().id()).build();
             } finally {
                 CONFIG.remove();
             }

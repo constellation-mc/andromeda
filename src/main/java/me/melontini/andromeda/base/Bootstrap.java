@@ -35,27 +35,46 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Bootstrap {
 
     static ModuleManager INSTANCE;
+    static volatile Status STATUS = Status.PRE_INIT;
 
     @Environment(EnvType.CLIENT)
     public static void onClient() {
-        for (Module<?> module : ModuleManager.get().loaded()) { module.onClient(); }
+        updateStatus(Status.CLIENT);
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            AndromedaException.run(module::onClient, () ->
+                    new AndromedaException.Builder().message("Failed to execute Module.onClient!").add("module", module.meta().id()));
+        }
         AndromedaClient.init();
     }
 
     @Environment(EnvType.SERVER)
     public static void onServer() {
-        for (Module<?> module : ModuleManager.get().loaded()) { module.onServer(); }
+        updateStatus(Status.SERVER);
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            AndromedaException.run(module::onServer, () ->
+                    new AndromedaException.Builder().message("Failed to execute Module.onServer!").add("module", module.meta().id()));
+        }
     }
 
     public static void onMain() {
+        updateStatus(Status.MAIN);
         if (Mixins.getUnvisitedCount() > 0) {
             for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
                 if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$"))
-                    throw new IllegalStateException("Mixin failed to consume Andromeda's late configs!");
+                    throw new AndromedaException.Builder()
+                            .message("Mixin failed to consume Andromeda's late configs!")
+                            .add("mixin_config", config.getName())
+                            .build();
             }
         }
 
-        for (Module<?> module : ModuleManager.get().loaded()) { module.onMain(); }
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            AndromedaException.run(module::onMain, () ->
+                    new AndromedaException.Builder().message("Failed to execute Module.onMain!").add("module", module.meta().id()));
+        }
+
         Andromeda.init();
     }
 
@@ -78,10 +97,12 @@ public class Bootstrap {
 
         Config.load();
 
+        updateStatus(Status.DISCOVERY);
         List<Module<?>> list = new ArrayList<>(40);
-        ServiceLoader.load(Module.class).stream().map(ServiceLoader.Provider::get).forEach(list::add);
-
-        EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
+        AndromedaException.run(() -> {
+            ServiceLoader.load(Module.class).stream().map(ServiceLoader.Provider::get).forEach(list::add);
+            EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
+        }, () -> new AndromedaException.Builder().message("Failed during module discovery!"));
 
         if (list.isEmpty()) {
             LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
@@ -93,7 +114,9 @@ public class Bootstrap {
         try {
             m = new ModuleManager(list, oldCfg.get());
         } catch (Throwable t) {
-            throw new AndromedaException("Failed to initialize ModuleManager!!!", t);
+            throw new AndromedaException.Builder()
+                    .cause(t).message("Failed to initialize ModuleManager!!!")
+                    .build();
         }
         m.print();
         //Scan for mixins.
@@ -101,7 +124,12 @@ public class Bootstrap {
         MixinProcessor.addMixins(m);
         FabricLoader.getInstance().getObjectShare().put("andromeda:module_manager", m);
 
-        for (Module<?> module : m.loaded()) { module.onPreLaunch(); }
+        updateStatus(Status.PRE_LAUNCH);
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            AndromedaException.run(module::onPreLaunch, () ->
+                    new AndromedaException.Builder().message("Failed to execute Module.onPreLaunch!").add("module", module.meta().id()));
+        }
     }
 
     static void wrapIO(ThrowingRunnable<IOException> runnable, String msg) {
@@ -135,5 +163,23 @@ public class Bootstrap {
 
     public static boolean isModLoaded(Module<?> m, String modId) {
         return !Debug.skipIntegration(m.meta().id(), modId) && FabricLoader.getInstance().isModLoaded(modId);
+    }
+
+    public static Status getStatus() {
+        return STATUS;
+    }
+
+    private static void updateStatus(Status status) {
+        STATUS = status;
+        LOGGER.debug("Status updated to {}", status);
+    }
+
+    public enum Status {
+        PRE_INIT,
+        DISCOVERY,
+        PRE_LAUNCH,
+        MAIN,
+        CLIENT,
+        SERVER
     }
 }
