@@ -1,7 +1,7 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.*;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
@@ -24,19 +24,21 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @CustomLog
 public class ModuleManager {
 
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    private final ImmutableMap<Class<?>, Module<?>> discoveredModules;
-    private final ImmutableMap<String, Module<?>> discoveredModuleNames;
+    private final Reference2ReferenceMap<Class<?>, Module<?>> discoveredModules;
+    private final Object2ReferenceMap<String, Module<?>> discoveredModuleNames;
 
-    private final ImmutableMap<Class<?>, Module<?>> modules;
-    private final ImmutableMap<String, Module<?>> moduleNames;
+    private final Reference2ReferenceMap<Class<?>, Module<?>> modules;
+    private final Object2ReferenceMap<String, Module<?>> moduleNames;
 
-    final Map<String, Module<?>> mixinConfigs = new HashMap<>();
+    final Map<String, Module<?>> mixinConfigs = new Object2ReferenceOpenHashMap<>();
 
     ModuleManager(List<Module<?>> discovered, @Nullable JsonObject oldCfg) {
         if (Bootstrap.INSTANCE != null)
@@ -56,39 +58,49 @@ public class ModuleManager {
             return i >= 0 ? i : categories.size();
         })).toList();
 
-        this.discoveredModules = sorted.stream().collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
-        this.discoveredModuleNames = sorted.stream().collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
+        this.discoveredModules = Utilities.supply(() -> {
+            var m = sorted.stream().collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, Reference2ReferenceLinkedOpenHashMap::new));
+            return Reference2ReferenceMaps.unmodifiable(m);
+        });
+        this.discoveredModuleNames = Utilities.supply(() -> {
+            var m = sorted.stream().collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, Object2ReferenceOpenHashMap::new));
+            return Object2ReferenceMaps.unmodifiable(m);
+        });
 
-        this.setUpConfigs(sorted);
+        this.setUpConfigs(this.discoveredModules.values());
 
         Set<CompletableFuture<?>> futures = new HashSet<>();
-        sorted.forEach(module -> futures.add(CompletableFuture.runAsync(() -> {
+        this.discoveredModules.values().forEach(module -> futures.add(CompletableFuture.runAsync(() -> {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
         })));
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
 
-        sorted.forEach(Module::postConfig);
+        this.discoveredModules.values().forEach(Module::postConfig);
 
         if (oldCfg != null)
-            sorted.forEach(module -> module.acceptLegacyConfig(oldCfg));
+            this.discoveredModules.values().forEach(module -> module.acceptLegacyConfig(oldCfg));
 
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
-            sorted.forEach(module -> module.config().enabled = true);
-        fixScopes(sorted);
+            this.discoveredModules.values().forEach(module -> module.config().enabled = true);
+        fixScopes(this.discoveredModules.values());
 
-        sorted.forEach(Module::save);
+        this.discoveredModules.values().forEach(Module::save);
 
-        this.modules = sorted.stream().filter(Module::enabled)
-                .collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
-        this.moduleNames = sorted.stream().filter(Module::enabled)
-                .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
+        this.modules = Utilities.supply(() -> {
+            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, Reference2ReferenceLinkedOpenHashMap::new));
+            return Reference2ReferenceMaps.unmodifiable(m);
+        });
+        this.moduleNames = Utilities.supply(() -> {
+            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, Object2ReferenceOpenHashMap::new));
+            return Object2ReferenceMaps.unmodifiable(m);
+        });
 
-        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
+        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), this.discoveredModules.values());
     }
 
-    private void fixScopes(List<Module<?>> list) {
-        list.forEach(m -> {
+    private void fixScopes(Collection<Module<?>> modules) {
+        modules.forEach(m -> {
             if (m.meta().environment() == Environment.CLIENT && m.config().scope != BasicConfig.Scope.GLOBAL) {
                 LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                         m.meta().environment(), m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
@@ -103,7 +115,7 @@ public class ModuleManager {
         });
 
         if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
-            list.forEach(m -> {
+            modules.forEach(m -> {
                 if (m.meta().environment() != Environment.CLIENT && !m.getClass().isAnnotationPresent(Unscoped.class)) {
                     m.config().scope = BasicConfig.Scope.DIMENSION;
                 }
@@ -116,9 +128,9 @@ public class ModuleManager {
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
     }
 
-    private void setUpConfigs(List<Module<?>> list) {
+    private void setUpConfigs(Collection<Module<?>> modules) {
         Set<CompletableFuture<?>> futures = new HashSet<>();
-        list.forEach(m -> futures.add(CompletableFuture.runAsync(() -> {
+        modules.forEach(m -> futures.add(CompletableFuture.runAsync(() -> {
             var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
             config.onLoad(config1 -> {
                 if (Config.get().sideOnlyMode) {
