@@ -14,7 +14,6 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -67,9 +66,8 @@ public class DataConfigs extends JsonDataLoader {
             return CompletableFuture.allOf(configs.values().stream().flatMap(map -> map.values().stream())
                     .flatMap(Collection::stream).toArray(CompletableFuture[]::new)).handle((unused, throwable) -> configs);
         }, executor).thenAcceptAsync(map -> {
-            var futures = Utilities.supplyUnchecked(map::get);
             Map<Identifier, Map<Module<?>, Set<Data>>> configs = new Object2ObjectOpenHashMap<>();
-            futures.forEach((identifier, moduleSetMap) -> {
+            map.join().forEach((identifier, moduleSetMap) -> {
                 var n = configs.computeIfAbsent(identifier, id -> new Object2ObjectOpenHashMap<>());
                 moduleSetMap.forEach((module, completableFutures) -> {
                     var set = n.computeIfAbsent(module, m -> new ReferenceLinkedOpenHashSet<>());
@@ -127,7 +125,8 @@ public class DataConfigs extends JsonDataLoader {
                         CompletableFuture.runAsync(() -> ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module)), Util.getMainWorkerExecutor());
             }
         }
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        var task = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+        world.getServer().runTasks(task::isDone);
     }
 
     public static void apply(MinecraftServer server) {
@@ -149,7 +148,8 @@ public class DataConfigs extends JsonDataLoader {
                 }, Util.getMainWorkerExecutor());
             }
         }
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        var task = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+        server.runTasks(task::isDone);
     }
 
     private static void apply(BasicConfig config, Data data) {

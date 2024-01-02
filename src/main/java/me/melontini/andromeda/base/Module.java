@@ -8,21 +8,22 @@ import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
 
 @CustomLog
 public abstract class Module<T extends BasicConfig> {
 
-    private final Metadata info = Utilities.supply(() -> {
-        ModuleInfo info1 = this.getClass().getAnnotation(ModuleInfo.class);
-        if (info1 == null) throw new IllegalStateException("Module has no info!");
-        return new Metadata(info1.name(), info1.category(), info1.environment());
-    });
+    private final Metadata info;
 
     volatile ConfigManager<T> manager;
     volatile T config;
     volatile T defaultConfig;
+
+    public Module() {
+        ModuleInfo info1 = this.getClass().getAnnotation(ModuleInfo.class);
+        if (info1 == null) throw new IllegalStateException("Module has no info!");
+        this.info = new Metadata(info1.name(), info1.category(), info1.environment());
+    }
 
     public void onClient() {
         initClasses("client.Client");

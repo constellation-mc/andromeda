@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericMethod;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import org.objectweb.asm.tree.ClassNode;
@@ -89,17 +88,13 @@ public class MixinProcessor {
 
             return method.invoke(currentService, args);
         });
-        Utilities.runUnchecked(() -> {
-            MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
-            SERVICE.accessible(true).set(serviceProxy, service);
-        });
+        MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
+        SERVICE.accessible(true).set(serviceProxy, service);
     }
 
     public static void dejectService(IMixinService realService) {
-        Utilities.runUnchecked(() -> {
-            MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
-            SERVICE.accessible(true).set(serviceProxy, realService);
-        });
+        MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
+        SERVICE.accessible(true).set(serviceProxy, realService);
     }
 
     @SuppressWarnings("UnstableApiUsage")

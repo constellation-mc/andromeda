@@ -5,7 +5,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.util.Annotations;
@@ -24,15 +24,15 @@ public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
         Bootstrap.getModuleClassPath().getTopLevelRecursive("me.melontini.andromeda.modules")
                 .stream().filter(ci -> !ci.packageName().endsWith("mixin") && !ci.packageName().endsWith("client"))
                 .forEach(info -> futures.add(CompletableFuture.supplyAsync(() -> {
-                    byte[] bytes = Utilities.supplyUnchecked(info::readAllBytes);
+                    byte[] bytes = Exceptions.supply(info::readAllBytes);
 
                     ClassReader reader = new ClassReader(bytes);
                     ClassNode node = new ClassNode();
                     reader.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
                     if (Annotations.getVisible(node, ModuleInfo.class) != null) {
-                        var c = Utilities.supplyUnchecked(() -> Class.forName(node.name.replace('/', '.')));
-                        return Utilities.supplyUnchecked(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
+                        var c = Exceptions.supply(() -> Class.forName(node.name.replace('/', '.')));
+                        return Exceptions.supply(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
                                 .newInstance());
                     }
                     return null;

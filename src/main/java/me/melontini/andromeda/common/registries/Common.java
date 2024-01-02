@@ -3,8 +3,8 @@ package me.melontini.andromeda.common.registries;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Module;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class Common {
         MakeSure.notNull(module);
 
         for (Class<?> cls : classes) {
-            Reflect.findField(cls, "MODULE").ifPresent(field -> Utilities.runUnchecked(() -> {
+            Reflect.findField(cls, "MODULE").ifPresent(field -> Exceptions.run(() -> {
                 MakeSure.isTrue(field.getType() == module.getClass(), "Illegal module field type '%s'! Must be '%s'".formatted(field.getType(), module.getClass()));
                 field.setAccessible(true);
                 LOGGER.debug("Setting module field for class '{}' to module '{}'", cls, module.meta().id());
@@ -32,8 +32,8 @@ public class Common {
 
             initKeepers(cls);
 
-            Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null, module)));
-            Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
+            Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Exceptions.run(() -> m.invoke(null, module)));
+            Reflect.findMethod(cls, "init").ifPresent(m -> Exceptions.run(() -> m.invoke(null)));
         }
     }
 
@@ -41,7 +41,7 @@ public class Common {
         for (Field field : reg.getFields()) {
             if (field.getType() != Keeper.class || !Modifier.isStatic(field.getModifiers())) continue;
 
-            Keeper<?> keeper = (Keeper<?>) Utilities.supplyUnchecked(() -> field.get(reg));
+            Keeper<?> keeper = (Keeper<?>) Exceptions.supply(() -> field.get(reg));
             if (keeper.initialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
 
             try {
@@ -67,7 +67,7 @@ public class Common {
 
     private static void bootstrap(Class<?>... classes) {
         for (Class<?> cls : classes) {
-            Reflect.findMethod(cls, "init").ifPresent(m -> Utilities.runUnchecked(() -> m.invoke(null)));
+            Reflect.findMethod(cls, "init").ifPresent(m -> Exceptions.run(() -> m.invoke(null)));
             initKeepers(cls);
         }
     }

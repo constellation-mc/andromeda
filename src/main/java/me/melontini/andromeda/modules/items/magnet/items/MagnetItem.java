@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.items.magnet.items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -45,6 +46,8 @@ public class MagnetItem extends Item {
     public MagnetItem(Settings settings) {
         super(settings);
     }
+
+    public static final String LEVEL_KEY = "PowerLevel";
 
     @Override
     public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
@@ -143,18 +146,18 @@ public class MagnetItem extends Item {
 
     private static boolean incrementLevel(ItemStack stack) {
         NbtCompound nbt = stack.getOrCreateNbt();
-        if (!nbt.contains("PowerLevel")) nbt.putInt("PowerLevel", 1);
-        int level = nbt.getInt("PowerLevel");
+        if (!nbt.contains(LEVEL_KEY)) nbt.putInt(LEVEL_KEY, 1);
+        int level = nbt.getInt(LEVEL_KEY);
         if (level >= 5) return false;
-        nbt.putInt("PowerLevel", level + 1);
+        nbt.putInt(LEVEL_KEY, level + 1);
         return true;
     }
 
     private static int getLevel(ItemStack stack) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) {
-            if (nbt.contains("PowerLevel"))
-                return nbt.getInt("PowerLevel");
+            if (nbt.contains(LEVEL_KEY))
+                return MathStuff.clamp(nbt.getInt(LEVEL_KEY), 0, 5);
         }
         return 1;
     }

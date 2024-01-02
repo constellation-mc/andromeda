@@ -8,7 +8,7 @@ import me.melontini.andromeda.util.ClassPath;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import net.fabricmc.api.EnvType;
 import org.objectweb.asm.ClassReader;
@@ -22,7 +22,7 @@ import java.util.List;
 @CustomLog
 public class AndromedaMixins {
 
-    private static final ClassPath CLASS_PATH = Utilities.supplyUnchecked(ClassPath::from);
+    private static final ClassPath CLASS_PATH = Exceptions.supply(ClassPath::from);
 
     public static ClassPath getClassPath() {
         return CLASS_PATH;
@@ -31,7 +31,7 @@ public class AndromedaMixins {
     public static List<String> discoverInPackage(String pck) {
         return Bootstrap.getModuleClassPath().getTopLevelRecursive(pck).stream()
                 .map(info -> {
-                    ClassReader reader = new ClassReader(Utilities.supplyUnchecked(info::readAllBytes));
+                    ClassReader reader = new ClassReader(Exceptions.supply(info::readAllBytes));
                     ClassNode node = new ClassNode();
                     reader.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
                     return node;

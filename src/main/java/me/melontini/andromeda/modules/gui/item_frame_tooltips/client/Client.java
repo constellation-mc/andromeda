@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.gui.item_frame_tooltips.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -16,7 +17,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -74,7 +74,7 @@ public class Client {
         });
     }
 
-    private static final Map<Predicate<EntityHitResult>, Function<EntityHitResult, List<TooltipComponent>>> ENTITY_LOOKUP = new HashMap<>();
+    private static final Map<Predicate<EntityHitResult>, Function<EntityHitResult, List<TooltipComponent>>> ENTITY_LOOKUP = new Reference2ObjectOpenHashMap<>();
 
     private static void getCast(HitResult cast) {
 

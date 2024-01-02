@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -26,7 +26,7 @@ class ParticleManagerMixin {
         if (list != null && !bl.get()) {
            ci.cancel();
            if (reader != null)
-               Utilities.runUnchecked(reader::close); //f u
+               Exceptions.run(reader::close); //f u
         }
     }
 }
