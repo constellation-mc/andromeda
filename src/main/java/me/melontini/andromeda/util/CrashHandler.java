@@ -3,6 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.analytics.Analytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
@@ -64,7 +65,7 @@ public class CrashHandler {
     }
 
     public static void handleCrash(boolean force, Throwable cause, String message, EnvType envType) {
-        //if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
+        if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
         if (!force && !findAndromedaInTrace(cause)) return;
 
         HANDLER.send((mixpanel, analytics) -> {
