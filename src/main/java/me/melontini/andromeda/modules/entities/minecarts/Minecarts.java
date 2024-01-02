@@ -9,6 +9,7 @@ import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @Unscoped
 @ModuleInfo(name = "minecarts", category = "entities")
@@ -32,15 +33,23 @@ public class Minecarts extends Module<Minecarts.Config> {
 
     public static class Config extends BasicConfig {
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isAnvilMinecartOn = false;
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isNoteBlockMinecartOn = false;
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isJukeboxMinecartOn = false;
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isSpawnerMinecartOn = false;
     }

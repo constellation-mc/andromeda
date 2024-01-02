@@ -9,6 +9,7 @@ import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @Unscoped
 @ModuleInfo(name = "boats", category = "entities")
@@ -33,15 +34,23 @@ public class Boats extends Module<Boats.Config> {
 
     public static class Config extends BasicConfig {
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isFurnaceBoatOn = false;
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isTNTBoatOn = false;
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isJukeboxBoatOn = false;
 
+        @Unscoped
+        @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isHopperBoatOn = false;
     }
