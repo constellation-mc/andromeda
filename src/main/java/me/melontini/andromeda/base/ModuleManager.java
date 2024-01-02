@@ -12,6 +12,7 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -27,6 +28,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * The ModuleManager is responsible for resolving and storing modules. It is also responsible for loading and fixing configs.
+ */
 @CustomLog
 public class ModuleManager {
 
@@ -45,12 +49,15 @@ public class ModuleManager {
             throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
+        Set<String> packages = new HashSet<>();
         Set<String> ids = new HashSet<>();
         for (Module<?> module : discovered) {
             validateModule(module);
 
             if (!ids.add(module.meta().id()))
                 throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
+            if (!packages.add(module.getClass().getPackageName()))
+                throw new IllegalStateException("Duplicate module packages! Package: %s, Module: %s".formatted(module.getClass().getPackageName(), module.getClass()));
         }
 
         List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m -> {
@@ -154,6 +161,12 @@ public class ModuleManager {
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
 
+    /**
+     * Parses the config class from modules generic type.
+     *
+     * @param m the module class.
+     * @return the config class.
+     */
     public Class<? extends BasicConfig> getConfigClass(Class<?> m) {
         if (m.getGenericSuperclass() instanceof ParameterizedType pt) {
             for (Type ta : pt.getActualTypeArguments()) {
@@ -192,51 +205,99 @@ public class ModuleManager {
         return paths;
     }
 
+    /**
+     * Checks if a module is present.
+     * @param cls the module class.
+     * @return if a module is enabled.
+     * @param <T> the module type.
+     */
     public <T extends Module<?>> boolean isPresent(Class<T> cls) {
         return getModule(cls).isPresent();
     }
 
+    /**
+     * Returns the module of the given class, but only if it is enabled.
+     * @param cls the module class.
+     * @return The module, if enabled, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
         return (Optional<T>) Optional.ofNullable(modules.get(cls));
     }
 
+    /**
+     * Returns the module of the given id, but only if it is enabled.
+     * @param name the module id.
+     * @return The module, if enabled, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name));
     }
 
+    /**
+     * Returns the module of the given class.
+     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#DISCOVERY}.</p>
+     * @param cls the module class.
+     * @return The module, if discovered, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getDiscovered(Class<T> cls) {
         return (Optional<T>) Optional.ofNullable(discoveredModules.get(cls));
     }
 
+    /**
+     * Returns the module of the given id.
+     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#DISCOVERY}.</p>
+     * @param name the module id.
+     * @return The module, if discovered, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getDiscovered(String name) {
         return (Optional<T>) Optional.ofNullable(discoveredModuleNames.get(name));
     }
 
+    @ApiStatus.Internal
     public Optional<Module<?>> moduleFromConfig(String name) {
         return Optional.ofNullable(mixinConfigs.get(name));
     }
 
+    @ApiStatus.Internal
     public Collection<Module<?>> all() {
         return discoveredModules.values();
     }
 
+    /**
+     * @return a collection of all loaded modules.
+     */
     public Collection<Module<?>> loaded() {
         return modules.values();
     }
 
+    /**
+     * Quickly returns a module of the given class. Useful for mixins and registration.
+     * <p>This will throw an {@link IllegalStateException} if the module is not loaded.</p>
+     * @param cls the module class.
+     * @return the module instance.
+     * @param <T> the module time.
+     * @throws IllegalStateException if the module is not loaded.
+     */
     public static <T extends Module<?>> T quick(Class<T> cls) {
         return get().getModule(cls).orElseThrow(() -> new IllegalStateException("Module %s requested quickly, but is not loaded.".formatted(cls)));
     }
 
+    /**
+     * @return The module manager.
+     */
     public static ModuleManager get() {
         return MakeSure.notNull(Bootstrap.INSTANCE, "ModuleManager requested too early!");
     }
 
-    public void print() {
+    void print() {
         Map<String, Set<Module<?>>> categories = Utilities.consume(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
                 map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 

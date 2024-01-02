@@ -32,6 +32,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Bootstrap is responsible for bootstrapping the bulk of Andromeda.
+ * <p> This includes, but not limited to: <br/>
+ * <ul>
+ *     <li>Discovering modules.</li>
+ *     <li>Constructing the {@link ModuleManager}.</li>
+ *     <li>Injecting mixin configs. {@link MixinProcessor}</li>
+ *     <li>Running module entrypoints.</li>
+ *     <li>Performing basic module verification.</li>
+ * </ul>
+ */
 @CustomLog
 public class Bootstrap {
 
@@ -107,6 +118,7 @@ public class Bootstrap {
         updateStatus(Status.DISCOVERY);
         List<Module<?>> list = new ArrayList<>(40);
         AndromedaException.run(() -> {
+            //This should probably be removed.
             ServiceLoader.load(Module.class).stream().map(ServiceLoader.Provider::get).forEach(list::add);
             EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
         }, () -> new AndromedaException.Builder().message("Failed during module discovery!"));
@@ -120,7 +132,7 @@ public class Bootstrap {
         ModuleManager m;
         try {
             m = new ModuleManager(list, oldCfg.get());
-        } catch (Throwable t) {
+        } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
             throw new AndromedaException.Builder()
                     .cause(t).message("Failed to initialize ModuleManager!!!")
                     .build();

@@ -23,6 +23,11 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The MixinProcessor is responsible for injecting dynamic mixin configs.
+ * <p> This is done by creating a config with GSON, passing it to the {@link ByteArrayInputStream}, and injecting this input stream to our temporary fake mixin service using a {@link ThreadLocal}.
+ * <p> This must be done during {@code 'preLaunch'} as no classes should be transformed at this point.
+ */
 @CustomLog
 public class MixinProcessor {
 
