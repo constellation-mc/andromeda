@@ -38,7 +38,7 @@ public class Andromeda {
     }
 
     private void onInitialize() {
-        Crashlytics.addHandler("andromeda", CrashHandler.get(), (report, cause, latestLog, envType) -> CrashHandler.handleCrash(false, cause, report.getMessage(), envType));
+        Crashlytics.addHandler("andromeda", CrashHandler.get(), (report, cause, latestLog, envType) -> CrashHandler.handleCrash(false, cause, report.getMessage()));
         CrashHandler.tickMain();
 
         Common.bootstrap();

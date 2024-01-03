@@ -3,13 +3,14 @@ package me.melontini.andromeda.util;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.analytics.Analytics;
+import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -39,9 +40,9 @@ public class CrashHandler {
         mainHooked = true;
     }
 
-    public static void accept(AndromedaException e) {
+    public static void offer(AndromedaException e) {
         if (e.shouldReport() && !mainHooked) {
-            handleCrash(false, e, e.getMessage(), CommonValues.environment());
+            handleCrash(false, e, e.getMessage());
         }
     }
 
@@ -64,7 +65,7 @@ public class CrashHandler {
         return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
     }
 
-    public static void handleCrash(boolean force, Throwable cause, String message, EnvType envType) {
+    public static void handleCrash(boolean force, Throwable cause, String message) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
         if (!force && !findAndromedaInTrace(cause)) return;
 
@@ -77,12 +78,13 @@ public class CrashHandler {
             for (String string : getCauseAsString(cause, message).lines().toList()) stackTrace.add(string);
             object.add("stackTrace", stackTrace);
 
-            object.addProperty("environment", envType.toString().toLowerCase());
+            MixpanelAnalytics.attachProps(object, Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION);
+            object.addProperty("java_vendor", System.getProperty("java.vendor"));
             object.addProperty("platform", CommonValues.platform().toString().toLowerCase());
+            object.addProperty("bootstrap_status", Bootstrap.getStatus().toString());
 
             JsonArray mods = new JsonArray();
-            Set<String> importantMods = Sets.newHashSet("andromeda", "minecraft", "modmenu", "dark-matter-base", "fabric-api", "fabricloader", "cloth-config", "cloth_config", "connectormod", "forge", "iceberg");
-            CauseFinder.findCause(cause).ifPresent(importantMods::add);
+            Set<String> importantMods = Sets.newHashSet("andromeda", "minecraft", "fabric-api", "fabricloader", "connectormod", "forge");
 
             for (String importantMod : importantMods) {
                 FabricLoader.getInstance().getModContainer(importantMod).ifPresent(mod -> mods.add(importantMod + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")"));

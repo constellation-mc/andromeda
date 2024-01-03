@@ -28,7 +28,7 @@ public class ErrorHandler implements IMixinErrorHandler {
 
         if (action == ErrorAction.ERROR) {
             if (mixin.getClassName().startsWith("me.melontini.andromeda")) {
-                CrashHandler.accept(new AndromedaException.Builder()
+                CrashHandler.offer(new AndromedaException.Builder()
                         .cause(th).message("Failed to " + phase + " " + mixin.getClassName())
                         .add("phase", phase)
                         .add("mixin", mixin.getClassName())

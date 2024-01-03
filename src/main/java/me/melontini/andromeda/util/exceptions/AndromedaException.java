@@ -2,7 +2,6 @@ package me.melontini.andromeda.util.exceptions;
 
 import com.google.common.base.Strings;
 import me.melontini.andromeda.base.Bootstrap;
-import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
@@ -48,7 +47,7 @@ public class AndromedaException extends RuntimeException {
             var statusesList = statuses.entrySet().stream().toList();
             for (int i = 0; i < statusesList.size(); i += 2) {
                 var e1 = statusesList.get(i);
-                b.append("\n\t").append('\'').append(e1.getKey()).append("': ").append('\'').append(e1.getValue()).append("',\t");
+                b.append("\n    ").append('\'').append(e1.getKey()).append("': ").append('\'').append(e1.getValue()).append("',    ");
 
                 if (i + 1 < statusesList.size()) {
                     var e2 = statusesList.get(i + 1);
@@ -78,11 +77,7 @@ public class AndromedaException extends RuntimeException {
         private final Map<String, String> statuses = new LinkedHashMap<>();
 
         public Builder() {
-            add("mod_version", CommonValues.version());
-            add(Prop.MINECRAFT_VERSION);
             add("bootstrap_status", Bootstrap.getStatus());
-            add("platform", CommonValues.platform());
-            add(Prop.ENVIRONMENT, Prop.JAVA_VERSION, Prop.OS);
         }
 
         public Builder message(String message) {
@@ -131,7 +126,7 @@ public class AndromedaException extends RuntimeException {
             var e = new AndromedaException(report,
                     Strings.isNullOrEmpty(message) ? "Something went very wrong!" : message,
                     cause, statuses);
-            if (submit) CrashHandler.accept(e);
+            if (submit) CrashHandler.offer(e);
             return e;
         }
     }
