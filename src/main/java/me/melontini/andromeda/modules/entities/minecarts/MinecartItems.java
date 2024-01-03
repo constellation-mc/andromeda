@@ -90,11 +90,11 @@ public class MinecartItems {
             JUKEBOX_MINECART.ifPresent(item -> PickUpBehaviorHandler.registerPickUpBehavior(Blocks.JUKEBOX, (state, world, pos) -> {
                 JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
 
-                ItemStack record = jukeboxBlockEntity.getRecord();
+                ItemStack record = jukeboxBlockEntity.getStack(0);
                 ItemStack jukeboxMinecart = new ItemStack(item);
 
                 if (!record.isEmpty()) {
-                    world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
+                    world.syncWorldEvent(WorldEvents.JUKEBOX_STARTS_PLAYING, pos, 0);
                     jukeboxMinecart.setNbt(NbtBuilder.create().put("Items", record.writeNbt(new NbtCompound())).build());
                 }
                 jukeboxBlockEntity.clear();
