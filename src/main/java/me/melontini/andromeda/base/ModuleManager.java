@@ -1,7 +1,7 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.*;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.config.BasicConfig;
@@ -12,6 +12,7 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -24,31 +25,43 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+/**
+ * The ModuleManager is responsible for resolving and storing modules. It is also responsible for loading and fixing configs.
+ */
 @CustomLog
 public class ModuleManager {
 
     private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    private final ImmutableMap<Class<?>, Module<?>> discoveredModules;
-    private final ImmutableMap<String, Module<?>> discoveredModuleNames;
+    private final Reference2ReferenceMap<Class<?>, Module<?>> discoveredModules;
+    private final Object2ReferenceMap<String, Module<?>> discoveredModuleNames;
 
-    private final ImmutableMap<Class<?>, Module<?>> modules;
-    private final ImmutableMap<String, Module<?>> moduleNames;
+    private final Reference2ReferenceMap<Class<?>, Module<?>> modules;
+    private final Object2ReferenceMap<String, Module<?>> moduleNames;
 
-    final Map<String, Module<?>> mixinConfigs = new HashMap<>();
+    final Map<String, Module<?>> mixinConfigs = new Object2ReferenceOpenHashMap<>();
 
     ModuleManager(List<Module<?>> discovered, @Nullable JsonObject oldCfg) {
         if (Bootstrap.INSTANCE != null)
             throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
-        Set<String> ids = new HashSet<>();
+        Map<String, Module<?>> packages = new HashMap<>();
+        Map<String, Module<?>> ids = new HashMap<>();
         for (Module<?> module : discovered) {
             validateModule(module);
 
-            if (!ids.add(module.meta().id()))
-                throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
+            var id = ids.put(module.meta().id(), module);
+            if (id != null)
+                throw new IllegalStateException("Duplicate module IDs! ID: %s, Duplicate: %s, Module: %s".formatted(module.meta().id(), module.getClass(), id.getClass()));
+
+            var pkg = packages.put(module.getClass().getPackageName(), module);
+            if (pkg != null)
+                throw new IllegalStateException("Duplicate module packages! Package: %s, Duplicate: %s, Module: %s".formatted(module.getClass().getPackageName(), module.getClass(), pkg.getClass()));
         }
 
         List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m -> {
@@ -56,39 +69,53 @@ public class ModuleManager {
             return i >= 0 ? i : categories.size();
         })).toList();
 
-        this.discoveredModules = sorted.stream().collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
-        this.discoveredModuleNames = sorted.stream().collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
+        this.discoveredModules = Utilities.supply(() -> {
+            var m = sorted.stream().collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, Reference2ReferenceLinkedOpenHashMap::new));
+            return Reference2ReferenceMaps.unmodifiable(m);
+        });
+        this.discoveredModuleNames = Utilities.supply(() -> {
+            var m = sorted.stream().collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, Object2ReferenceOpenHashMap::new));
+            return Object2ReferenceMaps.unmodifiable(m);
+        });
 
-        this.setUpConfigs(sorted);
+        this.setUpConfigs(this.discoveredModules.values());
 
-        Set<CompletableFuture<?>> futures = new HashSet<>();
-        sorted.forEach(module -> futures.add(CompletableFuture.runAsync(() -> {
+        doWork(this.discoveredModules.values(), module -> {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
-        })));
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        });
 
-        sorted.forEach(Module::postConfig);
+        this.discoveredModules.values().forEach(Module::postConfig);
 
         if (oldCfg != null)
-            sorted.forEach(module -> module.acceptLegacyConfig(oldCfg));
+            this.discoveredModules.values().forEach(module -> module.acceptLegacyConfig(oldCfg));
 
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
-            sorted.forEach(module -> module.config().enabled = true);
-        fixScopes(sorted);
+            this.discoveredModules.values().forEach(module -> module.config().enabled = true);
+        fixScopes(this.discoveredModules.values());
 
-        sorted.forEach(Module::save);
+        this.discoveredModules.values().forEach(Module::save);
 
-        this.modules = sorted.stream().filter(Module::enabled)
-                .collect(ImmutableMap.toImmutableMap(Module::getClass, m -> m));
-        this.moduleNames = sorted.stream().filter(Module::enabled)
-                .collect(ImmutableMap.toImmutableMap(m -> m.meta().id(), m -> m));
+        this.modules = Utilities.supply(() -> {
+            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, Reference2ReferenceLinkedOpenHashMap::new));
+            return Reference2ReferenceMaps.unmodifiable(m);
+        });
+        this.moduleNames = Utilities.supply(() -> {
+            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, Object2ReferenceOpenHashMap::new));
+            return Object2ReferenceMaps.unmodifiable(m);
+        });
 
-        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
+        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), this.discoveredModules.values());
     }
 
-    private void fixScopes(List<Module<?>> list) {
-        list.forEach(m -> {
+    private static void doWork(Collection<Module<?>> modules, Consumer<Module<?>> consumer) {
+        Set<CompletableFuture<?>> futures = new HashSet<>();
+        modules.forEach(m -> futures.add(CompletableFuture.runAsync(() -> consumer.accept(m))));
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+    }
+
+    private void fixScopes(Collection<Module<?>> modules) {
+        modules.forEach(m -> {
             if (m.meta().environment() == Environment.CLIENT && m.config().scope != BasicConfig.Scope.GLOBAL) {
                 LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                         m.meta().environment(), m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
@@ -103,7 +130,7 @@ public class ModuleManager {
         });
 
         if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
-            list.forEach(m -> {
+            modules.forEach(m -> {
                 if (m.meta().environment() != Environment.CLIENT && !m.getClass().isAnnotationPresent(Unscoped.class)) {
                     m.config().scope = BasicConfig.Scope.DIMENSION;
                 }
@@ -116,9 +143,8 @@ public class ModuleManager {
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
     }
 
-    private void setUpConfigs(List<Module<?>> list) {
-        Set<CompletableFuture<?>> futures = new HashSet<>();
-        list.forEach(m -> futures.add(CompletableFuture.runAsync(() -> {
+    private void setUpConfigs(Collection<Module<?>> modules) {
+        doWork(modules, m -> {
             var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
             config.onLoad(config1 -> {
                 if (Config.get().sideOnlyMode) {
@@ -138,10 +164,15 @@ public class ModuleManager {
             config.exceptionHandler((e, stage) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
             m.manager = Utilities.cast(config);
             m.onConfig(Utilities.cast(config));
-        })));
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        });
     }
 
+    /**
+     * Parses the config class from modules generic type.
+     *
+     * @param m the module class.
+     * @return the config class.
+     */
     public Class<? extends BasicConfig> getConfigClass(Class<?> m) {
         if (m.getGenericSuperclass() instanceof ParameterizedType pt) {
             for (Type ta : pt.getActualTypeArguments()) {
@@ -180,51 +211,99 @@ public class ModuleManager {
         return paths;
     }
 
+    /**
+     * Checks if a module is present.
+     * @param cls the module class.
+     * @return if a module is enabled.
+     * @param <T> the module type.
+     */
     public <T extends Module<?>> boolean isPresent(Class<T> cls) {
         return getModule(cls).isPresent();
     }
 
+    /**
+     * Returns the module of the given class, but only if it is enabled.
+     * @param cls the module class.
+     * @return The module, if enabled, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
         return (Optional<T>) Optional.ofNullable(modules.get(cls));
     }
 
+    /**
+     * Returns the module of the given id, but only if it is enabled.
+     * @param name the module id.
+     * @return The module, if enabled, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name));
     }
 
+    /**
+     * Returns the module of the given class.
+     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#DISCOVERY}.</p>
+     * @param cls the module class.
+     * @return The module, if discovered, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getDiscovered(Class<T> cls) {
         return (Optional<T>) Optional.ofNullable(discoveredModules.get(cls));
     }
 
+    /**
+     * Returns the module of the given id.
+     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#DISCOVERY}.</p>
+     * @param name the module id.
+     * @return The module, if discovered, or empty if not.
+     * @param <T> the module type.
+     */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getDiscovered(String name) {
         return (Optional<T>) Optional.ofNullable(discoveredModuleNames.get(name));
     }
 
+    @ApiStatus.Internal
     public Optional<Module<?>> moduleFromConfig(String name) {
         return Optional.ofNullable(mixinConfigs.get(name));
     }
 
+    @ApiStatus.Internal
     public Collection<Module<?>> all() {
         return discoveredModules.values();
     }
 
+    /**
+     * @return a collection of all loaded modules.
+     */
     public Collection<Module<?>> loaded() {
         return modules.values();
     }
 
+    /**
+     * Quickly returns a module of the given class. Useful for mixins and registration.
+     * <p>This will throw an {@link IllegalStateException} if the module is not loaded.</p>
+     * @param cls the module class.
+     * @return the module instance.
+     * @param <T> the module time.
+     * @throws IllegalStateException if the module is not loaded.
+     */
     public static <T extends Module<?>> T quick(Class<T> cls) {
         return get().getModule(cls).orElseThrow(() -> new IllegalStateException("Module %s requested quickly, but is not loaded.".formatted(cls)));
     }
 
+    /**
+     * @return The module manager.
+     */
     public static ModuleManager get() {
         return MakeSure.notNull(Bootstrap.INSTANCE, "ModuleManager requested too early!");
     }
 
-    public void print() {
+    void print() {
         Map<String, Set<Module<?>>> categories = Utilities.consume(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
                 map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 

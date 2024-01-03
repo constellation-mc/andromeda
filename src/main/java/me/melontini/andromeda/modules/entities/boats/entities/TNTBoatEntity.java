@@ -4,6 +4,7 @@ import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
+import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
@@ -24,7 +25,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -55,9 +55,11 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
         if (this.horizontalCollision) {
             if ((this.getFirstPassenger() instanceof PlayerEntity)) {
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeUuid(this.getUuid());
-                ClientPlayNetworking.send(AndromedaPackets.EXPLODE_BOAT_ON_SERVER, buf);
+                Support.runEnv(() -> () -> {
+                    PacketByteBuf buf = PacketByteBufs.create();
+                    buf.writeUuid(this.getUuid());
+                    ClientPlayNetworking.send(AndromedaPackets.EXPLODE_BOAT_ON_SERVER, buf);
+                }, () -> this::explode);
             } else {
                 this.explode();
             }
@@ -142,7 +144,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     public void setFuse() {
         if (this.fuseTicks == -1) {
-            this.fuseTicks = 50 + Random.create().nextInt(20);
+            this.fuseTicks = 50 + world.getRandom().nextInt(20);
             if (!world.isClient) {
                 world.playSoundFromEntity(null, this, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE, 1F, 1F);
             }

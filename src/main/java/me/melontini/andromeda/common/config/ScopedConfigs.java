@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common.config;
 
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -17,7 +18,6 @@ import net.minecraft.world.World;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.IdentityHashMap;
 import java.util.Map;
 
 public class ScopedConfigs {
@@ -112,7 +112,7 @@ public class ScopedConfigs {
 
     public static class State extends PersistentState implements DeserializableState {
 
-        private final Map<Module<?>, BasicConfig> configs = new IdentityHashMap<>();
+        private final Map<Module<?>, BasicConfig> configs = new Reference2ObjectOpenHashMap<>();
 
         public <T extends BasicConfig> T get(Module<T> module) {
             return (T) configs.get(module);

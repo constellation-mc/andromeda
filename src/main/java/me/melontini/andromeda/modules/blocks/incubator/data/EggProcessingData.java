@@ -16,6 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -25,7 +26,7 @@ import static me.melontini.andromeda.common.registries.ResourceRegistry.parseFro
 
 public record EggProcessingData(Item item, EntityType<?> entity, int time) {
 
-    public static Map<Item, EggProcessingData> EGG_DATA = new HashMap<>();
+    public static Map<Item, EggProcessingData> EGG_DATA = new IdentityHashMap<>();
 
     public static void init() {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> EggProcessingData.EGG_DATA.clear());

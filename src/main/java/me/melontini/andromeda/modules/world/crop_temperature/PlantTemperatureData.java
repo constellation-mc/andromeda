@@ -32,7 +32,7 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public record PlantTemperatureData(Set<Block> blocks, float min, float max, float aMin, float aMax) {
 
-    public static final Map<Block, PlantTemperatureData> PLANT_DATA = new HashMap<>();
+    public static final Map<Block, PlantTemperatureData> PLANT_DATA = new IdentityHashMap<>();
 
     public static boolean roll(Block block, float temp, World world) {
         return world.am$get(PlantTemperature.class).enabled && roll(block, temp);

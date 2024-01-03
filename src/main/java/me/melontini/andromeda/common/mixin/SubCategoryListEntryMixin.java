@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @SpecialEnvironment(Environment.CLIENT)
 @Mixin(SubCategoryListEntry.class)
-class SubCategoryListEntryMixin {
+abstract class SubCategoryListEntryMixin {
 
     //Why am I fixing CC bugs?
     @WrapOperation(method = "isRequiresRestart", at = @At(value = "INVOKE", target = "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"))

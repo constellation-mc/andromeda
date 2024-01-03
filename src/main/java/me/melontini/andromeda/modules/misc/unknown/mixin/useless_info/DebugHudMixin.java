@@ -15,7 +15,7 @@ import java.util.List;
 
 @SpecialEnvironment(Environment.CLIENT)
 @Mixin(DebugHud.class)
-class DebugHudMixin {
+abstract class DebugHudMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;getServerWorldDebugString()Ljava/lang/String;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "getLeftText")
     private void andromeda$leftText(CallbackInfoReturnable<List<String>> cir, @Local List<String> list) {

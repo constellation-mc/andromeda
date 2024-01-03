@@ -2,7 +2,7 @@ package me.melontini.andromeda.util;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,7 +58,7 @@ public final class ClassPath {
     public void addUrl(URL url) {
         if (url == null) return;
 
-        Path path = Utilities.supplyUnchecked(() -> Path.of(url.toURI()));
+        Path path = Exceptions.supply(() -> Path.of(url.toURI()));
 
         if (this.scanned.contains(path)) return;
 
@@ -75,7 +75,7 @@ public final class ClassPath {
 
     @SneakyThrows
     private void scanJar(Path path) {
-        FileSystem fs = Utilities.supplyUnchecked(() -> {
+        FileSystem fs = Exceptions.supply(() -> {
             try {
                 return FileSystems.getFileSystem(path.toUri());
             } catch (Exception e) {

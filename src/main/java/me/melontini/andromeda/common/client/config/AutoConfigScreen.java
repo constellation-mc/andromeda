@@ -11,6 +11,7 @@ import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -121,9 +122,9 @@ public class AutoConfigScreen {
     private static void wrapSaveCallback(AbstractConfigEntry<?> e, Runnable saveFunc) {
         if (saveCallback.isPresent()) {
             saveCallback.get().setAccessible(true);
-            Consumer<Object> original = (Consumer<Object>) Utilities.supplyUnchecked(() -> saveCallback.get().get(e));
+            Consumer<Object> original = (Consumer<Object>) Exceptions.supply(() -> saveCallback.get().get(e));
             if (original != null) {
-                Utilities.runUnchecked(() -> saveCallback.get().set(e, (Consumer<Object>) o -> {
+                Exceptions.run(() -> saveCallback.get().set(e, (Consumer<Object>) o -> {
                     if (e.isEdited()) {
                         original.accept(o);
                         saveQueue.get().add(saveFunc);

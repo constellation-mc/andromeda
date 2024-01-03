@@ -55,43 +55,27 @@ abstract class FallingBlockMixin extends Entity {
                         Optional<PlayerEntity> optional = PlayerUtil.findClosestNonCreativePlayerInRange(world, this.getBlockPos(), 16);
                         final NbtList nbeetlist = blockEntityData.getList("Bees", 10);
 
-                        if (optional.isPresent()) {
-                            world.breakBlock(beehiveBlockEntity.getPos(), false);
-                            for (int i = 0; i < nbeetlist.size(); ++i) {
-                                NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
-                                BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
-                                BeeEntity bee = EntityType.BEE.create(world);
-                                if (bee != null) {
-                                    bee.readNbt(entityData);
-                                    bee.setPosition(getPos());
-                                    bee.setTarget(optional.get());
-                                    world.spawnEntity(bee);
-                                }
+                        world.breakBlock(beehiveBlockEntity.getPos(), false);
+                        for (int i = 0; i < nbeetlist.size(); ++i) {
+                            NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
+                            BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
+                            BeeEntity bee = EntityType.BEE.create(world);
+                            if (bee != null) {
+                                bee.readNbt(entityData);
+                                bee.setPosition(getPos());
+                                bee.setCannotEnterHiveTicks(400);
+                                optional.ifPresent(bee::setTarget);
+                                world.spawnEntity(bee);
                             }
+                        }
+                        if (optional.isPresent()) {
                             for (BeeEntity bee : world.getNonSpectatingEntities(BeeEntity.class, new Box(getBlockPos()).expand(50))) {
                                 bee.setTarget(optional.get());
                             }
-                            for (ItemStack stack : stacks) {
-                                ItemStackUtil.spawnVelocity(this.getPos(), stack, world,
-                                        -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
-                            }
-                        } else {
-                            world.breakBlock(beehiveBlockEntity.getPos(), false);
-                            for (int i = 0; i < nbeetlist.size(); ++i) {
-                                NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
-                                BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
-                                BeeEntity bee = EntityType.BEE.create(world);
-                                if (bee != null) {
-                                    bee.readNbt(entityData);
-                                    bee.setPosition(getPos());
-                                    bee.setCannotEnterHiveTicks(400);
-                                    world.spawnEntity(bee);
-                                }
-                            }
-                            for (ItemStack stack : stacks) {
-                                ItemStackUtil.spawnVelocity(this.getPos(), stack, world,
-                                        new Vec3d(MathStuff.nextDouble(-.3, .3), MathStuff.nextDouble(.05, .2), MathStuff.nextDouble(-.3, .3)));
-                            }
+                        }
+                        for (ItemStack stack : stacks) {
+                            ItemStackUtil.spawnVelocity(this.getPos(), stack, world,
+                                    new Vec3d(MathStuff.nextDouble(-.3, .3), MathStuff.nextDouble(.05, .2), MathStuff.nextDouble(-.3, .3)));
                         }
                     }
                 }

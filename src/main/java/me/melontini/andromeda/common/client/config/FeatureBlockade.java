@@ -11,7 +11,7 @@ public class FeatureBlockade {
 
     private static final FeatureBlockade INSTANCE = new FeatureBlockade();
 
-    private final Map<Module<?>, Map<String, Tuple<Set<Text>, BooleanSupplier>>> blockades = new HashMap<>();
+    private final Map<Module<?>, Map<String, Tuple<Set<Text>, BooleanSupplier>>> blockades = new IdentityHashMap<>();
 
     public static FeatureBlockade get() {
         return INSTANCE;

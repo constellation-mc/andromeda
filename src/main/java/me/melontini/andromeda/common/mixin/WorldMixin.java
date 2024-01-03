@@ -5,5 +5,5 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(World.class)
-class WorldMixin implements ScopedConfigs.WorldExtension {
+abstract class WorldMixin implements ScopedConfigs.WorldExtension {
 }

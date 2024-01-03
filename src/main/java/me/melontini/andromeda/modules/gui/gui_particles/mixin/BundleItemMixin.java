@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BundleItem.class)
-class BundleItemMixin {
+abstract class BundleItemMixin {
 
     @Inject(at = @At("RETURN"), method = "addToBundle")
     private static void andromeda$spawnParticles(ItemStack bundle, ItemStack stack, CallbackInfoReturnable<Integer> cir) {

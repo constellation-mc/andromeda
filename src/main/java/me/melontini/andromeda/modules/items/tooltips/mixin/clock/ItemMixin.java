@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(Item.class)
-class ItemMixin {
+abstract class ItemMixin {
     @Unique
     private static final Tooltips am$tooltips = ModuleManager.quick(Tooltips.class);
     @Inject(at = @At("HEAD"), method = "appendTooltip")

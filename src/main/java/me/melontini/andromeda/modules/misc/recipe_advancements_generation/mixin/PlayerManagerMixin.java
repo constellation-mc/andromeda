@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static me.melontini.andromeda.modules.misc.recipe_advancements_generation.Helper.generateRecipeAdvancements;
 
 @Mixin(PlayerManager.class)
-class PlayerManagerMixin {
+abstract class PlayerManagerMixin {
 
     @Shadow @Final private MinecraftServer server;
 

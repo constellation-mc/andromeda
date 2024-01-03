@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SpecialEnvironment(Environment.CLIENT)
 @Mixin(MinecraftClient.class)
-class MinecraftClientMixin {
+abstract class MinecraftClientMixin {
 
     @Inject(method = "method_29338", at = @At("TAIL"))
     private void andromeda$init(CallbackInfo ci) {

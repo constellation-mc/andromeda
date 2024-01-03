@@ -116,17 +116,15 @@ public class WorldUtil {
     public static Optional<BlockPos> pickRandomSpot(World world, BlockPos blockPos, int range, Random random) {
         MakeSure.notNulls(world, blockPos, random);
         MakeSure.isTrue(range > 0, "range can't be negative or zero!");
-        int i = 0;
         double j = (range * range * range) * 0.75;
-        while (true) {
-            ++i;
-            if (i > j) {
-                return Optional.empty();
-            }
+
+        while (j > 0) {
+            j--;
             var pos = new BlockPos(blockPos.getX() + random.nextBetween(-range, range), blockPos.getY() + random.nextBetween(-range, range), blockPos.getZ() + random.nextBetween(-range, range));
             if (world.getBlockState(pos.up()).isAir() && world.getBlockState(pos).isAir() && isClear(world, pos) && isClear(world, pos.up())) {
                 return Optional.of(pos);
             }
         }
+        return Optional.empty();
     }
 }

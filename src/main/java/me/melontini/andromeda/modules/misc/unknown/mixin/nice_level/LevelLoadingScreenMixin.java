@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @SpecialEnvironment(Environment.CLIENT)
 @Mixin(LevelLoadingScreen.class)
-class LevelLoadingScreenMixin {
+abstract class LevelLoadingScreenMixin {
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
     private String andromeda$getPercentage(String o) {

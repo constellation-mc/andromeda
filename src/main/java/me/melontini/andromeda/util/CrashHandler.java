@@ -1,19 +1,16 @@
-package me.melontini.andromeda.common.util;
+package me.melontini.andromeda.util;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.config.Config;
-import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.CauseFinder;
-import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.analytics.Analytics;
-import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
+import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
 import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -27,6 +24,7 @@ public class CrashHandler {
     public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
     private static final Analytics ANALYTICS = Analytics.get(CommonValues.mod());
     private static final MixpanelHandler HANDLER = Utilities.supply(() -> MixpanelAnalytics.init(ANALYTICS, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true));
+    private static volatile boolean mainHooked = false;
 
     @SuppressWarnings("deprecation")
     public static void nukeProfile() {
@@ -38,11 +36,23 @@ public class CrashHandler {
         }
     }
 
-    public static void initCrashHandler() {
-        Crashlytics.addHandler("andromeda", ANALYTICS, (report, cause, latestLog, envType) -> handleCrash(false, cause, report.getMessage(), envType));
+    public static void tickMain() {
+        mainHooked = true;
+    }
+
+    public static void offer(AndromedaException e) {
+        if (e.shouldReport() && !mainHooked) {
+            handleCrash(false, e, e.getMessage());
+        }
+    }
+
+    public static Analytics get() {
+        return ANALYTICS;
     }
 
     private static boolean findAndromedaInTrace(Throwable cause) {
+        if (cause instanceof AndromedaException e && e.shouldReport()) return true;
+
         for (StackTraceElement element : cause.getStackTrace()) {
             if (element.isNativeMethod()) continue;
             String cls = element.getClassName();
@@ -55,12 +65,9 @@ public class CrashHandler {
         return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
     }
 
-    public static void handleCrash(boolean force, Throwable cause, String message, EnvType envType) {
+    public static void handleCrash(boolean force, Throwable cause, String message) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
-        if (!force) {
-            if (cause instanceof AndromedaException e && !e.shouldReport()) return;
-            if (!findAndromedaInTrace(cause)) return;
-        }
+        if (!force && !findAndromedaInTrace(cause)) return;
 
         HANDLER.send((mixpanel, analytics) -> {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
@@ -71,12 +78,13 @@ public class CrashHandler {
             for (String string : getCauseAsString(cause, message).lines().toList()) stackTrace.add(string);
             object.add("stackTrace", stackTrace);
 
-            object.addProperty("environment", envType.toString().toLowerCase());
+            MixpanelAnalytics.attachProps(object, Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION);
+            object.addProperty("java_vendor", System.getProperty("java.vendor"));
             object.addProperty("platform", CommonValues.platform().toString().toLowerCase());
+            object.addProperty("bootstrap_status", Bootstrap.getStatus().toString());
 
             JsonArray mods = new JsonArray();
-            Set<String> importantMods = Sets.newHashSet("andromeda", "minecraft", "modmenu", "dark-matter-base", "fabric-api", "fabricloader", "cloth-config", "cloth_config", "connectormod", "forge", "iceberg");
-            CauseFinder.findCause(cause).ifPresent(importantMods::add);
+            Set<String> importantMods = Sets.newHashSet("andromeda", "minecraft", "fabric-api", "fabricloader", "connectormod", "forge");
 
             for (String importantMod : importantMods) {
                 FabricLoader.getInstance().getModContainer(importantMod).ifPresent(mod -> mods.add(importantMod + " (" + mod.getMetadata().getVersion().getFriendlyString() + ")"));

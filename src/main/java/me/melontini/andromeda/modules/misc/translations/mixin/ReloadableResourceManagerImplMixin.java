@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ReloadableResourceManagerImpl.class)
-class ReloadableResourceManagerImplMixin {
+abstract class ReloadableResourceManagerImplMixin {
 
     @Shadow @Final private ResourceType type;
 

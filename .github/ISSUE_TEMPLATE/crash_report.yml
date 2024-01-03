@@ -7,6 +7,9 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this crash report!
+        Before proceeding, please make sure to do this first. 📋
+        - Ensure you are running the **latest** version of the mod.
+        - A similar report hasn't been filled before.
   - type: textarea
     id: what-happened
     attributes:
@@ -14,10 +17,12 @@ body:
       description: Please explain in detail how this crash happened.
     validations:
       required: true
-  - type: textarea
+  - type: input
     attributes:
       label: Logs
-      description: A crash report without logs is not that useful!
+      description: |
+        `latest.log` or `crash-20xx-xx-xx_xx.xx.xx-(client/server).log`.
+        Please upload your log to [Github Gist](https://gist.github.com/), [mslo.gs](https://mclo.gs/) or any other pasting platform.
     validations:
       required: true
   - type: input
@@ -27,15 +32,10 @@ body:
       description: What version of the mod are you running?
     validations:
       required: true
-  - type: checkboxes
+  - type: input
     id: mc-version
     attributes:
       label: Minecraft Version
-      description: What Minecraft version are you running?
-      options:
-      - label: "1.18.2"
-      - label: "1.19.x"
-      - label: "1.19.3"
-      - label: "1.20.x"
+      description: What version of Minecraft are you running?
     validations:
       required: true

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ExperienceOrbEntity.class)
-class ExperienceOrbMixin {
+abstract class ExperienceOrbMixin {
 
     @Inject(at = @At("HEAD"), method = "repairPlayerGears", cancellable = true)
     private void andromeda$repair(PlayerEntity player, int amount, CallbackInfoReturnable<Integer> cir) {

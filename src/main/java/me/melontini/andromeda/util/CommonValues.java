@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util;
 
 import lombok.CustomLog;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -42,7 +42,7 @@ public class CommonValues {
 
     public static Path hiddenPath() {
         if (!Files.exists(HIDDEN_PATH)) {
-            Utilities.runUnchecked(() -> Files.createDirectories(HIDDEN_PATH));
+            Exceptions.run(() -> Files.createDirectories(HIDDEN_PATH));
             try {
                 if (HIDDEN_PATH.getFileSystem().supportedFileAttributeViews().contains("dos"))
                     Files.setAttribute(HIDDEN_PATH, "dos:hidden", Boolean.TRUE, LinkOption.NOFOLLOW_LINKS);
@@ -71,15 +71,15 @@ public class CommonValues {
     private static boolean checkUpdate() {
         Path lh = hiddenPath().resolve("last_version.txt");
         if (Files.exists(lh)) {
-            Version version = Utilities.supplyUnchecked(() -> Version.parse(Files.readString(lh)));
+            Version version = Exceptions.supply(() -> Version.parse(Files.readString(lh)));
             if (mod().getMetadata().getVersion().compareTo(version) != 0) {
                 if (!FabricLoader.getInstance().isDevelopmentEnvironment())
                     LOGGER.warn("Andromeda version changed! was [{}], now [{}]", version.getFriendlyString(), mod().getMetadata().getVersion().getFriendlyString());
-                Utilities.runUnchecked(() -> Files.writeString(lh, mod().getMetadata().getVersion().getFriendlyString()));
+                Exceptions.run(() -> Files.writeString(lh, mod().getMetadata().getVersion().getFriendlyString()));
                 return true;
             }
         } else {
-            Utilities.runUnchecked(() -> Files.writeString(lh, mod().getMetadata().getVersion().getFriendlyString()));
+            Exceptions.run(() -> Files.writeString(lh, mod().getMetadata().getVersion().getFriendlyString()));
             return true;
         }
         return false;

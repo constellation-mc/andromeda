@@ -1,11 +1,8 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -13,8 +10,6 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -31,6 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 import static me.melontini.andromeda.util.CommonValues.MODID;
@@ -58,12 +54,6 @@ public class Content {
     };
 
     public static void init() {
-        if (DispenserBlock.BEHAVIORS instanceof Object2ObjectMap<Item, DispenserBehavior> map) {
-            DispenserBlock.BEHAVIORS = createBehaviorMap(map);
-        } else {
-            AndromedaLog.error("DispenserBlock.BEHAVIORS is not Object2ObjectMap! Can't override default dispense behavior!");
-        }
-
         BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked"));
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -86,22 +76,5 @@ public class Content {
             packet.writeIdentifier(CommonRegistries.items().getId(item));
         }
         return packet;
-    }
-
-    @NotNull
-    private static Object2ObjectMap<Item, DispenserBehavior> createBehaviorMap(Object2ObjectMap<Item, DispenserBehavior> map) {
-        Object2ObjectMap<Item, DispenserBehavior> n = new Object2ObjectOpenHashMap<>(map) {
-            @Override
-            public DispenserBehavior get(Object k) {
-                if (k instanceof ItemStack stack && ItemBehaviorManager.hasBehaviors(stack.getItem()) && ItemBehaviorManager.overridesVanilla(stack.getItem())) {
-                    return BEHAVIOR;
-                }
-                return super.get(k);
-            }
-        };
-        var b = map.defaultReturnValue();
-        n.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.hasBehaviors(stack.getItem()) ?
-                BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
-        return n;
     }
 }

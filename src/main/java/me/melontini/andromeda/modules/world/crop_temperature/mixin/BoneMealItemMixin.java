@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BoneMealItem.class)
-class BoneMealItemMixin {
+abstract class BoneMealItemMixin {
 
     @Inject(at = @At("HEAD"), method = "useOnBlock", cancellable = true)
     private void andromeda$useOnFertilizable(ItemUsageContext ctx, CallbackInfoReturnable<ActionResult> cir) {

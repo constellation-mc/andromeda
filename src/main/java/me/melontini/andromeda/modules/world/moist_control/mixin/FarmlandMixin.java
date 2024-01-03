@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FarmlandBlock.class)
-class FarmlandMixin {
+abstract class FarmlandMixin {
 
     @Inject(at = @At("HEAD"), method = "isWaterNearby")
     private static void andromeda$prepareRule(WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir, @Share("value") LocalIntRef ref) {

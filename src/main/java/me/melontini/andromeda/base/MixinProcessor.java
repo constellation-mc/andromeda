@@ -3,10 +3,10 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericMethod;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import org.objectweb.asm.tree.ClassNode;
@@ -23,6 +23,11 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The MixinProcessor is responsible for injecting dynamic mixin configs.
+ * <p> This is done by creating a config with GSON, passing it to the {@link ByteArrayInputStream}, and injecting this input stream to our temporary fake mixin service using a {@link ThreadLocal}.
+ * <p> This must be done during {@code 'preLaunch'} as no classes should be transformed at this point.
+ */
 @CustomLog
 public class MixinProcessor {
 
@@ -42,7 +47,9 @@ public class MixinProcessor {
                 Mixins.addConfiguration(cfg);
                 manager.mixinConfigs.put(cfg, module);
             } catch (IOException e) {
-                throw new IllegalStateException("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()));
+                throw new AndromedaException.Builder()
+                        .message("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()))
+                        .add("mixin_config", cfg).add("module", module.meta().id()).build();
             } finally {
                 CONFIG.remove();
             }
@@ -89,17 +96,13 @@ public class MixinProcessor {
 
             return method.invoke(currentService, args);
         });
-        Utilities.runUnchecked(() -> {
-            MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
-            SERVICE.accessible(true).set(serviceProxy, service);
-        });
+        MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
+        SERVICE.accessible(true).set(serviceProxy, service);
     }
 
     public static void dejectService(IMixinService realService) {
-        Utilities.runUnchecked(() -> {
-            MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
-            SERVICE.accessible(true).set(serviceProxy, realService);
-        });
+        MixinService serviceProxy = GET_INSTANCE.accessible(true).invoke(null);
+        SERVICE.accessible(true).set(serviceProxy, realService);
     }
 
     @SuppressWarnings("UnstableApiUsage")

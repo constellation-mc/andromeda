@@ -1,6 +1,8 @@
 package me.melontini.andromeda.util;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.base.config.BasicConfig;
+import me.melontini.andromeda.util.mixin.ErrorHandler;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import net.fabricmc.loader.api.FabricLoader;
 import org.intellij.lang.annotations.MagicConstant;
@@ -43,14 +45,35 @@ public class Debug {
     }
 
     public static class Keys {
+        /**
+         * Some minor mixin sanity checks. Verifies modifiers and forces an environment audit on startup.
+         */
         public static final String VERIFY_MIXINS = "verifyMixins";
         public static final String PRINT_DEBUG_MESSAGES = "printDebugMessages";
+        /**
+         * Skips the {@link ErrorHandler}. This handler reports mixin crashes and disables modules.
+         */
         public static final String SKIP_MIXIN_ERROR_HANDLER = "skipMixinErrorHandler";
+        /**
+         * Skips the server-side module check.
+         */
         public static final String SKIP_SERVER_MODULE_CHECK = "skipServerModuleCheck";
         public static final String DISPLAY_TRACKED_VALUES = "displayTrackedValues";
+        /**
+         * Force enables all modules.
+         */
         public static final String ENABLE_ALL_MODULES = "enableAllModules";
+        /**
+         * Forces all configs to be in {@link BasicConfig.Scope#DIMENSION}.
+         */
         public static final String FORCE_DIMENSION_SCOPE = "forceDimensionScope";
+        /**
+         * Prints missing data for blocks, items, etc. When there should be some. Case in point: {@code world/crop_temperature}
+         */
         public static final String PRINT_MISSING_ASSIGNED_DATA = "printMissingAssignedData";
+        /**
+         * Prints missing option tooltips for the currently selected language after client resources are loaded.
+         */
         public static final String PRINT_MISSING_TOOLTIPS = "printMissingTooltips";
     }
 }
