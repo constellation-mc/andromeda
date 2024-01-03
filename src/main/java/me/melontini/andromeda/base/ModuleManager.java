@@ -25,6 +25,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,15 +50,18 @@ public class ModuleManager {
             throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
-        Set<String> packages = new HashSet<>();
-        Set<String> ids = new HashSet<>();
+        Map<String, Module<?>> packages = new HashMap<>();
+        Map<String, Module<?>> ids = new HashMap<>();
         for (Module<?> module : discovered) {
             validateModule(module);
 
-            if (!ids.add(module.meta().id()))
-                throw new IllegalStateException("Duplicate module IDs! ID: %s, Module: %s".formatted(module.meta().id(), module.getClass()));
-            if (!packages.add(module.getClass().getPackageName()))
-                throw new IllegalStateException("Duplicate module packages! Package: %s, Module: %s".formatted(module.getClass().getPackageName(), module.getClass()));
+            var id = ids.put(module.meta().id(), module);
+            if (id != null)
+                throw new IllegalStateException("Duplicate module IDs! ID: %s, Duplicate: %s, Module: %s".formatted(module.meta().id(), module.getClass(), id.getClass()));
+
+            var pkg = packages.put(module.getClass().getPackageName(), module);
+            if (pkg != null)
+                throw new IllegalStateException("Duplicate module packages! Package: %s, Duplicate: %s, Module: %s".formatted(module.getClass().getPackageName(), module.getClass(), pkg.getClass()));
         }
 
         List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m -> {
@@ -76,12 +80,10 @@ public class ModuleManager {
 
         this.setUpConfigs(this.discoveredModules.values());
 
-        Set<CompletableFuture<?>> futures = new HashSet<>();
-        this.discoveredModules.values().forEach(module -> futures.add(CompletableFuture.runAsync(() -> {
+        doWork(this.discoveredModules.values(), module -> {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
-        })));
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        });
 
         this.discoveredModules.values().forEach(Module::postConfig);
 
@@ -104,6 +106,12 @@ public class ModuleManager {
         });
 
         cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), this.discoveredModules.values());
+    }
+
+    private static void doWork(Collection<Module<?>> modules, Consumer<Module<?>> consumer) {
+        Set<CompletableFuture<?>> futures = new HashSet<>();
+        modules.forEach(m -> futures.add(CompletableFuture.runAsync(() -> consumer.accept(m))));
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
 
     private void fixScopes(Collection<Module<?>> modules) {
@@ -136,8 +144,7 @@ public class ModuleManager {
     }
 
     private void setUpConfigs(Collection<Module<?>> modules) {
-        Set<CompletableFuture<?>> futures = new HashSet<>();
-        modules.forEach(m -> futures.add(CompletableFuture.runAsync(() -> {
+        doWork(modules, m -> {
             var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
             config.onLoad(config1 -> {
                 if (Config.get().sideOnlyMode) {
@@ -157,8 +164,7 @@ public class ModuleManager {
             config.exceptionHandler((e, stage) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
             m.manager = Utilities.cast(config);
             m.onConfig(Utilities.cast(config));
-        })));
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        });
     }
 
     /**
