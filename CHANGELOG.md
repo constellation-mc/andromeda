@@ -2,7 +2,32 @@
 
 ## Alpha warning!
 
-* Added `andromeda:default` to data pack configs. This will be applied to all dimensions before dimension specific
-  configs. Can be used to set `enabled` to `false` on all dimensions.
-* Data pack configs now support `WORLD` scopes.
-* Fixed right-clicking the magnet crashing the dedicated server.
+- **1.19.3 is no longer supported!**
+- **1.18.2 will no longer receive alpha updates!**
+
+***
+
+[`entities/slimes`]:
+
+* Added slime particles on collision.
+
+[`blocks/campfire_effects`]:
+
+* The game will no longer crash if the campfire configuration is invalid.
+
+[`items/magnet`]:
+
+* Magnet level is now capped at 5 even if NBT is modified.
+
+[`items/lockpick`]:
+
+* Fixed lockpick sending break status even when not broken.
+
+[`entities/boats`]:
+
+* Fixed a possible crash with TNT boats when `horizontalCollision` is updated on server.
+
+[`general`]:
+
+* Improved crash reporting.
+* A bunch of other improvements.
