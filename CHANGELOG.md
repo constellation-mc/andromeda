@@ -2,7 +2,8 @@
 
 ## Alpha warning!
 
-- **1.19.3 & 1.18.2 will no longer receive alpha updates!**
+- **1.19.3 is no longer supported!**
+- **1.18.2 will no longer receive alpha updates!**
 
 ***
 
