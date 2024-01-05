@@ -2,9 +2,8 @@ package me.melontini.andromeda.util.exceptions;
 
 import com.google.common.base.Strings;
 import me.melontini.andromeda.base.Bootstrap;
-import me.melontini.andromeda.util.CrashHandler;
-import me.melontini.dark_matter.api.analytics.Prop;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
+import me.melontini.dark_matter.api.crash_handler.Prop;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -117,17 +116,11 @@ public class AndromedaException extends RuntimeException {
         }
 
         public AndromedaException build() {
-            return build(true);
-        }
-
-        public AndromedaException build(boolean submit) {
             disableInHierarchy(cause);
 
-            var e = new AndromedaException(report,
+            return new AndromedaException(report,
                     Strings.isNullOrEmpty(message) ? "Something went very wrong!" : message,
                     cause, statuses);
-            if (submit) CrashHandler.offer(e);
-            return e;
         }
     }
 }

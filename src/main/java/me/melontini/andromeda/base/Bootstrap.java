@@ -8,11 +8,13 @@ import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.ClassPath;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
+import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -98,6 +100,8 @@ public class Bootstrap {
 
     public static void onPreLaunch() {
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
+
+        Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
 
         AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
         var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");

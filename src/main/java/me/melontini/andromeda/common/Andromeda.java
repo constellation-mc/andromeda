@@ -8,9 +8,7 @@ import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.andromeda.util.Debug;
-import me.melontini.dark_matter.api.analytics.crashes.Crashlytics;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -38,9 +36,6 @@ public class Andromeda {
     }
 
     private void onInitialize() {
-        Crashlytics.addHandler("andromeda", CrashHandler.get(), (report, cause, latestLog, envType) -> CrashHandler.handleCrash(false, cause, report.getMessage()));
-        CrashHandler.tickMain();
-
         Common.bootstrap();
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DataConfigs());

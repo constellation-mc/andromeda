@@ -6,12 +6,14 @@ import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.analytics.Analytics;
-import me.melontini.dark_matter.api.analytics.Prop;
-import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelAnalytics;
-import me.melontini.dark_matter.api.analytics.mixpanel.MixpanelHandler;
-import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.base.util.classes.Context;
+import me.melontini.dark_matter.api.crash_handler.Crashlytics;
+import me.melontini.dark_matter.api.crash_handler.Prop;
+import me.melontini.dark_matter.api.crash_handler.uploading.Mixpanel;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.impl.util.StringUtil;
+import net.minecraft.util.crash.CrashReport;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,34 +23,7 @@ import java.util.Set;
 
 public class CrashHandler {
 
-    public static final String CRASH_UUID = "be4db047-16df-4e41-9121-f1e87618ddea";
-    private static final Analytics ANALYTICS = Analytics.get(CommonValues.mod());
-    private static final MixpanelHandler HANDLER = Utilities.supply(() -> MixpanelAnalytics.init(ANALYTICS, new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true));
-    private static volatile boolean mainHooked = false;
-
-    @SuppressWarnings("deprecation")
-    public static void nukeProfile() {
-        if (!FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            if (CommonValues.updated() && !ANALYTICS.getDefaultUUID().equals(ANALYTICS.getUUID())) {
-                Analytics.oldUUID().ifPresent(uuid -> HANDLER.send((mixpanel, analytics) -> mixpanel.delete(uuid.toString())));
-                HANDLER.send((mixpanel, analytics) -> mixpanel.delete(analytics.getUUIDString()));
-            }
-        }
-    }
-
-    public static void tickMain() {
-        mainHooked = true;
-    }
-
-    public static void offer(AndromedaException e) {
-        if (e.shouldReport() && !mainHooked) {
-            handleCrash(false, e, e.getMessage());
-        }
-    }
-
-    public static Analytics get() {
-        return ANALYTICS;
-    }
+    private static final Mixpanel MIXPANEL = Mixpanel.get(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
 
     private static boolean findAndromedaInTrace(Throwable cause) {
         if (cause instanceof AndromedaException e && e.shouldReport()) return true;
@@ -56,8 +31,8 @@ public class CrashHandler {
         for (StackTraceElement element : cause.getStackTrace()) {
             if (element.isNativeMethod()) continue;
             String cls = element.getClassName();
-            if (cls.contains("me.melontini.andromeda.")) return true;
-            if (cls.contains("net.minecraft.")) {
+            if (cls.startsWith("me.melontini.andromeda.")) return true;
+            if (cls.startsWith("net.minecraft.")) {
                 String mthd = element.getMethodName();
                 return (mthd.contains("$andromeda$") || mthd.contains(".andromeda$"));
             }
@@ -65,21 +40,24 @@ public class CrashHandler {
         return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
     }
 
-    public static void handleCrash(boolean force, Throwable cause, String message) {
+    public static void handleCrash(Throwable cause, Context context) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
-        if (!force && !findAndromedaInTrace(cause)) return;
-
-        HANDLER.send((mixpanel, analytics) -> {
+        if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).map(info -> info.getClassName().startsWith("me.melontini.andromeda")).orElse(false) || findAndromedaInTrace(cause)) {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
             JsonObject object = new JsonObject();
 
+            String message = "Something terrible happened!";
+            if (context.get(Object.class, Crashlytics.Keys.CRASH_REPORT).isPresent()) {
+                message = getFromCrashReport(context);
+            }
+
             //fill trace.
             JsonArray stackTrace = new JsonArray();
-            for (String string : getCauseAsString(cause, message).lines().toList()) stackTrace.add(string);
+            for (String string : getCauseAsString(cause, message).lines().flatMap(s -> StringUtil.wrapLines(s, 190).lines()).toList())
+                stackTrace.add(string);
             object.add("stackTrace", stackTrace);
 
-            MixpanelAnalytics.attachProps(object, Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION);
-            object.addProperty("java_vendor", System.getProperty("java.vendor"));
+            MIXPANEL.attachProps(object, Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION, Prop.JAVA_VENDOR);
             object.addProperty("platform", CommonValues.platform().toString().toLowerCase());
             object.addProperty("bootstrap_status", Bootstrap.getStatus().toString());
 
@@ -92,8 +70,17 @@ public class CrashHandler {
 
             object.add("mods", mods);
 
-            mixpanel.trackEvent(CRASH_UUID, "Crash", object);
-        });
+            MIXPANEL.upload(new Mixpanel.Context("Crash", object)).handle((unused, throwable) -> {
+                if (throwable != null)
+                    AndromedaLog.error("Failed to upload crash report! {}: {}", throwable.getClass().getSimpleName(), throwable.getMessage());
+                return null;
+            });
+        }
+    }
+
+    private static String getFromCrashReport(Context context) {
+        return context.get(Object.class, Crashlytics.Keys.CRASH_REPORT)
+                .map(CrashReport.class::cast).map(CrashReport::getMessage).orElse("null");
     }
 
     private static String getCauseAsString(Throwable cause, String message) {

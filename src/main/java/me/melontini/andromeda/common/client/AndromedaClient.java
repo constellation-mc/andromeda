@@ -10,7 +10,6 @@ import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -80,8 +79,6 @@ public class AndromedaClient {
                 animate = false;
             }
         }));
-
-        Support.runWeak(EnvType.CLIENT, () -> CrashHandler::nukeProfile);
     }
 
     private static void printMissingTooltips() {

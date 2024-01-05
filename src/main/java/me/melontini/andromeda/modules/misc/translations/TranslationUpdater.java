@@ -5,7 +5,6 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.GitTracker;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.analytics.MessageHandler;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 
 public class TranslationUpdater {
 
@@ -45,7 +45,7 @@ public class TranslationUpdater {
             Set<String> languages = Sets.newHashSet("en_us");
             String s = TranslationUpdater.getSelectedLanguage();
             if (!s.isEmpty()) languages.add(s);
-            MessageHandler.EXECUTOR.submit(() -> TranslationUpdater.downloadTranslations(languages));
+            ForkJoinPool.commonPool().submit(() -> TranslationUpdater.downloadTranslations(languages));
         } else {
             AndromedaLog.info("Skipped translations update.");
         }
