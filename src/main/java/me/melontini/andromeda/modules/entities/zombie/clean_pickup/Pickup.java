@@ -4,11 +4,10 @@ import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 
 @ModuleInfo(name = "zombie/clean_pickup", category = "entities", environment = Environment.SERVER)
-public class Pickup extends Module<BasicConfig> {
+public class Pickup extends Module<Module.BaseConfig> {
 
     @Override
     public void acceptLegacyConfig(JsonObject config) {

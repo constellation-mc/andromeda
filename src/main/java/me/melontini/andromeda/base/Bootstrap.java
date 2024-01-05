@@ -3,7 +3,6 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.CustomLog;
-import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.ClassPath;
@@ -26,10 +25,7 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
@@ -117,9 +113,10 @@ public class Bootstrap {
             }
         }
 
-        Config.load();
+        AndromedaConfig.load();
 
         updateStatus(Status.DISCOVERY);
+
         List<Module<?>> list = new ArrayList<>(40);
         AndromedaException.run(() -> {
             //This should probably be removed.
@@ -133,9 +130,18 @@ public class Bootstrap {
 
         list.removeIf(m -> (m.meta().environment() == me.melontini.andromeda.base.Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
 
+        resolveConflicts(list);
+
+        List<Module<?>> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
+            int i = ModuleManager.CATEGORIES.indexOf(m.meta().category());
+            return i >= 0 ? i : ModuleManager.CATEGORIES.size();
+        })).toList();
+
+        updateStatus(Status.SETUP);
+
         ModuleManager m;
         try {
-            m = new ModuleManager(list, oldCfg.get());
+            m = new ModuleManager(sorted, oldCfg.get());
         } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
             throw new AndromedaException.Builder()
                     .cause(t).message("Failed to initialize ModuleManager!!!")
@@ -152,6 +158,22 @@ public class Bootstrap {
         for (Module<?> module : ModuleManager.get().loaded()) {
             AndromedaException.run(module::onPreLaunch, () ->
                     new AndromedaException.Builder().message("Failed to execute Module.onPreLaunch!").add("module", module.meta().id()));
+        }
+    }
+
+    private static void resolveConflicts(Collection<Module<?>> list) {
+        Map<String, Module<?>> packages = new HashMap<>();
+        Map<String, Module<?>> ids = new HashMap<>();
+        for (Module<?> module : list) {
+            ModuleManager.validateModule(module);
+
+            var id = ids.put(module.meta().id(), module);
+            if (id != null)
+                throw new IllegalStateException("Duplicate module IDs! ID: %s, Duplicate: %s, Module: %s".formatted(module.meta().id(), module.getClass(), id.getClass()));
+
+            var pkg = packages.put(module.getClass().getPackageName(), module);
+            if (pkg != null)
+                throw new IllegalStateException("Duplicate module packages! Package: %s, Duplicate: %s, Module: %s".formatted(module.getClass().getPackageName(), module.getClass(), pkg.getClass()));
         }
     }
 
@@ -200,6 +222,7 @@ public class Bootstrap {
     public enum Status {
         PRE_INIT,
         DISCOVERY,
+        SETUP,
         PRE_LAUNCH,
         MAIN,
         CLIENT,

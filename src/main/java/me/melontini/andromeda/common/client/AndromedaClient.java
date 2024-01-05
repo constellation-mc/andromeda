@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.common.client.config.AutoConfigScreen;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
@@ -51,7 +51,7 @@ public class AndromedaClient {
 
     public void onInitializeClient() {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
-        if (!Config.get().sideOnlyMode) ClientSideNetworking.register();
+        if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register();
         else {
             for (Module<?> module : ModuleManager.get().all()) {
                 switch (module.meta().environment()) {

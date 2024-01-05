@@ -5,8 +5,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.Origin;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
-import me.melontini.andromeda.base.config.AndromedaConfig;
-import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
@@ -104,13 +103,13 @@ public class AutoConfigScreen {
             });
 
             ConfigCategory misc = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.misc"));
-            Arrays.stream(AndromedaConfig.class.getFields()).forEach((field) -> {
+            Arrays.stream(AndromedaConfig.Config.class.getFields()).forEach((field) -> {
                 String opt = "config.andromeda.base.option." + field.getName();
-                registry.getAndTransform(opt, field, Config.get(), Config.getDefault(), registry).forEach(e -> {
+                registry.getAndTransform(opt, field, AndromedaConfig.get(), AndromedaConfig.getDefault(), registry).forEach(e -> {
                     setOptionTooltip(e, opt + ".@Tooltip");
                     appendEnvInfo(e, field);
                     wrapTooltip(e);
-                    wrapSaveCallback(e, Config::save);
+                    wrapSaveCallback(e, AndromedaConfig::save);
                     misc.addEntry(e);
                 });
             });
@@ -224,11 +223,11 @@ public class AutoConfigScreen {
     }
 
     private static void powerSave() {
-        Config.save();
         if (saveCallback.isPresent()) {
             saveQueue.get().forEach(Runnable::run);
             saveQueue.get().clear();
         } else {
+            AndromedaConfig.save();
             ModuleManager.get().all().forEach(Module::save);
         }
     }

@@ -2,12 +2,14 @@ package me.melontini.andromeda.base;
 
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
+import lombok.Getter;
+import lombok.Setter;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -20,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @param <T> the config type for this module.
  */
 @CustomLog
-public abstract class Module<T extends BasicConfig> {
+public abstract class Module<T extends Module.BaseConfig> {
 
     private final Metadata info;
 
@@ -122,6 +124,23 @@ public abstract class Module<T extends BasicConfig> {
 
         public String dotted() {
             return id().replace('/', '.');
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class BaseConfig {
+
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean enabled = false;
+
+        @ConfigEntry.Gui.Excluded
+        public Scope scope = Scope.GLOBAL;
+
+        public enum Scope {
+            GLOBAL,
+            WORLD,
+            DIMENSION
         }
     }
 }

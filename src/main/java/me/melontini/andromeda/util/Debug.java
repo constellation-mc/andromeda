@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.config.BasicConfig;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.util.mixin.ErrorHandler;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import net.fabricmc.loader.api.FabricLoader;
@@ -64,7 +64,7 @@ public class Debug {
          */
         public static final String ENABLE_ALL_MODULES = "enableAllModules";
         /**
-         * Forces all configs to be in {@link BasicConfig.Scope#DIMENSION}.
+         * Forces all configs to be in {@link Module.BaseConfig.Scope#DIMENSION}.
          */
         public static final String FORCE_DIMENSION_SCOPE = "forceDimensionScope";
         /**

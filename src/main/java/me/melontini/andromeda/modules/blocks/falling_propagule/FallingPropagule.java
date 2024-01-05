@@ -4,10 +4,9 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
-import me.melontini.andromeda.base.config.BasicConfig;
 
 @OldConfigKey("fallingPropagule")
 @ModuleInfo(name = "falling_propagule", category = "blocks", environment = Environment.SERVER)
-public class FallingPropagule extends Module<BasicConfig> {
+public class FallingPropagule extends Module<Module.BaseConfig> {
 
 }

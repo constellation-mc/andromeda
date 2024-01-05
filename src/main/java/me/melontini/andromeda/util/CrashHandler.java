@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.Bootstrap;
-import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.classes.Context;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
@@ -41,7 +41,7 @@ public class CrashHandler {
     }
 
     public static void handleCrash(Throwable cause, Context context) {
-        if (FabricLoader.getInstance().isDevelopmentEnvironment() || !Config.get().sendCrashReports) return;
+        if (FabricLoader.getInstance().isDevelopmentEnvironment() || !AndromedaConfig.get().sendCrashReports) return;
         if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).map(info -> info.getClassName().startsWith("me.melontini.andromeda")).orElse(false) || findAndromedaInTrace(cause)) {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
             JsonObject object = new JsonObject();

@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.annotations.Unscoped;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.util.JsonOps;
@@ -32,7 +31,7 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
         Common.bootstrap(this, Content.class, ItemBehaviorData.class);
     }
 
-    public static class Config extends BasicConfig {
+    public static class Config extends BaseConfig {
 
         @SpecialEnvironment(Environment.SERVER)
         public boolean canZombiesThrowItems = true;
