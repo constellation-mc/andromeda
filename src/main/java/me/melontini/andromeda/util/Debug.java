@@ -13,7 +13,7 @@ import java.util.*;
 public class Debug {
 
     private static final ConfigManager<Holder> MANAGER = ConfigManager.of(Holder.class, "andromeda/debug", Holder::new)
-            .exceptionHandler((e, stage) -> LOGGER.error("Failed to %s debug config!".formatted(stage.toString().toLowerCase()), e));
+            .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s debug config!".formatted(stage.toString().toLowerCase()), e));
 
     private static Holder CONFIG;
 

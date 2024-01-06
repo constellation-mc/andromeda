@@ -20,7 +20,7 @@ public class NameTooltips extends Module<Module.BaseConfig> {
 
     @Override
     public void onConfig(ConfigManager<BaseConfig> manager) {
-        manager.onLoad(config -> {
+        manager.onSave((config, path) -> {
             if (iceberg.getAsBoolean()) config.enabled = false;
         });
     }

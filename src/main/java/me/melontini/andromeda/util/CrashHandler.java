@@ -10,6 +10,7 @@ import me.melontini.dark_matter.api.base.util.classes.Context;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import me.melontini.dark_matter.api.crash_handler.Prop;
 import me.melontini.dark_matter.api.crash_handler.uploading.Mixpanel;
+import me.melontini.dark_matter.api.crash_handler.uploading.Uploader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.impl.util.StringUtil;
 import net.minecraft.util.crash.CrashReport;
@@ -117,11 +118,11 @@ public class CrashHandler {
 
             object.add("mods", mods);
 
-            MIXPANEL.upload(new Mixpanel.Context("Crash", object)).handle((unused, throwable) -> {
+            Uploader.SERVICE.submit(() -> MIXPANEL.upload(new Mixpanel.Context("Crash", object)).handle((unused, throwable) -> {
                 if (throwable != null)
                     AndromedaLog.error("Failed to upload crash report! {}: {}", throwable.getClass().getSimpleName(), throwable.getMessage());
                 return null;
-            });
+            }));
         }
     }
 

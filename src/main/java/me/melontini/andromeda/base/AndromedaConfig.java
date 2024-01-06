@@ -9,7 +9,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public class AndromedaConfig {
 
     private static final ConfigManager<Config> MANAGER = ConfigManager.of(Config.class, "andromeda/mod", Config::new)
-            .exceptionHandler((e, stage) -> LOGGER.error("Failed to %s main Andromeda config (mod.json)!".formatted(stage.toString().toLowerCase()), e));
+            .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s main Andromeda config (mod.json)!".formatted(stage.toString().toLowerCase()), e));
     private static Config CONFIG;
     private static Config DEFAULT;
 

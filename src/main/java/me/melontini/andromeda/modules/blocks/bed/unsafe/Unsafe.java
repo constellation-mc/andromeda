@@ -16,7 +16,7 @@ public class Unsafe extends Module<Module.BaseConfig> {
 
     @Override
     public void onConfig(ConfigManager<BaseConfig> manager) {
-        manager.onSave(config -> {
+        manager.onSave((config, path) -> {
             if (ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent()) {
                 config.enabled = false;
             }
