@@ -12,10 +12,12 @@ abstract class CrashReportMixin {
 
     @Inject(at = @At("TAIL"), method = "<init>", require = 0)
     private void andromeda$init(String message, Throwable cause, CallbackInfo ci) {
-        try {
+        if (CrashHandler.hasInstance(cause)) {
             var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
-            CrashHandler.traverse(sec::add, ((CrashReport) (Object) this).getCause(), 0);
-        } catch (Exception ignored) {
+            sec.trimStackTraceEnd(sec.getStackTrace().length);
+            CrashHandler.traverse(sec::add, cause, 0);
         }
+
+        CrashHandler.sanitizeTrace(cause);
     }
 }

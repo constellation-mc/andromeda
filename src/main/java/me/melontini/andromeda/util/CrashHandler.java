@@ -18,8 +18,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Base64;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class CrashHandler {
@@ -42,7 +41,7 @@ public class CrashHandler {
         return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
     }
 
-    private static boolean hasInstance(Throwable cause) {
+    public static boolean hasInstance(Throwable cause) {
         if (cause instanceof AndromedaException) return true;
         return cause.getCause() != null && hasInstance(cause.getCause());
     }
@@ -59,6 +58,22 @@ public class CrashHandler {
         if (cause.getCause() != null) traverse(acceptor, cause.getCause(), depth);
     }
 
+    private static final Set<String> BAD_PREFIXES = Set.of(
+            "me.melontini.andromeda.util.exceptions.AndromedaException", //run and Builder.build
+            "jdk.internal.reflect.", //Most likely, accessors
+            "com.sun.proxy.jdk.", //No source, useless
+            "java.lang.invoke.MethodHandleProxies$" //Internal class
+    );
+
+    public static void sanitizeTrace(Throwable cause) {
+        List<StackTraceElement> e = new ArrayList<>(Arrays.asList(cause.getStackTrace()));
+
+        e.removeIf(el -> BAD_PREFIXES.stream().anyMatch(s -> el.getClassName().startsWith(s)));
+
+        cause.setStackTrace(e.toArray(StackTraceElement[]::new));
+        if (cause.getCause() != null) sanitizeTrace(cause.getCause());
+    }
+
     public static void handleCrash(Throwable cause, Context context) {
         if (!Debug.hasKey(Debug.Keys.FORCE_CRASH_REPORT_UPLOAD)) {
             if (FabricLoader.getInstance().isDevelopmentEnvironment() || !AndromedaConfig.get().sendCrashReports)
@@ -67,7 +82,10 @@ public class CrashHandler {
 
         if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).map(info -> info.getClassName().startsWith("me.melontini.andromeda")).orElse(false) || findAndromedaInTrace(cause)) {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
+
             JsonObject object = new JsonObject();
+
+            sanitizeTrace(cause);
 
             String message = "Something terrible happened!";
             if (context.get(Object.class, Crashlytics.Keys.CRASH_REPORT).isPresent()) {

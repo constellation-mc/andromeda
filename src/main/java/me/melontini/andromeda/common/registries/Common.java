@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
@@ -22,10 +21,10 @@ public class Common {
 
     //DO NOT CALL THIS FROM THE WRONG MODULE!!!
     public static void bootstrap(Module<?> module, Class<?>... classes) {
-        AndromedaException.run(() -> {
-            MakeSure.notNull(module);
+        MakeSure.notNull(module);
 
-            for (Class<?> cls : classes) {
+        for (Class<?> cls : classes) {
+            AndromedaException.run(() -> {
                 Reflect.findField(cls, "MODULE").ifPresent(field -> Exceptions.run(() -> {
                     MakeSure.isTrue(field.getType() == module.getClass(), "Illegal module field type '%s'! Must be '%s'".formatted(field.getType(), module.getClass()));
                     field.setAccessible(true);
@@ -37,9 +36,9 @@ public class Common {
 
                 Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Exceptions.run(() -> m.invoke(null, module)));
                 Reflect.findMethod(cls, "init").ifPresent(m -> Exceptions.run(() -> m.invoke(null)));
-            }
-        }, (b) -> b.message("Failed to bootstrap module!")
-                .add("module", module.meta().id()).add("classes", Arrays.toString(classes)));
+            }, (b) -> b.message("Failed to bootstrap module!")
+                    .add("module", module.meta().id()).add("class", cls.getName()));
+        }
     }
 
     private static void initKeepers(@NotNull Class<?> reg) {
@@ -47,14 +46,16 @@ public class Common {
             if (field.getType() != Keeper.class || !Modifier.isStatic(field.getModifiers())) continue;
 
             Keeper<?> keeper = (Keeper<?>) Exceptions.supply(() -> field.get(reg));
-            if (keeper.initialized()) throw new IllegalStateException("Registry object bootstrapped before the registry itself!");
+            if (keeper.initialized())
+                throw AndromedaException.builder()
+                        .message("Keeper initialized before the Common.bootstrap call!")
+                        .add("field", field.getName())
+                        .build();
 
-            try {
+            AndromedaException.run(() -> {
                 LOGGER.debug("Initializing Keeper {} for class {}", field.getName(), reg.getName());
                 keeper.init(field);
-            } catch (Throwable t) {
-                throw new IllegalStateException("Failed to bootstrap registry object %s!".formatted(field.getName()), t);
-            }
+            }, b -> b.message("Failed to initialize Keeper").add("field", field.getName()));
         }
     }
 
@@ -72,8 +73,10 @@ public class Common {
 
     private static void bootstrap(Class<?>... classes) {
         for (Class<?> cls : classes) {
-            Reflect.findMethod(cls, "init").ifPresent(m -> Exceptions.run(() -> m.invoke(null)));
-            initKeepers(cls);
+            AndromedaException.run(() -> {
+                Reflect.findMethod(cls, "init").ifPresent(m -> Exceptions.run(() -> m.invoke(null)));
+                initKeepers(cls);
+            }, (b) -> b.message("Failed to bootstrap module!").add("class", cls.getName()));
         }
     }
 }
