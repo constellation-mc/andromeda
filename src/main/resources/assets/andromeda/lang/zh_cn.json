@@ -324,7 +324,7 @@
   "config.andromeda.base.option.sideOnlyMode": "仅客户端模式",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "禁用所有要求服务端的特性。",
   "config.andromeda.base.option.sendCrashReports": "上传错误报告",
-  "config.andromeda.base.option.sendCrashReports.@Tooltip": "在客户端崩溃时上传的数据：\n栈跟踪，加载的模组，环境（客户端/服务端）\n错误报告不会附加特征信息。",
+  "config.andromeda.base.option.sendCrashReports.@Tooltip": "崩溃时上传的数据：\n- 环境（如客户端），\n- 系统版本（如Windows 11），\n- 平台（如Fabric），\n- Java（如甲骨文Java17），\n- Bootstrap状态（如Discovery），\n- 部分载入的模组。\n错误报告不会附加特征信息。",
   "config.andromeda.base.option.debugMessages": "启用调试信息",
   "config.andromeda.base.option.debugMessages.@Tooltip": "开启后，日志文件将被数不清的条目淹没。"
 }
