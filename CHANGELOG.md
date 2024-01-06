@@ -2,7 +2,7 @@
 
 ## Alpha warning!
 
-- **1.19.3 is no longer supported!**
+- [**1.19.3 is no longer supported!**](https://github.com/melontini/dark-matter/wiki#version-support)
 - **1.18.2 will no longer receive alpha updates!**
 
 ***
