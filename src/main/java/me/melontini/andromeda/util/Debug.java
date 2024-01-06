@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.config.BasicConfig;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.util.mixin.ErrorHandler;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,7 +13,7 @@ import java.util.*;
 public class Debug {
 
     private static final ConfigManager<Holder> MANAGER = ConfigManager.of(Holder.class, "andromeda/debug", Holder::new)
-            .exceptionHandler((e, stage) -> LOGGER.error("Failed to %s debug config!".formatted(stage.toString().toLowerCase()), e));
+            .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s debug config!".formatted(stage.toString().toLowerCase()), e));
 
     private static Holder CONFIG;
 
@@ -64,7 +64,7 @@ public class Debug {
          */
         public static final String ENABLE_ALL_MODULES = "enableAllModules";
         /**
-         * Forces all configs to be in {@link BasicConfig.Scope#DIMENSION}.
+         * Forces all configs to be in {@link Module.BaseConfig.Scope#DIMENSION}.
          */
         public static final String FORCE_DIMENSION_SCOPE = "forceDimensionScope";
         /**
@@ -75,5 +75,6 @@ public class Debug {
          * Prints missing option tooltips for the currently selected language after client resources are loaded.
          */
         public static final String PRINT_MISSING_TOOLTIPS = "printMissingTooltips";
+        public static final String FORCE_CRASH_REPORT_UPLOAD = "forceCrashReportUpload";
     }
 }

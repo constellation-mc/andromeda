@@ -31,7 +31,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    def dmModules = ["base", "minecraft", "analytics", "analytics-crashes", "analytics-mixpanel", "content", "mirage", "glitter"]
+    def dmModules = ["base", "minecraft", "content", "crash-handler", "mirage", "glitter"]
     for (final def module in dmModules) {
         modApi include("me.melontini.dark-matter:dark-matter-${module}:${project.dark_matter}")
     }

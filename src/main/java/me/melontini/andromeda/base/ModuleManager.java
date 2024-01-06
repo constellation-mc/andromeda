@@ -4,8 +4,6 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.Unscoped;
-import me.melontini.andromeda.base.config.BasicConfig;
-import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -35,7 +33,7 @@ import java.util.stream.Collectors;
 @CustomLog
 public class ModuleManager {
 
-    private static final List<String> categories = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
+    public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
     private final Reference2ReferenceMap<Class<?>, Module<?>> discoveredModules;
     private final Object2ReferenceMap<String, Module<?>> discoveredModuleNames;
@@ -45,29 +43,10 @@ public class ModuleManager {
 
     final Map<String, Module<?>> mixinConfigs = new Object2ReferenceOpenHashMap<>();
 
-    ModuleManager(List<Module<?>> discovered, @Nullable JsonObject oldCfg) {
+    ModuleManager(List<Module<?>> sorted, @Nullable JsonObject oldCfg) {
         if (Bootstrap.INSTANCE != null)
             throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
-
-        Map<String, Module<?>> packages = new HashMap<>();
-        Map<String, Module<?>> ids = new HashMap<>();
-        for (Module<?> module : discovered) {
-            validateModule(module);
-
-            var id = ids.put(module.meta().id(), module);
-            if (id != null)
-                throw new IllegalStateException("Duplicate module IDs! ID: %s, Duplicate: %s, Module: %s".formatted(module.meta().id(), module.getClass(), id.getClass()));
-
-            var pkg = packages.put(module.getClass().getPackageName(), module);
-            if (pkg != null)
-                throw new IllegalStateException("Duplicate module packages! Package: %s, Duplicate: %s, Module: %s".formatted(module.getClass().getPackageName(), module.getClass(), pkg.getClass()));
-        }
-
-        List<Module<?>> sorted = discovered.stream().sorted(Comparator.comparingInt(m -> {
-            int i = categories.indexOf(m.meta().category());
-            return i >= 0 ? i : categories.size();
-        })).toList();
 
         this.discoveredModules = Utilities.supply(() -> {
             var m = sorted.stream().collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, Reference2ReferenceLinkedOpenHashMap::new));
@@ -116,28 +95,28 @@ public class ModuleManager {
 
     private void fixScopes(Collection<Module<?>> modules) {
         modules.forEach(m -> {
-            if (m.meta().environment() == Environment.CLIENT && m.config().scope != BasicConfig.Scope.GLOBAL) {
+            if (m.meta().environment() == Environment.CLIENT && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
                 LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
-                        m.meta().environment(), m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
-                m.config().scope = BasicConfig.Scope.GLOBAL;
+                        m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
+                m.config().scope = Module.BaseConfig.Scope.GLOBAL;
             }
 
-            if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != BasicConfig.Scope.GLOBAL) {
+            if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
                 LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
-                        "Unscoped", m.meta().id(), m.config().scope, BasicConfig.Scope.GLOBAL);
-                m.config().scope = BasicConfig.Scope.GLOBAL;
+                        "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
+                m.config().scope = Module.BaseConfig.Scope.GLOBAL;
             }
         });
 
         if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
             modules.forEach(m -> {
                 if (m.meta().environment() != Environment.CLIENT && !m.getClass().isAnnotationPresent(Unscoped.class)) {
-                    m.config().scope = BasicConfig.Scope.DIMENSION;
+                    m.config().scope = Module.BaseConfig.Scope.DIMENSION;
                 }
             });
     }
 
-    void validateModule(Module<?> module) {
+    static void validateModule(Module<?> module) {
         MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
         MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
@@ -146,8 +125,8 @@ public class ModuleManager {
     private void setUpConfigs(Collection<Module<?>> modules) {
         doWork(modules, m -> {
             var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
-            config.onLoad(config1 -> {
-                if (Config.get().sideOnlyMode) {
+            config.onLoad((config1, path) -> {
+                if (AndromedaConfig.get().sideOnlyMode) {
                     switch (m.meta().environment()) {
                         case BOTH -> config1.enabled = false;
                         case CLIENT -> {
@@ -161,7 +140,7 @@ public class ModuleManager {
                     }
                 }
             });
-            config.exceptionHandler((e, stage) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
+            config.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
             m.manager = Utilities.cast(config);
             m.onConfig(Utilities.cast(config));
         });
@@ -173,15 +152,15 @@ public class ModuleManager {
      * @param m the module class.
      * @return the config class.
      */
-    public Class<? extends BasicConfig> getConfigClass(Class<?> m) {
+    public Class<? extends Module.BaseConfig> getConfigClass(Class<?> m) {
         if (m.getGenericSuperclass() instanceof ParameterizedType pt) {
             for (Type ta : pt.getActualTypeArguments()) {
-                if (ta instanceof Class<?> cls && BasicConfig.class.isAssignableFrom(cls)) {
+                if (ta instanceof Class<?> cls && Module.BaseConfig.class.isAssignableFrom(cls)) {
                     return Utilities.cast(cls);
                 }
             }
         }
-        return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : BasicConfig.class;
+        return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : Module.BaseConfig.class;
     }
 
     public void cleanConfigs(Path root, Collection<Module<?>> modules) {
@@ -310,7 +289,7 @@ public class ModuleManager {
         StringBuilder builder = new StringBuilder();
         categories.forEach((s, strings) -> {
             builder.append("\n\t - ").append(s);
-            if (!ModuleManager.categories.contains(s)) builder.append("*");
+            if (!ModuleManager.CATEGORIES.contains(s)) builder.append("*");
             builder.append("\n\t  |-- ");
 
             StringJoiner joiner = new StringJoiner(", ");

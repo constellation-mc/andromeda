@@ -4,13 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.config.Config;
+import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.common.client.config.AutoConfigScreen;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -52,7 +51,7 @@ public class AndromedaClient {
 
     public void onInitializeClient() {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
-        if (!Config.get().sideOnlyMode) ClientSideNetworking.register();
+        if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register();
         else {
             for (Module<?> module : ModuleManager.get().all()) {
                 switch (module.meta().environment()) {
@@ -80,8 +79,6 @@ public class AndromedaClient {
                 animate = false;
             }
         }));
-
-        Support.runWeak(EnvType.CLIENT, () -> CrashHandler::nukeProfile);
     }
 
     private static void printMissingTooltips() {

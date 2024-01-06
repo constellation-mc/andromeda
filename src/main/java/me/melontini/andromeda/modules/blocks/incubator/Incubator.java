@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.annotations.Unscoped;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.andromeda.util.JsonOps;
@@ -30,7 +29,7 @@ public class Incubator extends Module<Incubator.Config> {
         Common.bootstrap(this, Content.class, EggProcessingData.class);
     }
 
-    public static class Config extends BasicConfig {
+    public static class Config extends BaseConfig {
 
         @SpecialEnvironment(Environment.SERVER)
         public boolean randomness = true;

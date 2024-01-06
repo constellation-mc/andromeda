@@ -5,7 +5,6 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.Unscoped;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.util.JsonOps;
 
 @Unscoped
@@ -19,7 +18,7 @@ public class BetterFurnaceMinecart extends Module<BetterFurnaceMinecart.Config> 
         JsonOps.ifPresent(config, "furnaceMinecartTakeFuelWhenLow", e -> this.config().takeFuelWhenLow = e.getAsBoolean());
     }
 
-    public static class Config extends BasicConfig {
+    public static class Config extends BaseConfig {
         public int maxFuel = 45000;
 
         public boolean takeFuelWhenLow = true;

@@ -4,7 +4,6 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -15,13 +14,13 @@ import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
 @OldConfigKey("tooltipNotName")
 @ModuleInfo(name = "name_tooltips", category = "gui", environment = Environment.CLIENT)
-public class NameTooltips extends Module<BasicConfig> {
+public class NameTooltips extends Module<Module.BaseConfig> {
 
     private final BooleanSupplier iceberg = () -> testModVersion(this, "minecraft", ">=1.20") && testModVersion(this, "iceberg", "<1.1.13");
 
     @Override
-    public void onConfig(ConfigManager<BasicConfig> manager) {
-        manager.onLoad(config -> {
+    public void onConfig(ConfigManager<BaseConfig> manager) {
+        manager.onSave((config, path) -> {
             if (iceberg.getAsBoolean()) config.enabled = false;
         });
     }

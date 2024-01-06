@@ -30,8 +30,9 @@ public class ModMenuIntegration implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> AutoConfigScreen.get(parent).map(screen1 -> {
-            ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+        return parent -> Support.get("cloth-config", () -> () -> {
+            Screen screen = AutoConfigScreen.get(parent);
+            ScreenEvents.AFTER_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
                 if (screen == screen1) {
                     addDrawableChild(screen, new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
                         if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
@@ -46,7 +47,7 @@ public class ModMenuIntegration implements ModMenuApi {
                     }));
                 }
             });
-            return screen1;
+            return screen;
         }).orElse(null);
     }
 

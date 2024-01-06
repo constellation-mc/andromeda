@@ -2,7 +2,8 @@
 
 ## Alpha warning!
 
-- **1.19.3 & 1.18.2 will no longer receive alpha updates!**
+- [**1.19.3 is no longer supported!**](https://github.com/melontini/dark-matter/wiki#version-support)
+- **1.18.2 will no longer receive alpha updates!**
 
 ***
 
@@ -30,3 +31,4 @@
 
 * Improved crash reporting.
 * A bunch of other improvements.
+* Updated Chinese translation. Courtesy of [Rad586](https://github.com/Rad586).

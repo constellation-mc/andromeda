@@ -10,6 +10,8 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
+import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
+import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import net.fabricmc.api.EnvType;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -23,6 +25,8 @@ import java.util.List;
 public class AndromedaMixins {
 
     private static final ClassPath CLASS_PATH = Exceptions.supply(ClassPath::from);
+
+    private static final IPluginPlugin MIXIN_PREDICATE = ExtendablePlugin.DefaultPlugins.mixinPredicatePlugin();
 
     public static ClassPath getClassPath() {
         return CLASS_PATH;
@@ -44,21 +48,26 @@ public class AndromedaMixins {
     public static boolean checkNode(ClassNode n) {
         if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS)) verifyMixin(n, n.name);
 
-        boolean load = true;
         AnnotationNode envNode = Annotations.getVisible(n, SpecialEnvironment.class);
         if (envNode != null) {
             Environment value = AsmUtil.getAnnotationValue(envNode, "value", Environment.BOTH);
             if (value != null) {
-                return switch (value) {
-                    case SERVER -> CommonValues.environment().equals(EnvType.SERVER);
-                    case CLIENT -> CommonValues.environment().equals(EnvType.CLIENT);
-                    case ANY -> true;
+                switch (value) {
+                    case SERVER -> {
+                        if (!CommonValues.environment().equals(EnvType.SERVER)) return false;
+                    }
+                    case CLIENT -> {
+                        if (!CommonValues.environment().equals(EnvType.CLIENT)) return false;
+                    }
+                    case ANY -> {
+                    }
                     default -> throw new IllegalStateException(value.toString());
-                };
+                }
             }
         }
 
-        return load;
+        //MixinPredicate only uses the node.
+        return MIXIN_PREDICATE.shouldApplyMixin(null, null, n, null);
     }
 
     private static void verifyMixin(ClassNode mixinNode, String mixinClassName) {

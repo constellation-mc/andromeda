@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
 
@@ -48,7 +47,7 @@ public class AdvancementGeneration extends Module<AdvancementGeneration.Config> 
         Common.bootstrap(this, Helper.class);
     }
 
-    public static class Config extends BasicConfig {
+    public static class Config extends BaseConfig {
 
         public boolean requireAllItems = true;
 

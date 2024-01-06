@@ -1,19 +1,17 @@
 package me.melontini.andromeda.common.client.config;
 
+import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.Origin;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
-import me.melontini.andromeda.base.config.AndromedaConfig;
-import me.melontini.andromeda.base.config.Config;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -25,6 +23,7 @@ import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.MutableText;
@@ -40,83 +39,88 @@ import java.util.function.Consumer;
 public class AutoConfigScreen {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static final Optional<Field> saveCallback = Reflect.findField(AbstractConfigEntry.class, "saveCallback");
+    private static Optional<Field> saveCallback;
     private static final ThreadLocal<Set<Runnable>> saveQueue = ThreadLocal.withInitial(HashSet::new);
+
+    static {
+        if (!FabricLoader.getInstance().isModLoaded("cloth-config")) {
+            AndromedaLog.error("AutoConfigScreen class loaded without Cloth Config!");
+        }
+    }
 
     public static void register() {
         AndromedaLog.info("Loading ClothConfig support!");
+        saveCallback = Reflect.findField(AbstractConfigEntry.class, "saveCallback");
     }
 
-    public static Optional<Screen> get(Screen screen) {
-        return Support.get("cloth-config", () -> () -> {
-            ConfigBuilder builder = ConfigBuilder.create()
-                    .setParentScreen(screen)
-                    .setTitle(TextUtil.translatable("config.andromeda.title", CommonValues.version().split("-")[0]))
-                    .setSavingRunnable(AutoConfigScreen::powerSave)
-                    .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
+    public static Screen get(Screen screen) {
+        ConfigBuilder builder = ConfigBuilder.create()
+                .setParentScreen(screen)
+                .setTitle(TextUtil.translatable("config.andromeda.title", CommonValues.version().split("-")[0]))
+                .setSavingRunnable(AutoConfigScreen::powerSave)
+                .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 
-            var eb = builder.entryBuilder();
+        var eb = builder.entryBuilder();
 
-            GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
+        GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
 
-            ModuleManager.get().all().forEach(module -> {
-                List<Field> fields = new ArrayList<>(MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields())));
-                fields.removeIf(field -> field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class));
-                fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
+        ModuleManager.get().all().forEach(module -> {
+            List<Field> fields = new ArrayList<>(MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields())));
+            fields.removeIf(field -> field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class));
+            fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
-                var category = getOrCreateCategoryForField(module, builder);
-                String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
+            var category = getOrCreateCategoryForField(module, builder);
+            String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
 
-                if (fields.size() <= 1) {
-                    registry.getAndTransform(moduleText, fields.get(0), module.config(), module.defaultConfig(), registry)
-                            .forEach(e -> {
-                                if (checkOptionManager(e, module, fields.get(0))) {
-                                    setModuleTooltip(e, module);
-                                    appendEnvInfo(e, module.meta().environment());
-                                }
-                                appendOrigin(e, module);
-                                wrapTooltip(e);
-                                wrapSaveCallback(e, module::save);
-                                category.addEntry(e);
-                            });
-                } else {
-                    List<AbstractConfigListEntry<?>> list = new ArrayList<>();
-                    fields.forEach((field) -> {
-                        String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
-                        registry.getAndTransform(opt, field, module.config(), module.defaultConfig(), registry).forEach(e -> {
-                            if (checkOptionManager(e, module, field)) {
-                                setOptionTooltip(e, opt + ".@Tooltip");
-                                appendEnvInfo(e, field);
+            if (fields.size() <= 1) {
+                registry.getAndTransform(moduleText, fields.get(0), module.config(), module.defaultConfig(), registry)
+                        .forEach(e -> {
+                            if (checkOptionManager(e, module, fields.get(0))) {
+                                setModuleTooltip(e, module);
+                                appendEnvInfo(e, module.meta().environment());
                             }
+                            appendOrigin(e, module);
                             wrapTooltip(e);
                             wrapSaveCallback(e, module::save);
-                            list.add(e);
+                            category.addEntry(e);
                         });
+            } else {
+                List<AbstractConfigListEntry<?>> list = new ArrayList<>();
+                fields.forEach((field) -> {
+                    String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
+                    registry.getAndTransform(opt, field, module.config(), module.defaultConfig(), registry).forEach(e -> {
+                        if (checkOptionManager(e, module, field)) {
+                            setOptionTooltip(e, opt + ".@Tooltip");
+                            appendEnvInfo(e, field);
+                        }
+                        wrapTooltip(e);
+                        wrapSaveCallback(e, module::save);
+                        list.add(e);
                     });
-                    var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
-                    var built = e.build();
-                    setModuleTooltip(built, module);
-                    appendOrigin(built, module);
-                    appendEnvInfo(built, module.meta().environment());
-                    wrapTooltip(built);
-                    category.addEntry(built);
-                }
-            });
-
-            ConfigCategory misc = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.misc"));
-            Arrays.stream(AndromedaConfig.class.getFields()).forEach((field) -> {
-                String opt = "config.andromeda.base.option." + field.getName();
-                registry.getAndTransform(opt, field, Config.get(), Config.getDefault(), registry).forEach(e -> {
-                    setOptionTooltip(e, opt + ".@Tooltip");
-                    appendEnvInfo(e, field);
-                    wrapTooltip(e);
-                    wrapSaveCallback(e, Config::save);
-                    misc.addEntry(e);
                 });
-            });
-
-            return builder.build();
+                var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
+                var built = e.build();
+                setModuleTooltip(built, module);
+                appendOrigin(built, module);
+                appendEnvInfo(built, module.meta().environment());
+                wrapTooltip(built);
+                category.addEntry(built);
+            }
         });
+
+        ConfigCategory misc = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.misc"));
+        Arrays.stream(AndromedaConfig.Config.class.getFields()).forEach((field) -> {
+            String opt = "config.andromeda.base.option." + field.getName();
+            registry.getAndTransform(opt, field, AndromedaConfig.get(), AndromedaConfig.getDefault(), registry).forEach(e -> {
+                setOptionTooltip(e, opt + ".@Tooltip");
+                appendEnvInfo(e, field);
+                wrapTooltip(e);
+                wrapSaveCallback(e, AndromedaConfig::save);
+                misc.addEntry(e);
+            });
+        });
+
+        return builder.build();
     }
 
     private static void wrapSaveCallback(AbstractConfigEntry<?> e, Runnable saveFunc) {
@@ -224,11 +228,11 @@ public class AutoConfigScreen {
     }
 
     private static void powerSave() {
-        Config.save();
         if (saveCallback.isPresent()) {
             saveQueue.get().forEach(Runnable::run);
             saveQueue.get().clear();
         } else {
+            AndromedaConfig.save();
             ModuleManager.get().all().forEach(Module::save);
         }
     }

@@ -7,7 +7,6 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.Origin;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.util.JsonOps;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class AutoPlanting extends Module<AutoPlanting.Config> {
         }
     }
 
-    public static class Config extends BasicConfig {
+    public static class Config extends BaseConfig {
 
         public boolean blacklistMode = true;
 

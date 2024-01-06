@@ -10,7 +10,6 @@ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.Unscoped;
-import me.melontini.andromeda.base.config.BasicConfig;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -48,9 +47,9 @@ public class DataConfigs extends JsonDataLoader {
                 var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
                 var cls = ModuleManager.get().getConfigClass(m.getClass());
 
-                if (m.config().scope == BasicConfig.Scope.WORLD) {
+                if (m.config().scope == Module.BaseConfig.Scope.WORLD) {
                     if (!object.has(DEFAULT.toString()) || object.size() > 1)
-                        throw new IllegalStateException("'%s' modules only support '%s' as their dimension!".formatted(BasicConfig.Scope.WORLD, DEFAULT));
+                        throw new IllegalStateException("'%s' modules only support '%s' as their dimension!".formatted(Module.BaseConfig.Scope.WORLD, DEFAULT));
 
                     var map = configs.computeIfAbsent(DEFAULT, identifier -> new Reference2ObjectOpenHashMap<>());
                     map.computeIfAbsent(m, module -> new ReferenceLinkedOpenHashSet<>())
@@ -80,7 +79,7 @@ public class DataConfigs extends JsonDataLoader {
         }, executor);
     }
 
-    private static CompletableFuture<Data> makeFuture(Gson gson, Module<?> m, Class<? extends BasicConfig> cls, JsonElement element) {
+    private static CompletableFuture<Data> makeFuture(Gson gson, Module<?> m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 var instance = gson.fromJson(element, cls);
@@ -102,7 +101,7 @@ public class DataConfigs extends JsonDataLoader {
         }, Util.getMainWorkerExecutor());
     }
 
-    public record Data(Set<Field> fields, BasicConfig config) {
+    public record Data(Set<Field> fields, Module.BaseConfig config) {
     }
 
     @Override
@@ -152,7 +151,7 @@ public class DataConfigs extends JsonDataLoader {
         server.runTasks(task::isDone);
     }
 
-    private static void apply(BasicConfig config, Data data) {
+    private static void apply(Module.BaseConfig config, Data data) {
         data.fields().forEach((field) -> {
             try {
                 field.set(config, field.get(data.config()));
@@ -162,7 +161,7 @@ public class DataConfigs extends JsonDataLoader {
         });
     }
 
-    static void applyDataPacks(BasicConfig config, Module<?> m, Identifier id) {
+    static void applyDataPacks(Module.BaseConfig config, Module<?> m, Identifier id) {
         if (DEFAULT_CONFIGS != null) {
             var forModule = DEFAULT_CONFIGS.get(m);
             if (forModule != null) {

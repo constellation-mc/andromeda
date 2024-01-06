@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
     @Override
@@ -36,7 +37,7 @@ public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
                                 .newInstance());
                     }
                     return null;
-                }, Bootstrap.getPreLaunchService())));
+                }, ForkJoinPool.commonPool())));
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
                 .handle((unused, throwable) -> futures).join().stream()
                 .map(CompletableFuture::join).filter(Objects::nonNull).toList();
