@@ -47,7 +47,7 @@ public class MixinProcessor {
                 Mixins.addConfiguration(cfg);
                 manager.mixinConfigs.put(cfg, module);
             } catch (IOException e) {
-                throw new AndromedaException.Builder()
+                throw AndromedaException.builder()
                         .message("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()))
                         .add("mixin_config", cfg).add("module", module.meta().id()).build();
             } finally {

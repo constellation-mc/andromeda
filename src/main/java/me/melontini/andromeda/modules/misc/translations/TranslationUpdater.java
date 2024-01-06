@@ -105,7 +105,7 @@ public class TranslationUpdater {
                     return languageCode;
                 }
             }
-            throw new AndromedaException.Builder()
+            throw AndromedaException.builder()
                     .report(false).message("Mo valid language option found!")
                     .build();
         } catch (Throwable e) {

@@ -2,23 +2,24 @@ package me.melontini.andromeda.util.exceptions;
 
 import com.google.common.base.Strings;
 import me.melontini.andromeda.base.Bootstrap;
+import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.dark_matter.api.base.util.classes.Context;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
+import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import me.melontini.dark_matter.api.crash_handler.Prop;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class AndromedaException extends RuntimeException {
 
     private final boolean report;
     private final Map<String, String> statuses;
-    private boolean appendStatuses = true;
 
     @SuppressWarnings("unused")
     private AndromedaException() {
-        this(false, "Empty ctx called! This must never happen!!!", null, Collections.emptyMap());
+        this(false, "Empty ctx called! This must never happen!!!", null, new HashMap<>());
     }
 
     private AndromedaException(boolean report, String message, Throwable cause, Map<String, String> statuses) {
@@ -29,54 +30,56 @@ public class AndromedaException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return buildMessage(report, super.getMessage(), appendStatuses ? statuses : Collections.emptyMap());
+        StringBuilder b = new StringBuilder();
+        b.append("(Andromeda) ");
+        if (Strings.isNullOrEmpty(super.getMessage())) b.append("Something went very wrong!");
+        else b.append(super.getMessage());
+        return b.toString();
+    }
+
+    public Map<String, String> getStatuses() {
+        return Collections.unmodifiableMap(statuses);
     }
 
     public boolean shouldReport() {
         return report;
     }
 
-    protected static String buildMessage(boolean report, String message, Map<String, String> statuses) {
-        StringBuilder b = new StringBuilder();
-        b.append("(Andromeda) ");
-        if (Strings.isNullOrEmpty(message)) b.append("Something went very wrong!");
-        else b.append(message);
-
-        if (!statuses.isEmpty()) {
-            var statusesList = statuses.entrySet().stream().toList();
-            for (int i = 0; i < statusesList.size(); i += 2) {
-                var e1 = statusesList.get(i);
-                b.append("\n    ").append('\'').append(e1.getKey()).append("': ").append('\'').append(e1.getValue()).append("',    ");
-
-                if (i + 1 < statusesList.size()) {
-                    var e2 = statusesList.get(i + 1);
-                    b.append('\'').append(e2.getKey()).append("': ").append('\'').append(e2.getValue()).append("'");
-                }
-            }
-        }
-
-        if (report)
-            b.append('\n').append("If you have \"Send Crash Reports\" enabled this crash report would've been sent to the developer. Sorry!");
-        return b.toString();
-    }
-
-    public static void run(ThrowingRunnable<Throwable> runnable, Supplier<Builder> builder) {
+    public static void run(ThrowingRunnable<Throwable> runnable, Consumer<Builder> consumer) {
         try {
             runnable.run();
         } catch (Throwable e) {
-            throw builder.get().cause(e).build();
+            var builder = AndromedaException.builder();
+            consumer.accept(builder);
+            throw builder.cause(e).build();
         }
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
+
+        private static final Set<String> DEFAULT_KEYS = Set.of(
+                "bootstrap_status", "platform",
+                prop(Prop.ENVIRONMENT), prop(Prop.OS), prop(Prop.JAVA_VERSION), prop(Prop.JAVA_VENDOR)
+        );
+
+        private static String prop(Prop prop) {
+            return prop.name().toLowerCase();
+        }
+
         private String message;
         private Throwable cause;
         private boolean report = true;
 
         private final Map<String, String> statuses = new LinkedHashMap<>();
 
-        public Builder() {
-            add("bootstrap_status", Bootstrap.getStatus());
+        private Builder() {
+            add(Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION, Prop.JAVA_VENDOR);
+            add("platform", CommonValues.platform());
+            add("bootstrap_status", Bootstrap.Status.get());
         }
 
         public Builder message(String message) {
@@ -109,8 +112,9 @@ public class AndromedaException extends RuntimeException {
         private void disableInHierarchy(Throwable cause) {
             if (cause == null) return;
             if (cause instanceof AndromedaException e) {
-                e.appendStatuses = false;
-                e.statuses.forEach(this.statuses::putIfAbsent);
+                for (String defaultKey : DEFAULT_KEYS) {
+                    e.statuses.remove(defaultKey);
+                }
             }
             disableInHierarchy(cause.getCause());
         }
@@ -118,9 +122,14 @@ public class AndromedaException extends RuntimeException {
         public AndromedaException build() {
             disableInHierarchy(cause);
 
-            return new AndromedaException(report,
+            var e = new AndromedaException(report,
                     Strings.isNullOrEmpty(message) ? "Something went very wrong!" : message,
                     cause, statuses);
+
+            //CrashHandler can't automatically handle preLaunch errors, so this is what we have to do.
+            if (!Crashlytics.hasHandler("andromeda")) CrashHandler.handleCrash(e, Context.of());
+
+            return e;
         }
     }
 }

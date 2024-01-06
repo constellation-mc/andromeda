@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
 import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;
@@ -29,7 +30,10 @@ public class ScopedConfigs {
                 case DIMENSION -> get(sw).get(module);
             };
         }
-        AndromedaLog.error("Scoped configs requested on client! Returning un-scoped! Module: %s".formatted(module.meta().id()));
+        AndromedaLog.error("Scoped configs requested on client! Returning un-scoped!", AndromedaException.builder()
+                .add("module", module.meta().id())
+                .add("world", world.getRegistryKey())
+                .build());
         return module.config();
     }
 
@@ -81,10 +85,7 @@ public class ScopedConfigs {
         }
 
         default <T extends Module.BaseConfig> T am$get(Module<T> module) {
-            if (this instanceof ServerWorld w) {
-                return ScopedConfigs.get(w, module);
-            }
-            return module.config();
+            return ScopedConfigs.get((World) this, module);
         }
 
         default <T extends Module.BaseConfig> void am$save(Class<? extends Module<T>> cls) {

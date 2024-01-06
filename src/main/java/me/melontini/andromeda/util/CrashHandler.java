@@ -3,8 +3,8 @@ package me.melontini.andromeda.util;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.AndromedaConfig;
+import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.classes.Context;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Base64;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 public class CrashHandler {
 
@@ -34,14 +35,36 @@ public class CrashHandler {
             if (cls.startsWith("me.melontini.andromeda.")) return true;
             if (cls.startsWith("net.minecraft.")) {
                 String mthd = element.getMethodName();
-                return (mthd.contains("$andromeda$") || mthd.contains(".andromeda$"));
+                if ((mthd.contains("$andromeda$") || mthd.contains(".andromeda$")))
+                    return true;
             }
         }
         return cause.getCause() != null && findAndromedaInTrace(cause.getCause());
     }
 
+    private static boolean hasInstance(Throwable cause) {
+        if (cause instanceof AndromedaException) return true;
+        return cause.getCause() != null && hasInstance(cause.getCause());
+    }
+
+    public static void traverse(BiConsumer<String, String> acceptor, Throwable cause, int depth) {
+        if (cause instanceof AndromedaException e) {
+            String s = "-".repeat(Math.max(0, depth));
+
+            e.getStatuses().forEach((string, string2) -> acceptor.accept(s + string, string2));
+
+            if (cause.getCause() != null) traverse(acceptor, cause.getCause(), depth + 1);
+            return;
+        }
+        if (cause.getCause() != null) traverse(acceptor, cause.getCause(), depth);
+    }
+
     public static void handleCrash(Throwable cause, Context context) {
-        if (FabricLoader.getInstance().isDevelopmentEnvironment() || !AndromedaConfig.get().sendCrashReports) return;
+        if (!Debug.hasKey(Debug.Keys.FORCE_CRASH_REPORT_UPLOAD)) {
+            if (FabricLoader.getInstance().isDevelopmentEnvironment() || !AndromedaConfig.get().sendCrashReports)
+                return;
+        }
+
         if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).map(info -> info.getClassName().startsWith("me.melontini.andromeda")).orElse(false) || findAndromedaInTrace(cause)) {
             AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
             JsonObject object = new JsonObject();
@@ -57,9 +80,15 @@ public class CrashHandler {
                 stackTrace.add(string);
             object.add("stackTrace", stackTrace);
 
-            MIXPANEL.attachProps(object, Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION, Prop.JAVA_VENDOR);
-            object.addProperty("platform", CommonValues.platform().toString().toLowerCase());
-            object.addProperty("bootstrap_status", Bootstrap.getStatus().toString());
+            JsonObject statuses = new JsonObject();
+            if (!hasInstance(cause)) {
+                MIXPANEL.attachProps(statuses, Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION, Prop.JAVA_VENDOR);
+                statuses.addProperty("platform", CommonValues.platform().toString().toLowerCase());
+                statuses.addProperty("bootstrap_status", Bootstrap.Status.get().toString());
+            } else {
+                traverse(statuses::addProperty, cause, 0);
+            }
+            object.add("statuses", statuses);
 
             JsonArray mods = new JsonArray();
             Set<String> importantMods = Sets.newHashSet("andromeda", "minecraft", "fabric-api", "fabricloader", "connectormod", "forge");
@@ -79,8 +108,7 @@ public class CrashHandler {
     }
 
     private static String getFromCrashReport(Context context) {
-        return context.get(Object.class, Crashlytics.Keys.CRASH_REPORT)
-                .map(CrashReport.class::cast).map(CrashReport::getMessage).orElse("null");
+        return CrashReportProcessor.accept(context);
     }
 
     private static String getCauseAsString(Throwable cause, String message) {
@@ -108,5 +136,13 @@ public class CrashHandler {
             throwable.setStackTrace(cause.getStackTrace());
         }
         return throwable;
+    }
+
+    private static class CrashReportProcessor {
+
+        public static String accept(Context context) {
+            CrashReport report = context.get(CrashReport.class, Crashlytics.Keys.CRASH_REPORT).orElseThrow();
+            return report.getMessage();
+        }
     }
 }

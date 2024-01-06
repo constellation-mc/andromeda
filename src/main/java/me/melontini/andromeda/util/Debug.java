@@ -75,5 +75,6 @@ public class Debug {
          * Prints missing option tooltips for the currently selected language after client resources are loaded.
          */
         public static final String PRINT_MISSING_TOOLTIPS = "printMissingTooltips";
+        public static final String FORCE_CRASH_REPORT_UPLOAD = "forceCrashReportUpload";
     }
 }

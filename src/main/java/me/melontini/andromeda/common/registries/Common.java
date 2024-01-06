@@ -38,8 +38,7 @@ public class Common {
                 Reflect.findMethod(cls, "init", module.getClass()).ifPresent(m -> Exceptions.run(() -> m.invoke(null, module)));
                 Reflect.findMethod(cls, "init").ifPresent(m -> Exceptions.run(() -> m.invoke(null)));
             }
-        }, () -> new AndromedaException.Builder()
-                .message("Failed to bootstrap module!")
+        }, (b) -> b.message("Failed to bootstrap module!")
                 .add("module", module.meta().id()).add("classes", Arrays.toString(classes)));
     }
 
