@@ -18,12 +18,23 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
+import java.util.Optional;
+
+import static me.melontini.dark_matter.api.base.util.Exceptions.supply;
 
 @Mixin(FurnaceMinecartEntity.class)
 abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
     @Unique
     private static final BetterFurnaceMinecart am$bfm = ModuleManager.quick(BetterFurnaceMinecart.class);
+
+    //stfu IDEA.
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "JavaReflectionMemberAccess"})
+    @Unique
+    private static final Optional<Field> fb$pauseFuel = Support.getWeak("fabrication", () -> () ->
+            FurnaceMinecartEntity.class.getDeclaredField("fabrication$pauseFuel"));
+
 
     @Shadow public int fuel;
 
@@ -37,8 +48,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
 
         if (!this.world.isClient() && this.fuel < 100) {
             if (world.getTime() % 20 == 0) {
-                if (Support.getWeak("fabrication", () -> () ->
-                        getClass().getField("fabrication$pauseFuel").getInt(this) > 0).orElse(false)) return;
+                if (fb$pauseFuel.map(f -> supply(() -> f.getInt(this)) > 0).orElse(false)) return;
 
                 AbstractMinecartEntity entity = this.world
                         .getEntitiesByClass(AbstractMinecartEntity.class, this.getBoundingBox().expand(1.5, 0, 1.5), minecart -> minecart instanceof Inventory)
