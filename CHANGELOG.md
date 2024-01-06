@@ -31,3 +31,4 @@
 
 * Improved crash reporting.
 * A bunch of other improvements.
+* Updated Chinese translation. Courtesy of [Rad586](https://github.com/Rad586).
