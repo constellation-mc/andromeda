@@ -1,6 +1,7 @@
 package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.base.hacks.EntrypointHack;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import org.spongepowered.asm.mixin.Mixins;
@@ -16,6 +17,10 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     @Override
     public void onPluginLoad(String mixinPackage) {
         this.mixinPackage = mixinPackage;
+        if (!EntrypointHack.pushPreLaunch()) {
+            //TODO: try some workaround? explain why this is bad?
+        }
+
         AndromedaMixins.getClassPath().addUrl(this.getClass().getProtectionDomain().getCodeSource().getLocation());
 
         Debug.load();
