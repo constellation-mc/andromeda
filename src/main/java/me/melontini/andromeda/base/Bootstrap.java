@@ -107,7 +107,7 @@ public class Bootstrap {
             }
         }
 
-        AndromedaConfig.load();
+        AndromedaConfig.save();
 
         Status.update(Status.DISCOVERY);
 

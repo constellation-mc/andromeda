@@ -10,14 +10,8 @@ public class AndromedaConfig {
 
     private static final ConfigManager<Config> MANAGER = ConfigManager.of(Config.class, "andromeda/mod", Config::new)
             .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s main Andromeda config (mod.json)!".formatted(stage.toString().toLowerCase()), e));
-    private static Config CONFIG;
-    private static Config DEFAULT;
-
-    public static void load() {
-        CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir());
-        DEFAULT = MANAGER.createDefault();
-        MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG);
-    }
+    private static final Config CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir());
+    private static final Config DEFAULT = MANAGER.createDefault();
 
     public static Config get() {
         return CONFIG;
