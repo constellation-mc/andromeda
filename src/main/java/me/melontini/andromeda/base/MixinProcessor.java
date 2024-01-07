@@ -31,6 +31,7 @@ import java.util.Set;
 @CustomLog
 public class MixinProcessor {
 
+    public static final String NOTICE = "## Mixin configs are internal mod components and are not the same as user configs! ##";
     private static final ThreadLocal<InputStream> CONFIG = ThreadLocal.withInitial(() -> null);
     private static boolean done = false;
 
@@ -48,7 +49,7 @@ public class MixinProcessor {
                 manager.mixinConfigs.put(cfg, module);
             } catch (IOException e) {
                 throw AndromedaException.builder()
-                        .message("Couldn't inject mixin config for module '%s'".formatted(module.meta().id()))
+                        .message("Couldn't inject mixin config for module '%s'".formatted(module.meta().id())).message(NOTICE)
                         .add("mixin_config", cfg).add("module", module.meta().id()).build();
             } finally {
                 CONFIG.remove();

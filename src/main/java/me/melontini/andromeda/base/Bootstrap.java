@@ -77,7 +77,7 @@ public class Bootstrap {
             for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
                 if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$"))
                     throw AndromedaException.builder()
-                            .message("Mixin failed to consume Andromeda's late configs!")
+                            .message("Mixin failed to consume Andromeda's late configs!").message(MixinProcessor.NOTICE)
                             .add("mixin_config", config.getName())
                             .build();
             }
@@ -144,7 +144,7 @@ public class Bootstrap {
         m.print();
         //Scan for mixins.
         m.loaded().forEach(module -> getModuleClassPath().addUrl(module.getClass().getProtectionDomain().getCodeSource().getLocation()));
-        run(() -> MixinProcessor.addMixins(m), (b) -> b.message("Failed to inject dynamic mixin configs!"));
+        run(() -> MixinProcessor.addMixins(m), (b) -> b.message("Failed to inject dynamic mixin configs!").message(MixinProcessor.NOTICE));
         FabricLoader.getInstance().getObjectShare().put("andromeda:module_manager", m);
 
         Status.update(Status.PRE_LAUNCH);

@@ -8,6 +8,7 @@ import me.melontini.dark_matter.api.base.util.classes.Context;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import me.melontini.dark_matter.api.crash_handler.Prop;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -70,7 +71,7 @@ public class AndromedaException extends RuntimeException {
             return prop.name().toLowerCase();
         }
 
-        private String message;
+        private final List<String> message = new ArrayList<>();
         private Throwable cause;
         private boolean report = true;
 
@@ -83,7 +84,7 @@ public class AndromedaException extends RuntimeException {
         }
 
         public Builder message(String message) {
-            this.message = message;
+            this.message.add(message);
             return this;
         }
 
@@ -123,7 +124,7 @@ public class AndromedaException extends RuntimeException {
             disableInHierarchy(cause);
 
             var e = new AndromedaException(report,
-                    Strings.isNullOrEmpty(message) ? "Something went very wrong!" : message,
+                    message.isEmpty() ? "Something went very wrong!" : StringUtils.join(message.toArray(), '\n'),
                     cause, statuses);
 
             //CrashHandler can't automatically handle preLaunch errors, so this is what we have to do.
