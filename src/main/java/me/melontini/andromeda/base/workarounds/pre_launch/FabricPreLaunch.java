@@ -1,4 +1,4 @@
-package me.melontini.andromeda.base.hacks;
+package me.melontini.andromeda.base.workarounds.pre_launch;
 
 import lombok.CustomLog;
 import lombok.SneakyThrows;
@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 @CustomLog
-public class FabricEntrypointHack {
+public class FabricPreLaunch {
 
     private GenericField<FabricLoaderImpl, EntrypointStorage> esField;
     private GenericField<EntrypointStorage, Map<String, List<?>>> emField;
 
-    FabricEntrypointHack() {
+    FabricPreLaunch() {
         try {
             esField = GenericField.of(FabricLoaderImpl.class, "entrypointStorage");
             emField = GenericField.of(EntrypointStorage.class, "entryMap");

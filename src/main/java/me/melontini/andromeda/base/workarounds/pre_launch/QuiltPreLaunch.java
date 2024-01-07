@@ -1,4 +1,4 @@
-package me.melontini.andromeda.base.hacks;
+package me.melontini.andromeda.base.workarounds.pre_launch;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Bootstrap;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @CustomLog
-public class QuiltEntrypointHack {
+public class QuiltPreLaunch {
 
     Object loader;
     Field esField;
@@ -20,7 +20,7 @@ public class QuiltEntrypointHack {
     Class<?> EntrypointStorage$Entry;
     Class<?> PreLaunchEntrypoint;
 
-    QuiltEntrypointHack() {
+    QuiltPreLaunch() {
         try {
             Class<?> QuiltLoaderImpl = Class.forName("org.quiltmc.loader.impl.QuiltLoaderImpl");
             Field INSTANCE = QuiltLoaderImpl.getField("INSTANCE");

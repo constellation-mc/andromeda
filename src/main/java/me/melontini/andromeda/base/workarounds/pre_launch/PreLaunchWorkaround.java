@@ -1,4 +1,4 @@
-package me.melontini.andromeda.base.hacks;
+package me.melontini.andromeda.base.workarounds.pre_launch;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.util.CommonValues;
@@ -9,18 +9,18 @@ import me.melontini.andromeda.util.CommonValues;
  * <p>If this doesn't work, I'll have to resort to {@link org.spongepowered.asm.mixin.transformer.ext.IExtension}. The ultimate entrypoint :)</p>
  */
 @CustomLog
-public class EntrypointHack {
+public class PreLaunchWorkaround {
 
     public static boolean pushPreLaunch() {
         try {
             return switch (CommonValues.platform()) {
                 case FABRIC, CONNECTOR -> {
                     LOGGER.info("Trying Fabric-style entrypoint push!");
-                     yield new FabricEntrypointHack().pushPreLaunch();
+                     yield new FabricPreLaunch().pushPreLaunch();
                 }
                 case QUILT -> {
                     LOGGER.info("Trying Quilt-style entrypoint push!");
-                    yield new QuiltEntrypointHack().pushPreLaunch();
+                    yield new QuiltPreLaunch().pushPreLaunch();
                 }
                 default -> true;
             };
