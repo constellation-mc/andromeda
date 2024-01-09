@@ -19,7 +19,7 @@ public class FabricPreLaunch {
     FabricPreLaunch() { }
 
     @SneakyThrows
-    boolean pushPreLaunch() {
+    void pushPreLaunch() {
         GenericField<FabricLoaderImpl, EntrypointStorage> esField = GenericField.of(FabricLoaderImpl.class, "entrypointStorage");
         GenericField<EntrypointStorage, Map<String, List<?>>> emField = GenericField.of(EntrypointStorage.class, "entryMap");
 
@@ -43,6 +43,5 @@ public class FabricPreLaunch {
 
         LOGGER.debug(entryMap.get("preLaunch"));
         LOGGER.info("Pushed entrypoint successfully!");
-        return true;
     }
 }

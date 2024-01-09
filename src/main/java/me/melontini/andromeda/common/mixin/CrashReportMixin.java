@@ -1,6 +1,8 @@
 package me.melontini.andromeda.common.mixin;
 
+import com.google.gson.JsonObject;
 import me.melontini.andromeda.util.CrashHandler;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.minecraft.util.crash.CrashReport;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +17,9 @@ abstract class CrashReportMixin {
         if (CrashHandler.hasInstance(cause)) {
             var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
             sec.trimStackTraceEnd(sec.getStackTrace().length);
-            CrashHandler.traverse(sec::add, cause, 0);
+
+            JsonObject statuses = CrashHandler.traverse(cause);
+            sec.add("statuses", "\n" + (statuses == null ? "Unavailable" : AndromedaException.toString(statuses)));
         }
 
         CrashHandler.sanitizeTrace(cause);

@@ -18,7 +18,7 @@ public class QuiltPreLaunch {
     QuiltPreLaunch() { }
 
     @SneakyThrows
-    boolean pushPreLaunch() {
+    void pushPreLaunch() {
         Class<?> QuiltLoaderImpl = Class.forName("org.quiltmc.loader.impl.QuiltLoaderImpl");
         Field INSTANCE = QuiltLoaderImpl.getField("INSTANCE");
         Object loader = INSTANCE.get(null);
@@ -33,44 +33,38 @@ public class QuiltPreLaunch {
         GenericField<?, Map<String, List<Object>>> emField = GenericField.of(EntrypointStorage, "entryMap");
         emField.accessible(true);
 
-        try {
-            var realEs = esField.get(loader);
+        var realEs = esField.get(loader);
 
-            var entryMap = emField.get(Utilities.cast(realEs));
+        var entryMap = emField.get(Utilities.cast(realEs));
 
-            var itr = entryMap.get("preLaunch").iterator();
-            while (itr.hasNext()) {
-                var value = itr.next();
+        var itr = entryMap.get("preLaunch").iterator();
+        while (itr.hasNext()) {
+            var value = itr.next();
 
-                if (value.toString().startsWith("andromeda->")) {
-                    itr.remove(); var invoker = Proxy.newProxyInstance(loader.getClass().getClassLoader(), new Class[]{ PreLaunchEntrypoint }, (proxy, method, args) -> {
-                        if ("onPreLaunch".equals(method.getName())) {
-                            Bootstrap.shake();
-                            return null;
-                        }
-                        method.setAccessible(true);
-                        return method.invoke(value, args);
-                    });
+            if (value.toString().startsWith("andromeda->")) {
+                itr.remove(); var invoker = Proxy.newProxyInstance(loader.getClass().getClassLoader(), new Class[]{ PreLaunchEntrypoint }, (proxy, method, args) -> {
+                    if ("onPreLaunch".equals(method.getName())) {
+                        Bootstrap.shake();
+                        return null;
+                    }
+                    method.setAccessible(true);
+                    return method.invoke(value, args);
+                });
 
-                    //We have to use proxies, since Quilt adds a new param.
-                    entryMap.computeIfAbsent("pre_launch", string -> new ArrayList<>()).add(0,
-                            Proxy.newProxyInstance(loader.getClass().getClassLoader(), new Class[]{ EntrypointStorage$Entry }, (proxy, method, args) -> {
-                                if ("getOrCreate".equals(method.getName())) {
-                                    return invoker;
-                                }
-                                method.setAccessible(true);
-                                return method.invoke(value, args);
-                            }));
-                    break;
-                }
+                //We have to use proxies, since Quilt adds a new param.
+                entryMap.computeIfAbsent("pre_launch", string -> new ArrayList<>()).add(0,
+                        Proxy.newProxyInstance(loader.getClass().getClassLoader(), new Class[]{ EntrypointStorage$Entry }, (proxy, method, args) -> {
+                            if ("getOrCreate".equals(method.getName())) {
+                                return invoker;
+                            }
+                            method.setAccessible(true);
+                            return method.invoke(value, args);
+                        }));
+                break;
             }
-
-            LOGGER.debug(entryMap.get("preLaunch"));
-            LOGGER.info("Pushed entrypoint successfully!");
-        } catch (Exception e) {
-            LOGGER.error("Quilt-style entrypoint push failed!", e);
-            return false;
         }
-        return true;
+
+        LOGGER.debug(entryMap.get("preLaunch"));
+        LOGGER.info("Pushed entrypoint successfully!");
     }
 }

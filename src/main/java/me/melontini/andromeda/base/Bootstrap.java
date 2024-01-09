@@ -3,6 +3,8 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.CustomLog;
+import me.melontini.andromeda.base.workarounds.pre_launch.CheckerExtension;
+import me.melontini.andromeda.base.workarounds.pre_launch.PreLaunchWorkaround;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.ClassPath;
@@ -92,6 +94,17 @@ public class Bootstrap {
 
     public static void onPreLaunch() {
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
+
+        if (CheckerExtension.done()) {
+            var s = PreLaunchWorkaround.findCandidates();
+            LOGGER.error("Candidates: {}", s);
+            throw AndromedaException.builder()
+                    .message("Invalid load state! Andromeda needs to initialize before the first mixin transformation!")
+                    .message("There is nothing you can do about this except remove other mods to see which ones conflict with Andromeda!")
+                    .message("See 'Candidates:' for a list of possibly conflicting mods!")
+                    .add("candidates", s)
+                    .build();
+        }
 
         AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
         var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");

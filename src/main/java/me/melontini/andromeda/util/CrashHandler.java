@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 public class CrashHandler {
 
@@ -47,16 +46,17 @@ public class CrashHandler {
         return cause.getCause() != null && hasInstance(cause.getCause());
     }
 
-    public static void traverse(BiConsumer<String, String> acceptor, Throwable cause, int depth) {
+    public static JsonObject traverse(Throwable cause) {
         if (cause instanceof AndromedaException e) {
-            String s = "-".repeat(Math.max(0, depth));
-
-            e.getStatuses().forEach((string, string2) -> acceptor.accept(s + string, string2));
-
-            if (cause.getCause() != null) traverse(acceptor, cause.getCause(), depth + 1);
-            return;
+            JsonObject s = e.getStatuses();
+            if (cause.getCause() != null) {
+                var r = traverse(cause.getCause());
+                if (r != null) s.add("cause", r);
+            }
+            return s;
         }
-        if (cause.getCause() != null) traverse(acceptor, cause.getCause(), depth);
+        if (cause.getCause() != null) return traverse(cause.getCause());
+        return null;
     }
 
     private static final Set<String> BAD_PREFIXES = Set.of(
@@ -99,13 +99,16 @@ public class CrashHandler {
                 stackTrace.add(string);
             object.add("stackTrace", stackTrace);
 
-            JsonObject statuses = new JsonObject();
+            JsonObject statuses;
             if (!hasInstance(cause)) {
+                statuses = new JsonObject();
+
                 MIXPANEL.attachProps(statuses, Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION, Prop.JAVA_VENDOR);
                 statuses.addProperty("platform", CommonValues.platform().toString().toLowerCase());
                 statuses.addProperty("bootstrap_status", Bootstrap.Status.get().toString());
             } else {
-                traverse(statuses::addProperty, cause, 0);
+                statuses = traverse(cause);
+                if (statuses == null) statuses = new JsonObject();
             }
             object.add("statuses", statuses);
 
