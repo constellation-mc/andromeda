@@ -16,27 +16,16 @@ import java.util.Map;
 @CustomLog
 public class FabricPreLaunch {
 
-    private GenericField<FabricLoaderImpl, EntrypointStorage> esField;
-    private GenericField<EntrypointStorage, Map<String, List<?>>> emField;
-
-    FabricPreLaunch() {
-        try {
-            esField = GenericField.of(FabricLoaderImpl.class, "entrypointStorage");
-            emField = GenericField.of(EntrypointStorage.class, "entryMap");
-
-            esField.accessible(true);
-            emField.accessible(true);
-        } catch (Throwable t) {
-            LOGGER.error("Failed to prepare Fabric-style push!", t);
-        }
-    }
+    FabricPreLaunch() { }
 
     @SneakyThrows
     boolean pushPreLaunch() {
-        if (esField == null || emField == null) {
-            LOGGER.error("Fabric-style entrypoint push failed! Internal fields changed! :(");
-            return false;
-        }
+        GenericField<FabricLoaderImpl, EntrypointStorage> esField = GenericField.of(FabricLoaderImpl.class, "entrypointStorage");
+        GenericField<EntrypointStorage, Map<String, List<?>>> emField = GenericField.of(EntrypointStorage.class, "entryMap");
+
+        esField.accessible(true);
+        emField.accessible(true);
+
         EntrypointStorage storage = esField.get(FabricLoaderImpl.INSTANCE);
         var entryMap = emField.get(storage);
 
