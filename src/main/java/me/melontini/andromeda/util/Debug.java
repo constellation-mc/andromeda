@@ -76,5 +76,7 @@ public class Debug {
          */
         public static final String PRINT_MISSING_TOOLTIPS = "printMissingTooltips";
         public static final String FORCE_CRASH_REPORT_UPLOAD = "forceCrashReportUpload";
+        public static final String SKIP_LOAD_STATE_VERIFICATION = "skipLoadStateVerification";
+        public static final String SKIP_ENTRYPOINT_WORKAROUND = "skipEntrypointWorkaround";
     }
 }

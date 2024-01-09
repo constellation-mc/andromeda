@@ -19,17 +19,20 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
     public void onPluginLoad(String mixinPackage) {
         this.mixinPackage = mixinPackage;
 
-        PreLaunchWorkaround.pushPreLaunch();
+        Debug.load();
 
-        try {
-            CheckerExtension.add();
-        } catch (Throwable e) {
-            LOGGER.error(e);
+        if (!Debug.hasKey(Debug.Keys.SKIP_ENTRYPOINT_WORKAROUND))
+            PreLaunchWorkaround.pushPreLaunch();
+
+        if (!Debug.hasKey(Debug.Keys.SKIP_LOAD_STATE_VERIFICATION)) {
+            try {
+                CheckerExtension.add();
+            } catch (Throwable e) {
+                LOGGER.error(e);
+            }
         }
 
         AndromedaMixins.getClassPath().addUrl(this.getClass().getProtectionDomain().getCodeSource().getLocation());
-
-        Debug.load();
 
         Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
     }
