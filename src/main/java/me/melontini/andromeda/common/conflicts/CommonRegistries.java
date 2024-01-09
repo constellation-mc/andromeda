@@ -1,6 +1,7 @@
 package me.melontini.andromeda.common.conflicts;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
@@ -20,6 +21,10 @@ public class CommonRegistries {
 
     public static DefaultedRegistry<EntityType<?>> entityTypes() {
         return Registry.ENTITY_TYPE;
+    }
+
+    public static Registry<BlockEntityType<?>> blockEntityTypes() {
+        return Registry.BLOCK_ENTITY_TYPE;
     }
 
     public static Registry<ParticleType<?>> particleTypes() {
