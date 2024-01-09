@@ -1,5 +1,7 @@
 package me.melontini.andromeda.modules.entities.minecarts.entities;
 
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -19,6 +21,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+
+import java.util.Optional;
 
 public class AnvilMinecartEntity extends AbstractMinecartEntity {
     public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, World world) {
@@ -59,9 +63,13 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
         return MinecartItems.ANVIL_MINECART.orThrow();
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private static final Optional<MinecartSpeedControl> optional = ModuleManager.get().getModule(MinecartSpeedControl.class);
+
     @Override
     public double getMaxSpeed() {
-        return (this.isTouchingWater() ? 0.08 : 0.1) / 20.0;
+        double d = (this.isTouchingWater() ? 0.08 : 0.1) / 20.0;
+        return optional.map(ms -> d * world.am$get(ms).modifier).orElse(d);
     }
 
     @Override
