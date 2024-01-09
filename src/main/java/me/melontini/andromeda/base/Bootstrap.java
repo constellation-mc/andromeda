@@ -206,6 +206,13 @@ public class Bootstrap {
         return !Debug.skipIntegration(m.meta().id(), modId) && FabricLoader.getInstance().isModLoaded(modId);
     }
 
+    static {
+        onPreLaunch();
+    }
+
+    //init static
+    public static void shake() { }
+
     public enum Status {
         PRE_INIT, DISCOVERY, SETUP,
         PRE_LAUNCH, MAIN, CLIENT, SERVER;

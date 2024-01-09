@@ -83,7 +83,7 @@ public class QuiltPreLaunch {
     private Object invoker(Object value) {
         return Proxy.newProxyInstance(loader.getClass().getClassLoader(), new Class[]{ PreLaunchEntrypoint }, (proxy, method, args) -> {
             if ("onPreLaunch".equals(method.getName())) {
-                Bootstrap.onPreLaunch();
+                Bootstrap.shake();
                 return null;
             }
             method.setAccessible(true);
