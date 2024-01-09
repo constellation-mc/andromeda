@@ -57,6 +57,10 @@ public class AndromedaException extends RuntimeException {
         return report;
     }
 
+    public static AndromedaException moduleException(Throwable t, String module) {
+        return AndromedaException.builder().cause(t).add("module", module).build();
+    }
+
     public static void run(ThrowingRunnable<Throwable> runnable, Consumer<Builder> consumer) {
         try {
             runnable.run();
@@ -122,6 +126,11 @@ public class AndromedaException extends RuntimeException {
 
         public Builder add(String key, Object value) {
             statuses.addProperty(key, String.valueOf(value));
+            return this;
+        }
+
+        public Builder add(String key, String value) {
+            statuses.addProperty(key, value);
             return this;
         }
 
