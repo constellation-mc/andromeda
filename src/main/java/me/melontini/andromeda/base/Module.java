@@ -120,6 +120,13 @@ public abstract class Module<T extends Module.BaseConfig> {
         }
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "{" +
+                "info=" + info +
+                '}';
+    }
+
     public record Metadata(String name, String category, Environment environment) {
 
         public String id() {

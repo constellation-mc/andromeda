@@ -1,7 +1,6 @@
 package me.melontini.andromeda.base;
 
 import com.google.gson.JsonObject;
-import it.unimi.dsi.fastutil.objects.*;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.util.Debug;
@@ -35,13 +34,13 @@ public class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    private final Reference2ReferenceMap<Class<?>, Module<?>> discoveredModules;
-    private final Object2ReferenceMap<String, Module<?>> discoveredModuleNames;
+    private final Map<Class<?>, Module<?>> discoveredModules;
+    private final Map<String, Module<?>> discoveredModuleNames;
 
-    private final Reference2ReferenceMap<Class<?>, Module<?>> modules;
-    private final Object2ReferenceMap<String, Module<?>> moduleNames;
+    private final Map<Class<?>, Module<?>> modules;
+    private final Map<String, Module<?>> moduleNames;
 
-    final Map<String, Module<?>> mixinConfigs = new Object2ReferenceOpenHashMap<>();
+    final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
     ModuleManager(List<Module<?>> sorted, @Nullable JsonObject oldCfg) {
         if (Bootstrap.INSTANCE != null)
@@ -49,12 +48,12 @@ public class ModuleManager {
         Bootstrap.INSTANCE = this;
 
         this.discoveredModules = Utilities.supply(() -> {
-            var m = sorted.stream().collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, Reference2ReferenceLinkedOpenHashMap::new));
-            return Reference2ReferenceMaps.unmodifiable(m);
+            var m = sorted.stream().collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
+            return Collections.unmodifiableMap(m);
         });
         this.discoveredModuleNames = Utilities.supply(() -> {
-            var m = sorted.stream().collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, Object2ReferenceOpenHashMap::new));
-            return Object2ReferenceMaps.unmodifiable(m);
+            var m = sorted.stream().collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
+            return Collections.unmodifiableMap(m);
         });
 
         this.setUpConfigs(this.discoveredModules.values());
@@ -76,12 +75,12 @@ public class ModuleManager {
         this.discoveredModules.values().forEach(Module::save);
 
         this.modules = Utilities.supply(() -> {
-            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, Reference2ReferenceLinkedOpenHashMap::new));
-            return Reference2ReferenceMaps.unmodifiable(m);
+            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
+            return Collections.unmodifiableMap(m);
         });
         this.moduleNames = Utilities.supply(() -> {
-            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, Object2ReferenceOpenHashMap::new));
-            return Object2ReferenceMaps.unmodifiable(m);
+            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
+            return Collections.unmodifiableMap(m);
         });
 
         cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), this.discoveredModules.values());

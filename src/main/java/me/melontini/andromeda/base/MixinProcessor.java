@@ -147,7 +147,7 @@ public class MixinProcessor {
                 if (unique == null && mixinMerged != null) {
                     String mixin = Annotations.getValue(mixinMerged, "mixin");
                     if (mixin.startsWith(this.mixinPackage)) {
-                        wrapNodeWithErrorHandling(method, ModuleManager.get().mixinConfigs.get(mixinInfo.getConfig().getName()).meta().id());
+                        wrapNodeWithErrorHandling(method, ModuleManager.get().moduleFromConfig(mixinInfo.getConfig().getName()).orElseThrow().meta().id());
                     }
                 }
             }
