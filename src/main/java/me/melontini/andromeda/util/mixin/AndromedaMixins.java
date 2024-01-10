@@ -1,7 +1,6 @@
 package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.util.ClassPath;
@@ -33,7 +32,7 @@ public class AndromedaMixins {
     }
 
     public static List<String> discoverInPackage(String pck) {
-        return Bootstrap.getModuleClassPath().getTopLevelRecursive(pck).stream()
+        return CLASS_PATH.getTopLevelRecursive(pck).stream()
                 .map(info -> {
                     ClassReader reader = new ClassReader(Exceptions.supply(info::readAllBytes));
                     ClassNode node = new ClassNode();

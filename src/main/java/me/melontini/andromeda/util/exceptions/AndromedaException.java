@@ -1,6 +1,11 @@
 package me.melontini.andromeda.util.exceptions;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import lombok.CustomLog;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.CrashHandler;
@@ -10,20 +15,26 @@ import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import me.melontini.dark_matter.api.crash_handler.Prop;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
+@CustomLog
 public class AndromedaException extends RuntimeException {
 
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
     private final boolean report;
-    private final Map<String, String> statuses;
+    private final JsonObject statuses;
 
     @SuppressWarnings("unused")
     private AndromedaException() {
-        this(false, "Empty ctx called! This must never happen!!!", null, new HashMap<>());
+        this(false, "Empty ctx called! This must never happen!!!", null, new JsonObject());
     }
 
-    private AndromedaException(boolean report, String message, Throwable cause, Map<String, String> statuses) {
+    private AndromedaException(boolean report, String message, Throwable cause, JsonObject statuses) {
         super(message, cause);
         this.report = report;
         this.statuses = statuses;
@@ -38,12 +49,16 @@ public class AndromedaException extends RuntimeException {
         return b.toString();
     }
 
-    public Map<String, String> getStatuses() {
-        return Collections.unmodifiableMap(statuses);
+    public JsonObject getStatuses() {
+        return statuses.deepCopy();
     }
 
     public boolean shouldReport() {
         return report;
+    }
+
+    public static AndromedaException moduleException(Throwable t, String module) {
+        return AndromedaException.builder().cause(t).add("module", module).build();
     }
 
     public static void run(ThrowingRunnable<Throwable> runnable, Consumer<Builder> consumer) {
@@ -54,6 +69,10 @@ public class AndromedaException extends RuntimeException {
             consumer.accept(builder);
             throw builder.cause(e).build();
         }
+    }
+
+    public static String toString(JsonObject object) {
+        return GSON.toJson(object);
     }
 
     public static Builder builder() {
@@ -75,7 +94,7 @@ public class AndromedaException extends RuntimeException {
         private Throwable cause;
         private boolean report = true;
 
-        private final Map<String, String> statuses = new LinkedHashMap<>();
+        private final JsonObject statuses = new JsonObject();
 
         private Builder() {
             add(Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION, Prop.JAVA_VENDOR);
@@ -100,13 +119,27 @@ public class AndromedaException extends RuntimeException {
 
         public Builder add(Prop... props) {
             for (Prop prop : props) {
-                statuses.put(prop.name().toLowerCase(), prop.get());
+                statuses.addProperty(prop.name().toLowerCase(), prop.get());
             }
             return this;
         }
 
         public Builder add(String key, Object value) {
-            statuses.put(key, String.valueOf(value));
+            statuses.addProperty(key, String.valueOf(value));
+            return this;
+        }
+
+        public Builder add(String key, String value) {
+            statuses.addProperty(key, value);
+            return this;
+        }
+
+        public Builder add(String key, Collection<?> collection) {
+            JsonArray array = new JsonArray();
+            for (Object object : collection) {
+                array.add(GSON.toJsonTree(object));
+            }
+            statuses.add(key, array);
             return this;
         }
 
@@ -128,7 +161,10 @@ public class AndromedaException extends RuntimeException {
                     cause, statuses);
 
             //CrashHandler can't automatically handle preLaunch errors, so this is what we have to do.
-            if (!Crashlytics.hasHandler("andromeda")) CrashHandler.handleCrash(e, Context.of());
+            if (!Crashlytics.hasHandler("andromeda")) {
+                LOGGER.error("Statuses: " + GSON.toJson(statuses));
+                CrashHandler.handleCrash(e, Context.of());
+            }
 
             return e;
         }

@@ -124,8 +124,8 @@ public class ModuleManager {
 
     private void setUpConfigs(Collection<Module<?>> modules) {
         doWork(modules, m -> {
-            var config = ConfigManager.of(getConfigClass(m.getClass()), "andromeda/" + m.meta().id());
-            config.onLoad((config1, path) -> {
+            var manager = makeManager(m);
+            manager.onLoad((config1, path) -> {
                 if (AndromedaConfig.get().sideOnlyMode) {
                     switch (m.meta().environment()) {
                         case BOTH -> config1.enabled = false;
@@ -140,10 +140,19 @@ public class ModuleManager {
                     }
                 }
             });
-            config.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
-            m.manager = Utilities.cast(config);
-            m.onConfig(Utilities.cast(config));
+            manager.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
+
+            m.manager = Utilities.cast(manager);
+            m.onConfig(Utilities.cast(manager));
         });
+    }
+
+    private ConfigManager<? extends Module.BaseConfig> makeManager(Module<?> m) {
+        Class<? extends Module.BaseConfig> cls = getConfigClass(m.getClass());
+
+        return cls == Module.BaseConfig.class ?
+                ConfigManager.of(Module.BaseConfig.class, "andromeda/" + m.meta().id(), Module.BaseConfig::new) :
+                ConfigManager.of(cls, "andromeda/" + m.meta().id());
     }
 
     /**

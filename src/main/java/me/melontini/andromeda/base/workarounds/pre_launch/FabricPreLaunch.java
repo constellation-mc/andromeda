@@ -1,4 +1,4 @@
-package me.melontini.andromeda.base.hacks;
+package me.melontini.andromeda.base.workarounds.pre_launch;
 
 import lombok.CustomLog;
 import lombok.SneakyThrows;
@@ -14,29 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 @CustomLog
-public class FabricEntrypointHack {
+public class FabricPreLaunch {
 
-    private GenericField<FabricLoaderImpl, EntrypointStorage> esField;
-    private GenericField<EntrypointStorage, Map<String, List<?>>> emField;
-
-    FabricEntrypointHack() {
-        try {
-            esField = GenericField.of(FabricLoaderImpl.class, "entrypointStorage");
-            emField = GenericField.of(EntrypointStorage.class, "entryMap");
-
-            esField.accessible(true);
-            emField.accessible(true);
-        } catch (Throwable t) {
-            LOGGER.error("Failed to prepare Fabric-style push!", t);
-        }
-    }
+    FabricPreLaunch() { }
 
     @SneakyThrows
-    boolean pushPreLaunch() {
-        if (esField == null || emField == null) {
-            LOGGER.error("Fabric-style entrypoint push failed! Internal fields changed! :(");
-            return false;
-        }
+    void pushPreLaunch() {
+        GenericField<FabricLoaderImpl, EntrypointStorage> esField = GenericField.of(FabricLoaderImpl.class, "entrypointStorage");
+        GenericField<EntrypointStorage, Map<String, List<?>>> emField = GenericField.of(EntrypointStorage.class, "entryMap");
+
+        esField.accessible(true);
+        emField.accessible(true);
+
         EntrypointStorage storage = esField.get(FabricLoaderImpl.INSTANCE);
         var entryMap = emField.get(storage);
 
@@ -54,6 +43,5 @@ public class FabricEntrypointHack {
 
         LOGGER.debug(entryMap.get("preLaunch"));
         LOGGER.info("Pushed entrypoint successfully!");
-        return true;
     }
 }
