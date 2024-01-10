@@ -14,6 +14,7 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
+import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import net.fabricmc.api.EnvType;
@@ -56,6 +57,10 @@ public class Bootstrap {
             MixinEnvironment.getCurrentEnvironment().audit();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
+            run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
+        }
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
             run(module::onClient, (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
         }
         run(AndromedaClient::init, b -> b.message("Failed to initialize AndromedaClient!"));
@@ -67,6 +72,10 @@ public class Bootstrap {
 
         if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
             MixinEnvironment.getCurrentEnvironment().audit();
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
+        }
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             run(module::onServer, (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
@@ -95,18 +104,7 @@ public class Bootstrap {
     public static void onPreLaunch() {
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
-        if (!Debug.hasKey(Debug.Keys.SKIP_LOAD_STATE_VERIFICATION)) {
-            if (CheckerExtension.done()) {
-                var s = PreLaunchWorkaround.findCandidates();
-                LOGGER.error("Candidates: {}", s);
-                throw AndromedaException.builder()
-                        .message("Invalid load state! Andromeda needs to initialize before the first mixin transformation!")
-                        .message("There is nothing you can do about this except remove other mods to see which ones conflict with Andromeda!")
-                        .message("See 'Candidates:' for a list of possibly conflicting mods!")
-                        .add("candidates", s)
-                        .build();
-            }
-        }
+        verifyLoadState();
 
         AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
         var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
@@ -160,7 +158,7 @@ public class Bootstrap {
         //Scan for mixins.
         m.loaded().forEach(module -> getModuleClassPath().addUrl(module.getClass().getProtectionDomain().getCodeSource().getLocation()));
         run(() -> MixinProcessor.addMixins(m), (b) -> b.message("Failed to inject dynamic mixin configs!").message(MixinProcessor.NOTICE));
-        FabricLoader.getInstance().getObjectShare().put("andromeda:module_manager", m);
+        Support.share("andromeda:module_manager", m);
 
         Status.update(Status.PRE_LAUNCH);
         Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
@@ -189,6 +187,20 @@ public class Bootstrap {
                         .message("Duplicate module packages!")
                         .add("package", module.getClass().getPackageName()).add("module", pkg.getClass()).add("duplicate", module.getClass())
                         .build();
+        }
+    }
+
+    //Mods shouldn't load MC classes at preLaunch, but some do anyway.
+    private static void verifyLoadState() {
+        if (!Debug.hasKey(Debug.Keys.SKIP_LOAD_STATE_VERIFICATION)) {
+            if (CheckerExtension.done()) {
+                throw AndromedaException.builder()
+                        .message("Invalid load state! Andromeda needs to initialize before the first mixin transformation!")
+                        .message("There is nothing you can do about this except remove other mods to see which ones conflict with Andromeda!")
+                        .message("See 'Candidates:' for a list of possibly conflicting mods!")
+                        .add("candidates", PreLaunchWorkaround.findCandidates())
+                        .build();
+            }
         }
     }
 

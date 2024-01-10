@@ -46,6 +46,10 @@ public abstract class Module<T extends Module.BaseConfig> {
     }
 
     @ApiStatus.OverrideOnly
+    public void onMerged() {
+    }
+
+    @ApiStatus.OverrideOnly
     public void onMain() {
         initClasses("Main", "Content");
     }
@@ -114,6 +118,13 @@ public abstract class Module<T extends Module.BaseConfig> {
                 JsonOps.ifPresent(config, key.value(), e -> this.config().enabled = e.getAsBoolean());
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "{" +
+                "info=" + info +
+                '}';
     }
 
     public record Metadata(String name, String category, Environment environment) {

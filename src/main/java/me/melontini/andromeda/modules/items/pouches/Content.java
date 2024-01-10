@@ -12,11 +12,8 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
-import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -110,11 +107,6 @@ public class Content {
     }
 
     public static void init() {
-        for (Block block : CommonRegistries.blocks()) {
-            test(block);
-        }
-        RegistryEntryAddedCallback.event(CommonRegistries.blocks()).register((rawId, id, object) -> test(object));
-
         Trades.register();
 
         var l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
@@ -134,18 +126,15 @@ public class Content {
         }
     }
 
-    private static void test(Block block) {
-        if (block instanceof BlockEntityProvider be) {
-            var real = be.createBlockEntity(BlockPos.ORIGIN, block.getDefaultState());
-            if (real != null) {
-                Field f = traverse(real.getClass());
-                if (f != null) {
-                    try {
-                        f.setAccessible(true);
-                        VIEWABLE_BLOCKS.put(real.getType(), f);
-                    } catch (Exception e) {
-                        AndromedaLog.error("{}: {}", e.getClass(), e.getLocalizedMessage());
-                    }
+    private static void test(BlockEntity be) {
+        if (be != null) {
+            Field f = traverse(be.getClass());
+            if (f != null) {
+                try {
+                    f.setAccessible(true);
+                    VIEWABLE_BLOCKS.put(be.getType(), f);
+                } catch (Exception e) {
+                    AndromedaLog.error("{}: {}", e.getClass(), e.getLocalizedMessage());
                 }
             }
         }
@@ -159,5 +148,16 @@ public class Content {
         }
         if (cls.getSuperclass() != null) return traverse(cls.getSuperclass());
         return null;
+    }
+
+    public static void testBlocks() {
+        for (BlockEntityType<?> type : CommonRegistries.blockEntityTypes()) {
+            var o = type.blocks.stream().findAny();
+            if (o.isPresent()) {
+                test(type.instantiate(BlockPos.ORIGIN, o.orElseThrow().getDefaultState()));
+            } else {
+                AndromedaLog.warn("{} has no blocks?", CommonRegistries.blockEntityTypes().getId(type));
+            }
+        }
     }
 }
