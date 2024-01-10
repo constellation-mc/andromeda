@@ -46,6 +46,10 @@ public abstract class Module<T extends Module.BaseConfig> {
     }
 
     @ApiStatus.OverrideOnly
+    public void onMerged() {
+    }
+
+    @ApiStatus.OverrideOnly
     public void onMain() {
         initClasses("Main", "Content");
     }

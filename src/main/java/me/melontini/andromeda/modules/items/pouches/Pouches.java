@@ -10,14 +10,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 public class Pouches extends Module<Pouches.Config> {
 
     @Override
-    public void onServer() {
-        super.onServer();
-        Content.testBlocks();
-    }
-
-    @Override
-    public void onClient() {
-        super.onClient();
+    public void onMerged() {
         Content.testBlocks();
     }
 
