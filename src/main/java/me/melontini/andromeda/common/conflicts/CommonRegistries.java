@@ -25,7 +25,7 @@ public class CommonRegistries {
     }
 
     public static Registry<BlockEntityType<?>> blockEntityTypes() {
-        return Registry.BLOCK_ENTITY_TYPE;
+        return Registries.BLOCK_ENTITY_TYPE;
     }
 
     public static Registry<ParticleType<?>> particleTypes() {
