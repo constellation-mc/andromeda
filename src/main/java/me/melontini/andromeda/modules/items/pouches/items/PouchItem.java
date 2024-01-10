@@ -4,6 +4,9 @@ import lombok.Getter;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.pouches.Content;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
+import me.melontini.andromeda.util.Debug;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,10 +18,15 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @Getter
 public class PouchItem extends Item {
@@ -28,6 +36,13 @@ public class PouchItem extends Item {
     public PouchItem(PouchEntity.Type type, Settings settings) {
         super(settings);
         this.type = type;
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        if (context.isAdvanced() && Debug.hasKey(Debug.Keys.DISPLAY_TRACKED_VALUES)) {
+            tooltip.add(TextUtil.literal("Loot: " + this.getType().getLootId(stack)).formatted(Formatting.GRAY));
+        }
     }
 
     @Override

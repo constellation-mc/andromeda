@@ -43,6 +43,10 @@ public class PouchEntity extends ThrownItemEntity {
         super(entityType, world);
     }
 
+    public PouchEntity(double d, double e, double f, World world) {
+        super(Content.POUCH.orThrow(), d, e, f, world);
+    }
+
     public PouchEntity(LivingEntity livingEntity, World world) {
         super(Content.POUCH.orThrow(), livingEntity, world);
     }
@@ -152,7 +156,17 @@ public class PouchEntity extends ThrownItemEntity {
     public enum Type {
         SEED(new Identifier(MODID, "pouches/seeds"), Content.SEED_POUCH),
         SAPLING(new Identifier(MODID, "pouches/saplings"), Content.SAPLING_POUCH),
-        FLOWER(new Identifier(MODID, "pouches/flowers"), Content.FLOWER_POUCH);
+        FLOWER(new Identifier(MODID, "pouches/flowers"), Content.FLOWER_POUCH),
+        CUSTOM(null, Content.SPECIAL_POUCH) {
+            @Override
+            public Identifier getLootId(ItemStack stack) {
+                NbtCompound nbt = stack.getNbt();
+                if (nbt != null && nbt.contains("CustomLootId")) {
+                    return new Identifier(nbt.getString("CustomLootId"));
+                }
+                return new Identifier(MODID, "pouches/seeds");
+            }
+        };
 
         private static final Int2ObjectMap<Type> LOOKUP = Utilities.supply(() -> {
             Int2ObjectMap<Type> map = new Int2ObjectOpenHashMap<>();

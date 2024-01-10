@@ -16,15 +16,19 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -36,17 +40,23 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class Content {
 
+    private static Pouches MODULE;
+
     public static final Keeper<PouchItem> SEED_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("seed_pouch"),
                     () -> new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().maxCount(16)))
-            .itemGroup(CommonItemGroups.tools()));
+            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().seedPouch));
 
     public static final Keeper<PouchItem> FLOWER_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("flower_pouch"),
                     () -> new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().maxCount(16)))
-            .itemGroup(CommonItemGroups.tools()));
+            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().flowerPouch));
 
     public static final Keeper<PouchItem> SAPLING_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("sapling_pouch"),
                     () -> new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().maxCount(16)))
-            .itemGroup(CommonItemGroups.tools()));
+            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().saplingPouch));
+
+    public static final Keeper<PouchItem> SPECIAL_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("special_pouch"),
+                    () -> new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().maxCount(16)))
+            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().specialPouch));
 
     public static final Keeper<EntityType<PouchEntity>> POUCH = Keeper.of(() ->
             RegistryUtil.createEntityType(id("pouch"),
@@ -102,6 +112,21 @@ public class Content {
             test(block);
         }
         RegistryEntryAddedCallback.event(CommonRegistries.blocks()).register((rawId, id, object) -> test(object));
+
+        Trades.register();
+
+        var behavior = new ProjectileDispenserBehavior() {
+            @Override
+            protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
+                var pouch = new PouchEntity(position.getX(), position.getY(), position.getZ(), world);
+                pouch.setPouchType(((PouchItem) stack.getItem()).getType());
+                return pouch;
+            }
+        };
+
+        Content.SEED_POUCH.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
+        Content.FLOWER_POUCH.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
+        Content.SAPLING_POUCH.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
     }
 
     private static void test(Block block) {

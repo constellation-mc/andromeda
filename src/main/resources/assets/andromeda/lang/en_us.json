@@ -28,6 +28,11 @@
 
   "item.andromeda.magnet": "Magnet",
 
+  "item.andromeda.seed_pouch": "Seed Pouch",
+  "item.andromeda.flower_pouch": "Flower Pouch",
+  "item.andromeda.sapling_pouch": "Sapling Pouch",
+  "item.andromeda.special_pouch": "Special Pouch",
+
   "item.andromeda.spawner_minecart": "Minecart with Spawner",
   "item.andromeda.anvil_minecart": "Minecart with Anvil",
   "item.andromeda.note_block_minecart": "Minecart with Note Block",
@@ -262,6 +267,13 @@
   "config.andromeda.items.minecart_block_picking.@Tooltip": "Allows players to \"pick\" blocks via minecarts",
   "config.andromeda.items.minecart_block_picking.option.spawnerPicking": "Spawner Picking",
   "config.andromeda.items.minecart_block_picking.option.spawnerPicking.@Tooltip": "Allows players to \"pick\" spawners \nSpawner minecart must be enabled to use this!",
+  "config.andromeda.items.pouches": "Pouches",
+  "config.andromeda.items.pouches.@Tooltip": "A collection of plant-themed pouches!\nMost pouches can be bought from the Farmer.",
+  "config.andromeda.items.pouches.option.seedPouch": "Seed Pouch",
+  "config.andromeda.items.pouches.option.flowerPouch": "Flower Pouch",
+  "config.andromeda.items.pouches.option.saplingPouch": "Sapling Pouch",
+  "config.andromeda.items.pouches.option.specialPouch": "Special Pouch",
+  "config.andromeda.items.pouches.option.specialPouch.@Tooltip": "The loot in this pouch is defined by the 'CustomLootId' nbt entry.\nDefault loot is seeds.",
 
   "config.andromeda.category.bugfixes": "Bugfixes",
   "config.andromeda.bugfixes.advancement_shadow": "Frame-Independent Advancement Shadow",
