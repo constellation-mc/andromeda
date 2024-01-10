@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.items.pouches;
 
 import me.melontini.andromeda.common.conflicts.CommonItemGroups;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.common.util.ItemStackUtil;
@@ -34,6 +35,7 @@ import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static me.melontini.andromeda.common.registries.Common.id;
@@ -115,6 +117,9 @@ public class Content {
 
         Trades.register();
 
+        var l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
+        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(MODULE, l));
+
         var behavior = new ProjectileDispenserBehavior() {
             @Override
             protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
@@ -124,9 +129,9 @@ public class Content {
             }
         };
 
-        Content.SEED_POUCH.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
-        Content.FLOWER_POUCH.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
-        Content.SAPLING_POUCH.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
+        for (Keeper<PouchItem> pouchItemKeeper : l) {
+            pouchItemKeeper.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
+        }
     }
 
     private static void test(Block block) {
