@@ -9,7 +9,7 @@ public class AndromedaLog {
         Class<?> cls = Utilities.getCallerClass(4);
         String[] split = cls.getName().split("\\.");
         String caller = split[split.length - 1];
-        if (cls.getName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
+        if (cls.getName().startsWith("net.minecraft.")) caller += "@Mixin";
         return ((!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR) ?
                 "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
     });
@@ -20,7 +20,7 @@ public class AndromedaLog {
 
         String caller = split[split.length - 1];
         caller = "Andromeda/" + caller;
-        if (cls.getName().startsWith("net.minecraft.")) caller = caller + "@Mixin";
+        if (cls.getName().startsWith("net.minecraft.")) caller += "@Mixin";
 
         return PrependingLogger.get(caller, logger -> (!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR) ?
                 "(" + logger.getName() + ") " : "");

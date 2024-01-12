@@ -29,9 +29,6 @@
     "main": [
       "me.melontini.andromeda.base.Bootstrap::onMain"
     ],
-    "preLaunch": [
-      "me.melontini.andromeda.base.Bootstrap::shake"
-    ],
     "modmenu": [
       "me.melontini.andromeda.common.client.config.ModMenuIntegration"
     ],

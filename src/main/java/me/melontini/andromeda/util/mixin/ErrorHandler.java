@@ -13,15 +13,15 @@ public class ErrorHandler implements IMixinErrorHandler {
 
     @Override
     public ErrorAction onPrepareError(IMixinConfig config, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        return handleMixinError("prepare", th, mixin, action);
+        return handleMixinError(mixin, action);
     }
 
     @Override
     public ErrorAction onApplyError(String targetClassName, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        return handleMixinError("apply", th, mixin, action);
+        return handleMixinError(mixin, action);
     }
 
-    private static ErrorAction handleMixinError(String phase, Throwable th, IMixinInfo mixin, ErrorAction action) {
+    private static ErrorAction handleMixinError(IMixinInfo mixin, ErrorAction action) {
         if (Debug.hasKey(Debug.Keys.SKIP_MIXIN_ERROR_HANDLER)) return action;
 
         if (action == ErrorAction.ERROR) {

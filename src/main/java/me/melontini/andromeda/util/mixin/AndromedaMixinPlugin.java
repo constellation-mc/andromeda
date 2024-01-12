@@ -1,8 +1,7 @@
 package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.workarounds.pre_launch.CheckerExtension;
-import me.melontini.andromeda.base.workarounds.pre_launch.PreLaunchWorkaround;
+import me.melontini.andromeda.base.BootstrapExtension;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import org.spongepowered.asm.mixin.Mixins;
@@ -21,16 +20,7 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
 
         Debug.load();
 
-        if (!Debug.hasKey(Debug.Keys.SKIP_ENTRYPOINT_WORKAROUND))
-            PreLaunchWorkaround.pushPreLaunch();
-
-        if (!Debug.hasKey(Debug.Keys.SKIP_LOAD_STATE_VERIFICATION)) {
-            try {
-                CheckerExtension.add();
-            } catch (Throwable e) {
-                LOGGER.error(e);
-            }
-        }
+        BootstrapExtension.add();
 
         AndromedaMixins.getClassPath().addUrl(this.getClass().getProtectionDomain().getCodeSource().getLocation());
 
