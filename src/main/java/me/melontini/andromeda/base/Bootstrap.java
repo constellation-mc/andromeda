@@ -51,14 +51,9 @@ public class Bootstrap {
 
     @Environment(EnvType.CLIENT)
     public static void onClient() {
-        Status.update(Status.CLIENT);
+        Status.update();
 
-        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
-            MixinEnvironment.getCurrentEnvironment().audit();
-
-        for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
-        }
+        onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             run(module::onClient, (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
@@ -68,22 +63,26 @@ public class Bootstrap {
 
     @Environment(EnvType.SERVER)
     public static void onServer() {
-        Status.update(Status.SERVER);
+        Status.update();
 
-        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
-            MixinEnvironment.getCurrentEnvironment().audit();
-
-        for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
-        }
+        onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             run(module::onServer, (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
         }
     }
 
+    private static void onMerged() {
+        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
+            MixinEnvironment.getCurrentEnvironment().audit();
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
+        }
+    }
+
     public static void onMain() {
-        Status.update(Status.MAIN);
+        Status.update();
         if (Mixins.getUnvisitedCount() > 0) {
             for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
                 if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$"))
@@ -102,6 +101,7 @@ public class Bootstrap {
     }
 
     public static void onPreLaunch() {
+        Status.update();
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
         //Necessary to avoid class loading related deadlock in ModuleDiscovery.
@@ -126,7 +126,7 @@ public class Bootstrap {
 
         AndromedaConfig.save();
 
-        Status.update(Status.DISCOVERY);
+        Status.update();
 
         List<Module<?>> list = new ArrayList<>(40);
         run(() -> {
@@ -148,7 +148,7 @@ public class Bootstrap {
             return i >= 0 ? i : ModuleManager.CATEGORIES.size();
         })).toList();
 
-        Status.update(Status.SETUP);
+        Status.update();
 
         ModuleManager m;
         try {
@@ -164,7 +164,7 @@ public class Bootstrap {
         run(() -> MixinProcessor.addMixins(m), (b) -> b.message("Failed to inject dynamic mixin configs!").message(MixinProcessor.NOTICE));
         Support.share("andromeda:module_manager", m);
 
-        Status.update(Status.PRE_LAUNCH);
+        Status.update();
         Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
 
         for (Module<?> module : ModuleManager.get().loaded()) {
@@ -224,14 +224,14 @@ public class Bootstrap {
     }
 
     public enum Status {
-        PRE_INIT, DISCOVERY, SETUP,
-        PRE_LAUNCH, MAIN, CLIENT, SERVER;
+        PRE_INIT, INIT, DISCOVERY, SETUP,
+        PRE_LAUNCH, MAIN, DEFAULT;
 
-        private static volatile Status CURRENT = PRE_INIT;
+        private static Status CURRENT = PRE_INIT;
 
-        public static void update(Status status) {
-            Status.CURRENT = status;
-            LOGGER.debug("Status updated to {}", status);
+        public static void update() {
+            Status.CURRENT = values()[CURRENT.ordinal() + 1];
+            LOGGER.debug("Status updated to {}", Status.CURRENT);
         }
 
         public static Status get() {

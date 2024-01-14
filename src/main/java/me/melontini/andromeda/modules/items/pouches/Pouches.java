@@ -9,11 +9,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @ModuleInfo(name = "pouches", category = "items")
 public class Pouches extends Module<Pouches.Config> {
 
-    @Override
-    public void onMerged() {
-        Content.testBlocks();
-    }
-
     public static class Config extends BaseConfig {
         @ConfigEntry.Gui.RequiresRestart
         public boolean seedPouch = true;
