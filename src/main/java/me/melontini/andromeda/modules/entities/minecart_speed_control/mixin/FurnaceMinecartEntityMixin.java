@@ -7,6 +7,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,6 +17,7 @@ abstract class FurnaceMinecartEntityMixin {
 
     @Shadow public int fuel;
 
+    @Unique
     private static final MinecartSpeedControl am$module = ModuleManager.quick(MinecartSpeedControl.class);
 
     @Inject(at = @At("HEAD"), method = "tick")
@@ -29,6 +31,9 @@ abstract class FurnaceMinecartEntityMixin {
 
     @ModifyReturnValue(method = "getMaxSpeed", at = @At("RETURN"))
     private double andromeda$getMaxSpeed(double original) {
-        return original * ((AbstractMinecartEntity) (Object) this).getWorld().am$get(am$module).furnaceModifier;
+        if (!((AbstractMinecartEntity) (Object) this).getWorld().isClient()) {
+            return original * ((AbstractMinecartEntity) (Object) this).getWorld().am$get(am$module).furnaceModifier;
+        }
+        return original;
     }
 }
