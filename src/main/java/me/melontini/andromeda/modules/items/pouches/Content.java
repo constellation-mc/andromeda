@@ -12,6 +12,7 @@ import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.DispenserBlock;
@@ -106,6 +107,8 @@ public class Content {
         return -1;
     }
 
+    private static boolean done;
+
     public static void init() {
         Trades.register();
 
@@ -124,6 +127,13 @@ public class Content {
         for (Keeper<PouchItem> pouchItemKeeper : l) {
             pouchItemKeeper.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
         }
+
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            if (!done) {
+                testBlocks();
+                done = true;
+            }
+        });
     }
 
     private static void test(BlockEntity be) {
