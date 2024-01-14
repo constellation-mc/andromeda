@@ -2,6 +2,7 @@ package me.melontini.andromeda.common.client.config;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.text.Text;
 
 import java.util.*;
@@ -17,8 +18,8 @@ public class FeatureBlockade {
         return INSTANCE;
     }
 
-    public FeatureBlockade explain(Module<?> module, String feature, BooleanSupplier predicate, Text explanation) {
-        blockades.computeIfAbsent(module, m -> new HashMap<>()).computeIfAbsent(feature, f -> Tuple.of(new HashSet<>(), predicate)).left().add(explanation);
+    public FeatureBlockade explain(Module<?> module, String feature, BooleanSupplier predicate, String key) {
+        blockades.computeIfAbsent(module, m -> new HashMap<>()).computeIfAbsent(feature, f -> Tuple.of(new HashSet<>(), predicate)).left().add(TextUtil.translatable(key));
         return this;
     }
 

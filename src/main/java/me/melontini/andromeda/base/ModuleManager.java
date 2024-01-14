@@ -21,8 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,7 +56,7 @@ public class ModuleManager {
 
         this.setUpConfigs(this.discoveredModules.values());
 
-        doWork(this.discoveredModules.values(), module -> {
+        this.discoveredModules.values().forEach(module -> {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
         });
@@ -84,12 +82,6 @@ public class ModuleManager {
         });
 
         cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), this.discoveredModules.values());
-    }
-
-    private static void doWork(Collection<Module<?>> modules, Consumer<Module<?>> consumer) {
-        Set<CompletableFuture<?>> futures = new HashSet<>();
-        modules.forEach(m -> futures.add(CompletableFuture.runAsync(() -> consumer.accept(m))));
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
 
     private void fixScopes(Collection<Module<?>> modules) {
@@ -122,7 +114,7 @@ public class ModuleManager {
     }
 
     private void setUpConfigs(Collection<Module<?>> modules) {
-        doWork(modules, m -> {
+        modules.forEach(m -> {
             var manager = makeManager(m);
             manager.onLoad((config1, path) -> {
                 if (AndromedaConfig.get().sideOnlyMode) {

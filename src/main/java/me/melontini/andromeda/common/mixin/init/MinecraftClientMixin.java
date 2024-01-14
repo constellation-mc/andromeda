@@ -1,4 +1,4 @@
-package me.melontini.andromeda.common.mixin;
+package me.melontini.andromeda.common.mixin.init;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;

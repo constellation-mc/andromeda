@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 
 import java.util.function.BooleanSupplier;
 
@@ -28,6 +27,6 @@ public class ItemFrameTooltips extends Module<Module.BaseConfig> {
     @Override
     public void collectBlockades() {
         FeatureBlockade.get().explain(this, "enabled", iceberg,
-                TextUtil.translatable("andromeda.config.option_manager.reason.andromeda.iceberg"));
+                "andromeda.config.option_manager.reason.andromeda.iceberg");
     }
 }

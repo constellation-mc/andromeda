@@ -3,8 +3,7 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.CustomLog;
-import me.melontini.andromeda.base.workarounds.pre_launch.CheckerExtension;
-import me.melontini.andromeda.base.workarounds.pre_launch.PreLaunchWorkaround;
+import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.ClassPath;
@@ -14,6 +13,7 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
@@ -104,7 +104,11 @@ public class Bootstrap {
     public static void onPreLaunch() {
         LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
-        verifyLoadState();
+        //Necessary to avoid class loading related deadlock in ModuleDiscovery.
+        Exceptions.run(() -> {
+            Class.forName(ModuleInfo.class.getName());
+            Class.forName(Exceptions.class.getName());
+        });
 
         AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
         var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
@@ -190,20 +194,6 @@ public class Bootstrap {
         }
     }
 
-    //Mods shouldn't load MC classes at preLaunch, but some do anyway.
-    private static void verifyLoadState() {
-        if (!Debug.hasKey(Debug.Keys.SKIP_LOAD_STATE_VERIFICATION)) {
-            if (CheckerExtension.done()) {
-                throw AndromedaException.builder()
-                        .message("Invalid load state! Andromeda needs to initialize before the first mixin transformation!")
-                        .message("There is nothing you can do about this except remove other mods to see which ones conflict with Andromeda!")
-                        .message("See 'Candidates:' for a list of possibly conflicting mods!")
-                        .add("candidates", PreLaunchWorkaround.findCandidates())
-                        .build();
-            }
-        }
-    }
-
     static void wrapIO(ThrowingRunnable<IOException> runnable, String msg) {
         try {
             runnable.run();
@@ -232,13 +222,6 @@ public class Bootstrap {
     public static boolean isModLoaded(Module<?> m, String modId) {
         return !Debug.skipIntegration(m.meta().id(), modId) && FabricLoader.getInstance().isModLoaded(modId);
     }
-
-    static {
-        onPreLaunch();
-    }
-
-    //init static
-    public static void shake() { }
 
     public enum Status {
         PRE_INIT, DISCOVERY, SETUP,
