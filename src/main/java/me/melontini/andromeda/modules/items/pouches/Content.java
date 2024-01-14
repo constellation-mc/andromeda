@@ -154,7 +154,11 @@ public class Content {
         for (BlockEntityType<?> type : CommonRegistries.blockEntityTypes()) {
             var o = type.blocks.stream().findAny();
             if (o.isPresent()) {
-                test(type.instantiate(BlockPos.ORIGIN, o.orElseThrow().getDefaultState()));
+                try {
+                    test(type.instantiate(BlockPos.ORIGIN, o.orElseThrow().getDefaultState()));
+                } catch (Exception e) {
+                    AndromedaLog.error("{} failed the ViewerCountManager test. {}: {}", CommonRegistries.blockEntityTypes().getId(type), e.getClass().getSimpleName(), e.getLocalizedMessage());
+                }
             } else {
                 AndromedaLog.warn("{} has no blocks?", CommonRegistries.blockEntityTypes().getId(type));
             }
