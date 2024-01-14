@@ -53,7 +53,12 @@ public class Bootstrap {
     public static void onClient() {
         Status.update();
 
-        onMerged();
+        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
+            MixinEnvironment.getCurrentEnvironment().audit();
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
+        }
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             run(module::onClient, (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
@@ -65,19 +70,15 @@ public class Bootstrap {
     public static void onServer() {
         Status.update();
 
-        onMerged();
-
-        for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onServer, (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
-        }
-    }
-
-    private static void onMerged() {
         if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
             MixinEnvironment.getCurrentEnvironment().audit();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
+        }
+
+        for (Module<?> module : ModuleManager.get().loaded()) {
+            run(module::onServer, (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
         }
     }
 
