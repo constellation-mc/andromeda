@@ -19,12 +19,12 @@ public class LockpickItem extends Item {
     }
 
     public boolean tryUse(Lockpick module, ItemStack stack, LivingEntity user, Hand hand) {
-        if (module.enabled()) {
+        if (module.enabled() && hand == Hand.MAIN_HAND) {
 
             if (!(user instanceof PlayerEntity p && p.getAbilities().creativeMode)) {
                 if (module.config().breakAfterUse) {
                     if (!user.world.isClient())
-                        user.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+                        user.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
 
                     stack.decrement(1);
                 }
