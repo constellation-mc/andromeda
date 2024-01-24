@@ -2,23 +2,12 @@ accessWidener  v2	named
 
 accessible field net/minecraft/server/MinecraftServer session Lnet/minecraft/world/level/storage/LevelStorage$Session;
 
-# game rule factory
-accessible class net/minecraft/world/GameRules$Acceptor
-accessible method net/minecraft/world/GameRules$Type <init> (Ljava/util/function/Supplier;Ljava/util/function/Function;Ljava/util/function/BiConsumer;Lnet/minecraft/world/GameRules$Acceptor;)V
-
 accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen children Ljava/util/List;
 
-# entities/slimes/flee
-accessible class net/minecraft/entity/mob/SlimeEntity$FaceTowardTargetGoal
-
 # gui/no_more_adventure
 accessible class net/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection
-
-# mechanics/throwable_items
-accessible field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
-mutable field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
 
 # entities/boats (furnaceBoat)
 accessible field net/minecraft/entity/vehicle/BoatEntity location Lnet/minecraft/entity/vehicle/BoatEntity$Location;
@@ -39,8 +28,6 @@ accessible field net/minecraft/server/ServerAdvancementLoader manager Lnet/minec
 accessible field net/minecraft/entity/vehicle/FurnaceMinecartEntity fuel I
 accessible field net/minecraft/block/entity/AbstractFurnaceBlockEntity burnTime I
 accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
-accessible field net/minecraft/block/entity/ChestBlockEntity inventory Lnet/minecraft/util/collection/DefaultedList;
-accessible field net/minecraft/block/entity/HopperBlockEntity inventory Lnet/minecraft/util/collection/DefaultedList;
 
 # entities/villagers_follow_emeralds  mechanics/throwable_items
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;

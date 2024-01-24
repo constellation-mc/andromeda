@@ -37,7 +37,7 @@ public class PickUpBehaviorHandler {
             ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
             chestMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity));
-            chestBlockEntity.inventory.clear();
+            chestBlockEntity.clear();
             return chestMinecart;
         });
 
@@ -56,7 +56,7 @@ public class PickUpBehaviorHandler {
             ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
             hopperMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity));
-            hopperBlockEntity.inventory.clear();
+            hopperBlockEntity.clear();
             return hopperMinecart;
         });
     }
