@@ -1,4 +1,4 @@
-package me.melontini.andromeda.common.mixin;
+package me.melontini.andromeda.common.mixin.configs;
 
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import net.minecraft.world.World;

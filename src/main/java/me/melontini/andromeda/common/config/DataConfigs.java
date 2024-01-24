@@ -111,7 +111,7 @@ public class DataConfigs extends JsonDataLoader {
 
     public static void apply(ServerWorld world) {
         MakeSure.notNull(DataConfigs.CONFIGS);
-        ScopedConfigs.get(world);
+        ScopedConfigs.getConfigs(world);
 
         Set<CompletableFuture<?>> futures = new ReferenceOpenHashSet<>();
         for (Module<?> module : ModuleManager.get().loaded()) {
@@ -131,7 +131,7 @@ public class DataConfigs extends JsonDataLoader {
     public static void apply(MinecraftServer server) {
         MakeSure.notNull(DataConfigs.CONFIGS);
 
-        server.getWorlds().forEach(ScopedConfigs::get);
+        server.getWorlds().forEach(ScopedConfigs::getConfigs);
 
         Set<CompletableFuture<?>> futures = new ReferenceOpenHashSet<>();
         for (Module<?> module : ModuleManager.get().loaded()) {
