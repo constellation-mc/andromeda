@@ -130,7 +130,6 @@ public abstract class Module<T extends Module.BaseConfig> {
             MakeSure.isTrue(cls.getDeclaredConstructors().length == 1);
             var ctx = Reflect.setAccessible(cls.getDeclaredConstructors()[0]);
 
-            LOGGER.warn("Loading {}", cls.getName());
             if (ctx.getParameterCount() == 0) {
                 AndromedaException.run(ctx::newInstance, b -> b.message("Failed to construct module class!").add("class", str));
             } else {

@@ -121,11 +121,17 @@ public class CrashHandler {
 
             object.add("mods", mods);
 
-            Uploader.SERVICE.submit(() -> MIXPANEL.upload(new Mixpanel.Context("Crash", object)).handle((unused, throwable) -> {
+            Runnable r = () -> MIXPANEL.upload(new Mixpanel.Context("Crash", object)).handle((unused, throwable) -> {
                 if (throwable != null)
-                    AndromedaLog.error("Failed to upload crash report! {}: {}", throwable.getClass().getSimpleName(), throwable.getMessage());
+                    System.err.printf("Failed to upload crash report! %s: %s%n", throwable.getClass().getSimpleName(), throwable.getMessage());
                 return null;
-            }));
+            });
+
+            if (context.get(Boolean.class, "andromeda:skip_service").orElse(false)) {
+                r.run();
+            } else {
+                Uploader.SERVICE.submit(r);
+            }
         }
     }
 
