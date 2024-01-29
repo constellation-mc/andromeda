@@ -8,3 +8,4 @@
 
 * Switched to Codecs for JSON parsing.
 * `ScopedConfigs#get` no longer looks up a `PersistentState`.
+* Bumped min loader version to 0.15.6
