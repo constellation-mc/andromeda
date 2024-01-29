@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import me.melontini.andromeda.common.util.MiscUtil;
-import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
+import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.AbstractFireBlock;
@@ -37,7 +37,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import static me.melontini.andromeda.modules.mechanics.throwable_items.Content.BRICKED;
+import static me.melontini.andromeda.modules.mechanics.throwable_items.Main.BRICKED;
 
 public class DefaultBehaviors implements Runnable {
 
@@ -77,14 +77,14 @@ public class DefaultBehaviors implements Runnable {
                 if (hitResult.getType() == HitResult.Type.ENTITY) {
                     EntityHitResult entityHitResult = (EntityHitResult) hitResult;
                     if (entityHitResult.getEntity() instanceof PlayerEntity player) {
-                        ServerPlayNetworking.send((ServerPlayerEntity) player, Content.COLORED_FLYING_STACK_LANDED, buf);
+                        ServerPlayNetworking.send((ServerPlayerEntity) player, Main.COLORED_FLYING_STACK_LANDED, buf);
                     }
                 } else if (hitResult.getType() == HitResult.Type.BLOCK) {
                     Vec3d pos = hitResult.getPos();
                     List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(((BlockHitResult) hitResult).getBlockPos()).expand(0.5), LivingEntity::isAlive);
                     playerEntities.stream().min(Comparator.comparingDouble(player -> player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())))
                             .ifPresent(player -> {
-                                ServerPlayNetworking.send((ServerPlayerEntity) player, Content.COLORED_FLYING_STACK_LANDED, buf);
+                                ServerPlayNetworking.send((ServerPlayerEntity) player, Main.COLORED_FLYING_STACK_LANDED, buf);
                             });
                 }
             });

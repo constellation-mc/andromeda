@@ -9,8 +9,4 @@ import me.melontini.andromeda.base.annotations.OldConfigKey;
 @ModuleInfo(name = "translations", category = "misc", environment = Environment.CLIENT)
 public class Translations extends Module<Module.BaseConfig> {
 
-    @Override
-    public void onClient() {
-        TranslationUpdater.checkAndUpdate();
-    }
 }

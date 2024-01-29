@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.items.infinite_totem.client;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.AndromedaPackets;
-import me.melontini.andromeda.modules.items.infinite_totem.Content;
+import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class Client {
 
-    public static void init() {
+    Client() {
         ClientPlayNetworking.registerGlobalReceiver(AndromedaPackets.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
             UUID id = buf.readUuid();
             ItemStack stack = buf.readItemStack();
@@ -28,6 +28,6 @@ public class Client {
             });
         });
 
-        Content.KNOCKOFF_TOTEM_PARTICLE.ifPresent(t -> ParticleFactoryRegistry.getInstance().register(t, KnockoffTotemParticle.Factory::new));
+        Main.KNOCKOFF_TOTEM_PARTICLE.ifPresent(t -> ParticleFactoryRegistry.getInstance().register(t, KnockoffTotemParticle.Factory::new));
     }
 }

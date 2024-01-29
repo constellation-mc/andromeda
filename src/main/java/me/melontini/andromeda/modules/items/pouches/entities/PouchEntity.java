@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
-import me.melontini.andromeda.modules.items.pouches.Content;
+import me.melontini.andromeda.modules.items.pouches.Main;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.block.BlockState;
@@ -44,11 +44,11 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     public PouchEntity(double d, double e, double f, World world) {
-        super(Content.POUCH.orThrow(), d, e, f, world);
+        super(Main.POUCH.orThrow(), d, e, f, world);
     }
 
     public PouchEntity(LivingEntity livingEntity, World world) {
-        super(Content.POUCH.orThrow(), livingEntity, world);
+        super(Main.POUCH.orThrow(), livingEntity, world);
     }
 
     @Override
@@ -85,10 +85,10 @@ public class PouchEntity extends ThrownItemEntity {
                 stacks.forEach(stack -> pe.getInventory().offerOrDrop(stack));
                 return;
             } else if (entity instanceof InventoryOwner io) {
-                stacks.forEach(stack -> Content.tryInsertItem(world, this.getPos(), stack, io.getInventory()));
+                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, io.getInventory()));
                 return;
             } else if (entity instanceof Inventory inv) {
-                stacks.forEach(stack -> Content.tryInsertItem(world, this.getPos(), stack, inv));
+                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, inv));
                 return;
             }
             stacks.forEach(stack -> ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
@@ -103,16 +103,16 @@ public class PouchEntity extends ThrownItemEntity {
             var be = world.getBlockEntity(blockHitResult.getBlockPos());
             if (be != null) {
                 if (be instanceof Inventory inv) {
-                    if (Content.getViewCount(be) > 0) {
+                    if (Main.getViewCount(be) > 0) {
                         if (be instanceof ChestBlockEntity) {
                             BlockState state = world.getBlockState(blockHitResult.getBlockPos());
                             Inventory cInv = ChestBlock.getInventory((ChestBlock) state.getBlock(), state, world, blockHitResult.getBlockPos(), false);
                             if (cInv != null) {
-                                stacks.forEach(stack -> Content.tryInsertItem(world, this.getPos(), stack, cInv));
+                                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, cInv));
                                 return;
                             }
                         } else {
-                            stacks.forEach(stack -> Content.tryInsertItem(world, this.getPos(), stack, inv));
+                            stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, inv));
                             return;
                         }
                     }
@@ -154,10 +154,10 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     public enum Type {
-        SEED(new Identifier(MODID, "pouches/seeds"), Content.SEED_POUCH),
-        SAPLING(new Identifier(MODID, "pouches/saplings"), Content.SAPLING_POUCH),
-        FLOWER(new Identifier(MODID, "pouches/flowers"), Content.FLOWER_POUCH),
-        CUSTOM(null, Content.SPECIAL_POUCH) {
+        SEED(new Identifier(MODID, "pouches/seeds"), Main.SEED_POUCH),
+        SAPLING(new Identifier(MODID, "pouches/saplings"), Main.SAPLING_POUCH),
+        FLOWER(new Identifier(MODID, "pouches/flowers"), Main.FLOWER_POUCH),
+        CUSTOM(null, Main.SPECIAL_POUCH) {
             @Override
             public Identifier getLootId(ItemStack stack) {
                 NbtCompound nbt = stack.getNbt();

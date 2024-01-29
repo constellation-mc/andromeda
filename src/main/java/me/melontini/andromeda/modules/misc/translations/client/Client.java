@@ -1,4 +1,4 @@
-package me.melontini.andromeda.modules.misc.translations;
+package me.melontini.andromeda.modules.misc.translations.client;
 
 import com.google.common.collect.Sets;
 import me.melontini.andromeda.util.AndromedaLog;
@@ -20,7 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 
-public class TranslationUpdater {
+public class Client {
 
     public static final Path TRANSLATION_PACK = CommonValues.hiddenPath().resolve("andromeda_translations");
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
@@ -31,11 +31,11 @@ public class TranslationUpdater {
 
     private static String languageCode = "en_us";
 
-    public static void checkAndUpdate() {
+    Client() {
         boolean shouldUpdate = true;
-        if (Files.exists(TranslationUpdater.LANG_PATH.resolve("en_us.json"))) {
+        if (Files.exists(Client.LANG_PATH.resolve("en_us.json"))) {
             try {
-                FileTime lastModifiedTime = Files.getLastModifiedTime(TranslationUpdater.LANG_PATH.resolve("en_us.json"));
+                FileTime lastModifiedTime = Files.getLastModifiedTime(Client.LANG_PATH.resolve("en_us.json"));
                 shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
             } catch (Exception ignored) {}
         }
@@ -43,9 +43,9 @@ public class TranslationUpdater {
 
         if (shouldUpdate) {
             Set<String> languages = Sets.newHashSet("en_us");
-            String s = TranslationUpdater.getSelectedLanguage();
+            String s = Client.getSelectedLanguage();
             if (!s.isEmpty()) languages.add(s);
-            ForkJoinPool.commonPool().submit(() -> TranslationUpdater.downloadTranslations(languages));
+            ForkJoinPool.commonPool().submit(() -> Client.downloadTranslations(languages));
         } else {
             AndromedaLog.info("Skipped translations update.");
         }

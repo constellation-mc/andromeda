@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
+import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
@@ -20,13 +20,13 @@ abstract class DispenserBlockMixin {
     private static void andromeda$throwItem(Object2ObjectOpenHashMap<Item, DispenserBehavior> map, CallbackInfo ci) {
         var b = map.defaultReturnValue();
         map.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.hasBehaviors(stack.getItem()) ?
-                Content.BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
+                Main.BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
     }
 
     @Inject(at = @At("HEAD"), method = "getBehaviorForItem", cancellable = true)
     private void andromeda$overrideBehavior(ItemStack stack, CallbackInfoReturnable<DispenserBehavior> cir) {
         if (ItemBehaviorManager.hasBehaviors(stack.getItem()) && ItemBehaviorManager.overridesVanilla(stack.getItem())) {
-            cir.setReturnValue(Content.BEHAVIOR);
+            cir.setReturnValue(Main.BEHAVIOR);
         }
     }
 }

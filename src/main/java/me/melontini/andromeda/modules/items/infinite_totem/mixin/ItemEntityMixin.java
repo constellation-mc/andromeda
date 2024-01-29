@@ -3,8 +3,8 @@ package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.BlockUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
-import me.melontini.andromeda.modules.items.infinite_totem.Content;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
+import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.base.util.classes.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -141,7 +141,7 @@ abstract class ItemEntityMixin extends Entity {
 
                         ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
 
-                        ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(Content.INFINITE_TOTEM.orThrow()));
+                        ItemEntity entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(Main.INFINITE_TOTEM.orThrow()));
                         this.discard();
                         andromeda$itemEntity.discard();
                         world.spawnEntity(entity);

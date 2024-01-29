@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.misc.unknown.mixin.useless_info;
 
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
-import me.melontini.andromeda.modules.misc.unknown.Unknown;
+import me.melontini.andromeda.modules.misc.unknown.Main;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
@@ -20,6 +20,6 @@ abstract class TitleScreenMixin extends Screen {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resource/SplashTextResourceSupplier;get()Lnet/minecraft/client/gui/screen/SplashTextRenderer;"), method = "init")
     private void andromeda$init(CallbackInfo ci) {
-        Unknown.DEBUG_SPLASH = "Welcome to 1.20!";
+        Main.DEBUG_SPLASH = "Welcome to 1.20!";
     }
 }

@@ -31,40 +31,37 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.List;
 import java.util.Objects;
 
 import static me.melontini.andromeda.common.registries.Common.id;
-import static me.melontini.andromeda.common.registries.Common.start;
 
 public class MinecartItems {
 
-    private static Minecarts MODULE;
+    public static final Keeper<SpawnerMinecartItem> SPAWNER_MINECART = Keeper.create();
+    public static final Keeper<AnvilMinecartItem> ANVIL_MINECART = Keeper.create();
+    public static final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = Keeper.create();
+    public static final Keeper<JukeBoxMinecartItem> JUKEBOX_MINECART = Keeper.create();
 
-    public static final Keeper<SpawnerMinecartItem> SPAWNER_MINECART = start(() -> ContentBuilder.ItemBuilder
-            .create(id("spawner_minecart"), () -> new SpawnerMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(CommonItemGroups.transport())
-            .register(() -> MODULE.config().isSpawnerMinecartOn))
-            .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(MODULE, item)));
+    public static void init(Minecarts module, Minecarts.Config config) {
+        SPAWNER_MINECART.init(ContentBuilder.ItemBuilder.create(id("spawner_minecart"), () -> new SpawnerMinecartItem(new FabricItemSettings().maxCount(1)))
+                .itemGroup(CommonItemGroups.transport())
+                .register(config.isSpawnerMinecartOn).build());
 
-    public static final Keeper<AnvilMinecartItem> ANVIL_MINECART = start(() -> ContentBuilder.ItemBuilder
-            .create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(CommonItemGroups.transport())
-            .register(() -> MODULE.config().isAnvilMinecartOn))
-            .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(MODULE, item)));
+        ANVIL_MINECART.init(ContentBuilder.ItemBuilder.create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
+                .itemGroup(CommonItemGroups.transport())
+                .register(config.isAnvilMinecartOn).build());
 
-    public static final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = start(() -> ContentBuilder.ItemBuilder
-            .create(id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(CommonItemGroups.transport())
-            .register(() -> MODULE.config().isNoteBlockMinecartOn))
-            .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(MODULE, item)));
+        NOTE_BLOCK_MINECART.init(ContentBuilder.ItemBuilder.create(id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1)))
+                .itemGroup(CommonItemGroups.transport())
+                .register(config.isNoteBlockMinecartOn).build());
 
-    public static final Keeper<JukeBoxMinecartItem> JUKEBOX_MINECART = start(() -> ContentBuilder.ItemBuilder
-            .create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
-            .itemGroup(CommonItemGroups.transport())
-            .register(() -> MODULE.config().isJukeboxMinecartOn))
-            .afterInit(item -> AndromedaItemGroup.accept(acceptor -> acceptor.item(MODULE, item)));
+        JUKEBOX_MINECART.init(ContentBuilder.ItemBuilder.create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
+                .itemGroup(CommonItemGroups.transport())
+                .register(config.isJukeboxMinecartOn).build());
 
-    public static void init() {
+        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART)));
+
         ModuleManager.get().getModule(MinecartBlockPicking.class).ifPresent(m -> {
             SPAWNER_MINECART.ifPresent(item -> PickUpBehaviorHandler.registerPickUpBehavior(Blocks.SPAWNER, (state, world, pos) -> {
                 if (m.config().spawnerPicking) {

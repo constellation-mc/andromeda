@@ -11,12 +11,6 @@ import me.melontini.andromeda.util.JsonOps;
 public class MinecartBlockPicking extends Module<MinecartBlockPicking.Config> {
 
     @Override
-    public void onMain() {
-        PlaceBehaviorHandler.init();
-        PickUpBehaviorHandler.init();
-    }
-
-    @Override
     public void acceptLegacyConfig(JsonObject config) {
         JsonOps.ifPresent(config, "minecartBlockPicking", e -> this.config().enabled = e.getAsBoolean());
         JsonOps.ifPresent(config, "minecartSpawnerPicking", e -> this.config().spawnerPicking = e.getAsBoolean());

@@ -4,8 +4,8 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.blocks.guarded_loot.GuardedLoot;
-import me.melontini.andromeda.modules.items.lockpick.Content;
 import me.melontini.andromeda.modules.items.lockpick.Lockpick;
+import me.melontini.andromeda.modules.items.lockpick.Main;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
@@ -47,8 +47,8 @@ abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockE
         if (!monster.isEmpty()) {
             boolean lockpicking = ModuleManager.get().getModule(Lockpick.class).map(m -> {
                 if (config.allowLockPicking) {
-                    if (player.getMainHandStack().isOf(Content.LOCKPICK.orThrow())) {
-                        return Content.LOCKPICK.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
+                    if (player.getMainHandStack().isOf(Main.LOCKPICK.orThrow())) {
+                        return Main.LOCKPICK.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
                     }
                 }
                 return false;

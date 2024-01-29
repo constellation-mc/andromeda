@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -25,18 +26,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class Content {
+public class Main {
 
-    public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.of(() ->
-            RegistryUtil.createEntityType(id("flying_item"),
-                    FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
-                            .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10)));
+    public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
 
     public static RegistryKey<DamageType> BRICKED;
 
@@ -53,7 +49,11 @@ public class Content {
         }
     };
 
-    public static void init() {
+    Main() {
+        FLYING_ITEM.init(RegistryUtil.createEntityType(id("flying_item"), FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
+                .dimensions(new EntityDimensions(0.25F, 0.25F, true))
+                .trackRangeChunks(4).trackedUpdateRate(10)));
+
         BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked"));
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -66,6 +66,8 @@ public class Content {
                 ServerPlayNetworking.send(player, ITEMS_WITH_BEHAVIORS, packet);
             }
         });
+
+        ItemBehaviorData.init();
     }
 
     private static PacketByteBuf sendItemsS2CPacket() {

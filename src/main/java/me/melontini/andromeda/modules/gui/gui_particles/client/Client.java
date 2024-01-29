@@ -10,7 +10,7 @@ import net.minecraft.particle.ParticleTypes;
 
 public class Client {
 
-    public static void init() {
+    Client() {
         GuiParticles module = ModuleManager.quick(GuiParticles.class);
 
         ScreenEvents.BEFORE_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {

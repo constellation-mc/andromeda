@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.items.pouches;
 import me.melontini.andromeda.common.conflicts.CommonItemGroups;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
-import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
@@ -31,42 +30,25 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 
-public class Content {
+public class Main {
 
-    private static Pouches MODULE;
-
-    public static final Keeper<PouchItem> SEED_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("seed_pouch"),
-                    () -> new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().maxCount(16)))
-            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().seedPouch));
-
-    public static final Keeper<PouchItem> FLOWER_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("flower_pouch"),
-                    () -> new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().maxCount(16)))
-            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().flowerPouch));
-
-    public static final Keeper<PouchItem> SAPLING_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("sapling_pouch"),
-                    () -> new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().maxCount(16)))
-            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().saplingPouch));
-
-    public static final Keeper<PouchItem> SPECIAL_POUCH = Common.start(() -> ContentBuilder.ItemBuilder.create(id("special_pouch"),
-                    () -> new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().maxCount(16)))
-            .itemGroup(CommonItemGroups.tools()).register(() -> MODULE.config().specialPouch));
-
-    public static final Keeper<EntityType<PouchEntity>> POUCH = Keeper.of(() ->
-            RegistryUtil.createEntityType(id("pouch"),
-                    FabricEntityTypeBuilder.<PouchEntity>create(SpawnGroup.MISC, PouchEntity::new)
-                            .dimensions(new EntityDimensions(0.25F, 0.25F, true))
-                            .trackRangeChunks(4).trackedUpdateRate(10)));
+    public static final Keeper<PouchItem> SEED_POUCH = Keeper.create();
+    public static final Keeper<PouchItem> FLOWER_POUCH = Keeper.create();
+    public static final Keeper<PouchItem> SAPLING_POUCH = Keeper.create();
+    public static final Keeper<PouchItem> SPECIAL_POUCH = Keeper.create();
+    public static final Keeper<EntityType<PouchEntity>> POUCH = Keeper.create();
 
     public static final Map<BlockEntityType<?>, Field> VIEWABLE_BLOCKS = new HashMap<>();
 
     public static int getViewCount(BlockEntity be) {
-        Field f = Content.VIEWABLE_BLOCKS.get(be.getType());
+        Field f = Main.VIEWABLE_BLOCKS.get(be.getType());
         if (f != null) {
             ViewerCountManager vcm = (ViewerCountManager) Exceptions.supply(() -> f.get(be));
             return vcm.getViewerCount();
@@ -106,11 +88,31 @@ public class Content {
         return -1;
     }
 
-    public static void init() {
+    Main(Pouches module, Pouches.Config config) {
+        SEED_POUCH.init(ContentBuilder.ItemBuilder.create(id("seed_pouch"),
+                        () -> new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().maxCount(16)))
+                .itemGroup(CommonItemGroups.tools()).register(() -> config.seedPouch).build());
+
+        FLOWER_POUCH.init(ContentBuilder.ItemBuilder.create(id("flower_pouch"),
+                        () -> new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().maxCount(16)))
+                .itemGroup(CommonItemGroups.tools()).register(() -> config.flowerPouch).build());
+
+        SAPLING_POUCH.init(ContentBuilder.ItemBuilder.create(id("sapling_pouch"),
+                        () -> new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().maxCount(16)))
+                .itemGroup(CommonItemGroups.tools()).register(() -> config.saplingPouch).build());
+
+        SPECIAL_POUCH.init(ContentBuilder.ItemBuilder.create(id("special_pouch"),
+                        () -> new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().maxCount(16)))
+                .itemGroup(CommonItemGroups.tools()).register(() -> config.specialPouch).build());
+
+        POUCH.init(RegistryUtil.createEntityType(id("pouch"), FabricEntityTypeBuilder.<PouchEntity>create(SpawnGroup.MISC, PouchEntity::new)
+                .dimensions(new EntityDimensions(0.25F, 0.25F, true))
+                .trackRangeChunks(4).trackedUpdateRate(10)));
+
         Trades.register();
 
-        var l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
-        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(MODULE, l));
+        List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
+        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, new ArrayList<>(l)));
 
         var behavior = new ProjectileDispenserBehavior() {
             @Override

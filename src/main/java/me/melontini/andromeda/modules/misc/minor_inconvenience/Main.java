@@ -6,10 +6,10 @@ import net.minecraft.registry.RegistryKeys;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 
-public class Agony {
+public class Main {
     public static RegistryKey<DamageType> AGONY;
 
-    public static void init() {
-        Agony.AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("agony"));
+    Main() {
+        Main.AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("agony"));
     }
 }

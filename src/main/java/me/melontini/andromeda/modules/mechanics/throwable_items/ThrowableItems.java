@@ -6,8 +6,6 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.annotations.Unscoped;
-import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.util.JsonOps;
 
 @Unscoped
@@ -24,11 +22,6 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
             JsonOps.ifPresent(newThrowableItems, "zombieThrowInterval", e -> this.config().zombieThrowInterval = e.getAsInt());
             JsonOps.ifPresent(newThrowableItems, "tooltip", e -> this.config().tooltip = e.getAsBoolean());
         }
-    }
-
-    @Override
-    public void onMain() {
-        Common.bootstrap(this, Content.class, ItemBehaviorData.class);
     }
 
     public static class Config extends BaseConfig {

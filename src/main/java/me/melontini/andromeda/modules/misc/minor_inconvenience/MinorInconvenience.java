@@ -8,8 +8,4 @@ import me.melontini.andromeda.base.annotations.OldConfigKey;
 @ModuleInfo(name = "minor_inconvenience", category = "misc")
 public class MinorInconvenience extends Module<Module.BaseConfig> {
 
-    @Override
-    public void onMain() {
-        Agony.init();
-    }
 }

@@ -94,7 +94,7 @@ public class Bootstrap {
         }
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onMain, (b) -> b.message("Failed to execute Module.onMain!").add("module", module.meta().id()));
+            run(module::onMain, (b) -> b.message("Failed to execute Module!").add("module", module.meta().id()));
         }
 
         run(Andromeda::init, b -> b.message("Failed to initialize Andromeda!"));
@@ -166,10 +166,6 @@ public class Bootstrap {
 
         Status.update();
         Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
-
-        for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onPreLaunch, (b) -> b.message("Failed to execute Module.onPreLaunch!").add("module", module.meta().id()));
-        }
     }
 
     private static void resolveConflicts(Collection<Module<?>> list) {
