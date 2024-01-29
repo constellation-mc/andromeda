@@ -8,10 +8,7 @@ import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.CrashHandler;
-import me.melontini.dark_matter.api.base.util.classes.Context;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
-import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import me.melontini.dark_matter.api.crash_handler.Prop;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,10 +21,11 @@ import java.util.function.Consumer;
 @CustomLog
 public class AndromedaException extends RuntimeException {
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final boolean report;
     private final JsonObject statuses;
+    private Consumer<StringBuilder> appender;
 
     @SuppressWarnings("unused")
     private AndromedaException() {
@@ -46,7 +44,12 @@ public class AndromedaException extends RuntimeException {
         b.append("(Andromeda) ");
         if (Strings.isNullOrEmpty(super.getMessage())) b.append("Something went very wrong!");
         else b.append(super.getMessage());
+        if (appender != null) appender.accept(b.append('\n'));
         return b.toString();
+    }
+
+    public void setAppender(Consumer<StringBuilder> b) {
+        this.appender = b;
     }
 
     public JsonObject getStatuses() {
@@ -156,17 +159,10 @@ public class AndromedaException extends RuntimeException {
         public AndromedaException build() {
             disableInHierarchy(cause);
 
-            var e = new AndromedaException(report,
+            //CrashHandler can't automatically handle preLaunch errors, so this is what we have to do.
+            return new AndromedaException(report,
                     message.isEmpty() ? "Something went very wrong!" : StringUtils.join(message.toArray(), '\n'),
                     cause, statuses);
-
-            //CrashHandler can't automatically handle preLaunch errors, so this is what we have to do.
-            if (!Crashlytics.hasHandler("andromeda")) {
-                LOGGER.error("Statuses: " + GSON.toJson(statuses));
-                CrashHandler.handleCrash(e, Context.of());
-            }
-
-            return e;
         }
     }
 }
