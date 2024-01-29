@@ -1,14 +1,14 @@
 package me.melontini.andromeda.modules.world.crop_temperature;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.Debug;
@@ -28,11 +28,7 @@ import net.minecraft.world.World;
 
 import java.lang.invoke.MethodType;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.Function;
-
-import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public record PlantTemperatureData(List<Block> blocks, float min, float max, float aMin, float aMax) {
 
@@ -72,30 +68,21 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
     public static void init() {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> PlantTemperatureData.PLANT_DATA.clear());
 
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new JsonDataLoader(new Gson(), "andromeda/crop_temperatures") {
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new JsonDataLoader(Common.id("crop_temperatures")) {
             @Override
-            public CompletableFuture<Void> apply(Map<Identifier, JsonObject> data, ResourceManager manager, Profiler profiler, Executor executor) {
-                return CompletableFuture.supplyAsync(() -> {
-                    Map<Identifier, PlantTemperatureData> map = new HashMap<>();
+            protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
+                Map<Identifier, PlantTemperatureData> map = new HashMap<>();
 
-                    data.forEach((identifier, object) -> map.put(identifier, CODEC.parse(JsonOps.INSTANCE, object)
-                            .getOrThrow(false, string -> {
-                                throw new JsonParseException(string);
-                            })));
+                data.forEach((identifier, object) -> map.put(identifier, CODEC.parse(JsonOps.INSTANCE, object)
+                        .getOrThrow(false, string -> {
+                            throw new JsonParseException(string);
+                        })));
 
-                    return map;
-                }, executor).thenAcceptAsync(map -> {
-                    map.forEach((identifier, temperatureData) ->
-                            temperatureData.blocks.forEach((block) -> PLANT_DATA.put(block, temperatureData)));
+                map.forEach((identifier, temperatureData) ->
+                        temperatureData.blocks.forEach((block) -> PLANT_DATA.put(block, temperatureData)));
 
-                    if (Debug.hasKey(Debug.Keys.PRINT_MISSING_ASSIGNED_DATA))
-                        verifyPostLoad();
-                }, executor);
-            }
-
-            @Override
-            public Identifier getFabricId() {
-                return new Identifier(MODID, "crop_temperatures");
+                if (Debug.hasKey(Debug.Keys.PRINT_MISSING_ASSIGNED_DATA))
+                    verifyPostLoad();
             }
         });
     }
