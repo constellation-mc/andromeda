@@ -1,11 +1,11 @@
 ### What's New:
 
-## [Notice on future updates | ❗ 🔄](https://github.com/melontini/andromeda/discussions/94)
+[`world/crop_temperature`]:
 
-## Alpha warning!
+`min`, `max`, `aMin`, `aMax` no longer accept string values. `"1.5"` -> `1.5`
 
 [`general`]:
 
-* Changed the loading process again. Should be a bit more reliable.
-* Updated Chinese translation. Courtesy of [Rad586](https://github.com/Rad586).
-* Fixed some minor issues.
+* Switched to Codecs for JSON parsing.
+* `ScopedConfigs#get` no longer looks up a `PersistentState`.
+* Bumped min loader version to 0.15.6
