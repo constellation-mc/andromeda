@@ -2,6 +2,9 @@ package me.melontini.andromeda.modules.blocks.incubator.data;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -22,9 +25,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import static me.melontini.andromeda.common.registries.Common.id;
-import static me.melontini.andromeda.common.registries.ResourceRegistry.parseFromId;
 
 public record EggProcessingData(Item item, EntityType<?> entity, int time) {
+
+    public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
+            CommonRegistries.items().getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
+            CommonRegistries.entityTypes().getCodec().fieldOf("entity").forGetter(EggProcessingData::entity),
+            Codec.INT.fieldOf("time").forGetter(EggProcessingData::time)
+    ).apply(data, EggProcessingData::new));
 
     public static Map<Item, EggProcessingData> EGG_DATA = new IdentityHashMap<>();
 
@@ -42,14 +50,10 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
             public CompletableFuture<Void> apply(Map<Identifier, JsonObject> data, ResourceManager manager, Profiler profiler, Executor executor) {
                 return CompletableFuture.supplyAsync(() -> {
                     Map<Identifier, EggProcessingData> map = new HashMap<>();
-
-                    data.forEach((identifier, object) -> {
-                        EntityType<?> entity = parseFromId(object.get("entity").getAsString(), CommonRegistries.entityTypes());
-                        Item item = parseFromId(object.get("identifier").getAsString(), CommonRegistries.items());
-
-                        map.put(identifier, new EggProcessingData(item, entity, object.get("time").getAsInt()));
-                    });
-
+                    data.forEach((identifier, object) -> map.put(identifier, CODEC.parse(JsonOps.INSTANCE, object)
+                            .getOrThrow(false, string -> {
+                                throw new RuntimeException(string);
+                            })));
                     return map;
                 }, executor).thenAcceptAsync(map -> {
                     EggProcessingData.EGG_DATA.clear();

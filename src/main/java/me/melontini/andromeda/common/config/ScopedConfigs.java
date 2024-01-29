@@ -7,13 +7,9 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
-import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 import java.nio.file.Files;
@@ -26,8 +22,8 @@ public class ScopedConfigs {
         if (world instanceof ServerWorld sw) {
             return switch (module.config().scope) {
                 case GLOBAL -> module.config();
-                case WORLD -> get(sw.getServer().getWorld(World.OVERWORLD)).get(module);
-                case DIMENSION -> get(sw).get(module);
+                case WORLD -> getConfigs(sw.getServer().getWorld(World.OVERWORLD)).get(module);
+                case DIMENSION -> getConfigs(sw).get(module);
             };
         }
         AndromedaLog.error("Scoped configs requested on client! Returning un-scoped!", AndromedaException.builder()
@@ -35,11 +31,6 @@ public class ScopedConfigs {
                 .add("world", world.getRegistryKey())
                 .build());
         return module.config();
-    }
-
-    @SuppressWarnings("UnstableApiUsage")
-    public static State get(ServerWorld world) {
-        return PersistentStateHelper.getOrCreate(world, State::new, "andromeda_configs_dummy");
     }
 
     public static Path getPath(World world, Module<?> m) {
@@ -64,7 +55,7 @@ public class ScopedConfigs {
     }
 
     static void prepareForWorld(ServerWorld world, Module<?> module, Path p) {
-        ScopedConfigs.State state = ScopedConfigs.get(world);
+        Attachment attachment = ScopedConfigs.getConfigs(world);
         Module.BaseConfig config = ScopedConfigs.loadScoped(p, module);
 
         module.manager().save(p, Utilities.cast(config));
@@ -72,7 +63,7 @@ public class ScopedConfigs {
         if (module.config().scope == Module.BaseConfig.Scope.DIMENSION) {
             DataConfigs.applyDataPacks(config, module, world.getRegistryKey().getValue());
         }
-        state.addConfig(module, config);
+        attachment.addConfig(module, config);
     }
 
     public interface WorldExtension {
@@ -103,14 +94,19 @@ public class ScopedConfigs {
         }
 
         default boolean am$isReady() {
-            if (this instanceof ServerWorld w) {
-                return PersistentStateHelper.isStateLoaded(w, "andromeda_configs_dummy");
-            }
-            return false;
+            return this instanceof ServerWorld;
         }
     }
 
-    public static class State extends PersistentState implements DeserializableState {
+    public static Attachment getConfigs(ServerWorld world) {
+        return ((AttachmentGetter)world).andromeda$getConfigs();
+    }
+
+    public interface AttachmentGetter {
+        Attachment andromeda$getConfigs();
+    }
+
+    public static class Attachment {
 
         private final Map<Module<?>, Module.BaseConfig> configs = new Reference2ObjectOpenHashMap<>();
 
@@ -122,15 +118,6 @@ public class ScopedConfigs {
             synchronized (this.configs) {
                 this.configs.put(module, config);
             }
-        }
-
-        @Override
-        public NbtCompound writeNbt(NbtCompound nbt) {
-            return nbt;
-        }
-
-        @Override
-        public void readNbt(NbtCompound nbt) {
         }
     }
 }
