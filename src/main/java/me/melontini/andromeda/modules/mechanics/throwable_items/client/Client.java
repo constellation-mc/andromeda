@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
+import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -34,11 +34,11 @@ public class Client {
         return showTooltip.contains(item);
     }
 
-    public static void init(ThrowableItems module) {
-        Content.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
+    Client(ThrowableItems module) {
+        Main.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
-        ClientPlayNetworking.registerGlobalReceiver(Content.ITEMS_WITH_BEHAVIORS, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(Main.ITEMS_WITH_BEHAVIORS, (client, handler, buf, responseSender) -> {
             Set<Identifier> ids = new HashSet<>();
             int length = buf.readVarInt();
             for (int i = 0; i < length; i++) ids.add(buf.readIdentifier());
@@ -54,7 +54,7 @@ public class Client {
             }
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(Content.FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(Main.FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
             double x = buf.readDouble(), y = buf.readDouble(), z = buf.readDouble();
             boolean spawnItem = buf.readBoolean();
             ItemStack stack = buf.readItemStack();
@@ -86,7 +86,7 @@ public class Client {
             });
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(Content.COLORED_FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(Main.COLORED_FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
             ItemStack dye = buf.readItemStack();
             client.execute(() -> {
                 int a = client.getWindow().getScaledWidth();

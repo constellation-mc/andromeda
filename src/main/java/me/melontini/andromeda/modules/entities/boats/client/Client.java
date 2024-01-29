@@ -8,7 +8,7 @@ import net.minecraft.util.math.Direction;
 
 public class Client {
 
-    public static void init() {
+    Client() {
         BoatEntities.BOAT_WITH_FURNACE.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH))));
         BoatEntities.BOAT_WITH_JUKEBOX.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.JUKEBOX.getDefaultState())));
         BoatEntities.BOAT_WITH_TNT.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState())));

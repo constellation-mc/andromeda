@@ -1,31 +1,20 @@
 package me.melontini.andromeda.common.registries;
 
-import me.melontini.dark_matter.api.base.util.MakeSure;
-import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Keeper<T> {
 
-    private volatile Callable<T> supplier;
     private volatile boolean initialized;
 
     private T value;
-    private Field field;
 
     private final Set<Consumer<T>> consumers = new HashSet<>();
 
-    public Keeper(Callable<T> supplier) {
-        this.supplier = MakeSure.notNull(supplier);
-    }
-
-    public static <T> Keeper<T> of(Callable<T> supplier) {
-        return new Keeper<>(supplier);
+    public static <T> Keeper<T> create() {
+        return new Keeper<>();
     }
 
     public boolean isPresent() {
@@ -36,29 +25,20 @@ public class Keeper<T> {
         if (this.value != null) consumer.accept(this.value);
     }
 
-    public boolean initialized() {
-        return this.supplier == null;
-    }
-
     public Keeper<T> afterInit(Consumer<T> consumer) {
         this.consumers.add(consumer);
         return this;
     }
 
-    public @Nullable Field getField() {
-        return this.field;
-    }
-
-    void init(@Nullable Field f) throws Exception {
+    public void init(T value) {
         if (!initialized) {
             synchronized (this) {
                 if (!initialized) {
-                    this.value = supplier.call();
-                    this.supplier = null;
-                    this.field = f;
+                    this.value = value;
                     this.initialized = true;
 
                     if (isPresent()) this.consumers.forEach(c -> c.accept(this.value));
+                    this.consumers.clear();
                 }
             }
         }
@@ -69,7 +49,7 @@ public class Keeper<T> {
     }
 
     public T orThrow() {
-        return orThrow("No value present! Keeper (%s) not bootstrapped?".formatted(getField() == null ? "UNKNOWN" : getField().getName()));
+        return orThrow("No value present! Keeper not bootstrapped?");
     }
 
     public T orThrow(String msg) {

@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.items.pouches.items;
 
 import lombok.Getter;
 import me.melontini.andromeda.common.util.WorldUtil;
-import me.melontini.andromeda.modules.items.pouches.Content;
+import me.melontini.andromeda.modules.items.pouches.Main;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -76,7 +76,7 @@ public class PouchItem extends Item {
                 stacks.forEach(itemStack -> player.getInventory().offerOrDrop(itemStack));
                 success = true;
             } else if (entity instanceof InventoryOwner io) {
-                stacks.forEach(itemStack -> Content.tryInsertItem(entity.getWorld(), entity.getPos(), itemStack, io.getInventory()));
+                stacks.forEach(itemStack -> Main.tryInsertItem(entity.getWorld(), entity.getPos(), itemStack, io.getInventory()));
                 success = true;
             }
 

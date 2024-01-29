@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.misc.translations.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import me.melontini.andromeda.modules.misc.translations.TranslationUpdater;
+import me.melontini.andromeda.modules.misc.translations.client.Client;
 import net.minecraft.resource.*;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ abstract class ReloadableResourceManagerImplMixin {
         if (this.type != ResourceType.CLIENT_RESOURCES) return;
 
         packs.set(new ArrayList<>(packs.get()));
-        packs.get().add(new DirectoryResourcePack(TranslationUpdater.TRANSLATION_PACK.toFile()) {
+        packs.get().add(new DirectoryResourcePack(Client.TRANSLATION_PACK.toFile()) {
             @Override
             public String getName() {
                 return "Andromeda Translations";

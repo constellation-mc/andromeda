@@ -13,6 +13,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -20,33 +22,23 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class BoatEntities {
 
-    private static Boats MODULE;
+    public static final Keeper<EntityType<TNTBoatEntity>> BOAT_WITH_TNT = Keeper.create();
+    public static final Keeper<EntityType<FurnaceBoatEntity>> BOAT_WITH_FURNACE = Keeper.create();
+    public static final Keeper<EntityType<JukeboxBoatEntity>> BOAT_WITH_JUKEBOX = Keeper.create();
+    public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.create();
 
-    public static final Keeper<EntityType<TNTBoatEntity>> BOAT_WITH_TNT = Keeper.of(() ->
-            RegistryUtil.createEntityType(() -> MODULE.config().isTNTBoatOn,
-                    id("tnt_boat"),
-                    FabricEntityTypeBuilder.<TNTBoatEntity>create(SpawnGroup.MISC, TNTBoatEntity::new)
-                            .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
+    private static @Nullable <T extends Entity> EntityType<T> boatType(boolean register, Identifier id, EntityType.EntityFactory<T> factory) {
+        return RegistryUtil.createEntityType(register, id,
+                FabricEntityTypeBuilder.create(SpawnGroup.MISC, factory)
+                        .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
+    }
 
-    public static final Keeper<EntityType<FurnaceBoatEntity>> BOAT_WITH_FURNACE = Keeper.of(() ->
-            RegistryUtil.createEntityType(() -> MODULE.config().isFurnaceBoatOn,
-                    id("furnace_boat"),
-                    FabricEntityTypeBuilder.<FurnaceBoatEntity>create(SpawnGroup.MISC, FurnaceBoatEntity::new)
-                            .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
+    public static void init(Boats.Config config) {
+        BOAT_WITH_TNT.init(boatType(config.isTNTBoatOn, id("tnt_boat"), TNTBoatEntity::new));
+        BOAT_WITH_FURNACE.init(boatType(config.isFurnaceBoatOn, id("furnace_boat"), FurnaceBoatEntity::new));
+        BOAT_WITH_JUKEBOX.init(boatType(config.isJukeboxBoatOn, id("jukebox_boat"), JukeboxBoatEntity::new));
+        BOAT_WITH_HOPPER.init(boatType(config.isHopperBoatOn, id("hopper_boat"), HopperBoatEntity::new));
 
-    public static final Keeper<EntityType<JukeboxBoatEntity>> BOAT_WITH_JUKEBOX = Keeper.of(() ->
-            RegistryUtil.createEntityType(() -> MODULE.config().isJukeboxBoatOn,
-                    id("jukebox_boat"),
-                    FabricEntityTypeBuilder.<JukeboxBoatEntity>create(SpawnGroup.MISC, JukeboxBoatEntity::new)
-                            .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
-
-    public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.of(() ->
-            RegistryUtil.createEntityType(() -> MODULE.config().isHopperBoatOn,
-                    id("hopper_boat"),
-                    FabricEntityTypeBuilder.<HopperBoatEntity>create(SpawnGroup.MISC, HopperBoatEntity::new)
-                            .dimensions(new EntityDimensions(1.375F, 0.5625F, true))));
-
-    public static void init() {
         BOAT_WITH_TNT.ifPresent(e -> ServerPlayNetworking.registerGlobalReceiver(AndromedaPackets.EXPLODE_BOAT_ON_SERVER,
                 (server, player, handler, buf, responseSender) -> {
                     UUID id = buf.readUuid();

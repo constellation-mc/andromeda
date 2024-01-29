@@ -9,21 +9,21 @@ import net.minecraft.village.VillagerProfession;
 public class Trades {
 
     public static void register() {
-        Content.SAPLING_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories ->
+        Main.SAPLING_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories ->
                 factories.add(((entity, random) -> new TradeOffer(
                         new ItemStack(Items.EMERALD, 5),
                         new ItemStack(pouch, 1),
                         12, 4, 0.06f
                 )))));
 
-        Content.FLOWER_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories ->
+        Main.FLOWER_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories ->
                 factories.add(((entity, random) -> new TradeOffer(
                         new ItemStack(Items.EMERALD, 4),
                         new ItemStack(pouch, 1),
                         12, 4, 0.06f
                 )))));
 
-        Content.SEED_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories ->
+        Main.SEED_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories ->
                 factories.add(((entity, random) -> new TradeOffer(
                         new ItemStack(Items.EMERALD, 3),
                         new ItemStack(pouch, 1),

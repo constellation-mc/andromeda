@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -28,12 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import static me.melontini.andromeda.common.registries.Common.id;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class Content {
+public class Main {
 
-    public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.of(() ->
-            RegistryUtil.createEntityType(id("flying_item"),
-                    FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
-                            .dimensions(new EntityDimensions(0.25F, 0.25F, true)).trackRangeChunks(4).trackedUpdateRate(10)));
+    public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
 
     public static final Identifier FLYING_STACK_LANDED = new Identifier(MODID, "flying_stack_landed");
     public static final Identifier ITEMS_WITH_BEHAVIORS = new Identifier(MODID, "items_with_behaviors");
@@ -48,7 +46,11 @@ public class Content {
         }
     };
 
-    public static void init() {
+    Main() {
+        FLYING_ITEM.init(RegistryUtil.createEntityType(id("flying_item"), FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
+                .dimensions(new EntityDimensions(0.25F, 0.25F, true))
+                .trackRangeChunks(4).trackedUpdateRate(10)));
+
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             var packet = sendItemsS2CPacket();
             sender.sendPacket(ITEMS_WITH_BEHAVIORS, packet);
@@ -59,6 +61,8 @@ public class Content {
                 ServerPlayNetworking.send(player, ITEMS_WITH_BEHAVIORS, packet);
             }
         });
+
+        ItemBehaviorData.init();
     }
 
     private static PacketByteBuf sendItemsS2CPacket() {

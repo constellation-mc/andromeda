@@ -42,7 +42,7 @@ public class IncubatorBlock extends BlockWithEntity {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, Content.INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
+        return checkType(type, Main.INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
     }
 
     @Override

@@ -18,12 +18,13 @@ import java.util.Set;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 
-public class Content {
+public class Main {
 
-    public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.of(() ->
-            RegistryUtil.createScreenHandler(id("fletching"), () -> FletchingScreenHandler::new));
+    public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.create();
 
-    public static void init(BetterFletchingTable module) {
+    Main(BetterFletchingTable module) {
+        FLETCHING.init(RegistryUtil.createScreenHandler(id("fletching"), () -> FletchingScreenHandler::new));
+
         Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 
         if (Bootstrap.isModLoaded(module, "additionaladditions")) {

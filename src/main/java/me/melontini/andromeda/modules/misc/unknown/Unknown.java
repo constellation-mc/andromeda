@@ -10,5 +10,4 @@ import me.melontini.andromeda.base.annotations.Unscoped;
 @ModuleInfo(name = "unknown", category = "misc")
 public class Unknown extends Module<Module.BaseConfig> {
 
-    public static String DEBUG_SPLASH;
 }

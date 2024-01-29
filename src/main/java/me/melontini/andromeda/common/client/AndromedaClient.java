@@ -67,7 +67,7 @@ public class AndromedaClient {
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
                 ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
-        AndromedaItemGroup.GROUP.ifPresent(group -> group.dm$setIconAnimation((group1, matrices, itemX, itemY, selected, isTopRow) -> {
+        AndromedaItemGroup.GROUP.dm$setIconAnimation((group1, matrices, itemX, itemY, selected, isTopRow) -> {
             try {
                 if (!animate) return;
                 drawTexture(matrices, itemX + 8, itemY + 8, stack -> {
@@ -77,7 +77,7 @@ public class AndromedaClient {
             } catch (Throwable t) {
                 animate = false;
             }
-        }));
+        });
     }
 
     private static void printMissingTooltips() {

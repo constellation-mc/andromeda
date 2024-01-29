@@ -14,24 +14,21 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class MinecartEntities {
 
-    private static Minecarts MODULE;
+    public static final Keeper<EntityType<AnvilMinecartEntity>> ANVIL_MINECART_ENTITY = Keeper.create();
+    public static final Keeper<EntityType<NoteBlockMinecartEntity>> NOTEBLOCK_MINECART_ENTITY = Keeper.create();
+    public static final Keeper<EntityType<JukeboxMinecartEntity>> JUKEBOX_MINECART_ENTITY = Keeper.create();
 
-    public static final Keeper<EntityType<AnvilMinecartEntity>> ANVIL_MINECART_ENTITY = Keeper.of(() ->
-            RegistryUtil.createEntityType(() -> MODULE.config().isAnvilMinecartOn,
-                    id("anvil_minecart"),
-                    FabricEntityTypeBuilder.<AnvilMinecartEntity>create(SpawnGroup.MISC, AnvilMinecartEntity::new)
-                            .dimensions(new EntityDimensions(0.98F, 0.7F, true))));
+    static void init(Minecarts.Config config) {
+        ANVIL_MINECART_ENTITY.init(RegistryUtil.createEntityType(config.isAnvilMinecartOn, id("anvil_minecart"),
+                FabricEntityTypeBuilder.<AnvilMinecartEntity>create(SpawnGroup.MISC, AnvilMinecartEntity::new)
+                        .dimensions(new EntityDimensions(0.98F, 0.7F, true))));
 
-    public static final Keeper<EntityType<NoteBlockMinecartEntity>> NOTEBLOCK_MINECART_ENTITY = Keeper.of(() ->
-            RegistryUtil.createEntityType(() -> MODULE.config().isNoteBlockMinecartOn,
-                    id("note_block_minecart"),
-                    FabricEntityTypeBuilder.<NoteBlockMinecartEntity>create(SpawnGroup.MISC, NoteBlockMinecartEntity::new)
-                            .dimensions(new EntityDimensions(0.98F, 0.7F, true))));
+        NOTEBLOCK_MINECART_ENTITY.init(RegistryUtil.createEntityType(config.isNoteBlockMinecartOn, id("note_block_minecart"),
+                FabricEntityTypeBuilder.<NoteBlockMinecartEntity>create(SpawnGroup.MISC, NoteBlockMinecartEntity::new)
+                        .dimensions(new EntityDimensions(0.98F, 0.7F, true))));
 
-    public static final Keeper<EntityType<JukeboxMinecartEntity>> JUKEBOX_MINECART_ENTITY = Keeper.of(() ->
-            RegistryUtil.createEntityType(() -> MODULE.config().isJukeboxMinecartOn,
-                    id("jukebox_minecart"),
-                    FabricEntityTypeBuilder.<JukeboxMinecartEntity>create(SpawnGroup.MISC, JukeboxMinecartEntity::new)
-                            .dimensions(new EntityDimensions(0.98F, 0.7F, true))));
-
+        JUKEBOX_MINECART_ENTITY.init(RegistryUtil.createEntityType(config.isJukeboxMinecartOn, id("jukebox_minecart"),
+                FabricEntityTypeBuilder.<JukeboxMinecartEntity>create(SpawnGroup.MISC, JukeboxMinecartEntity::new)
+                        .dimensions(new EntityDimensions(0.98F, 0.7F, true))));
+    }
 }

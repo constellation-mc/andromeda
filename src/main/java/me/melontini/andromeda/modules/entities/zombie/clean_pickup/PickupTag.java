@@ -9,8 +9,4 @@ import static me.melontini.andromeda.common.registries.Common.id;
 public class PickupTag {
 
     public static final TagKey<Item> ZOMBIES_PICKUP = TagKey.of(TagUtil.key("item"), id("zombies_pick_up"));
-
-    public static void init() {
-
-    }
 }

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
-import me.melontini.andromeda.modules.mechanics.throwable_items.Content;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
+import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -109,7 +109,7 @@ public class ItemBehaviorAdder {
         byteBuf.writeBoolean(colored);
         byteBuf.writeVarInt(color);
         for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(flyingItemEntity)) {
-            ServerPlayNetworking.send(serverPlayerEntity, Content.FLYING_STACK_LANDED, byteBuf);
+            ServerPlayNetworking.send(serverPlayerEntity, Main.FLYING_STACK_LANDED, byteBuf);
         }
     }
 

@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
-public class Helper {
+public class Main {
     private static AdvancementGeneration MODULE;
 
     public static final Hash.Strategy<ItemStack> STRATEGY = new Hash.Strategy<>() {//Vanilla ItemStackSet is good, but it uses canCombine() and not areEqual(). It also doesn't exist on 1.18.2-1.19.2
@@ -55,21 +55,6 @@ public class Helper {
         }
     };
     private static final Map<RecipeType<?>, BiConsumer<Map<Identifier, Advancement.Builder>, Recipe<?>>> RECIPE_TYPE_HANDLERS = new HashMap<>();
-
-    static {
-        addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting"));
-        addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking"));
-        addRecipeTypeHandler(RecipeType.SMELTING, basicConsumer("smelting"));
-        addRecipeTypeHandler(RecipeType.CAMPFIRE_COOKING, basicConsumer("campfire_cooking"));
-        addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting"));
-        addRecipeTypeHandler(RecipeType.CRAFTING, (map, recipe) -> {
-            if (!(recipe instanceof SpecialCraftingRecipe)) {
-                if (!recipe.getIngredients().isEmpty()) {
-                    map.put(idFromRecipe(recipe, "crafting"), createAdvBuilder(recipe.getId(), recipe.getIngredients().toArray(Ingredient[]::new)));
-                }
-            }
-        });
-    }
 
     public static BiConsumer<Map<Identifier, Advancement.Builder>, Recipe<?>> basicConsumer(String typeName) {
         return (map, recipe) -> map.put(idFromRecipe(recipe, typeName), createAdvBuilder(recipe.getId(), recipe.getIngredients().get(0)));
@@ -193,10 +178,23 @@ public class Helper {
         return builder;
     }
 
-    public static void init() {
+    Main() {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            Helper.generateRecipeAdvancements(server);
+            Main.generateRecipeAdvancements(server);
             server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
+        });
+
+        addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting"));
+        addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking"));
+        addRecipeTypeHandler(RecipeType.SMELTING, basicConsumer("smelting"));
+        addRecipeTypeHandler(RecipeType.CAMPFIRE_COOKING, basicConsumer("campfire_cooking"));
+        addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting"));
+        addRecipeTypeHandler(RecipeType.CRAFTING, (map, recipe) -> {
+            if (!(recipe instanceof SpecialCraftingRecipe)) {
+                if (!recipe.getIngredients().isEmpty()) {
+                    map.put(idFromRecipe(recipe, "crafting"), createAdvBuilder(recipe.getId(), recipe.getIngredients().toArray(Ingredient[]::new)));
+                }
+            }
         });
     }
 }

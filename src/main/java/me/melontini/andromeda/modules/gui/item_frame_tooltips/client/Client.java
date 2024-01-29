@@ -30,7 +30,7 @@ public class Client {
     private static float tooltipFlow;
     private static float oldTooltipFlow;
 
-    public static void init() {
+    Client() {
         inGameTooltips();
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {

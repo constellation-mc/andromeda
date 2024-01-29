@@ -24,9 +24,7 @@ public class Tooltips extends Module<Tooltips.Config> {
     public static class Config extends BaseConfig {
 
         public boolean clock = true;
-
         public boolean compass = true;
-
         public boolean recoveryCompass = true;
     }
 }

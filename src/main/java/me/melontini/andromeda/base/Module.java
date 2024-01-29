@@ -4,14 +4,21 @@ import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
-import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.util.JsonOps;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
+import me.melontini.dark_matter.api.base.reflect.Reflect;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for all modules.
@@ -37,38 +44,7 @@ public abstract class Module<T extends Module.BaseConfig> {
     }
 
     @ApiStatus.OverrideOnly
-    public void onClient() {
-        initClasses("client.Client");
-    }
-
-    @ApiStatus.OverrideOnly
-    public void onServer() {
-    }
-
-    @ApiStatus.OverrideOnly
-    public void onMerged() {
-    }
-
-    @ApiStatus.OverrideOnly
-    public void onMain() {
-        initClasses("Main", "Content");
-    }
-
-    @ApiStatus.OverrideOnly
-    public void onPreLaunch() {
-    }
-
-    @ApiStatus.OverrideOnly
     public void collectBlockades() {
-    }
-
-    protected final void initClasses(String... classes) {
-        for (String cls : classes) {
-            try {
-                Common.bootstrap(this, Class.forName(this.getClass().getPackageName() + "." + cls));
-            } catch (ClassNotFoundException ignored) {
-            }
-        }
     }
 
     @ApiStatus.OverrideOnly
@@ -125,6 +101,53 @@ public abstract class Module<T extends Module.BaseConfig> {
         return this.getClass().getSimpleName() + "{" +
                 "info=" + info +
                 '}';
+    }
+
+    @ApiStatus.Internal
+    final void onClient() {
+        initClasses("client.Client");
+    }
+
+    @ApiStatus.Internal
+    final void onServer() {
+        initClasses("server.Server");
+    }
+
+    @ApiStatus.Internal
+    final void onMerged() {
+        initClasses("Merged");
+    }
+
+    @ApiStatus.Internal
+    final void onMain() {
+        initClasses("Main");
+    }
+
+    @SneakyThrows
+    final void initClasses(String str) {
+        try {
+            var cls = Class.forName(this.getClass().getPackageName() + "." + str, false, this.getClass().getClassLoader());
+            MakeSure.isTrue(cls.getDeclaredConstructors().length == 1);
+            var ctx = Reflect.setAccessible(cls.getDeclaredConstructors()[0]);
+
+            LOGGER.warn("Loading {}", cls.getName());
+            if (ctx.getParameterCount() == 0) {
+                AndromedaException.run(ctx::newInstance, b -> b.message("Failed to construct module class!").add("class", str));
+            } else {
+                Map<Class<?>, Object> args = Map.of(
+                        this.getClass(), this,
+                        ModuleManager.get().getConfigClass(this.getClass()), this.config()
+                );
+
+                List<Object> passed = new ArrayList<>(ctx.getParameterCount());
+                for (Class<?> parameterType : ctx.getParameterTypes()) {
+                    var value = MakeSure.notNull(args.get(parameterType));
+                    passed.add(value);
+                }
+                AndromedaException.run(() -> ctx.newInstance(passed.toArray(Object[]::new)), b -> b.message("Failed to construct module class!").add("class", str));
+            }
+        } catch (ClassNotFoundException ignored) {
+        }
     }
 
     public record Metadata(String name, String category, Environment environment) {

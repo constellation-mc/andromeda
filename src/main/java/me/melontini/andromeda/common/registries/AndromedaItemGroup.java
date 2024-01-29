@@ -16,14 +16,13 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.registries.Common.id;
-import static me.melontini.andromeda.common.registries.Common.start;
 
 public class AndromedaItemGroup {
 
     private static final Set<Consumer<Acceptor>> ACCEPTORS = new LinkedHashSet<>();
 
     @SuppressWarnings("unused")
-    public static final Keeper<ItemGroup> GROUP = start(() -> ContentBuilder.ItemGroupBuilder.create(id("group"))
+    public static final ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 Map<Module<?>, List<ItemStack>> stackMap = new LinkedHashMap<>();
                 Acceptor acceptor = (module, stack) -> {
@@ -71,7 +70,11 @@ public class AndromedaItemGroup {
                     appendStacks(entries, itemStacks);
                 });
             })
-            .displayName(AndromedaTexts.ITEM_GROUP_NAME));
+            .displayName(AndromedaTexts.ITEM_GROUP_NAME).optional().orElseThrow();
+
+    public static void init() {
+
+    }
 
     private static void appendStacks(DarkMatterEntries stacks, Collection<ItemStack> list) {
         if (list == null || list.isEmpty()) return; //we shouldn't add line breaks if there are no items.
@@ -105,7 +108,7 @@ public class AndromedaItemGroup {
             stack(module, new ItemStack(item));
         }
 
-        default <T extends ItemConvertible> void keepers(Module<?> module, List<Keeper<T>> keepers) {
+        default <T extends ItemConvertible> void keepers(Module<?> module, List<Keeper<? extends ItemConvertible>> keepers) {
             stacks(module, keepers.stream().filter(Keeper::isPresent).map(Keeper::get).map(ItemStack::new).toList());
         }
         default <T extends ItemConvertible> void keeper(Module<?> module, Keeper<T> keeper) {
