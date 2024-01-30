@@ -130,10 +130,10 @@ public class Bootstrap {
 
         Status.update();
 
-        List<Module<?>> list = new ArrayList<>(40);
+        List<ModuleManager.Zygote> list = new ArrayList<>(40);
         run(() -> {
             //This should probably be removed.
-            ServiceLoader.load(Module.class).stream().map(ServiceLoader.Provider::get).forEach(list::add);
+            ServiceLoader.load(Module.class).stream().map(p -> new ModuleManager.Zygote(p.type(), p::get)).forEach(list::add);
             EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
         }, (b) -> b.message("Failed during module discovery!"));
 
@@ -145,7 +145,7 @@ public class Bootstrap {
 
         resolveConflicts(list);
 
-        List<Module<?>> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
+        List<ModuleManager.Zygote> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
             int i = ModuleManager.CATEGORIES.indexOf(m.meta().category());
             return i >= 0 ? i : ModuleManager.CATEGORIES.size();
         })).toList();
@@ -170,24 +170,24 @@ public class Bootstrap {
         Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
     }
 
-    private static void resolveConflicts(Collection<Module<?>> list) {
-        Map<String, Module<?>> packages = new HashMap<>();
-        Map<String, Module<?>> ids = new HashMap<>();
-        for (Module<?> module : list) {
-            ModuleManager.validateModule(module);
+    private static void resolveConflicts(Collection<ModuleManager.Zygote> list) {
+        Map<String, ModuleManager.Zygote> packages = new HashMap<>();
+        Map<String, ModuleManager.Zygote> ids = new HashMap<>();
+        for (ModuleManager.Zygote module : list) {
+            ModuleManager.validateZygote(module);
 
             var id = ids.put(module.meta().id(), module);
             if (id != null)
                 throw AndromedaException.builder()
                         .message("Duplicate module IDs!")
-                        .add("identifier", module.meta().id()).add("module", id.getClass()).add("duplicate", module.getClass())
+                        .add("identifier", module.meta().id()).add("module", id.type()).add("duplicate", module.type())
                         .build();
 
-            var pkg = packages.put(module.getClass().getPackageName(), module);
+            var pkg = packages.put(module.type().getPackageName(), module);
             if (pkg != null)
                 throw AndromedaException.builder()
                         .message("Duplicate module packages!")
-                        .add("package", module.getClass().getPackageName()).add("module", pkg.getClass()).add("duplicate", module.getClass())
+                        .add("package", module.type().getPackageName()).add("module", pkg.type()).add("duplicate", module.type())
                         .build();
         }
     }
