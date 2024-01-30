@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -37,8 +38,8 @@ public class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    private final Map<Class<?>, Module<?>> discoveredModules;
-    private final Map<String, Module<?>> discoveredModuleNames;
+    private final Map<Class<?>, CompletableFuture<Module<?>>> discoveredModules;
+    private final Map<String, CompletableFuture<Module<?>>> discoveredModuleNames;
 
     private final Map<Class<?>, Module<?>> modules;
     private final Map<String, Module<?>> moduleNames;
@@ -49,20 +50,24 @@ public class ModuleManager {
         if (Bootstrap.INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
-        List<? extends Module<?>> sorted = zygotes.stream().map(Zygote::supplier).map(Supplier::get).toList();
-
         this.discoveredModules = Utilities.supply(() -> {
-            var m = sorted.stream().collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
+            var m = zygotes.stream().collect(Collectors.toMap(Zygote::type, o -> new CompletableFuture<Module<?>>(), (t, t2) -> t, LinkedHashMap::new));
             return Collections.unmodifiableMap(m);
         });
         this.discoveredModuleNames = Utilities.supply(() -> {
-            var m = sorted.stream().collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
+            var m = zygotes.stream().collect(Collectors.toMap(module -> module.meta().id(), o -> this.discoveredModules.get(o.type()), (t, t2) -> t, HashMap::new));
             return Collections.unmodifiableMap(m);
         });
 
-        this.setUpConfigs(this.discoveredModules.values());
+        List<? extends Module<?>> sorted = zygotes.stream().map(Zygote::supplier).map(supplier -> {
+            Module<?> v = supplier.get();
+            getDiscovered(v.getClass()).orElseThrow(() -> new IllegalStateException(v.getClass().getName())).complete(Utilities.cast(v));
+            return v;
+        }).toList();
 
-        this.discoveredModules.values().forEach(module -> {
+        this.setUpConfigs(sorted);
+
+        sorted.forEach(module -> {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
         });
@@ -70,37 +75,37 @@ public class ModuleManager {
         if (oldCfg != null) LegacyConfigEvent.BUS.invoker().acceptLegacy(oldCfg);
 
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
-            this.discoveredModules.values().forEach(module -> module.config().enabled = true);
-        fixScopes(this.discoveredModules.values());
+            sorted.forEach(module -> module.config().enabled = true);
+        fixScopes(sorted);
 
-        this.discoveredModules.values().forEach(Module::save);
+        sorted.forEach(Module::save);
 
         this.modules = Utilities.supply(() -> {
-            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
+            var m = sorted.stream().filter(Module::enabled).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
             return Collections.unmodifiableMap(m);
         });
         this.moduleNames = Utilities.supply(() -> {
-            var m = this.discoveredModules.values().stream().filter(Module::enabled).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
+            var m = sorted.stream().filter(Module::enabled).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
             return Collections.unmodifiableMap(m);
         });
 
-        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), this.discoveredModules.values());
+        cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
     }
 
-    private void fixScopes(Collection<Module<?>> modules) {
-        if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
-            modules.forEach(m -> m.config().scope = Module.BaseConfig.Scope.DIMENSION);
-
+    private void fixScopes(Collection<? extends Module<?>> modules) {
+        boolean force = Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE);
         modules.forEach(m -> {
+            if (force) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
+
             if (m.meta().environment() == Environment.CLIENT && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
-                LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                if (!force) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                         m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
                 return;
             }
 
             if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
-                LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                if (!force) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                         "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
             }
@@ -113,7 +118,7 @@ public class ModuleManager {
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
     }
 
-    private void setUpConfigs(Collection<Module<?>> modules) {
+    private void setUpConfigs(Collection<? extends Module<?>> modules) {
         modules.forEach(m -> {
             var manager = makeManager(m);
             manager.onLoad((config1, path) -> {
@@ -165,7 +170,7 @@ public class ModuleManager {
         return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : Module.BaseConfig.class;
     }
 
-    public void cleanConfigs(Path root, Collection<Module<?>> modules) {
+    public void cleanConfigs(Path root, Collection<? extends Module<?>> modules) {
         Set<Path> paths = collectPaths(root.getParent(), modules);
         if (Files.exists(root)) {
             Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
@@ -181,7 +186,7 @@ public class ModuleManager {
         }
     }
 
-    private Set<Path> collectPaths(Path root, Collection<Module<?>> modules) {
+    private Set<Path> collectPaths(Path root, Collection<? extends Module<?>> modules) {
         Set<Path> paths = new HashSet<>();
 
         paths.add(root.resolve("andromeda/mod.json"));
@@ -226,26 +231,28 @@ public class ModuleManager {
 
     /**
      * Returns the module of the given class.
-     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#DISCOVERY}.</p>
+     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#SETUP}.</p>
+     * <p>Due to the way Andromeda is loaded, executors must not be used to avoid deadlocking the game</p>
      * @param cls the module class.
-     * @return The module, if discovered, or empty if not.
+     * @return The module future, if discovered, or empty if not.
      * @param <T> the module type.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<T> getDiscovered(Class<T> cls) {
-        return (Optional<T>) Optional.ofNullable(discoveredModules.get(cls));
+    public <T extends Module<?>> Optional<CompletableFuture<T>> getDiscovered(Class<T> cls) {
+        return Optional.ofNullable((CompletableFuture<T>) discoveredModules.get(cls));
     }
 
     /**
      * Returns the module of the given id.
-     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#DISCOVERY}.</p>
+     * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#SETUP}.</p>
+     * <p>Due to the way Andromeda is loaded, executors must not be used to avoid deadlocking the game</p>
      * @param name the module id.
-     * @return The module, if discovered, or empty if not.
+     * @return The module future, if discovered, or empty if not.
      * @param <T> the module type.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<T> getDiscovered(String name) {
-        return (Optional<T>) Optional.ofNullable(discoveredModuleNames.get(name));
+    public <T extends Module<?>> Optional<CompletableFuture<T>> getDiscovered(String name) {
+        return Optional.ofNullable((CompletableFuture<T>) discoveredModuleNames.get(name));
     }
 
     @ApiStatus.Internal
@@ -254,7 +261,7 @@ public class ModuleManager {
     }
 
     @ApiStatus.Internal
-    public Collection<Module<?>> all() {
+    public Collection<CompletableFuture<Module<?>>> all() {
         return discoveredModules.values();
     }
 

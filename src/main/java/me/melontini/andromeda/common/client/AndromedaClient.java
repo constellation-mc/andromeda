@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.registries.Common.id;
@@ -53,14 +54,14 @@ public class AndromedaClient {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
         if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register();
         else {
-            for (Module<?> module : ModuleManager.get().all()) {
+            ModuleManager.get().all().stream().map(CompletableFuture::join).forEach(module -> {
                 switch (module.meta().environment()) {
                     case ANY, CLIENT -> {
                     }
                     default -> FeatureBlockade.get().explain(module, "enabled", () -> true,
                             "andromeda.config.option_manager.reason.andromeda.side_only_enabled");
                 }
-            }
+            });
         }
         BlockadesEvent.BUS.invoker().explain(FeatureBlockade.get());
 
@@ -81,15 +82,15 @@ public class AndromedaClient {
 
     private static void printMissingTooltips() {
         Set<String> missing = new LinkedHashSet<>();
-        for (Module<?> module : ModuleManager.get().all()) {
-            String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
+        for (CompletableFuture<Module<?>> module : ModuleManager.get().all()) {
+            String m = "config.andromeda.%s.@Tooltip".formatted(module.join().meta().dotted());
             if (!I18n.hasTranslation(m)) missing.add(m);
 
             for (Field field : ModuleManager.get().getConfigClass(module.getClass()).getFields()) {
                 if ("enabled".equals(field.getName()) || field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
                     continue;
 
-                String f = "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName());
+                String f = "config.andromeda.%s.option.%s.@Tooltip".formatted(module.join().meta().dotted(), field.getName());
                 if (!I18n.hasTranslation(f)) missing.add(f);
             }
         }

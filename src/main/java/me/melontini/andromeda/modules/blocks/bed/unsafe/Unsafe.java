@@ -9,6 +9,7 @@ import me.melontini.andromeda.base.events.BlockadesEvent;
 import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
 @OldConfigKey("bedsExplodeEverywhere")
@@ -16,7 +17,7 @@ import java.util.function.BooleanSupplier;
 public class Unsafe extends Module<Module.BaseConfig> {
 
     Unsafe() {
-        BooleanSupplier supplier = () -> ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent();
+        BooleanSupplier supplier = () -> ModuleManager.get().getDiscovered(Safe.class).map(CompletableFuture::join).filter(Module::enabled).isPresent();
 
         ConfigEvent.forModule(this).listen(manager -> {
             manager.onSave((config, path) -> {
