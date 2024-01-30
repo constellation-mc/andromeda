@@ -34,6 +34,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class AutoConfigScreen {
@@ -64,7 +65,7 @@ public class AutoConfigScreen {
 
         GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
 
-        ModuleManager.get().all().forEach(module -> {
+        ModuleManager.get().all().stream().map(CompletableFuture::join).forEach(module -> {
             List<Field> fields = new ArrayList<>(MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields())));
             fields.removeIf(field -> field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class));
             fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
@@ -233,7 +234,7 @@ public class AutoConfigScreen {
             saveQueue.get().clear();
         } else {
             AndromedaConfig.save();
-            ModuleManager.get().all().forEach(Module::save);
+            ModuleManager.get().all().forEach(future -> future.join().save());
         }
     }
 
