@@ -44,7 +44,6 @@ public abstract class Module<T extends Module.BaseConfig> {
 
     protected Module() {
         ModuleInfo info1 = this.getClass().getAnnotation(ModuleInfo.class);
-        if (info1 == null) throw new IllegalStateException("Module has no info!");
         this.info = new Metadata(info1.name(), info1.category(), info1.environment());
 
         if (this.getClass().isAnnotationPresent(OldConfigKey.class)) {

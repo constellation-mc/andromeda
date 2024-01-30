@@ -2,6 +2,7 @@ package me.melontini.andromeda.base;
 
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
+import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
@@ -25,6 +26,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -43,10 +45,11 @@ public class ModuleManager {
 
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
-    ModuleManager(List<Module<?>> sorted, @Nullable JsonObject oldCfg) {
-        if (Bootstrap.INSTANCE != null)
-            throw new IllegalStateException("ModuleManager already initialized!");
+    ModuleManager(List<Zygote> zygotes, @Nullable JsonObject oldCfg) {
+        if (Bootstrap.INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
+
+        List<? extends Module<?>> sorted = zygotes.stream().map(Zygote::supplier).map(Supplier::get).toList();
 
         this.discoveredModules = Utilities.supply(() -> {
             var m = sorted.stream().collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
@@ -85,11 +88,15 @@ public class ModuleManager {
     }
 
     private void fixScopes(Collection<Module<?>> modules) {
+        if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
+            modules.forEach(m -> m.config().scope = Module.BaseConfig.Scope.DIMENSION);
+
         modules.forEach(m -> {
             if (m.meta().environment() == Environment.CLIENT && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
                 LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                         m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
+                return;
             }
 
             if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
@@ -98,16 +105,9 @@ public class ModuleManager {
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
             }
         });
-
-        if (Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE))
-            modules.forEach(m -> {
-                if (m.meta().environment() != Environment.CLIENT && !m.getClass().isAnnotationPresent(Unscoped.class)) {
-                    m.config().scope = Module.BaseConfig.Scope.DIMENSION;
-                }
-            });
     }
 
-    static void validateModule(Module<?> module) {
+    static void validateZygote(Zygote module) {
         MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
         MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
@@ -308,6 +308,17 @@ public class ModuleManager {
     }
 
     public interface ModuleSupplier {
-        List<? extends Module<?>> get();
+        List<Zygote> get();
+    }
+
+    public record Zygote(Class<?> type, Module.Metadata meta, Supplier<? extends Module<?>> supplier) {
+
+        public Zygote(Class<?> type, Supplier<? extends Module<?>> supplier) {
+            this(type, Utilities.supply(() -> {
+                ModuleInfo info1 = type.getAnnotation(ModuleInfo.class);
+                if (info1 == null) throw new IllegalStateException("Module has no info!");
+                return new Module.Metadata(info1.name(), info1.category(), info1.environment());
+            }), supplier);
+        }
     }
 }

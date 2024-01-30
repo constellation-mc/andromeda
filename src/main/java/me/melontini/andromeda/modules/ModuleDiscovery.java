@@ -20,7 +20,7 @@ import java.util.concurrent.ForkJoinPool;
 @CustomLog
 public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
     @Override
-    public List<? extends Module<?>> get() {
+    public List<ModuleManager.Zygote> get() {
         Bootstrap.getModuleClassPath().addUrl(ModuleDiscovery.class.getProtectionDomain().getCodeSource().getLocation());
 
         List<CompletableFuture<String>> futures = new ArrayList<>();
@@ -44,8 +44,8 @@ public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
                 .map(CompletableFuture::join).filter(Objects::nonNull)
                 .map(name -> {
                     var c = Exceptions.supply(() -> Class.forName(name.replace('/', '.')));
-                    return Exceptions.supply(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
-                            .newInstance());
+                    return new ModuleManager.Zygote(c, () -> Exceptions.supply(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
+                            .newInstance()));
                 }).toList();
     }
 }
