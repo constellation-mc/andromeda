@@ -23,12 +23,15 @@ public class FeatureBlockade {
         return this;
     }
 
-
     public Optional<Set<Text>> explain(Module<?> module, String feature) {
         return Optional.ofNullable(blockades.get(module)).map(m -> {
             var s = m.get(feature);
             if (s != null && s.right().getAsBoolean()) return s.left();
             return null;
         });
+    }
+
+    public String andromeda(String key) {
+        return "andromeda.config.option_manager.reason.andromeda." + key;
     }
 }
