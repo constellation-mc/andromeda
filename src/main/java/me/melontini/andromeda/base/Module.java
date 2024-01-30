@@ -105,11 +105,13 @@ public abstract class Module<T extends Module.BaseConfig> {
 
     @ApiStatus.Internal
     final void onClient() {
+        if (this.meta().environment() == Environment.SERVER) return;
         initClasses("client.Client");
     }
 
     @ApiStatus.Internal
     final void onServer() {
+        if (this.meta().environment() == Environment.CLIENT) return;
         initClasses("server.Server");
     }
 
