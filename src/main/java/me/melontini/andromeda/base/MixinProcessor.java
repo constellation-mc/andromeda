@@ -3,6 +3,8 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.events.Bus;
+import me.melontini.andromeda.base.events.MixinConfigEvent;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;
@@ -78,7 +80,7 @@ public class MixinProcessor {
         JsonObject object = new JsonObject();
         object.addProperty("required", true);
         object.addProperty("minVersion", "0.8");
-        object.addProperty("package", module.mixins());
+        object.addProperty("package", module.getClass().getPackageName() + ".mixin");
         object.addProperty("compatibilityLevel", "JAVA_17");
         object.addProperty("plugin", Plugin.class.getName());
         object.addProperty("refmap", "andromeda-refmap.json");
@@ -86,7 +88,8 @@ public class MixinProcessor {
         injectors.addProperty("defaultRequire", 1);
         object.add("injectors", injectors);
 
-        module.acceptMixinConfig(object);
+        Bus<MixinConfigEvent> bus = module.getOrCreateBus(MixinConfigEvent.class, null);
+        if (bus != null) bus.invoker().accept(object);
 
         return object;
     }

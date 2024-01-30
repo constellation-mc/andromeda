@@ -5,26 +5,28 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.OldConfigKey;
-import me.melontini.andromeda.common.client.config.FeatureBlockade;
+import me.melontini.andromeda.base.events.BlockadesEvent;
+import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
-import me.melontini.dark_matter.api.base.config.ConfigManager;
+
+import java.util.function.BooleanSupplier;
 
 @OldConfigKey("bedsExplodeEverywhere")
 @ModuleInfo(name = "bed/unsafe", category = "blocks", environment = Environment.SERVER)
 public class Unsafe extends Module<Module.BaseConfig> {
 
-    @Override
-    public void onConfig(ConfigManager<BaseConfig> manager) {
-        manager.onSave((config, path) -> {
-            if (ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent()) {
-                config.enabled = false;
-            }
-        });
-    }
+    Unsafe() {
+        BooleanSupplier supplier = () -> ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent();
 
-    @Override
-    public void collectBlockades() {
-        FeatureBlockade.get().explain(this, "enabled", () -> ModuleManager.get().getDiscovered(Safe.class).filter(Module::enabled).isPresent(),
-                "andromeda.config.option_manager.reason.andromeda.module_conflict");
+        ConfigEvent.forModule(this).listen(manager -> {
+            manager.onSave((config, path) -> {
+                if (supplier.getAsBoolean()) {
+                    config.enabled = false;
+                }
+            });
+        });
+        BlockadesEvent.BUS.listen(blockade -> {
+            blockade.explain(this, "enabled", supplier, blockade.andromeda("module_conflict"));
+        });
     }
 }

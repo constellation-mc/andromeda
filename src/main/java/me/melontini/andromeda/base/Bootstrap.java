@@ -56,7 +56,8 @@ public class Bootstrap {
         onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onClient, (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
+            if (module.meta().environment() == me.melontini.andromeda.base.Environment.SERVER) continue;
+            run(() -> module.initClasses("client.Client"), (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
         }
         run(AndromedaClient::init, b -> b.message("Failed to initialize AndromedaClient!"));
     }
@@ -68,7 +69,8 @@ public class Bootstrap {
         onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onServer, (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
+            if (module.meta().environment() == me.melontini.andromeda.base.Environment.CLIENT) continue;
+            run(() -> module.initClasses("server.Server"), (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
         }
     }
 
@@ -77,7 +79,7 @@ public class Bootstrap {
             MixinEnvironment.getCurrentEnvironment().audit();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onMerged, (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
+            run(() -> module.initClasses("Merged"), (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
         }
     }
 
@@ -94,7 +96,7 @@ public class Bootstrap {
         }
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            run(module::onMain, (b) -> b.message("Failed to execute Module!").add("module", module.meta().id()));
+            run(() -> module.initClasses("Main"), (b) -> b.message("Failed to execute Module!").add("module", module.meta().id()));
         }
 
         run(Andromeda::init, b -> b.message("Failed to initialize Andromeda!"));

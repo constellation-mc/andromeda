@@ -3,6 +3,9 @@ package me.melontini.andromeda.base;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.Unscoped;
+import me.melontini.andromeda.base.events.Bus;
+import me.melontini.andromeda.base.events.ConfigEvent;
+import me.melontini.andromeda.base.events.LegacyConfigEvent;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -61,10 +64,7 @@ public class ModuleManager {
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
         });
 
-        this.discoveredModules.values().forEach(Module::postConfig);
-
-        if (oldCfg != null)
-            this.discoveredModules.values().forEach(module -> module.acceptLegacyConfig(oldCfg));
+        if (oldCfg != null) LegacyConfigEvent.BUS.invoker().acceptLegacy(oldCfg);
 
         if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
             this.discoveredModules.values().forEach(module -> module.config().enabled = true);
@@ -133,8 +133,10 @@ public class ModuleManager {
             });
             manager.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
 
+            Bus<ConfigEvent<?>> e = m.getOrCreateBus(ConfigEvent.class, null);
+            if (e != null) e.invoker().accept(Utilities.cast(manager));
+
             m.manager = Utilities.cast(manager);
-            m.onConfig(Utilities.cast(manager));
         });
     }
 

@@ -5,6 +5,7 @@ import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.events.BlockadesEvent;
 import me.melontini.andromeda.common.client.config.AutoConfigScreen;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
@@ -61,9 +62,7 @@ public class AndromedaClient {
                 }
             }
         }
-        for (Module<?> module : ModuleManager.get().all()) {
-            module.collectBlockades();
-        }
+        BlockadesEvent.BUS.invoker().explain(FeatureBlockade.get());
 
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
                 ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
