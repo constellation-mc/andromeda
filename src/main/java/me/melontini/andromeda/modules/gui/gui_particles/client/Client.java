@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.gui.gui_particles.client;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -10,9 +9,7 @@ import net.minecraft.particle.ParticleTypes;
 
 public class Client {
 
-    Client() {
-        GuiParticles module = ModuleManager.quick(GuiParticles.class);
-
+    Client(GuiParticles module) {
         ScreenEvents.BEFORE_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
             if (screen1 instanceof AbstractFurnaceScreen<?> abstractFurnaceScreen && module.config().furnaceScreenParticles) {
                 ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
