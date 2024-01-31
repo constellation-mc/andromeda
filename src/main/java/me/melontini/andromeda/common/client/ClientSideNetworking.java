@@ -10,8 +10,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class ClientSideNetworking {
 
-
-
     public static void register() {
         ClientLoginNetworking.registerGlobalReceiver(Andromeda.VERIFY_MODULES, (client, handler, buf, listenerAdder) -> {
             String[] modules = ModuleManager.get().loaded().stream().filter(m -> m.meta().environment() == Environment.BOTH)
