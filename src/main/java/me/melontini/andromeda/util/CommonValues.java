@@ -89,7 +89,7 @@ public class CommonValues {
         if (FabricLoader.getInstance().isModLoaded(Platform.CONNECTOR.modId)) {
             try {
                 //The above check should be fine, but just in case.
-                Class.forName("dev.su5ed.sinytra.connector.mod.ConnectorMod");
+                Class.forName("dev.su5ed.sinytra.connector.mod.ConnectorMod", false, CommonValues.class.getClassLoader());
                 return Platform.CONNECTOR;
             } catch (ClassNotFoundException ignored) {
             }

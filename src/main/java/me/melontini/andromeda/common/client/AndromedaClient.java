@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.registries.Common.id;
-import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @Getter
 @Environment(EnvType.CLIENT)
@@ -65,8 +64,7 @@ public class AndromedaClient {
         }
         BlockadesEvent.BUS.invoker().explain(FeatureBlockade.get());
 
-        FabricLoader.getInstance().getModContainer(MODID).ifPresent(mod ->
-                ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), mod, ResourcePackActivationType.NORMAL));
+        ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), CommonValues.mod(), ResourcePackActivationType.NORMAL);
         AndromedaItemGroup.GROUP.dm$setIconAnimation((group1, context, itemX, itemY, selected, isTopRow) -> {
             try {
                 if (!animate) return;
