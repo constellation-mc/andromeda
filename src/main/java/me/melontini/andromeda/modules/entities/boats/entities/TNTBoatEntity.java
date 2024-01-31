@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -24,11 +23,15 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+import static me.melontini.andromeda.util.CommonValues.MODID;
+
 public class TNTBoatEntity extends BoatEntityWithBlock {
+    public static final Identifier EXPLODE_BOAT_ON_SERVER = new Identifier(MODID, "explode_boat_on_server");
     public int fuseTicks = -1;
 
     public TNTBoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
@@ -58,7 +61,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
                 Support.runEnv(() -> () -> {
                     PacketByteBuf buf = PacketByteBufs.create();
                     buf.writeUuid(this.getUuid());
-                    ClientPlayNetworking.send(AndromedaPackets.EXPLODE_BOAT_ON_SERVER, buf);
+                    ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
                 }, () -> this::explode);
             } else {
                 this.explode();

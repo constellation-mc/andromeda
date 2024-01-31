@@ -1,32 +1,24 @@
 package me.melontini.andromeda.common.util;
 
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
-import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -41,25 +33,6 @@ public class WorldUtil {
     public static final Identifier BEE_LOOT_ID = new Identifier(MODID, "bee_nest/bee_nest_broken");
 
     public static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
-
-    public static void addParticle(World world, ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-        if (!world.isClient) {
-            PacketByteBuf packetByteBuf = PacketByteBufs.create();
-            packetByteBuf.writeRegistryValue(CommonRegistries.particleTypes(), parameters.getType());
-            packetByteBuf.writeDouble(x);
-            packetByteBuf.writeDouble(y);
-            packetByteBuf.writeDouble(z);
-            packetByteBuf.writeDouble(velocityX);
-            packetByteBuf.writeDouble(velocityY);
-            packetByteBuf.writeDouble(velocityZ);
-
-            for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, new BlockPos(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)), 85)) {
-                ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.ADD_ONE_PARTICLE, packetByteBuf);
-            }
-        } else {
-            throw new UnsupportedOperationException("Can't send packets to client unless you're on server.");
-        }
-    }
 
     public static void crudeSetVelocity(Entity entity, double x, double y, double z) {
         crudeSetVelocity(entity, new Vec3d(x, y, z));

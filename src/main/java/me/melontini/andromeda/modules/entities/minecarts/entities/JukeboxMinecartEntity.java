@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.minecarts.entities;
 
-import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.common.util.ItemStackUtil;
+import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.andromeda.util.AndromedaLog;
@@ -122,7 +122,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
         buf.writeUuid(this.getUuid());
 
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, AndromedaPackets.JUKEBOX_STOP_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
         }
     }
 
@@ -132,7 +132,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
         buf.writeItemStack(this.record);
 
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, AndromedaPackets.JUKEBOX_START_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
         }
         AndromedaLog.devInfo(this.record);
     }

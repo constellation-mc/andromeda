@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -57,7 +56,7 @@ abstract class LivingEntityMixin extends Entity {
                 buf.writeRegistryValue(CommonRegistries.particleTypes(), Main.KNOCKOFF_TOTEM_PARTICLE.orThrow());
 
                 for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
-                    ServerPlayNetworking.send((ServerPlayerEntity) player, AndromedaPackets.USED_CUSTOM_TOTEM, buf);
+                    ServerPlayNetworking.send((ServerPlayerEntity) player, Main.USED_CUSTOM_TOTEM, buf);
                 }
             }
             cir.setReturnValue(true);

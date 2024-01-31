@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 import me.melontini.andromeda.common.registries.Keeper;
-import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
@@ -39,7 +38,7 @@ public class BoatEntities {
         BOAT_WITH_JUKEBOX.init(boatType(config.isJukeboxBoatOn, id("jukebox_boat"), JukeboxBoatEntity::new));
         BOAT_WITH_HOPPER.init(boatType(config.isHopperBoatOn, id("hopper_boat"), HopperBoatEntity::new));
 
-        BOAT_WITH_TNT.ifPresent(e -> ServerPlayNetworking.registerGlobalReceiver(AndromedaPackets.EXPLODE_BOAT_ON_SERVER,
+        BOAT_WITH_TNT.ifPresent(e -> ServerPlayNetworking.registerGlobalReceiver(TNTBoatEntity.EXPLODE_BOAT_ON_SERVER,
                 (server, player, handler, buf, responseSender) -> {
                     UUID id = buf.readUuid();
                     server.execute(() -> {

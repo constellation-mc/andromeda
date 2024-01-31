@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.BlockUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
@@ -24,7 +23,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
@@ -41,12 +39,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static me.melontini.andromeda.util.CommonValues.MODID;
-
 @Mixin(ItemEntity.class)
 abstract class ItemEntityMixin extends Entity {
-    @Unique
-    private static final InfiniteTotem am$itou = ModuleManager.quick(InfiniteTotem.class);
 
     @Shadow
     public abstract void setPickupDelayInfinite();
@@ -120,7 +114,7 @@ abstract class ItemEntityMixin extends Entity {
                             buf.writeVarInt(andromeda$itemEntity.getId());
                             buf.writeItemStack(targetStack);
                             for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
-                                ServerPlayNetworking.send(serverPlayerEntity, new Identifier(MODID, "notify_client_about_stuff_please"), buf);
+                                ServerPlayNetworking.send(serverPlayerEntity, Main.NOTIFY_CLIENT, buf);
                             }
                         }
 

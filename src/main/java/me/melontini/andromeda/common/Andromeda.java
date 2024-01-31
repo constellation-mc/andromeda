@@ -1,12 +1,11 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
+import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.common.util.AndromedaPackets;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -17,6 +16,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 
 import java.util.Arrays;
@@ -25,8 +25,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static me.melontini.andromeda.util.CommonValues.MODID;
+
 public class Andromeda {
 
+    public static final Identifier VERIFY_MODULES = new Identifier(MODID, "verify_modules");
     private static Andromeda INSTANCE;
 
     public static void init() {
@@ -55,7 +58,7 @@ public class Andromeda {
         });
 
         if (!AndromedaConfig.get().sideOnlyMode) {
-            ServerLoginNetworking.registerGlobalReceiver(AndromedaPackets.VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
+            ServerLoginNetworking.registerGlobalReceiver(VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
                 if (Debug.hasKey(Debug.Keys.SKIP_SERVER_MODULE_CHECK)) return;
 
                 Set<String> modules = ModuleManager.get().loaded().stream().filter(m -> m.meta().environment() == Environment.BOTH).map(m -> m.meta().id()).collect(Collectors.toSet());
@@ -93,7 +96,7 @@ public class Andromeda {
                     }
                 }));
             });
-            ServerLoginConnectionEvents.QUERY_START.register((handler, server, sender, synchronizer) -> sender.sendPacket(AndromedaPackets.VERIFY_MODULES, PacketByteBufs.create()));
+            ServerLoginConnectionEvents.QUERY_START.register((handler, server, sender, synchronizer) -> sender.sendPacket(VERIFY_MODULES, PacketByteBufs.create()));
         }
     }
 
