@@ -10,6 +10,10 @@ So, I may have lied a bit and may or may not have refactored half of the mod's i
 
 * Added missing dispenser behavior.
 
+[`misc/recipe_advancements_generation`]:
+
+* Reworked advancement generation. More recipe types should be supported by default!
+
 [`general`]:
 
 * Switched to Codecs for JSON parsing.
