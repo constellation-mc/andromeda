@@ -18,16 +18,16 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
 /**
  * Base class for all modules.
- * <p> Modules are singletons, and are created by {@link Bootstrap}* during {@link Bootstrap.Status#DISCOVERY}.
+ * <p> Modules are singletons, and are created by {@link ModuleManager}* during {@link Bootstrap.Status#SETUP}.
  * <p> A module class must not contain any game classes or references in its fields, the constructor and config class, as they are loaded before the game.</p>
- * <p>Most methods must not be invoked directly.</p>
+ * <p>The only functional part of a module is its constructor.</p>
  *
  * @param <T> the config type for this module.
  */
@@ -40,7 +40,7 @@ public abstract class Module<T extends Module.BaseConfig> {
     volatile T config;
     volatile T defaultConfig;
 
-    private final Map<Class<?>, Bus<?>> busMap = new HashMap<>();
+    private final Map<Class<?>, Bus<?>> busMap = new IdentityHashMap<>();
 
     protected Module() {
         ModuleInfo info1 = this.getClass().getAnnotation(ModuleInfo.class);
