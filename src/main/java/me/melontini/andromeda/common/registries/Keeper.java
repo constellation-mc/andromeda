@@ -17,6 +17,12 @@ public class Keeper<T> {
         return new Keeper<>();
     }
 
+    public static <T> Keeper<T> now(T value) {
+        Keeper<T> keeper = create();
+        keeper.init(value);
+        return keeper;
+    }
+
     public boolean isPresent() {
         return this.value != null;
     }

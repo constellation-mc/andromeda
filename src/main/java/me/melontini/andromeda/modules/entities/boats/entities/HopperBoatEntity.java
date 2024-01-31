@@ -7,8 +7,10 @@ import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
@@ -16,15 +18,20 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class HopperBoatEntity extends StorageBoatEntity implements Hopper {
+import static me.melontini.andromeda.modules.entities.boats.entities.BoatEntityWithBlock.PIby180;
+import static me.melontini.andromeda.modules.entities.boats.entities.BoatEntityWithBlock.PIby2;
+
+public class HopperBoatEntity extends ChestBoatEntity implements Hopper {
     private final BlockPos currentBlockPos = BlockPos.ORIGIN;
     public int transferCooldown = -1;
 
     public HopperBoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
         super(entityType, world);
+        this.resetInventory();
     }
 
     public HopperBoatEntity(World world, double x, double y, double z) {
@@ -35,9 +42,10 @@ public class HopperBoatEntity extends StorageBoatEntity implements Hopper {
         this.prevZ = z;
     }
 
+    @Nullable
     @Override
-    public ScreenHandler getScreenHandler(int syncId, PlayerInventory playerInventory) {
-        return new HopperScreenHandler(syncId, playerInventory, this);
+    public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new HopperScreenHandler(i, playerInventory, this);
     }
 
     @Override

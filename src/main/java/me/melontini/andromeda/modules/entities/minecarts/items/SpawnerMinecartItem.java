@@ -1,8 +1,10 @@
 package me.melontini.andromeda.modules.entities.minecarts.items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -17,7 +19,7 @@ import java.util.List;
 public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEntity> {
 
     public SpawnerMinecartItem(Settings settings) {
-        super(settings);
+        super(Keeper.now(EntityType.SPAWNER_MINECART), settings);
     }
 
     @Override
@@ -34,10 +36,5 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
         if (nbt != null) if (nbt.getString("Entity") != null) {
             entity.getLogic().setEntityId(CommonRegistries.entityTypes().get(Identifier.tryParse(nbt.getString("Entity"))), entity.world, entity.world.random, entity.getBlockPos());
         }
-    }
-
-    @Override
-    protected SpawnerMinecartEntity createEntity(World world, double x, double y, double z) {
-        return new SpawnerMinecartEntity(world, x, y, z);
     }
 }

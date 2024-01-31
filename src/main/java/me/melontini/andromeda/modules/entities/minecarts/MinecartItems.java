@@ -5,8 +5,9 @@ import me.melontini.andromeda.common.conflicts.CommonItemGroups;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.common.registries.Keeper;
-import me.melontini.andromeda.modules.entities.minecarts.items.AnvilMinecartItem;
-import me.melontini.andromeda.modules.entities.minecarts.items.JukeBoxMinecartItem;
+import me.melontini.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
+import me.melontini.andromeda.modules.entities.minecarts.items.AndromedaMinecartItem;
+import me.melontini.andromeda.modules.entities.minecarts.items.JukeboxMinecartItem;
 import me.melontini.andromeda.modules.entities.minecarts.items.NoteBlockMinecartItem;
 import me.melontini.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem;
 import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
@@ -39,16 +40,16 @@ import static me.melontini.andromeda.common.registries.Common.id;
 public class MinecartItems {
 
     public static final Keeper<SpawnerMinecartItem> SPAWNER_MINECART = Keeper.create();
-    public static final Keeper<AnvilMinecartItem> ANVIL_MINECART = Keeper.create();
+    public static final Keeper<AndromedaMinecartItem<AnvilMinecartEntity>> ANVIL_MINECART = Keeper.create();
     public static final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = Keeper.create();
-    public static final Keeper<JukeBoxMinecartItem> JUKEBOX_MINECART = Keeper.create();
+    public static final Keeper<JukeboxMinecartItem> JUKEBOX_MINECART = Keeper.create();
 
     public static void init(Minecarts module, Minecarts.Config config) {
         SPAWNER_MINECART.init(ContentBuilder.ItemBuilder.create(id("spawner_minecart"), () -> new SpawnerMinecartItem(new FabricItemSettings().maxCount(1)))
                 .itemGroup(CommonItemGroups.transport())
                 .register(config.isSpawnerMinecartOn).build());
 
-        ANVIL_MINECART.init(ContentBuilder.ItemBuilder.create(id("anvil_minecart"), () -> new AnvilMinecartItem(new FabricItemSettings().maxCount(1)))
+        ANVIL_MINECART.init(ContentBuilder.ItemBuilder.create(id("anvil_minecart"), () -> new AndromedaMinecartItem<>(MinecartEntities.ANVIL_MINECART_ENTITY, new FabricItemSettings().maxCount(1)))
                 .itemGroup(CommonItemGroups.transport())
                 .register(config.isAnvilMinecartOn).build());
 
@@ -56,7 +57,7 @@ public class MinecartItems {
                 .itemGroup(CommonItemGroups.transport())
                 .register(config.isNoteBlockMinecartOn).build());
 
-        JUKEBOX_MINECART.init(ContentBuilder.ItemBuilder.create(id("jukebox_minecart"), () -> new JukeBoxMinecartItem(new FabricItemSettings().maxCount(1)))
+        JUKEBOX_MINECART.init(ContentBuilder.ItemBuilder.create(id("jukebox_minecart"), () -> new JukeboxMinecartItem(new FabricItemSettings().maxCount(1)))
                 .itemGroup(CommonItemGroups.transport())
                 .register(config.isJukeboxMinecartOn).build());
 

@@ -1,14 +1,14 @@
 package me.melontini.andromeda.modules.entities.minecarts.items;
 
+import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.entities.JukeboxMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.world.World;
 
-public class JukeBoxMinecartItem extends AndromedaMinecartItem<JukeboxMinecartEntity> {
+public class JukeboxMinecartItem extends AndromedaMinecartItem<JukeboxMinecartEntity> {
 
-    public JukeBoxMinecartItem(Settings settings) {
-        super(settings);
+    public JukeboxMinecartItem(Settings settings) {
+        super(MinecartEntities.JUKEBOX_MINECART_ENTITY, settings);
     }
 
     @Override
@@ -16,12 +16,7 @@ public class JukeBoxMinecartItem extends AndromedaMinecartItem<JukeboxMinecartEn
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) if (nbt.getCompound("Items") != null) {
             entity.record = ItemStack.fromNbt(nbt.getCompound("Items"));
+            if (!entity.record.isEmpty()) entity.startPlaying();
         }
-        if (nbt != null) if (nbt.getCompound("Items") != null) entity.startPlaying();
-    }
-
-    @Override
-    protected JukeboxMinecartEntity createEntity(World world, double x, double y, double z) {
-        return new JukeboxMinecartEntity(world, x, y, z);
     }
 }
