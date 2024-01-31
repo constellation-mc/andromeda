@@ -43,6 +43,17 @@ dependencies {
 
 loom {
     accessWidenerPath = file("src/main/resources/andromeda.accesswidener")
+
+    runs {
+        client {
+            vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition", "-Dmixin.debug.export=true")
+            runDir("run_client")
+        }
+        server {
+            vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition", "-Dmixin.debug.export=true")
+            runDir("run_server")
+        }
+    }
 }
 
 processResources {
