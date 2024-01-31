@@ -8,9 +8,8 @@ import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.pouches.Main;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.entity.ChestBlockEntity;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InventoryOwner;
@@ -85,10 +84,12 @@ public class PouchEntity extends ThrownItemEntity {
                 stacks.forEach(stack -> pe.getInventory().offerOrDrop(stack));
                 return;
             } else if (entity instanceof InventoryOwner io) {
-                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, io.getInventory()));
+                var storage = InventoryStorage.of(io.getInventory(), null);
+                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
                 return;
             } else if (entity instanceof Inventory inv) {
-                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, inv));
+                var storage = InventoryStorage.of(inv, null);
+                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
                 return;
             }
             stacks.forEach(stack -> ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
@@ -101,21 +102,11 @@ public class PouchEntity extends ThrownItemEntity {
             var stacks = WorldUtil.prepareLoot(world, this.getPouchType().getLootId(getStack()));
 
             var be = world.getBlockEntity(blockHitResult.getBlockPos());
-            if (be != null) {
-                if (be instanceof Inventory inv) {
-                    if (Main.getViewCount(be) > 0) {
-                        if (be instanceof ChestBlockEntity) {
-                            BlockState state = world.getBlockState(blockHitResult.getBlockPos());
-                            Inventory cInv = ChestBlock.getInventory((ChestBlock) state.getBlock(), state, world, blockHitResult.getBlockPos(), false);
-                            if (cInv != null) {
-                                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, cInv));
-                                return;
-                            }
-                        } else {
-                            stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, inv));
-                            return;
-                        }
-                    }
+            if ((be != null && Main.getViewCount(be) > 0)) {
+                var storage = ItemStorage.SIDED.find(world, blockHitResult.getBlockPos(), world.getBlockState(blockHitResult.getBlockPos()), be, blockHitResult.getSide());
+                if (storage != null) {
+                    stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
+                    return;
                 }
             }
             stacks.forEach(stack -> ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
