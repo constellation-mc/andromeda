@@ -74,7 +74,7 @@ public class ModuleManager {
 
         if (oldCfg != null) LegacyConfigEvent.BUS.invoker().acceptLegacy(oldCfg);
 
-        if (Debug.hasKey(Debug.Keys.ENABLE_ALL_MODULES))
+        if (Debug.Keys.ENABLE_ALL_MODULES.isPresent())
             sorted.forEach(module -> module.config().enabled = true);
         fixScopes(sorted);
 
@@ -93,19 +93,18 @@ public class ModuleManager {
     }
 
     private void fixScopes(Collection<? extends Module<?>> modules) {
-        boolean force = Debug.hasKey(Debug.Keys.FORCE_DIMENSION_SCOPE);
         modules.forEach(m -> {
-            if (force) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
+            if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
 
             if (m.meta().environment() == Environment.CLIENT && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
-                if (!force) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                         m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
                 return;
             }
 
             if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
-                if (!force) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                         "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
             }

@@ -76,7 +76,7 @@ public class CrashHandler {
     }
 
     public static void handleCrash(Throwable cause, Context context) {
-        if (!Debug.hasKey(Debug.Keys.FORCE_CRASH_REPORT_UPLOAD)) {
+        if (!Debug.Keys.FORCE_CRASH_REPORT_UPLOAD.isPresent()) {
             if (FabricLoader.getInstance().isDevelopmentEnvironment() || !AndromedaConfig.get().sendCrashReports)
                 return;
         }

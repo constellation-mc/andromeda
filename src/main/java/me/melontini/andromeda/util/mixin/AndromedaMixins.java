@@ -45,7 +45,7 @@ public class AndromedaMixins {
     }
 
     public static boolean checkNode(ClassNode n) {
-        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS)) verifyMixin(n, n.name);
+        if (Debug.Keys.VERIFY_MIXINS.isPresent()) verifyMixin(n, n.name);
 
         AnnotationNode envNode = Annotations.getVisible(n, SpecialEnvironment.class);
         if (envNode != null) {

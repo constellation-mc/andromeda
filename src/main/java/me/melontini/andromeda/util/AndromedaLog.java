@@ -27,17 +27,17 @@ public class AndromedaLog {
     }
 
     public static void devInfo(String msg) {
-        if (Debug.hasKey(Debug.Keys.PRINT_DEBUG_MESSAGES)) {
+        if (Debug.Keys.PRINT_DEBUG_MESSAGES.isPresent()) {
             LOGGER.info(msg);
         }
     }
     public static void devInfo(Object object) {
-        if (Debug.hasKey(Debug.Keys.PRINT_DEBUG_MESSAGES)) {
+        if (Debug.Keys.PRINT_DEBUG_MESSAGES.isPresent()) {
             LOGGER.info(object);
         }
     }
     public static void devInfo(String msg, Object... params) {
-        if (Debug.hasKey(Debug.Keys.PRINT_DEBUG_MESSAGES)) {
+        if (Debug.Keys.PRINT_DEBUG_MESSAGES.isPresent()) {
             LOGGER.info(msg, params);
         }
     }

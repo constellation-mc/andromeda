@@ -59,7 +59,7 @@ public class Andromeda {
 
         if (!AndromedaConfig.get().sideOnlyMode) {
             ServerLoginNetworking.registerGlobalReceiver(VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
-                if (Debug.hasKey(Debug.Keys.SKIP_SERVER_MODULE_CHECK)) return;
+                if (Debug.Keys.SKIP_SERVER_MODULE_CHECK.isPresent()) return;
 
                 Set<String> modules = ModuleManager.get().loaded().stream().filter(m -> m.meta().environment() == Environment.BOTH).map(m -> m.meta().id()).collect(Collectors.toSet());
                 if (!understood) {

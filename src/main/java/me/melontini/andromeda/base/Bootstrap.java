@@ -75,7 +75,7 @@ public class Bootstrap {
     }
 
     private static void onMerged() {
-        if (Debug.hasKey(Debug.Keys.VERIFY_MIXINS))
+        if (Debug.Keys.VERIFY_MIXINS.isPresent())
             MixinEnvironment.getCurrentEnvironment().audit();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
@@ -217,8 +217,8 @@ public class Bootstrap {
         return false;
     }
 
-    public static boolean isModLoaded(Module<?> m, String modId) {
-        return !Debug.skipIntegration(m.meta().id(), modId) && FabricLoader.getInstance().isModLoaded(modId);
+    public static boolean isModLoaded(Module<?> module, String mod) {
+        return !Debug.skipIntegration(module.meta().id(), mod) && FabricLoader.getInstance().isModLoaded(mod);
     }
 
     public enum Status {

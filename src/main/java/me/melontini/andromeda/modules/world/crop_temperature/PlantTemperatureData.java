@@ -81,8 +81,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
                 map.forEach((identifier, temperatureData) ->
                         temperatureData.blocks.forEach((block) -> PLANT_DATA.put(block, temperatureData)));
 
-                if (Debug.hasKey(Debug.Keys.PRINT_MISSING_ASSIGNED_DATA))
-                    verifyPostLoad();
+                if (Debug.Keys.PRINT_MISSING_ASSIGNED_DATA.isPresent()) verifyPostLoad();
             }
         });
     }
