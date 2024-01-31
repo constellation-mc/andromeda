@@ -1,10 +1,13 @@
 package me.melontini.andromeda.modules.entities.minecarts.items;
 
+import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,16 +21,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
-public abstract class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Item {
+public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Item {
 
-    public AndromedaMinecartItem(Settings settings) {
+    private final Keeper<EntityType<T>> keeper;
+
+    public AndromedaMinecartItem(Keeper<EntityType<T>> keeper, Settings settings) {
         super(settings);
+        this.keeper = keeper;
         DispenserBlock.registerBehavior(this, new MinecartDispenseBehavior());
     }
 
-    protected abstract void onCreate(ItemStack stack, T entity);
-
-    protected abstract T createEntity(World world, double x, double y, double z);
+    protected void onCreate(ItemStack stack, T entity) { }
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
@@ -47,7 +51,9 @@ public abstract class AndromedaMinecartItem<T extends AbstractMinecartEntity> ex
                     d = 0.5;
                 }
 
-                T minecart = createEntity(world, (double) blockPos.getX() + 0.5, (double) blockPos.getY() + 0.0625 + d, (double) blockPos.getZ() + 0.5);
+                T minecart = MakeSure.notNull(this.keeper.orThrow().create(world));
+                minecart.setPosition((double) blockPos.getX() + 0.5, (double) blockPos.getY() + 0.0625 + d, (double) blockPos.getZ() + 0.5);
+
                 onCreate(itemStack, minecart);
 
                 if (itemStack.hasCustomName()) {
@@ -95,7 +101,9 @@ public abstract class AndromedaMinecartItem<T extends AbstractMinecartEntity> ex
             double e = Math.floor(pointer.getY()) + direction.getOffsetY();
             double f = pointer.getZ() + direction.getOffsetZ() * 1.125;
 
-            T minecart = createEntity(world, d, e + g, f);
+            T minecart = MakeSure.notNull(AndromedaMinecartItem.this.keeper.orThrow().create(world));
+            minecart.setPosition(d, e + g, f);
+
             onCreate(stack, minecart);
 
             if (stack.hasCustomName()) {
