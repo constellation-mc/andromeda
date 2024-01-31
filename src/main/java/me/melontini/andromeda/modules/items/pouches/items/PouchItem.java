@@ -6,6 +6,8 @@ import me.melontini.andromeda.modules.items.pouches.Main;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
@@ -73,10 +75,12 @@ public class PouchItem extends Item {
 
             boolean success = false;
             if (entity instanceof PlayerEntity player) {
-                stacks.forEach(itemStack -> player.getInventory().offerOrDrop(itemStack));
+                var storage = PlayerInventoryStorage.of(player);
+                stacks.forEach(itemStack -> Main.tryInsertItem(user.getWorld(), player.getPos(), itemStack, storage));
                 success = true;
             } else if (entity instanceof InventoryOwner io) {
-                stacks.forEach(itemStack -> Main.tryInsertItem(entity.getWorld(), entity.getPos(), itemStack, io.getInventory()));
+                var storage = InventoryStorage.of(io.getInventory(), null);
+                stacks.forEach(itemStack -> Main.tryInsertItem(entity.getWorld(), entity.getPos(), itemStack, storage));
                 success = true;
             }
 

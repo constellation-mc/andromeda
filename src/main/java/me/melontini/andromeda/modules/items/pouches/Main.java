@@ -13,6 +13,10 @@ import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -22,7 +26,6 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
@@ -53,39 +56,21 @@ public class Main {
             ViewerCountManager vcm = (ViewerCountManager) Exceptions.supply(() -> f.get(be));
             return vcm.getViewerCount();
         }
-        return 0;
-    }
-
-    public static void tryInsertItem(World world, Vec3d pos, ItemStack stack, Inventory inventory) {
-        int slot = getEmptyOrIdenticalSlotIndex(stack, inventory);
-        if (slot == -1) {
-            ItemStackUtil.spawnVelocity(pos, stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
-        } else {
-            if (!inventory.getStack(slot).isEmpty()) {
-                int count = inventory.getStack(slot).getCount();
-                int stackCount = stack.getCount();
-                stack.setCount(stackCount + count);
-                inventory.setStack(slot, stack);
-            } else {
-                inventory.setStack(slot, stack);
-            }
-        }
-    }
-
-    public static int getEmptyOrIdenticalSlotIndex(ItemStack stack, Inventory inventory) {
-        assert inventory != null;
-        for (int i = 0; i < inventory.size(); i++) {
-            if (inventory.getStack(i).getItem() == stack.getItem()) {
-                int a = stack.getCount();
-                int b = inventory.getStack(i).getCount();
-                if (!((a + b) > stack.getMaxCount())) {
-                    return i;
-                }
-            } else if (inventory.getStack(i).isEmpty()) {
-                return i;
-            }
-        }
         return -1;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static void tryInsertItem(World world, Vec3d pos, ItemStack stack, Storage<ItemVariant> storage) {
+        if (stack.isEmpty()) return;
+        ItemStack itemStack = stack.copy();
+        try (Transaction transaction = Transaction.openOuter()) {
+            long i = StorageUtil.tryInsertStacking(storage, ItemVariant.of(stack), stack.getCount(), transaction);
+            if (i > 0) {
+                transaction.commit();
+                itemStack.setCount((int) (stack.getCount() - i));
+            }
+        }
+        if (!itemStack.isEmpty()) ItemStackUtil.spawnVelocity(pos, itemStack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
     }
 
     Main(Pouches module, Pouches.Config config) {
