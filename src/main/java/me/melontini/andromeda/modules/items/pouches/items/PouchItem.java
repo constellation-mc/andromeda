@@ -42,7 +42,7 @@ public class PouchItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        if (context.isAdvanced() && Debug.hasKey(Debug.Keys.DISPLAY_TRACKED_VALUES)) {
+        if (context.isAdvanced() && Debug.Keys.DISPLAY_TRACKED_VALUES.isPresent()) {
             tooltip.add(TextUtil.literal("Loot: " + this.getType().getLootId(stack)).formatted(Formatting.GRAY));
         }
     }

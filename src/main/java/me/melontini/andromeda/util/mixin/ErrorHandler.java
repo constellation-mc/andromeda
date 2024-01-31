@@ -22,7 +22,7 @@ public class ErrorHandler implements IMixinErrorHandler {
     }
 
     private static ErrorAction handleMixinError(IMixinInfo mixin, ErrorAction action) {
-        if (Debug.hasKey(Debug.Keys.SKIP_MIXIN_ERROR_HANDLER)) return action;
+        if (Debug.Keys.SKIP_MIXIN_ERROR_HANDLER.isPresent()) return action;
 
         if (action == ErrorAction.ERROR) {
             ModuleManager.get().moduleFromConfig(mixin.getConfig().getName()).ifPresent(module -> {

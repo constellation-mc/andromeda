@@ -100,7 +100,7 @@ public class AndromedaClient {
     }
 
     public void lateInit() {
-        if (Debug.hasKey(Debug.Keys.PRINT_MISSING_TOOLTIPS)) printMissingTooltips();
+        if (Debug.Keys.PRINT_MISSING_TOOLTIPS.isPresent()) printMissingTooltips();
     }
 
     @Override

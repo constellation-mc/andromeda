@@ -12,7 +12,7 @@ public class Client {
     Client() {
         EntityRendererRegistry.register(Main.POUCH.orThrow(), FlyingItemEntityRenderer::new);
 
-        if (Debug.hasKey(Debug.Keys.PRINT_DEBUG_MESSAGES)) {
+        if (Debug.Keys.PRINT_DEBUG_MESSAGES.isPresent()) {
             StringBuilder b = new StringBuilder();
             b.append("Viewable block entities:");
             Main.VIEWABLE_BLOCKS.forEach((blockEntityType, field) -> {
