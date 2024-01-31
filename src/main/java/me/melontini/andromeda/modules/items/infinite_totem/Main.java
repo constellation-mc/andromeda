@@ -9,14 +9,19 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
 import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class Main {
 
     public static final Keeper<Item> INFINITE_TOTEM = Keeper.create();
     public static Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.create();
+
+    public static final Identifier USED_CUSTOM_TOTEM = new Identifier(MODID, "used_custom_totem");
+    public static final Identifier NOTIFY_CLIENT = new Identifier(MODID, "notify_client_about_stuff_please");
 
     Main(InfiniteTotem module) {
         INFINITE_TOTEM.init(ContentBuilder.ItemBuilder
