@@ -43,7 +43,6 @@ dependencies {
 
 loom {
     accessWidenerPath = file("src/main/resources/andromeda.accesswidener")
-    mixin.useLegacyMixinAp = false
 }
 
 processResources {

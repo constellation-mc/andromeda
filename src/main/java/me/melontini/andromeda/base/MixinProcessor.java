@@ -83,7 +83,7 @@ public class MixinProcessor {
         object.addProperty("package", module.getClass().getPackageName() + ".mixin");
         object.addProperty("compatibilityLevel", "JAVA_17");
         object.addProperty("plugin", Plugin.class.getName());
-        //object.addProperty("refmap", "andromeda-refmap.json");
+        object.addProperty("refmap", "andromeda-refmap.json");
         JsonObject injectors = new JsonObject();
         injectors.addProperty("defaultRequire", 1);
         object.add("injectors", injectors);
