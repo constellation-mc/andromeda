@@ -5,13 +5,14 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 
 public class AndromedaLog {
 
+    private static final boolean prefix = (!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR);
+
     private static final PrependingLogger LOGGER = PrependingLogger.get("Andromeda", logger -> {
         Class<?> cls = Utilities.getCallerClass(4);
         String[] split = cls.getName().split("\\.");
         String caller = split[split.length - 1];
         if (cls.getName().startsWith("net.minecraft.")) caller += "@Mixin";
-        return ((!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR) ?
-                "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
+        return (prefix ? "(" + logger.getName() + ") " : "") + "[" + caller + "] ";
     });
 
     public static PrependingLogger factory() {
@@ -22,8 +23,7 @@ public class AndromedaLog {
         caller = "Andromeda/" + caller;
         if (cls.getName().startsWith("net.minecraft.")) caller += "@Mixin";
 
-        return PrependingLogger.get(caller, logger -> (!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR) ?
-                "(" + logger.getName() + ") " : "");
+        return PrependingLogger.get(caller, logger -> prefix ? "(" + logger.getName() + ") " : "");
     }
 
     public static void devInfo(String msg) {
