@@ -68,11 +68,11 @@ jobs:
             dark-matter(embedded)
 
 
-          curseforge-id: 639198
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          curseforge-dependencies: |
-            fabric-api(required)
-            cloth-config(required)
-            modmenu(recommended)
-            tooltipfix(recommended)
-            dark-matter(embedded)
+          #curseforge-id: 639198
+          #curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          #curseforge-dependencies: |
+          #  fabric-api(required)
+          #  cloth-config(required)
+          #  modmenu(recommended)
+          #  tooltipfix(recommended)
+          #  dark-matter(embedded)
