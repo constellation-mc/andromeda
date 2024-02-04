@@ -8,7 +8,6 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementManager;
-import net.minecraft.advancement.AdvancementPositioner;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
@@ -86,12 +85,6 @@ public class Main {
         AdvancementManager advancementManager = server.getAdvancementLoader().manager;
         advancementManager.load(advancementBuilders);
 
-        for (Advancement advancement : advancementManager.getRoots()) {
-            if (advancement.getDisplay() != null) {
-                AdvancementPositioner.arrangeForTree(advancement);
-            }
-        }
-
         AndromedaLog.info("finished generating {} recipe advancements", count.get());
         advancementBuilders.clear();
     }
@@ -158,10 +151,7 @@ public class Main {
     Main(AdvancementGeneration module) {
         Main.MODULE.init(module);
 
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            Main.generateRecipeAdvancements(server);
-            server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
-        });
+        ServerLifecycleEvents.SERVER_STARTING.register(Main::generateRecipeAdvancements);
 
         addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting"));
         addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking"));
