@@ -54,7 +54,7 @@ public class ItemBehaviorAdder {
 
         if (!data.user_commands().isEmpty() && user != null) {
             ServerCommandSource source = new ServerCommandSource(
-                    serverWorld.getServer(), user.getPos(), new Vec2f(user.getPitch(), user.getYaw()), serverWorld, 4, user.getEntityName(), TextUtil.literal(user.getEntityName()), serverWorld.getServer(), user).withSilent();
+                    serverWorld.getServer(), user.getPos(), new Vec2f(user.getPitch(), user.getYaw()), serverWorld, 4, user.getNameForScoreboard(), TextUtil.literal(user.getNameForScoreboard()), serverWorld.getServer(), user).withSilent();
             for (String command : data.user_commands()) {
                 serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
             }
@@ -72,7 +72,7 @@ public class ItemBehaviorAdder {
             if (entity instanceof LivingEntity) {
                 if (!data.hit_entity_commands().isEmpty()) {
                     ServerCommandSource source = new ServerCommandSource(
-                            serverWorld.getServer(), entity.getPos(), new Vec2f(entity.getPitch(), entity.getYaw()), serverWorld, 4, entity.getEntityName(), TextUtil.literal(entity.getEntityName()), serverWorld.getServer(), entity).withSilent();
+                            serverWorld.getServer(), entity.getPos(), new Vec2f(entity.getPitch(), entity.getYaw()), serverWorld, 4, entity.getNameForScoreboard(), TextUtil.literal(entity.getNameForScoreboard()), serverWorld.getServer(), entity).withSilent();
                     for (String command : data.hit_entity_commands()) {
                         serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
                     }

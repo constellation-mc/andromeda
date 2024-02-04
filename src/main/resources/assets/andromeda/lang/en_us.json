@@ -105,6 +105,7 @@
   "andromeda.config.option_manager.reason.andromeda.module_conflict": "Conflicting module enabled!",
   "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
   "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "Module disabled in side-only mode!",
+  "andromeda.config.option_manager.reason.andromeda.unavailable": "This module is yet to be ported to this Minecraft version.",
 
   "andromeda.config.tooltip.environment.client": "Client-only feature",
   "andromeda.config.tooltip.environment.server": "Server-only feature.",

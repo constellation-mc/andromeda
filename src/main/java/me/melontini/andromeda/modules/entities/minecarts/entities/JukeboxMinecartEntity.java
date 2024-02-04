@@ -76,7 +76,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
                 if (isCreativePlayer && !this.hasCustomName()) {
                     this.discard();
                 } else {
-                    this.dropItems(source);
+                    this.killAndDropSelf(source);
                 }
             }
 
@@ -85,8 +85,8 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     }
 
     @Override
-    public void dropItems(DamageSource damageSource) {
-        super.dropItems(damageSource);
+    public void killAndDropSelf(DamageSource damageSource) {
+        super.killAndDropSelf(damageSource);
         if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             this.dropItem(record.getItem());
         }
@@ -153,7 +153,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     }
 
     @Override
-    public Item getItem() {
+    public Item asItem() {
         return MinecartItems.JUKEBOX_MINECART.orThrow();
     }
 

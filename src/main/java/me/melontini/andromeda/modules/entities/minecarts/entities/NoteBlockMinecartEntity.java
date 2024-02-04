@@ -106,7 +106,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
     }
 
     @Override
-    public Item getItem() {
+    public Item asItem() {
         return MinecartItems.NOTE_BLOCK_MINECART.orThrow();
     }
 

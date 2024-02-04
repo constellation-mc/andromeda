@@ -2,10 +2,7 @@ package me.melontini.andromeda.common.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import me.melontini.andromeda.util.AndromedaLog;
-import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -13,9 +10,6 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
@@ -34,7 +28,7 @@ public class ModMenuIntegration implements ModMenuApi {
             Screen screen = AutoConfigScreen.get(parent);
             ScreenEvents.AFTER_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
                 if (screen == screen1) {
-                    addDrawableChild(screen, new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
+                    /*addDrawableChild(screen, new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
                         if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
                             Debug.load();
                             Support.runWeak(EnvType.CLIENT, () -> () -> ScreenParticleHelper.addScreenParticles(
@@ -44,7 +38,7 @@ public class ModMenuIntegration implements ModMenuApi {
                         } else {
                             screen.handleTextClick(WIKI_LINK);
                         }
-                    }));
+                    }));*/
                 }
             });
             return screen;

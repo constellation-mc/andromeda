@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
+import com.mojang.serialization.MapCodec;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
@@ -34,6 +35,7 @@ public class IncubatorBlock extends BlockWithEntity {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     private final VoxelShape BASE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
     private final VoxelShape GLASS_SHAPE = Block.createCuboidShape(3.0, 11.0, 3.0, 13.0, 18.0, 13.0);
+    public static final MapCodec<IncubatorBlock> CODEC = createCodec(IncubatorBlock::new);
 
     public IncubatorBlock(Settings settings) {
         super(settings);
@@ -41,8 +43,13 @@ public class IncubatorBlock extends BlockWithEntity {
     }
 
     @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
+    }
+
+    @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, Main.INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
+        return validateTicker(type, Main.INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
     }
 
     @Override

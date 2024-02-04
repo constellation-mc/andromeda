@@ -3,21 +3,25 @@ package me.melontini.andromeda.modules.misc.unknown.mixin.nice_level;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.annotations.SpecialEnvironment;
-import net.minecraft.client.gui.screen.LevelLoadingScreen;
+import net.minecraft.client.gui.screen.world.LevelLoadingScreen;
+import net.minecraft.server.WorldGenerationProgressTracker;
+import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-
-import java.util.Objects;
 
 @SpecialEnvironment(Environment.CLIENT)
 @Mixin(LevelLoadingScreen.class)
 abstract class LevelLoadingScreenMixin {
 
+    @Shadow @Final private WorldGenerationProgressTracker progressProvider;
+
     @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
-    private String andromeda$getPercentage(String o) {
-        if (Objects.equals(o, "69%")) {
-            return "Nice%";
+    private Text andromeda$getPercentage(Text original) {
+        if (this.progressProvider.getProgressPercentage() == 69) {
+            return Text.literal("Nice%");
         }
-        return o;
+        return original;
     }
 }

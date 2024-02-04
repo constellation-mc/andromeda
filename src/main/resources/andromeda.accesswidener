@@ -29,7 +29,7 @@ accessible field net/minecraft/server/ServerAdvancementLoader manager Lnet/minec
 # items/minecart_block_picking
 accessible field net/minecraft/entity/vehicle/FurnaceMinecartEntity fuel I
 accessible field net/minecraft/block/entity/AbstractFurnaceBlockEntity burnTime I
-accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
+accessible field net/minecraft/block/spawner/MobSpawnerLogic spawnEntry Lnet/minecraft/block/spawner/MobSpawnerEntry;
 
 # entities/villagers_follow_emeralds  mechanics/throwable_items
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;

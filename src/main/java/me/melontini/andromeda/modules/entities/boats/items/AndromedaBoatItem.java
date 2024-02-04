@@ -94,13 +94,13 @@ public class AndromedaBoatItem<T extends BoatEntity> extends Item {
 
         @Override
         protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-            Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-            World world = pointer.getWorld();
+            Direction direction = pointer.state().get(DispenserBlock.FACING);
+            World world = pointer.world();
             double d = 0.5625 + EntityType.BOAT.getWidth() / 2.0;
-            double e = pointer.getX() + direction.getOffsetX() * d;
-            double f = pointer.getY() + direction.getOffsetY() * 1.125F;
-            double g = pointer.getZ() + direction.getOffsetZ() * d;
-            BlockPos blockPos = pointer.getPos().offset(direction);
+            double e = pointer.centerPos().getX() + direction.getOffsetX() * d;
+            double f = pointer.centerPos().getY() + direction.getOffsetY() * 1.125F;
+            double g = pointer.centerPos().getZ() + direction.getOffsetZ() * d;
+            BlockPos blockPos = pointer.pos().offset(direction);
             double h;
             if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
                 h = 1.0;

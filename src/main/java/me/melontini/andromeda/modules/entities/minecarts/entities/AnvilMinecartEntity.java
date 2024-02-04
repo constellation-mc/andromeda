@@ -59,7 +59,7 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
     }
 
     @Override
-    public Item getItem() {
+    public Item asItem() {
         return MinecartItems.ANVIL_MINECART.orThrow();
     }
 

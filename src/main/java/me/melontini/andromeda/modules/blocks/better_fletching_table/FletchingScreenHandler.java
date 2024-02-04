@@ -34,7 +34,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
 
     @Override
     protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
-        stack.onCraft(player.getWorld(), player, stack.getCount());
+        stack.onCraftByPlayer(player.getWorld(), player, stack.getCount());
         this.output.unlockLastRecipe(player, List.of(this.input.getStack(0), this.input.getStack(1)));
         this.decrementStack(0);
         this.decrementStack(1);

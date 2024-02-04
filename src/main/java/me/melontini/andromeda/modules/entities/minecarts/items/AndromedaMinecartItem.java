@@ -74,10 +74,10 @@ public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Ite
 
         @Override
         public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-            Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-            World world = pointer.getWorld();
+            Direction direction = pointer.state().get(DispenserBlock.FACING);
+            World world = pointer.world();
 
-            BlockPos blockPos = pointer.getPos().offset(direction);
+            BlockPos blockPos = pointer.pos().offset(direction);
             BlockState blockState = world.getBlockState(blockPos);
             RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
                     ? blockState.get(((AbstractRailBlock) blockState.getBlock()).getShapeProperty())
@@ -97,9 +97,9 @@ public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Ite
                 g = direction != Direction.DOWN && railShape2.isAscending() ? -0.4 : -0.9;
             }
 
-            double d = pointer.getX() + direction.getOffsetX() * 1.125;
-            double e = Math.floor(pointer.getY()) + direction.getOffsetY();
-            double f = pointer.getZ() + direction.getOffsetZ() * 1.125;
+            double d = pointer.centerPos().getX() + direction.getOffsetX() * 1.125;
+            double e = Math.floor(pointer.centerPos().getY()) + direction.getOffsetY();
+            double f = pointer.centerPos().getZ() + direction.getOffsetZ() * 1.125;
 
             T minecart = MakeSure.notNull(AndromedaMinecartItem.this.keeper.orThrow().create(world));
             minecart.setPosition(d, e + g, f);
@@ -117,7 +117,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Ite
 
         @Override
         protected void playSound(BlockPointer pointer) {
-            pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
+            pointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.pos(), 0);
         }
     }
 }

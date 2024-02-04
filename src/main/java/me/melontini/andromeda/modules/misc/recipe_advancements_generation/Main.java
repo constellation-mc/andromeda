@@ -2,23 +2,17 @@ package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementManager;
-import net.minecraft.advancement.AdvancementPositioner;
-import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.*;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -52,26 +46,26 @@ public class Main {
         AtomicInteger count = new AtomicInteger();
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
-        List<List<Recipe<?>>> lists = Lists.partition(server.getRecipeManager().values().stream().toList(), 800);
-        for (List<Recipe<?>> list : lists) {
+        List<List<RecipeEntry<?>>> lists = Lists.partition(server.getRecipeManager().values().stream().toList(), 800);
+        for (List<RecipeEntry<?>> list : lists) {
             futures.add(CompletableFuture.runAsync(() -> {
-                for (Recipe<?> recipe : list) {
-                    if (module.config().namespaceBlacklist.contains(recipe.getId().getNamespace()))
+                for (RecipeEntry<?> recipe : list) {
+                    if (module.config().namespaceBlacklist.contains(recipe.id().getNamespace()))
                         continue;
-                    if (module.config().recipeBlacklist.contains(recipe.getId().toString()))
+                    if (module.config().recipeBlacklist.contains(recipe.id().toString()))
                         continue;
-                    if (recipe.isIgnoredInRecipeBook() && module.config().ignoreRecipesHiddenInTheRecipeBook)
+                    if (recipe.value().isIgnoredInRecipeBook() && module.config().ignoreRecipesHiddenInTheRecipeBook)
                         continue;
 
-                    var handler = RECIPE_TYPE_HANDLERS.get(recipe.getType());
+                    var handler = RECIPE_TYPE_HANDLERS.get(recipe.value().getType());
                     if (handler != null) {
                         count.getAndIncrement();
-                        var r = handler.apply(new Context(recipe, recipe.getId()));
+                        var r = handler.apply(new Context(recipe.value(), recipe.id()));
                         if (r != null) advancementBuilders.put(r.id(), r.builder());
                     } else {
-                        if (!recipe.getIngredients().isEmpty()) {
+                        if (!recipe.value().getIngredients().isEmpty()) {
                             count.getAndIncrement();
-                            advancementBuilders.put(new Identifier(recipe.getId().getNamespace(), "recipes/gen/generic/" + recipe.getId().toString().replace(":", "_")), createAdvBuilder(recipe.getId(), recipe.getIngredients().toArray(Ingredient[]::new)));
+                            advancementBuilders.put(new Identifier(recipe.id().getNamespace(), "recipes/gen/generic/" + recipe.id().toString().replace(":", "_")), createAdvBuilder(recipe.id(), recipe.value().getIngredients().toArray(Ingredient[]::new)));
                         }
                     }
                 }
@@ -84,34 +78,16 @@ public class Main {
         server.runTasks(future::isDone);
 
         AdvancementManager advancementManager = server.getAdvancementLoader().manager;
-        advancementManager.load(advancementBuilders);
+        advancementManager.addAll(advancementBuilders.entrySet().stream().map(e -> e.getValue().build(e.getKey())).toList());
 
-        for (Advancement advancement : advancementManager.getRoots()) {
-            if (advancement.getDisplay() != null) {
+        for (PlacedAdvancement advancement : advancementManager.getRoots()) {
+            if (advancement.getAdvancement().display().isPresent()) {
                 AdvancementPositioner.arrangeForTree(advancement);
             }
         }
 
         AndromedaLog.info("finished generating {} recipe advancements", count.get());
         advancementBuilders.clear();
-    }
-
-    static final class CustomPredicate extends ItemPredicate {
-        private final Ingredient ingredient;
-
-        CustomPredicate(Ingredient ingredient) {
-            this.ingredient = ingredient;
-        }
-
-        @Override
-        public boolean test(ItemStack stack) {
-            return ingredient.test(stack);
-        }
-
-        @Override
-        public JsonElement toJson() {
-            return ANY.toJson();
-        }
     }
 
     public static @NotNull Advancement.Builder createAdvBuilder(Identifier id, Ingredient... ingredients) {
@@ -125,13 +101,18 @@ public class Main {
             var ingredient = ingredients[i];
 
             if (ingredient.isEmpty()) continue;
-            if (!elements.add(ingredient.toJson())) continue;
+            if (!elements.add(Ingredient.ALLOW_EMPTY_CODEC.encode(ingredient, JsonOps.INSTANCE, JsonOps.INSTANCE.empty()).getOrThrow(false, string -> {
+                throw new JsonParseException(string);
+            }))) continue;
 
             var name = String.valueOf(i);
             names.add(name);
-            builder.criterion(name, InventoryChangedCriterion.Conditions.items(new CustomPredicate(ingredient)));
+            //This is horrible
+            var predicate = ItemPredicate.Builder.create().build();
+            ((ItemPredicateAccessor) (Object) predicate).andromeda$setIngredient(ingredient);
+            builder.criterion(name, InventoryChangedCriterion.Conditions.items(predicate));
         }
-        builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.create(), id));
+        builder.criterion("has_recipe", RecipeUnlockedCriterion.create(id));
 
         String[][] reqs;
         if (MODULE.orThrow().config().requireAllItems) {
@@ -149,7 +130,7 @@ public class Main {
             }
             reqs[0][names.size()] = "has_recipe";
         }
-        builder.requirements(reqs);
+        builder.requirements(new AdvancementRequirements(Arrays.stream(reqs).map(List::of).toList()));
 
         Optional.ofNullable(AdvancementRewards.Builder.recipe(id).build()).ifPresent(builder::rewards);
         return builder;
