@@ -25,6 +25,7 @@ accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen gameMod
 
 # misc/recipe_advancements_generation
 accessible field net/minecraft/server/ServerAdvancementLoader manager Lnet/minecraft/advancement/AdvancementManager;
+accessible field net/minecraft/server/ServerAdvancementLoader advancements Ljava/util/Map;
 
 # items/minecart_block_picking
 accessible field net/minecraft/entity/vehicle/FurnaceMinecartEntity fuel I
@@ -42,5 +43,3 @@ accessible method net/minecraft/entity/passive/BeeEntity$PollinateGoal completed
 accessible method net/minecraft/entity/FallingBlockEntity readCustomDataFromNbt (Lnet/minecraft/nbt/NbtCompound;)V
 accessible method net/minecraft/block/entity/BeehiveBlockEntity removeIrrelevantNbtKeys (Lnet/minecraft/nbt/NbtCompound;)V
 
-# misc/recipe_advancements_generation
-accessible field net/minecraft/server/ServerAdvancementLoader advancements Ljava/util/Map;
