@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
@@ -8,7 +9,10 @@ import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.advancement.*;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementManager;
+import net.minecraft.advancement.AdvancementRequirements;
+import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -77,14 +81,12 @@ public class Main {
 
         server.runTasks(future::isDone);
 
-        AdvancementManager advancementManager = server.getAdvancementLoader().manager;
-        advancementManager.addAll(advancementBuilders.entrySet().stream().map(e -> e.getValue().build(e.getKey())).toList());
-
-        for (PlacedAdvancement advancement : advancementManager.getRoots()) {
-            if (advancement.getAdvancement().display().isPresent()) {
-                AdvancementPositioner.arrangeForTree(advancement);
-            }
-        }
+        var map = Maps.transformEntries(advancementBuilders, (key, value) -> value.build(key));
+        AdvancementManager advancementManager = server.getAdvancementLoader().getManager();
+        advancementManager.addAll(map.values());
+        var mutable = new HashMap<>(server.getAdvancementLoader().advancements);
+        mutable.putAll(map);
+        server.getAdvancementLoader().advancements = Collections.unmodifiableMap(mutable);
 
         AndromedaLog.info("finished generating {} recipe advancements", count.get());
         advancementBuilders.clear();
@@ -101,7 +103,7 @@ public class Main {
             var ingredient = ingredients[i];
 
             if (ingredient.isEmpty()) continue;
-            if (!elements.add(Ingredient.ALLOW_EMPTY_CODEC.encode(ingredient, JsonOps.INSTANCE, JsonOps.INSTANCE.empty()).getOrThrow(false, string -> {
+            if (!elements.add(Ingredient.ALLOW_EMPTY_CODEC.encodeStart(JsonOps.INSTANCE, ingredient).getOrThrow(false, string -> {
                 throw new JsonParseException(string);
             }))) continue;
 
@@ -139,10 +141,7 @@ public class Main {
     Main(AdvancementGeneration module) {
         Main.MODULE.init(module);
 
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            Main.generateRecipeAdvancements(server);
-            server.getPlayerManager().getPlayerList().forEach(entity -> server.getPlayerManager().getAdvancementTracker(entity).reload(server.getAdvancementLoader()));
-        });
+        ServerLifecycleEvents.SERVER_STARTING.register(Main::generateRecipeAdvancements);
 
         addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting"));
         addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking"));
