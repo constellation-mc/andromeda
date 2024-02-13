@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.events.Bus;
-import me.melontini.andromeda.base.events.LegacyConfigEvent;
-import me.melontini.andromeda.util.JsonOps;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
@@ -45,15 +42,6 @@ public abstract class Module<T extends Module.BaseConfig> {
     protected Module() {
         ModuleInfo info1 = this.getClass().getAnnotation(ModuleInfo.class);
         this.info = new Metadata(info1.name(), info1.category(), info1.environment());
-
-        if (this.getClass().isAnnotationPresent(OldConfigKey.class)) {
-            OldConfigKey key = this.getClass().getAnnotation(OldConfigKey.class);
-            LegacyConfigEvent.BUS.listen(config -> {
-                if (config.has(key.value())) {
-                    JsonOps.ifPresent(config, key.value(), e -> this.config().enabled = e.getAsBoolean());
-                }
-            });
-        }
     }
 
     public final Metadata meta() {

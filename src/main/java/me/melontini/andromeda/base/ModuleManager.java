@@ -1,12 +1,10 @@
 package me.melontini.andromeda.base;
 
-import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
-import me.melontini.andromeda.base.events.LegacyConfigEvent;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -14,7 +12,6 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -46,7 +43,7 @@ public class ModuleManager {
 
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
-    ModuleManager(List<Zygote> zygotes, @Nullable JsonObject oldCfg) {
+    ModuleManager(List<Zygote> zygotes) {
         if (Bootstrap.INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
@@ -71,8 +68,6 @@ public class ModuleManager {
             module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
             module.defaultConfig = Utilities.cast(module.manager.createDefault());
         });
-
-        if (oldCfg != null) LegacyConfigEvent.BUS.invoker().acceptLegacy(oldCfg);
 
         if (Debug.Keys.ENABLE_ALL_MODULES.isPresent())
             sorted.forEach(module -> module.config().enabled = true);
