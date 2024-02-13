@@ -272,7 +272,7 @@ public class ModuleManager {
     }
 
     /**
-     * Quickly returns a module of the given class. Useful for mixins and registration.
+     * Quickly returns a module of the given class. Useful for mixins and registration. Must never be used in non-mixin static fields and class initializers.
      * <p>This will throw an {@link IllegalStateException} if the module is not loaded.</p>
      * @param cls the module class.
      * @return the module instance.
