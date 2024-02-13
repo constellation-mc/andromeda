@@ -4,7 +4,6 @@ import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.events.BlockadesEvent;
 import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
@@ -12,7 +11,6 @@ import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
-@OldConfigKey("bedsExplodeEverywhere")
 @ModuleInfo(name = "bed/unsafe", category = "blocks", environment = Environment.SERVER)
 public class Unsafe extends Module<Module.BaseConfig> {
 
