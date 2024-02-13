@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.BehaviorLoader;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.dark_matter.api.content.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -19,6 +20,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -62,7 +64,8 @@ public class Main {
             }
         });
 
-        ItemBehaviorData.init();
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ItemBehaviorManager.clear());
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new BehaviorLoader());
     }
 
     private static PacketByteBuf sendItemsS2CPacket() {
