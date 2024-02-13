@@ -13,9 +13,11 @@ abstract class CrashReportMixin {
 
     @Inject(at = @At("TAIL"), method = "<init>", require = 0)
     private void andromeda$init(String message, Throwable cause, CallbackInfo ci) {
-        var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
-        sec.trimStackTraceEnd(sec.getStackTrace().length);
-        sec.add("statuses", "\n" + AndromedaException.toString(CrashHandler.traverse(cause).orElseGet(AndromedaException::defaultStatuses)));
+        CrashHandler.traverse(cause).ifPresent(statuses -> {
+            var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
+            sec.trimStackTraceEnd(sec.getStackTrace().length);
+            sec.add("statuses", "\n" + AndromedaException.toString(statuses));
+        });
 
         CrashHandler.sanitizeTrace(cause);
     }
