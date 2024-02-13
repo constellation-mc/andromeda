@@ -1,6 +1,5 @@
 package me.melontini.andromeda.common.mixin;
 
-import com.google.gson.JsonObject;
 import me.melontini.andromeda.util.CrashHandler;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.minecraft.util.crash.CrashReport;
@@ -14,13 +13,9 @@ abstract class CrashReportMixin {
 
     @Inject(at = @At("TAIL"), method = "<init>", require = 0)
     private void andromeda$init(String message, Throwable cause, CallbackInfo ci) {
-        if (CrashHandler.hasInstance(cause)) {
-            var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
-            sec.trimStackTraceEnd(sec.getStackTrace().length);
-
-            JsonObject statuses = CrashHandler.traverse(cause);
-            sec.add("statuses", "\n" + (statuses == null ? "Unavailable" : AndromedaException.toString(statuses)));
-        }
+        var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
+        sec.trimStackTraceEnd(sec.getStackTrace().length);
+        sec.add("statuses", "\n" + AndromedaException.toString(CrashHandler.traverse(cause).orElseGet(AndromedaException::defaultStatuses)));
 
         CrashHandler.sanitizeTrace(cause);
     }

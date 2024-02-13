@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @CustomLog
@@ -60,8 +60,12 @@ public class AndromedaException extends RuntimeException {
         return report;
     }
 
+    //referenced by name in MixinProcessor$Plugin#wrapNodeWithErrorHandling
+    @SuppressWarnings("unused")
     public static AndromedaException moduleException(Throwable t, String module) {
-        return AndromedaException.builder().cause(t).add("module", module).build();
+        return AndromedaException.builder()
+                .message("Andromeda module caught a mixin handler exception! There's no guarantee that this is Andromeda's fault.")
+                .cause(t).add("module", module).build();
     }
 
     public static void run(ThrowingRunnable<Throwable> runnable, Consumer<Builder> consumer) {
@@ -82,11 +86,19 @@ public class AndromedaException extends RuntimeException {
         return new Builder();
     }
 
+    public static JsonObject defaultStatuses() {
+        return new Builder().statuses;
+    }
+
     public static class Builder {
 
-        private static final Set<String> DEFAULT_KEYS = Set.of(
-                "bootstrap_status", "platform",
-                prop(Prop.ENVIRONMENT), prop(Prop.OS), prop(Prop.JAVA_VERSION), prop(Prop.JAVA_VENDOR)
+        private static final Map<String, Consumer<Builder>> DEFAULT_KEYS = Map.of(
+                "bootstrap_status", b -> b.add("bootstrap_status", Bootstrap.Status.get()),
+                "platform", b -> b.add("platform", CommonValues.platform()),
+                prop(Prop.ENVIRONMENT), b -> b.add(Prop.ENVIRONMENT),
+                prop(Prop.OS), b -> b.add(Prop.OS),
+                prop(Prop.JAVA_VERSION), b -> b.add(Prop.JAVA_VERSION),
+                prop(Prop.JAVA_VENDOR), b -> b.add(Prop.JAVA_VENDOR)
         );
 
         private static String prop(Prop prop) {
@@ -100,9 +112,7 @@ public class AndromedaException extends RuntimeException {
         private final JsonObject statuses = new JsonObject();
 
         private Builder() {
-            add(Prop.ENVIRONMENT, Prop.OS, Prop.JAVA_VERSION, Prop.JAVA_VENDOR);
-            add("platform", CommonValues.platform());
-            add("bootstrap_status", Bootstrap.Status.get());
+            DEFAULT_KEYS.values().forEach(c -> c.accept(this));
         }
 
         public Builder message(String message) {
@@ -149,7 +159,7 @@ public class AndromedaException extends RuntimeException {
         private void disableInHierarchy(Throwable cause) {
             if (cause == null) return;
             if (cause instanceof AndromedaException e) {
-                for (String defaultKey : DEFAULT_KEYS) {
+                for (String defaultKey : DEFAULT_KEYS.keySet()) {
                     e.statuses.remove(defaultKey);
                 }
             }
