@@ -3,6 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.experimental.ExtensionMethod;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,13 +12,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
+@ExtensionMethod(Files.class)
 public class GitTracker {
 
     public static final String OWNER = "melontini";
@@ -38,29 +39,24 @@ public class GitTracker {
 
     static {
         Path lastResponse = CommonValues.hiddenPath().resolve("git-response.json");
+        if (shouldUpdate(lastResponse)) tryUpdateGitInfo(lastResponse);
+        if (lastResponse.exists()) tryUpdateInfoFromJson(lastResponse);
+    }
 
-        boolean shouldUpdate = true;
-        if (Files.exists(lastResponse)) {
+    public static boolean shouldUpdate(Path lastResponse) {
+        if (lastResponse.exists()) {
             try {
-                FileTime lastModifiedTime = Files.getLastModifiedTime(lastResponse);
-                shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
+                if (ChronoUnit.HOURS.between(lastResponse.getLastModifiedTime().toInstant(), Instant.now()) >= 24)
+                    return true;
             } catch (Exception ignored) {
             }
-        }
-        if (!shouldUpdate) shouldUpdate = CommonValues.updated();
-
-        if (shouldUpdate) {
-            tryUpdateGitInfo(lastResponse);
-        } else AndromedaLog.info("Skipped git info update.");
-
-        if (Files.exists(lastResponse)) {
-            tryUpdateInfoFromJson(lastResponse);
-        }
+        } else return true;
+        return CommonValues.updated();
     }
 
     private static void tryUpdateInfoFromJson(Path lastResponse) {
         try {
-            JsonObject object = (JsonObject) JsonParser.parseString(Files.readString(lastResponse));
+            JsonObject object = (JsonObject) JsonParser.parseString(lastResponse.readString());
 
             if (object.has("default_branch")) {
                 DEFAULT_BRANCH = object.get("default_branch").getAsString();
@@ -87,8 +83,8 @@ public class GitTracker {
                 if (!PRESERVE_KEYS.contains(s)) jsonResponse.remove(s);
             }
 
-            if (!Files.exists(lastResponse)) Files.createDirectories(lastResponse.getParent());
-            Files.writeString(lastResponse, jsonResponse.toString());
+            if (!lastResponse.exists()) lastResponse.getParent().createDirectories();
+            lastResponse.writeString(jsonResponse.toString());
         } catch (Exception e) {
             AndromedaLog.warn("Couldn't update git info", e);
         }
