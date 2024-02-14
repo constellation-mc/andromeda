@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.gui.name_tooltips;
 import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.OldConfigKey;
 import me.melontini.andromeda.base.events.BlockadesEvent;
 import me.melontini.andromeda.base.events.ConfigEvent;
 
@@ -11,7 +10,6 @@ import java.util.function.BooleanSupplier;
 
 import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
-@OldConfigKey("tooltipNotName")
 @ModuleInfo(name = "name_tooltips", category = "gui", environment = Environment.CLIENT)
 public class NameTooltips extends Module<Module.BaseConfig> {
 

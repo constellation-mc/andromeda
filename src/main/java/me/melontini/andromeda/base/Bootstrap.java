@@ -112,20 +112,6 @@ public class Bootstrap {
             Class.forName(Exceptions.class.getName());
         });
 
-        AtomicReference<JsonObject> oldCfg = new AtomicReference<>();
-        var oldCfgPath = FabricLoader.getInstance().getConfigDir().resolve("andromeda.json");
-        if (Files.exists(oldCfgPath)) {
-            if (!Files.exists(CommonValues.configPath())) {
-                wrapIO(() -> {
-                    oldCfg.set(JsonParser.parseReader(Files.newBufferedReader(oldCfgPath)).getAsJsonObject());
-                    Files.createDirectories(CommonValues.configPath().getParent());
-                    Files.move(oldCfgPath, CommonValues.configPath());
-                }, "Couldn't rename pre-1.0.0 config!");
-            } else {
-                wrapIO(() -> Files.delete(oldCfgPath), "Couldn't delete pre-1.0.0 config!");
-            }
-        }
-
         AndromedaConfig.save();
 
         Status.update();
@@ -154,7 +140,7 @@ public class Bootstrap {
 
         ModuleManager m;
         try {
-            m = new ModuleManager(sorted, oldCfg.get());
+            m = new ModuleManager(sorted);
         } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
             throw AndromedaException.builder()
                     .cause(t).message("Failed to initialize ModuleManager!!!")

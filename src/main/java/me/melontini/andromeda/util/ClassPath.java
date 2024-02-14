@@ -7,7 +7,10 @@ import me.melontini.dark_matter.api.base.util.Exceptions;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
@@ -75,15 +78,9 @@ public final class ClassPath {
 
     @SneakyThrows
     private void scanJar(Path path) {
-        FileSystem fs = Exceptions.supply(() -> {
-            try {
-                return FileSystems.getFileSystem(path.toUri());
-            } catch (Exception e) {
-                return FileSystems.newFileSystem(path, Collections.emptyMap());
-            }
-        });
-
-        scan(fs.getRootDirectories().iterator().next());
+        try (var delegate = FileSystemUtil.getJarFileSystem(path, false)) {
+            scan(delegate.get().getRootDirectories().iterator().next());
+        }
     }
 
     @SneakyThrows

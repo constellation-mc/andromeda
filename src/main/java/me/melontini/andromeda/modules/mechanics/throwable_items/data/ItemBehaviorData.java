@@ -7,10 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.item.Item;
-import net.minecraft.resource.ResourceType;
 
 import java.util.Collections;
 import java.util.List;
@@ -68,10 +65,5 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
         return CODEC.parse(JsonOps.INSTANCE, object).getOrThrow(false, string -> {
             throw new RuntimeException(string);
         });
-    }
-
-    public static void init() {
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ItemBehaviorManager.clear());
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new BehaviorLoader());
     }
 }
