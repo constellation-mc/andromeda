@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.misc.translations.client;
 
 import com.google.common.collect.Sets;
+import lombok.experimental.ExtensionMethod;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.GitTracker;
@@ -14,16 +15,18 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 
+@ExtensionMethod(Files.class)
 public class Client {
 
     public static final Path TRANSLATION_PACK = CommonValues.hiddenPath().resolve("andromeda_translations");
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
+    private static final Path EN_US = LANG_PATH.resolve("en_us.json");
     private static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
 
     private static final String URL = GitTracker.RAW_URL + "/" + GitTracker.OWNER + "/" + GitTracker.REPO + "/" + GitTracker.getDefaultBranch() + "/src/main/resources/assets/andromeda/lang/";
@@ -32,23 +35,22 @@ public class Client {
     private static String languageCode = "en_us";
 
     Client() {
-        boolean shouldUpdate = true;
-        if (Files.exists(Client.LANG_PATH.resolve("en_us.json"))) {
-            try {
-                FileTime lastModifiedTime = Files.getLastModifiedTime(Client.LANG_PATH.resolve("en_us.json"));
-                shouldUpdate = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), Instant.now()) >= 24;
-            } catch (Exception ignored) {}
-        }
-        if (!shouldUpdate) shouldUpdate = CommonValues.updated();
-
-        if (shouldUpdate) {
+        if (shouldUpdate()) {
             Set<String> languages = Sets.newHashSet("en_us");
-            String s = Client.getSelectedLanguage();
-            if (!s.isEmpty()) languages.add(s);
+            Client.getSelectedLanguage().ifPresent(languages::add);
             ForkJoinPool.commonPool().submit(() -> Client.downloadTranslations(languages));
-        } else {
-            AndromedaLog.info("Skipped translations update.");
         }
+    }
+
+    public boolean shouldUpdate() {
+        if (EN_US.exists()) {
+            try {
+                if (ChronoUnit.HOURS.between(EN_US.getLastModifiedTime().toInstant(), Instant.now()) >= 24)
+                    return true;
+            } catch (Exception ignored) {
+            }
+        } else return true;
+        return CommonValues.updated();
     }
 
     public static void onResourceReload(String code) {
@@ -65,8 +67,8 @@ public class Client {
             String file = downloadLang(language);
             if (!file.isEmpty()) {
                 try {
-                    if (!Files.exists(LANG_PATH)) Files.createDirectories(LANG_PATH);
-                    Files.writeString(LANG_PATH.resolve(language + ".json"), file);
+                    if (!LANG_PATH.exists()) LANG_PATH.createDirectories();
+                    LANG_PATH.resolve(language + ".json").writeString(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -96,13 +98,12 @@ public class Client {
         }
     }
 
-    public static String getSelectedLanguage() {
+    public static Optional<String> getSelectedLanguage() {
         try {
-            if (!Files.exists(OPTIONS)) return "";
-            for (String line : Files.readAllLines(OPTIONS)) {
+            if (!OPTIONS.exists()) return Optional.empty();
+            for (String line : OPTIONS.readAllLines()) {
                 if (line.matches("^lang:\\w+_\\w+")) {
-                    languageCode = line.replace("lang:", "");
-                    return languageCode;
+                    return Optional.of(line.replace("lang:", ""));
                 }
             }
             throw AndromedaException.builder()
@@ -110,7 +111,7 @@ public class Client {
                     .build();
         } catch (Throwable e) {
             AndromedaLog.error("Couldn't determine selected language!", e);
-            return "";
+            return Optional.empty();
         }
     }
 }
