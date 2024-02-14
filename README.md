@@ -1,9 +1,11 @@
 ## <img src="https://us-east-1.tixte.net/uploads/melontini.tixte.co/andromeda_512.png" width="75" height="75"> Andromeda
+
+[![Modrinth](https://img.shields.io/modrinth/dt/TseYlb0f?logo=modrinth&color=mint)](https://modrinth.com/mod/andromeda)
+[![CodeFactor](https://www.codefactor.io/repository/github/melontini/andromeda/badge)](https://www.codefactor.io/repository/github/melontini/andromeda)
+![GitHub](https://img.shields.io/github/license/melontini/andromeda)
+
 ### A galaxy is a collection of things and systems. So is this mod.
 
-<br/>
-<a href="https://www.curseforge.com/minecraft/mc-mods/andromeda"><img src="https://cf.way2muchnoise.eu/title/639198.svg" alt="" height="20"></a><a href="https://modrinth.com/mod/andromeda"><img src="https://img.shields.io/modrinth/dt/TseYlb0f?label=modrinth" alt="" height="20"></a>
-<br/>
 <br/>
 
 <img alt="Fabric API icon" src="https://cdn.modrinth.com/data/P7dR8mSH/icon.png" width="40" height="40"></img> [Fabric API](https://modrinth.com/mod/fabric-api) and <img alt="Cloth Config icon" src="https://cdn.modrinth.com/data/9s6osm5g/icon.png" width="40" height="40"> [Cloth Config API](https://modrinth.com/mod/cloth-config) are required!
@@ -16,7 +18,7 @@ https://andromeda-wiki.pages.dev/
 
 ***
 
-### Cool things/products this project uses:
+### Other cool things/products this project uses:
 
 #### The mod itself:<br/>
 - [Mixpanel Analytics](https://mixpanel.com/home)
@@ -27,8 +29,5 @@ https://andromeda-wiki.pages.dev/
 - [Cloudflare Pages](https://pages.cloudflare.com/)
 
 ***
-
-[![CodeFactor](https://www.codefactor.io/repository/github/melontini/andromeda/badge)](https://www.codefactor.io/repository/github/melontini/andromeda)
-![GitHub](https://img.shields.io/github/license/melontini/andromeda)
 
 ### ❤️
