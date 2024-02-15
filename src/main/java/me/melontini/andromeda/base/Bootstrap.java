@@ -1,7 +1,5 @@
 package me.melontini.andromeda.base;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.common.Andromeda;
@@ -27,9 +25,7 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
 
