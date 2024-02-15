@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
@@ -22,88 +21,73 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Collection;
+import java.util.function.Supplier;
+
 public class ItemBehaviorAdder {
 
     public static ItemBehavior dataPack(ItemBehaviorData data) {
-        return (stack, flyingItemEntity, world, user, hitResult) -> {//default behavior to handle datapacks
-            if (!world.isClient()) {
-                ServerWorld serverWorld = (ServerWorld) world;
-
-                switch (hitResult.getType()) {
-                    case ENTITY -> executeCommands(serverWorld, flyingItemEntity, user, hitResult, data.on_entity_hit());
-                    case BLOCK -> executeCommands(serverWorld, flyingItemEntity, user, hitResult, data.on_block_hit());
-                    case MISS -> executeCommands(serverWorld, flyingItemEntity, user, hitResult, data.on_miss());
-                }
-                executeCommands(serverWorld, flyingItemEntity, user, hitResult, data.on_any_hit());
-
-                sendParticlePacket(flyingItemEntity, flyingItemEntity.getPos(), data.spawn_item_particles(), stack, data.spawn_colored_particles(), ColorUtil.toColor(data.particle_colors().red(), data.particle_colors().green(), data.particle_colors().blue()));
+        return (stack, fie, world, user, hitResult) -> {//default behavior to handle datapacks
+            switch (hitResult.getType()) {
+                case ENTITY -> executeCommands(world, fie, user, hitResult, data.on_entity_hit());
+                case BLOCK -> executeCommands(world, fie, user, hitResult, data.on_block_hit());
+                case MISS -> executeCommands(world, fie, user, hitResult, data.on_miss());
             }
+            executeCommands(world, fie, user, hitResult, data.on_any_hit());
+
+            sendParticlePacket(fie, fie.getPos(), data.spawn_item_particles(), stack, data.spawn_colored_particles(),
+                    ColorUtil.toColor(data.particle_colors().red(),
+                            data.particle_colors().green(),
+                            data.particle_colors().blue())
+            );
         };
     }
 
-    private static void executeCommands(ServerWorld serverWorld, FlyingItemEntity flyingItemEntity, Entity user, HitResult hitResult, ItemBehaviorData.CommandHolder data) {
+    private static ServerCommandSource forEntity(ServerWorld world, Entity entity) {
+        return new ServerCommandSource(
+                world.getServer(), entity.getPos(),
+                new Vec2f(entity.getPitch(), entity.getYaw()),
+                world, 4, entity.getEntityName(), TextUtil.literal(entity.getEntityName()),
+                world.getServer(), entity);
+    }
+
+    private static void executeCommands(ServerWorld world, FlyingItemEntity fie, Entity user, HitResult hitResult, ItemBehaviorData.CommandHolder data) {
         if (data == ItemBehaviorData.CommandHolder.EMPTY) return;
 
-        if (!data.item_commands().isEmpty()) {
-            ServerCommandSource source = new ServerCommandSource(
-                    serverWorld.getServer(), flyingItemEntity.getPos(), new Vec2f(flyingItemEntity.getPitch(), flyingItemEntity.getYaw()), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
-            for (String command : data.item_commands()) {
-                serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
-            }
-        }
-
-        if (!data.user_commands().isEmpty() && user != null) {
-            ServerCommandSource source = new ServerCommandSource(
-                    serverWorld.getServer(), user.getPos(), new Vec2f(user.getPitch(), user.getYaw()), serverWorld, 4, user.getEntityName(), TextUtil.literal(user.getEntityName()), serverWorld.getServer(), user).withSilent();
-            for (String command : data.user_commands()) {
-                serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
-            }
-        }
-
-        if (!data.server_commands().isEmpty()) {
-            for (String command : data.server_commands()) {
-                serverWorld.getServer().getCommandManager().executeWithPrefix(serverWorld.getServer().getCommandSource().withSilent(), command);
-            }
-        }
+        executeCommands(world, data.item_commands(), () -> forEntity(world, fie).withSilent());
+        executeCommands(world, data.user_commands(), () -> forEntity(world, user).withSilent());
+        executeCommands(world, data.server_commands(), () -> world.getServer().getCommandSource().withSilent());
 
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
             Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity) {
-                if (!data.hit_entity_commands().isEmpty()) {
-                    ServerCommandSource source = new ServerCommandSource(
-                            serverWorld.getServer(), entity.getPos(), new Vec2f(entity.getPitch(), entity.getYaw()), serverWorld, 4, entity.getEntityName(), TextUtil.literal(entity.getEntityName()), serverWorld.getServer(), entity).withSilent();
-                    for (String command : data.hit_entity_commands()) {
-                        serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
-                    }
-                }
+                executeCommands(world, data.hit_entity_commands(), () -> forEntity(world, entity).withSilent());
             }
         } else if (hitResult.getType() == HitResult.Type.BLOCK) {
-            BlockHitResult blockHitResult = (BlockHitResult) hitResult;
-            if (!data.hit_block_commands().isEmpty()) {
-                Vec3d vec3d = new Vec3d(blockHitResult.getBlockPos().getX(), blockHitResult.getBlockPos().getY(), blockHitResult.getBlockPos().getZ());
-                ServerCommandSource source = new ServerCommandSource(
-                        serverWorld.getServer(), vec3d, new Vec2f(0, 0), serverWorld, 4, "AndromedaFlyingItem", TextUtil.literal("AndromedaFlyingItem"), serverWorld.getServer(), flyingItemEntity).withSilent();
-                for (String command : data.hit_block_commands()) {
-                    serverWorld.getServer().getCommandManager().executeWithPrefix(source, command);
-                }
-            }
+            BlockHitResult hit = (BlockHitResult) hitResult;
+            executeCommands(world, data.hit_block_commands(), () -> new ServerCommandSource(
+                    world.getServer(),
+                    new Vec3d(hit.getBlockPos().getX(),
+                            hit.getBlockPos().getY(),
+                            hit.getBlockPos().getZ()), Vec2f.ZERO,
+                    world, 4, "Block", TextUtil.literal("Block"),
+                    world.getServer(), fie).withSilent());
         }
     }
 
-    public static void sendParticlePacketInt(FlyingItemEntity flyingItemEntity, Vec3d pos, boolean item, ItemStack stack, boolean colored, int red, int green, int blue) {
-        sendParticlePacket(flyingItemEntity, pos, item, stack, colored, ColorUtil.toColor(red, green, blue));
-    }
+    private static void executeCommands(ServerWorld world, Collection<String> commands, Supplier<ServerCommandSource> source) {
+        if (commands == null || commands.isEmpty()) return;
 
-    public static void sendParticlePacketInt(FlyingItemEntity flyingItemEntity, Vec3d pos, ItemStack stack, boolean colored, int red, int green, int blue) {
-        sendParticlePacket(flyingItemEntity, pos, true, stack, colored, ColorUtil.toColor(red, green, blue));
+        var s = source.get();
+        for (String command : commands) {
+            world.getServer().getCommandManager().executeWithPrefix(s, command);
+        }
     }
 
     public static void sendParticlePacket(FlyingItemEntity flyingItemEntity, Vec3d pos, boolean item, ItemStack stack, boolean colored, int color) {
         PacketByteBuf byteBuf = PacketByteBufs.create();
-        byteBuf.writeDouble(pos.getX());
-        byteBuf.writeDouble(pos.getY());
-        byteBuf.writeDouble(pos.getZ());
+        byteBuf.writeDouble(pos.getX()).writeDouble(pos.getY()).writeDouble(pos.getZ());
         byteBuf.writeBoolean(item);
         byteBuf.writeItemStack(stack);
         byteBuf.writeBoolean(colored);
@@ -112,17 +96,4 @@ public class ItemBehaviorAdder {
             ServerPlayNetworking.send(serverPlayerEntity, Main.FLYING_STACK_LANDED, byteBuf);
         }
     }
-
-    public static void sendParticlePacket(FlyingItemEntity flyingItemEntity, Vec3d pos, ItemStack stack, boolean colored, int color) {
-        sendParticlePacket(flyingItemEntity, pos, true, stack, colored, color);
-    }
-
-    public static void addBehavior(Item item, ItemBehavior behavior) {
-        ItemBehaviorManager.addBehavior(item, behavior);
-    }
-
-    public static void addBehavior(ItemBehavior behavior, Item... items) {
-        ItemBehaviorManager.addBehaviors(behavior, items);
-    }
-
 }
