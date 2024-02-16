@@ -1,10 +1,10 @@
 package me.melontini.andromeda.modules.gui.name_tooltips;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
 import me.melontini.andromeda.base.events.BlockadesEvent;
 import me.melontini.andromeda.base.events.ConfigEvent;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 import java.util.function.BooleanSupplier;
 

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.entities.minecart_speed_control;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "minecart_speed_control", category = "entities", environment = Environment.SERVER)
 public class MinecartSpeedControl extends Module<MinecartSpeedControl.Config> {

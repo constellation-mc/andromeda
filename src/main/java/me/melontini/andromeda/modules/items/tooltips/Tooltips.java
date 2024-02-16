@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.items.tooltips;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "tooltips", category = "items", environment = Environment.CLIENT)
 public class Tooltips extends Module<Tooltips.Config> {

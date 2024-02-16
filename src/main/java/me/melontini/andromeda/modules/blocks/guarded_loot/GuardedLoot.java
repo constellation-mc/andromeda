@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "guarded_loot", category = "blocks")
 public class GuardedLoot extends Module<GuardedLoot.Config> {

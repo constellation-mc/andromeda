@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.world.moist_control;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "moist_control", category = "world", environment = Environment.SERVER)
 public class MoistControl extends Module<MoistControl.Config> {

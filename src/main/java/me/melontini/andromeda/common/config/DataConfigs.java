@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.annotations.Unscoped;
+import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.MakeSure;

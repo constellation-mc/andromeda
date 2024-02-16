@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 import java.util.Arrays;
 import java.util.List;

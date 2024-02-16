@@ -1,6 +1,6 @@
-package me.melontini.andromeda.base.annotations;
+package me.melontini.andromeda.base.util.annotations;
 
-import me.melontini.andromeda.base.Environment;
+import me.melontini.andromeda.base.util.Environment;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

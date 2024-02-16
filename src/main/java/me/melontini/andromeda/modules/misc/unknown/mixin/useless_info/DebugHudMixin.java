@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.useless_info;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.base.Environment;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.modules.misc.unknown.Main;
 import net.minecraft.client.gui.hud.DebugHud;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,10 +1,10 @@
 package me.melontini.andromeda.modules.world.auto_planting;
 
 import com.google.common.collect.Lists;
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.Origin;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.Origin;
 
 import java.util.List;
 

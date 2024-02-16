@@ -1,9 +1,9 @@
 package me.melontini.andromeda.modules.entities.better_furnace_minecart;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.Unscoped;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.Unscoped;
 
 @Unscoped
 @ModuleInfo(name = "better_furnace_minecart", category = "entities", environment = Environment.SERVER)

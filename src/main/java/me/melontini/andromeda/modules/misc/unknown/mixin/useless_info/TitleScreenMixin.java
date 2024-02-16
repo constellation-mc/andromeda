@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.useless_info;
 
-import me.melontini.andromeda.base.Environment;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.modules.misc.unknown.Main;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;

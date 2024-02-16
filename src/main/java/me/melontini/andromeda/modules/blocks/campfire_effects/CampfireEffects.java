@@ -2,9 +2,9 @@ package me.melontini.andromeda.modules.blocks.campfire_effects;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.Arrays;

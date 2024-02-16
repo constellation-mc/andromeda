@@ -1,7 +1,7 @@
 package me.melontini.andromeda.base;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.ClassPath;
@@ -52,7 +52,7 @@ public class Bootstrap {
         onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            if (module.meta().environment() == me.melontini.andromeda.base.Environment.SERVER) continue;
+            if (module.meta().environment() == me.melontini.andromeda.base.util.Environment.SERVER) continue;
             run(() -> module.initClasses("client.Client"), (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
         }
         run(AndromedaClient::init, b -> b.message("Failed to initialize AndromedaClient!"));
@@ -65,7 +65,7 @@ public class Bootstrap {
         onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            if (module.meta().environment() == me.melontini.andromeda.base.Environment.CLIENT) continue;
+            if (module.meta().environment() == me.melontini.andromeda.base.util.Environment.CLIENT) continue;
             run(() -> module.initClasses("server.Server"), (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
         }
     }
@@ -112,10 +112,10 @@ public class Bootstrap {
 
         Status.update();
 
-        List<ModuleManager.Zygote> list = new ArrayList<>(40);
+        List<Module.Zygote> list = new ArrayList<>(40);
         run(() -> {
             //This should probably be removed.
-            ServiceLoader.load(Module.class).stream().map(p -> new ModuleManager.Zygote(p.type(), p::get)).forEach(list::add);
+            ServiceLoader.load(Module.class).stream().map(p -> Module.Zygote.spawn(p.type(), p::get)).forEach(list::add);
             EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
         }, (b) -> b.message("Failed during module discovery!"));
 
@@ -123,11 +123,11 @@ public class Bootstrap {
             LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
         }
 
-        list.removeIf(m -> (m.meta().environment() == me.melontini.andromeda.base.Environment.CLIENT && CommonValues.environment() == EnvType.SERVER));
+        list.removeIf(m -> CommonValues.environment() == EnvType.SERVER && !m.meta().environment().allows(EnvType.SERVER));
 
         resolveConflicts(list);
 
-        List<ModuleManager.Zygote> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
+        List<Module.Zygote> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
             int i = ModuleManager.CATEGORIES.indexOf(m.meta().category());
             return i >= 0 ? i : ModuleManager.CATEGORIES.size();
         })).toList();
@@ -152,10 +152,10 @@ public class Bootstrap {
         Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
     }
 
-    private static void resolveConflicts(Collection<ModuleManager.Zygote> list) {
-        Map<String, ModuleManager.Zygote> packages = new HashMap<>();
-        Map<String, ModuleManager.Zygote> ids = new HashMap<>();
-        for (ModuleManager.Zygote module : list) {
+    private static void resolveConflicts(Collection<Module.Zygote> list) {
+        Map<String, Module.Zygote> packages = new HashMap<>();
+        Map<String, Module.Zygote> ids = new HashMap<>();
+        for (Module.Zygote module : list) {
             ModuleManager.validateZygote(module);
 
             var id = ids.put(module.meta().id(), module);
