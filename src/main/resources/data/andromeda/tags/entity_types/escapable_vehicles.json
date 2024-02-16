@@ -1,0 +1,24 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:boat",
+    "minecraft:chest_boat",
+    "minecraft:minecart",
+    {
+      "id": "andromeda:tnt_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:furnace_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:hopper_boat",
+      "required": false
+    }
+  ]
+}

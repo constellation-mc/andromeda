@@ -236,6 +236,8 @@
   "config.andromeda.entities.boats.option.isChestBoatOn.@Tooltip": "The long awaited chest boat is now in the game!",
   "config.andromeda.entities.boats.option.isHopperBoatOn": "Boat with Hopper",
   "config.andromeda.entities.boats.option.isHopperBoatOn.@Tooltip": "Quickly pulls items inside itself.",
+  "config.andromeda.entities.vehicle_unentrapment": "Vehicle Unentrapment",
+  "config.andromeda.entities.vehicle_unentrapment.@Tooltip": "Entities in the 'andromeda:escape_vehicles_on_hit' tag (Enderman by default) will stop riding whatever they're riding at the moment after getting hit. \nThe vehicle must be in the 'andromeda:escapable_vehicle' tag. (Boats and Mincarts by default)",
 
   "config.andromeda.category.items": "Items",
   "config.andromeda.items.tooltips": "Tooltips",
