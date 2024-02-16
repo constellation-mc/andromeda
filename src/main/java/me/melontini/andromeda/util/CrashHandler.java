@@ -71,7 +71,7 @@ public class CrashHandler {
                 return;
         }
 
-        if (!context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).map(info -> info.getClassName().startsWith("me.melontini.andromeda")).orElse(false) && !shouldReportRecursive(cause, new Flag()).report())
+        if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).filter(info -> info.getClassName().startsWith("me.melontini.andromeda")).isEmpty() && !shouldReportRecursive(cause, new Flag()).report())
             return;
         AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
 
