@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.blocks.better_fletching_table;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.Unscoped;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.Unscoped;
 
 @Unscoped
 @ModuleInfo(name = "better_fletching_table", category = "blocks")

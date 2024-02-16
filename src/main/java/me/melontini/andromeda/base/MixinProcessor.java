@@ -2,9 +2,9 @@ package me.melontini.andromeda.base;
 
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.MixinConfigEvent;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;

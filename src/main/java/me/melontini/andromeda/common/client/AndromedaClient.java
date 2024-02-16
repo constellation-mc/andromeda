@@ -3,9 +3,9 @@ package me.melontini.andromeda.common.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
-import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.BlockadesEvent;
+import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.client.config.AutoConfigScreen;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
@@ -31,7 +31,6 @@ import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.registries.Common.id;
@@ -53,7 +52,7 @@ public class AndromedaClient {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
         if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register();
         else {
-            ModuleManager.get().all().stream().map(CompletableFuture::join).forEach(module -> {
+            ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
                 switch (module.meta().environment()) {
                     case ANY, CLIENT -> {
                     }
@@ -65,7 +64,7 @@ public class AndromedaClient {
         BlockadesEvent.BUS.invoker().explain(FeatureBlockade.get());
 
         ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), CommonValues.mod(), ResourcePackActivationType.NORMAL);
-        AndromedaItemGroup.GROUP.dm$setIconAnimation((group1, context, itemX, itemY, selected, isTopRow) -> {
+        AndromedaItemGroup.GROUP.dm$setIconAnimation((group, context, itemX, itemY, selected, isTopRow) -> {
             try {
                 if (!animate) return;
                 drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> {
@@ -80,15 +79,15 @@ public class AndromedaClient {
 
     private static void printMissingTooltips() {
         Set<String> missing = new LinkedHashSet<>();
-        for (CompletableFuture<Module<?>> module : ModuleManager.get().all()) {
-            String m = "config.andromeda.%s.@Tooltip".formatted(module.join().meta().dotted());
+        for (Promise<?> module : ModuleManager.get().all()) {
+            String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
             if (!I18n.hasTranslation(m)) missing.add(m);
 
             for (Field field : ModuleManager.get().getConfigClass(module.getClass()).getFields()) {
                 if ("enabled".equals(field.getName()) || field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
                     continue;
 
-                String f = "config.andromeda.%s.option.%s.@Tooltip".formatted(module.join().meta().dotted(), field.getName());
+                String f = "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName());
                 if (!I18n.hasTranslation(f)) missing.add(f);
             }
         }

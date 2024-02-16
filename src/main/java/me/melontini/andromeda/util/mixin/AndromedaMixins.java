@@ -1,8 +1,8 @@
 package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.Environment;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.util.ClassPath;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
@@ -11,7 +11,6 @@ import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
-import net.fabricmc.api.EnvType;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -49,20 +48,8 @@ public class AndromedaMixins {
 
         AnnotationNode envNode = Annotations.getVisible(n, SpecialEnvironment.class);
         if (envNode != null) {
-            Environment value = AsmUtil.getAnnotationValue(envNode, "value", Environment.BOTH);
-            if (value != null) {
-                switch (value) {
-                    case SERVER -> {
-                        if (!CommonValues.environment().equals(EnvType.SERVER)) return false;
-                    }
-                    case CLIENT -> {
-                        if (!CommonValues.environment().equals(EnvType.CLIENT)) return false;
-                    }
-                    case ANY -> {
-                    }
-                    default -> throw new IllegalStateException(value.toString());
-                }
-            }
+            Environment value = AsmUtil.getAnnotationValue(envNode, "value", Environment.ANY);
+            if (!value.allows(CommonValues.environment())) return false;
         }
 
         //MixinPredicate only uses the node.

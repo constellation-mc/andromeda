@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.infinite_totem;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "infinite_totem", category = "items")
 public class InfiniteTotem extends Module<InfiniteTotem.Config> {

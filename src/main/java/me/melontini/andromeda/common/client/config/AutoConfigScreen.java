@@ -1,11 +1,12 @@
 package me.melontini.andromeda.common.client.config;
 
 import me.melontini.andromeda.base.AndromedaConfig;
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.annotations.Origin;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.base.util.annotations.Origin;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
@@ -34,7 +35,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class AutoConfigScreen {
@@ -65,7 +65,7 @@ public class AutoConfigScreen {
 
         GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
 
-        ModuleManager.get().all().stream().map(CompletableFuture::join).forEach(module -> {
+        ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
             List<Field> fields = new ArrayList<>(MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields())));
             fields.removeIf(field -> field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class));
             fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
@@ -99,8 +99,7 @@ public class AutoConfigScreen {
                         list.add(e);
                     });
                 });
-                var e = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list));
-                var built = e.build();
+                var built = eb.startSubCategory(TextUtil.translatable("config.andromeda.%s".formatted(module.meta().dotted())), Utilities.cast(list)).build();
                 setModuleTooltip(built, module);
                 appendOrigin(built, module);
                 appendEnvInfo(built, module.meta().environment());
@@ -156,9 +155,10 @@ public class AutoConfigScreen {
     }
 
     private static void appendOrigin(AbstractConfigListEntry<?> e, Module<?> module) {
-        if (module.getClass().isAnnotationPresent(Origin.class)) {
-            Origin origin = module.getClass().getAnnotation(Origin.class);
-            if (e instanceof TooltipListEntry<?> t) {
+        if (e instanceof TooltipListEntry<?> t) {
+            if (module.getClass().isAnnotationPresent(Origin.class)) {
+                Origin origin = module.getClass().getAnnotation(Origin.class);
+
                 appendText(t, TextUtil.translatable("andromeda.config.tooltip.origin", origin.mod(), origin.author()).formatted(Formatting.DARK_AQUA));
             }
         }
@@ -172,7 +172,7 @@ public class AutoConfigScreen {
     }
 
     private static void appendEnvInfo(AbstractConfigListEntry<?> e, Field f) {
-        if (f.isAnnotationPresent(SpecialEnvironment.class) && e instanceof TooltipListEntry<?> t) {
+        if (e instanceof TooltipListEntry<?> t && f.isAnnotationPresent(SpecialEnvironment.class)) {
             SpecialEnvironment env = f.getAnnotation(SpecialEnvironment.class);
             Text text = TextUtil.translatable("andromeda.config.tooltip.environment." + env.value().toString().toLowerCase()).formatted(Formatting.YELLOW);
             appendText(t, text);
@@ -234,7 +234,7 @@ public class AutoConfigScreen {
             saveQueue.get().clear();
         } else {
             AndromedaConfig.save();
-            ModuleManager.get().all().forEach(future -> future.join().save());
+            ModuleManager.get().all().forEach(future -> future.get().save());
         }
     }
 
