@@ -106,11 +106,12 @@
   "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
   "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "Module disabled in side-only mode!",
 
-  "andromeda.config.tooltip.environment.client": "Client-only feature",
-  "andromeda.config.tooltip.environment.server": "Server-only feature.",
-  "andromeda.config.tooltip.environment.both": "Required on both Client and Server.",
-  "andromeda.config.tooltip.origin": "Taken from or based on %s by %s",
+  "andromeda.config.tooltip.environment.client": "[E] Client",
+  "andromeda.config.tooltip.environment.server": "[E] Server",
+  "andromeda.config.tooltip.environment.both": "[E] Client and Server",
+  "andromeda.config.tooltip.origin": "[@] Taken from or based on %s by %s",
   "andromeda.config.tooltip.game_rule": "This option is a default for a game rule!",
+  "andromeda.config.tooltip.deprecated": "[!!!] This feature is deprecated and will be removed in a future version!",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "Effect",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "Identifier",
