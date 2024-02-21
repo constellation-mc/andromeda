@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.world.crop_temperature.mixin;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
