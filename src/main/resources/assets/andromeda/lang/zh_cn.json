@@ -14,7 +14,7 @@
   "tooltip.andromeda.magnet.level": "等级 %s/5",
   "death.attack.andromeda_agony": "%s死于痛苦",
   "death.attack.andromeda_bricked": "%1$s被%2$s用砖块砸晕了",
-  "andromeda.container.guarded": "这个箱子被守护着，无法打开！",
+  "andromeda.container.guarded": "这个容器被守护着，无法打开！",
 
   "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
   "commands.andromeda.damage.success": "已将%s伤害施加于%s",
