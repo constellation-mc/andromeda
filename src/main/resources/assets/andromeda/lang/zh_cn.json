@@ -236,6 +236,8 @@
   "config.andromeda.entities.boats.option.isChestBoatOn.@Tooltip": "玩家们期待已久的箱船！",
   "config.andromeda.entities.boats.option.isHopperBoatOn": "载漏斗的船",
   "config.andromeda.entities.boats.option.isHopperBoatOn.@Tooltip": "快速装入物品",
+  "config.andromeda.entities.vehicle_unentrapment": "脱离载具",
+  "config.andromeda.entities.vehicle_unentrapment.@Tooltip": "在“andromeda:escape_vehicles_on_hit”标签内的生物（默认为末影人）会在受击后脱离载具。\n载具类别需要在“andromeda:escapable_vehicle”中写入（默认为船和矿车）",
 
   "config.andromeda.category.items": "物品",
   "config.andromeda.items.tooltips": "工具提示",
