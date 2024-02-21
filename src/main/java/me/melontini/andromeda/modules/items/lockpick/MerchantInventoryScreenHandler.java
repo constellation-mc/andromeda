@@ -1,15 +1,18 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
+import me.melontini.andromeda.common.registries.Keeper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 
 public class MerchantInventoryScreenHandler extends ScreenHandler {
 
+    public static final Keeper<ScreenHandlerType<MerchantInventoryScreenHandler>> INSTANCE = Keeper.create();
     private final Inventory inventory;
 
     public MerchantInventoryScreenHandler(int syncId, PlayerInventory playerInventory) {
@@ -17,7 +20,7 @@ public class MerchantInventoryScreenHandler extends ScreenHandler {
     }
 
     public MerchantInventoryScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-        super(Main.MERCHANT_INVENTORY.orThrow(), syncId);
+        super(INSTANCE.orThrow(), syncId);
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 
