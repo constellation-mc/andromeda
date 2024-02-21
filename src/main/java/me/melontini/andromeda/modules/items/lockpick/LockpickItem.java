@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +14,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
 public class LockpickItem extends Item {
+
+    public static final Keeper<LockpickItem> INSTANCE = Keeper.create();
 
     public LockpickItem(Settings settings) {
         super(settings);

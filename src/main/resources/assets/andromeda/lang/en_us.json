@@ -116,6 +116,9 @@
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "Identifier",
   "config.andromeda.blocks.campfire_effects.option.Effect.amplifier": "Amplifier",
 
+  "config.andromeda.blocks.guarded_loot.option.BreakingHandler.NONE": "None",
+  "config.andromeda.blocks.guarded_loot.option.BreakingHandler.UNBREAKABLE": "Unbreakable",
+
   "config.andromeda.category.world": "World",
   "config.andromeda.world.auto_planting": "Self Planting Crops",
   "config.andromeda.world.auto_planting.@Tooltip": "If possible, crops will plant themselves after some time.",
@@ -140,6 +143,8 @@
   "config.andromeda.blocks.guarded_loot.option.range": "Range",
   "config.andromeda.blocks.guarded_loot.option.allowLockPicking": "Allow Lock Picking",
   "config.andromeda.blocks.guarded_loot.option.allowLockPicking.@Tooltip": "Requires Lockpick to be enabled!",
+  "config.andromeda.blocks.guarded_loot.option.breakingHandler": "Block Breaking Handler",
+  "config.andromeda.blocks.guarded_loot.option.breakingHandler.@Tooltip": "Choose what happens when players try to break a guarded container.",
   "config.andromeda.blocks.falling_propagule": "Falling Propagule",
   "config.andromeda.blocks.falling_propagule.@Tooltip": "Fully grown, hanging propagule will fall after some time.",
   "config.andromeda.blocks.cactus_bottle_filling": "Cactus Bottle Filling",
