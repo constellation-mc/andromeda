@@ -44,6 +44,7 @@ public class GitTracker {
     }
 
     public static boolean shouldUpdate(Path lastResponse) {
+        if (Debug.Keys.DISABLE_NETWORK_FEATURES.isPresent()) return false;
         if (lastResponse.exists()) {
             try {
                 if (ChronoUnit.HOURS.between(lastResponse.getLastModifiedTime().toInstant(), Instant.now()) >= 24)
