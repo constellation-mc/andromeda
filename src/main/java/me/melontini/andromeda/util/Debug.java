@@ -93,5 +93,6 @@ public class Debug {
          */
         public static final Key PRINT_MISSING_TOOLTIPS = make("printMissingTooltips");
         public static final Key FORCE_CRASH_REPORT_UPLOAD = make("forceCrashReportUpload");
+        public static final Key DISABLE_NETWORK_FEATURES = make("disableNetworkFeatures");
     }
 }

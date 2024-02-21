@@ -66,6 +66,8 @@ public class CrashHandler {
     }
 
     public static void handleCrash(Throwable cause, Context context) {
+        if (Debug.Keys.DISABLE_NETWORK_FEATURES.isPresent()) return;
+
         if (!Debug.Keys.FORCE_CRASH_REPORT_UPLOAD.isPresent()) {
             if (FabricLoader.getInstance().isDevelopmentEnvironment() || !AndromedaConfig.get().sendCrashReports)
                 return;
