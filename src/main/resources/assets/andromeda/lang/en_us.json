@@ -120,6 +120,9 @@
   "config.andromeda.blocks.guarded_loot.option.BreakingHandler.NONE": "None",
   "config.andromeda.blocks.guarded_loot.option.BreakingHandler.UNBREAKABLE": "Unbreakable",
 
+  "config.andromeda.misc.tiny_storage.option.TransferMode.FOLLOW_GAMERULE": "Follow Gamerule",
+  "config.andromeda.misc.tiny_storage.option.TransferMode.ALWAYS_TRANSFER": "Always Transfer",
+
   "config.andromeda.category.world": "World",
   "config.andromeda.world.auto_planting": "Self Planting Crops",
   "config.andromeda.world.auto_planting.@Tooltip": "If possible, crops will plant themselves after some time.",
@@ -290,7 +293,7 @@
   "config.andromeda.bugfixes.aligned_alternatives.@Tooltip": "Recipe groups won't look janky when there are a lot of recipes in a group.",
 
   "config.andromeda.category.mechanics": "Mechanics",
-  "config.andromeda.mechanics.villager_gifting": "[EXP] Villager Gifting",
+  "config.andromeda.mechanics.villager_gifting": "Villager Gifting",
   "config.andromeda.mechanics.villager_gifting.@Tooltip": "Allows to restore some reputation by giving gifts to villagers!",
   "config.andromeda.mechanics.dragon_fight": "Dragon Fight Tweaks",
   "config.andromeda.mechanics.dragon_fight.option.respawnCrystals": "Respawn Crystals",
@@ -348,6 +351,10 @@
   "config.andromeda.misc.minor_inconvenience": "Minor Inconvenience",
   "config.andromeda.misc.minor_inconvenience.@Tooltip": "Makes the player explode after taking any damage.",
   "config.andromeda.misc.unknown": "???",
+  "config.andromeda.misc.tiny_storage": "[EXP] Tiny Storage",
+  "config.andromeda.misc.tiny_storage.@Tooltip": "Allows you store 4 more stacks of items in the 2x2 crafting space.\nCurrently experimental, so proceed with caution!",
+  "config.andromeda.misc.tiny_storage.option.transferMode": "Transfer Mode",
+  "config.andromeda.misc.tiny_storage.option.transferMode.@Tooltip": "Should the items be transferred or dropped upon death.",
 
   "config.andromeda.base.option.sideOnlyMode": "Side-Only Mode",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "Disables all modules which require Andromeda to be present on server.",
