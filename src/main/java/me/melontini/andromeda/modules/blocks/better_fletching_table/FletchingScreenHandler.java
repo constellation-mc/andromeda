@@ -36,6 +36,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
         this.output.unlockLastRecipe(player);
         this.decrementStack(0);
         this.decrementStack(1);
+        this.context.run((world, pos) -> world.syncWorldEvent(1044, pos, 0));
     }
 
     private void decrementStack(int slot) {
