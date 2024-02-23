@@ -33,7 +33,7 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
     @Inject(at = @At("HEAD"), method = "serverTick")
     private static void andromeda$fallingHive(@NotNull World world, BlockPos pos, BlockState state, BeehiveBlockEntity beehiveBlockEntity, CallbackInfo ci) {
-        if (world.getBlockState(pos).getBlock() != Blocks.BEE_NEST) return;
+        if (state.getBlock() != Blocks.BEE_NEST) return;
 
         if (world.am$get(CanBeeNestsFall.class).enabled && world.random.nextInt(32000) == 0) {
             if (!world.getBlockState(pos.offset(Direction.DOWN)).isAir()) return;
