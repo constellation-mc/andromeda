@@ -106,15 +106,19 @@
   "andromeda.config.option_manager.reason.andromeda.iceberg": "与低于1.1.13的Iceberg前置冲突。",
   "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "此特性因启用了“客户端模式”被禁用！",
 
-  "andromeda.config.tooltip.environment.client": "仅客户端特性",
-  "andromeda.config.tooltip.environment.server": "仅服务端特性。",
-  "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
-  "andromeda.config.tooltip.origin": "灵感源于%2$s创作的%1$s",
+  "andromeda.config.tooltip.environment.client": "[E] 客户端",
+  "andromeda.config.tooltip.environment.server": "[E] 服务端",
+  "andromeda.config.tooltip.environment.both": "[E] 客户端+服务端",
+  "andromeda.config.tooltip.origin": "[@] 灵感源于%2$s创作的%1$s",
   "andromeda.config.tooltip.game_rule": "此选项是游戏规则的默认值！",
+  "andromeda.config.tooltip.deprecated": "[!!!] 这一特性已经过时，将会在未来的版本移除！",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "状态效果",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "名称",
   "config.andromeda.blocks.campfire_effects.option.Effect.amplifier": "倍率",
+
+  "config.andromeda.blocks.guarded_loot.option.BreakingHandler.NONE": "无",
+  "config.andromeda.blocks.guarded_loot.option.BreakingHandler.UNBREAKABLE": "无法破坏",
 
   "config.andromeda.category.world": "世界",
   "config.andromeda.world.auto_planting": "自种植作物",
@@ -140,6 +144,8 @@
   "config.andromeda.blocks.guarded_loot.option.range": "检测距离",
   "config.andromeda.blocks.guarded_loot.option.allowLockPicking": "开锁器解除守卫",
   "config.andromeda.blocks.guarded_loot.option.allowLockPicking.@Tooltip": "前提是启用开锁器！",
+  "config.andromeda.blocks.guarded_loot.option.breakingHandler": "破坏行为控制",
+  "config.andromeda.blocks.guarded_loot.option.breakingHandler.@Tooltip": "玩家尝试破坏被守卫的容器时，会发生什么。",
   "config.andromeda.blocks.falling_propagule": "胎生苗掉落",
   "config.andromeda.blocks.falling_propagule.@Tooltip": "成熟后，悬挂的红树胎生苗会掉下来。",
   "config.andromeda.blocks.cactus_bottle_filling": "仙人掌取水",
