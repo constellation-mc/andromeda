@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
-import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +18,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,14 +26,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
 import java.util.Optional;
 
 @Mixin(FallingBlockEntity.class)
 abstract class FallingBlockMixin extends Entity {
 
-    @Shadow @Nullable public NbtCompound blockEntityData;
-    @Shadow private BlockState block;
+    @Shadow
+    @Nullable
+    public NbtCompound blockEntityData;
+    @Shadow
+    private BlockState block;
 
     public FallingBlockMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -45,40 +45,35 @@ abstract class FallingBlockMixin extends Entity {
     public void andromeda$tick(CallbackInfo ci) {
         BlockPos blockPos = this.getBlockPos();
         BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-        if (blockEntity != null) {
-            if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity) {
-                if (this.block.getBlock() == Blocks.BEE_NEST) {
-                    if (blockEntityData != null && blockEntityData.getBoolean("AM-FromFallenBlock") && this.world.am$get(CanBeeNestsFall.class).enabled) {
-                        blockEntityData.putBoolean("AM-FromFallenBlock", false);
-                        List<ItemStack> stacks = WorldUtil.prepareLoot(world, WorldUtil.BEE_LOOT_ID);
+        if (blockEntity == null) return;
 
-                        Optional<PlayerEntity> optional = PlayerUtil.findClosestNonCreativePlayerInRange(world, this.getBlockPos(), 16);
-                        final NbtList nbeetlist = blockEntityData.getList("Bees", 10);
+        if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity && this.world.am$get(CanBeeNestsFall.class).enabled) {
+            if (this.block.getBlock() != Blocks.BEE_NEST) return;
+            if (blockEntityData == null || !blockEntityData.getBoolean("AM-FromFallenBlock")) return;
 
-                        world.breakBlock(beehiveBlockEntity.getPos(), false);
-                        for (int i = 0; i < nbeetlist.size(); ++i) {
-                            NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
-                            BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
-                            BeeEntity bee = EntityType.BEE.create(world);
-                            if (bee != null) {
-                                bee.readNbt(entityData);
-                                bee.setPosition(getPos());
-                                bee.setCannotEnterHiveTicks(400);
-                                optional.ifPresent(bee::setTarget);
-                                world.spawnEntity(bee);
-                            }
-                        }
-                        if (optional.isPresent()) {
-                            for (BeeEntity bee : world.getNonSpectatingEntities(BeeEntity.class, new Box(getBlockPos()).expand(50))) {
-                                bee.setTarget(optional.get());
-                            }
-                        }
-                        for (ItemStack stack : stacks) {
-                            ItemStackUtil.spawnVelocity(this.getPos(), stack, world,
-                                    new Vec3d(MathStuff.nextDouble(-.3, .3), MathStuff.nextDouble(.05, .2), MathStuff.nextDouble(-.3, .3)));
-                        }
-                    }
-                }
+            blockEntityData.putBoolean("AM-FromFallenBlock", false);
+
+            Optional<PlayerEntity> optional = PlayerUtil.findClosestNonCreativePlayerInRange(world, this.getBlockPos(), 16);
+            final NbtList nbeetlist = blockEntityData.getList("Bees", 10);
+
+            world.breakBlock(beehiveBlockEntity.getPos(), false);
+            for (int i = 0; i < nbeetlist.size(); ++i) {
+                NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
+                BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
+                BeeEntity bee = EntityType.BEE.create(world);
+                if (bee == null) continue;
+
+                bee.readNbt(entityData);
+                bee.setPosition(getPos());
+                bee.setCannotEnterHiveTicks(400);
+                optional.ifPresent(bee::setTarget);
+                world.spawnEntity(bee);
+            }
+            optional.ifPresent(player -> world.getNonSpectatingEntities(BeeEntity.class, new Box(getBlockPos()).expand(50))
+                    .forEach(bee -> bee.setTarget(player)));
+
+            for (ItemStack stack : WorldUtil.prepareLoot(world, WorldUtil.BEE_LOOT_ID)) {
+                ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
             }
         }
     }
