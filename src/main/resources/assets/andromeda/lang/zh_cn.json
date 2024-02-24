@@ -120,6 +120,9 @@
   "config.andromeda.blocks.guarded_loot.option.BreakingHandler.NONE": "无",
   "config.andromeda.blocks.guarded_loot.option.BreakingHandler.UNBREAKABLE": "无法破坏",
 
+  "config.andromeda.misc.tiny_storage.option.TransferMode.FOLLOW_GAMERULE": "与游戏规则一致",
+  "config.andromeda.misc.tiny_storage.option.TransferMode.ALWAYS_TRANSFER": "总是保留",
+
   "config.andromeda.category.world": "世界",
   "config.andromeda.world.auto_planting": "自种植作物",
   "config.andromeda.world.auto_planting.@Tooltip": "作物将尝试在一段时间后种植自身。\n灵感取自于HephaestusDev的TinyTweaks",
@@ -290,7 +293,7 @@
   "config.andromeda.bugfixes.aligned_alternatives.@Tooltip": "在组内配方繁多时，配方组别不会再看上去那么小块了",
 
   "config.andromeda.category.mechanics": "机制",
-  "config.andromeda.mechanics.villager_gifting": "[实验性] 友好送礼",
+  "config.andromeda.mechanics.villager_gifting": "友好送礼",
   "config.andromeda.mechanics.villager_gifting.@Tooltip": "使玩家能够通过给村民送礼来恢复一定的声望值！",
   "config.andromeda.mechanics.dragon_fight": "末地龙战调整",
   "config.andromeda.mechanics.dragon_fight.option.respawnCrystals": "末影水晶再生成",
@@ -346,8 +349,12 @@
   "config.andromeda.misc.recipe_advancements_generation.option.recipeBlacklist": "ID黑名单",
   "config.andromeda.misc.recipe_advancements_generation.option.recipeBlacklist.@Tooltip": "不为下列ID的物品生成配方成就。",
   "config.andromeda.misc.minor_inconvenience": "小麻烦",
-  "config.andromeda.misc.minor_inconvenience.@Tooltip": "使玩家在受到任何伤害后爆炸",
+  "config.andromeda.misc.minor_inconvenience.@Tooltip": "使玩家在受到伤害后爆炸",
   "config.andromeda.misc.unknown": "？？？",
+  "config.andromeda.misc.tiny_storage": "[实验性] 微存储",
+  "config.andromeda.misc.tiny_storage.@Tooltip": "允许玩家在背包的2x2合成位存放至多四组物品。\n目前处于测试阶段，谨慎启用！",
+  "config.andromeda.misc.tiny_storage.option.transferMode": "转移模式",
+  "config.andromeda.misc.tiny_storage.option.transferMode.@Tooltip": "物品应当死亡保留，还是死亡掉落。",
 
   "config.andromeda.base.option.sideOnlyMode": "仅客户端模式",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "禁用所有要求服务端的特性。",
