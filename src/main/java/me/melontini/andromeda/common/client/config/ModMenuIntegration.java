@@ -2,7 +2,7 @@ package me.melontini.andromeda.common.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import me.melontini.andromeda.util.AndromedaLog;
+import lombok.CustomLog;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -22,6 +22,7 @@ import net.minecraft.util.Identifier;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
+@CustomLog
 @Environment(EnvType.CLIENT)
 public class ModMenuIntegration implements ModMenuApi {
 
@@ -40,7 +41,7 @@ public class ModMenuIntegration implements ModMenuApi {
                             Support.runWeak(EnvType.CLIENT, () -> () -> ScreenParticleHelper.addScreenParticles(
                                     ParticleTypes.ANGRY_VILLAGER, screen.width - 30, 23, 0.5, 0.5, 0.5, 1
                             ));
-                            AndromedaLog.info("Reloaded Debug Keys!");
+                            LOGGER.info("Reloaded Debug Keys!");
                         } else {
                             screen.handleTextClick(WIKI_LINK);
                         }

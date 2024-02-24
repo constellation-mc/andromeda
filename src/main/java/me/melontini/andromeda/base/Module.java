@@ -10,6 +10,7 @@ import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
@@ -28,19 +29,25 @@ import java.util.function.Supplier;
  *
  * @param <T> the config type for this module.
  */
-@CustomLog
+@CustomLog @Accessors(fluent = true)
 public abstract class Module<T extends Module.BaseConfig> {
 
     private final Metadata info;
+    @Getter
+    private final PrependingLogger logger;
 
+    @Getter
     volatile ConfigManager<T> manager;
+    @Getter
     volatile T config;
+    @Getter
     volatile T defaultConfig;
 
     private final Map<Class<?>, Bus<?>> busMap = new IdentityHashMap<>();
 
     protected Module() {
         this.info = Metadata.fromAnnotation(this.getClass().getAnnotation(ModuleInfo.class));
+        this.logger = PrependingLogger.get("Andromeda/" + meta().id(), PrependingLogger.LOGGER_NAME);
     }
 
     public final Metadata meta() {
@@ -49,18 +56,6 @@ public abstract class Module<T extends Module.BaseConfig> {
 
     public final void save() {
         manager.save(FabricLoader.getInstance().getConfigDir(), config());
-    }
-
-    public final ConfigManager<T> manager() {
-        return manager;
-    }
-
-    public final T config() {
-        return config;
-    }
-
-    public final T defaultConfig() {
-        return defaultConfig;
     }
 
     public final boolean enabled() {

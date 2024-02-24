@@ -47,7 +47,7 @@ public class CommonValues {
                 if (HIDDEN_PATH.getFileSystem().supportedFileAttributeViews().contains("dos"))
                     Files.setAttribute(HIDDEN_PATH, "dos:hidden", Boolean.TRUE, LinkOption.NOFOLLOW_LINKS);
             } catch (IOException ignored) {
-                AndromedaLog.warn("Failed to hide the .andromeda folder");
+                LOGGER.warn("Failed to hide the .andromeda folder");
             }
         }
         return HIDDEN_PATH;

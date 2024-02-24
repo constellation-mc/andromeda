@@ -5,7 +5,6 @@ import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
-import me.melontini.andromeda.util.AndromedaLog;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -114,7 +113,6 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
         for (PlayerEntity player1 : world.getPlayers()) {
             ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
         }
-        AndromedaLog.devInfo(this.record);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common.client.config;
 
+import lombok.CustomLog;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -8,7 +9,6 @@ import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Origin;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
@@ -37,6 +37,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
 
+@CustomLog
 public class AutoConfigScreen {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -45,12 +46,12 @@ public class AutoConfigScreen {
 
     static {
         if (!FabricLoader.getInstance().isModLoaded("cloth-config")) {
-            AndromedaLog.error("AutoConfigScreen class loaded without Cloth Config!");
+            LOGGER.error("AutoConfigScreen class loaded without Cloth Config!");
         }
     }
 
     public static void register() {
-        AndromedaLog.info("Loading ClothConfig support!");
+        LOGGER.info("Loading ClothConfig support!");
         saveCallback = Reflect.findField(AbstractConfigEntry.class, "saveCallback");
     }
 

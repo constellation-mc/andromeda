@@ -3,6 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.CustomLog;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.classes.Context;
@@ -18,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
+@CustomLog
 public class CrashHandler {
 
     private static final Mixpanel MIXPANEL = Mixpanel.get(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
@@ -75,7 +77,7 @@ public class CrashHandler {
 
         if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).filter(info -> info.getClassName().startsWith("me.melontini.andromeda")).isEmpty() && !shouldReportRecursive(cause, new Flag()).report())
             return;
-        AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
+        LOGGER.warn("Found Andromeda in trace, collecting and uploading crash report...");
 
         sanitizeTrace(cause);
 

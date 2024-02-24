@@ -3,6 +3,7 @@ package me.melontini.andromeda.util;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.CustomLog;
 import lombok.experimental.ExtensionMethod;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
+@CustomLog
 @ExtensionMethod(Files.class)
 public class GitTracker {
 
@@ -61,7 +63,7 @@ public class GitTracker {
 
             if (object.has("default_branch")) {
                 DEFAULT_BRANCH = object.get("default_branch").getAsString();
-                AndromedaLog.info("Default branch is: {}", DEFAULT_BRANCH);
+                LOGGER.info("Default branch is: {}", DEFAULT_BRANCH);
             }
         } catch (IOException ignored) {}
     }
@@ -87,7 +89,7 @@ public class GitTracker {
             if (!lastResponse.exists()) lastResponse.getParent().createDirectories();
             lastResponse.writeString(jsonResponse.toString());
         } catch (Exception e) {
-            AndromedaLog.warn("Couldn't update git info", e);
+            LOGGER.warn("Couldn't update git info", e);
         }
     }
 }

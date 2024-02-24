@@ -1,11 +1,9 @@
 package me.melontini.andromeda.common.registries;
 
-import lombok.CustomLog;
 import net.minecraft.util.Identifier;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-@CustomLog
 public class Common {
 
     public static Identifier id(String path) {
