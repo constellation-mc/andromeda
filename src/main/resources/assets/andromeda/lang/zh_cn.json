@@ -14,7 +14,7 @@
   "tooltip.andromeda.magnet.level": "等级 %s/5",
   "death.attack.andromeda_agony": "%s死于痛苦",
   "death.attack.andromeda_bricked": "%1$s被%2$s用砖块砸晕了",
-  "andromeda.container.guarded": "这个箱子被守护着，无法打开！",
+  "andromeda.container.guarded": "这个容器被守护着，无法打开！",
 
   "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
   "commands.andromeda.damage.success": "已将%s伤害施加于%s",
@@ -106,15 +106,22 @@
   "andromeda.config.option_manager.reason.andromeda.iceberg": "与低于1.1.13的Iceberg前置冲突。",
   "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "此特性因启用了“客户端模式”被禁用！",
 
-  "andromeda.config.tooltip.environment.client": "仅客户端特性",
-  "andromeda.config.tooltip.environment.server": "仅服务端特性。",
-  "andromeda.config.tooltip.environment.both": "需要客户端与服务端同步启用。",
-  "andromeda.config.tooltip.origin": "灵感源于%2$s创作的%1$s",
+  "andromeda.config.tooltip.environment.client": "[E] 客户端",
+  "andromeda.config.tooltip.environment.server": "[E] 服务端",
+  "andromeda.config.tooltip.environment.both": "[E] 客户端+服务端",
+  "andromeda.config.tooltip.origin": "[@] 灵感源于%2$s创作的%1$s",
   "andromeda.config.tooltip.game_rule": "此选项是游戏规则的默认值！",
+  "andromeda.config.tooltip.deprecated": "[!!!] 这一特性已经过时，将会在未来的版本移除！",
 
   "config.andromeda.blocks.campfire_effects.option.Effect": "状态效果",
   "config.andromeda.blocks.campfire_effects.option.Effect.identifier": "名称",
   "config.andromeda.blocks.campfire_effects.option.Effect.amplifier": "倍率",
+
+  "config.andromeda.blocks.guarded_loot.option.BreakingHandler.NONE": "无",
+  "config.andromeda.blocks.guarded_loot.option.BreakingHandler.UNBREAKABLE": "无法破坏",
+
+  "config.andromeda.misc.tiny_storage.option.TransferMode.FOLLOW_GAMERULE": "与游戏规则一致",
+  "config.andromeda.misc.tiny_storage.option.TransferMode.ALWAYS_TRANSFER": "总是保留",
 
   "config.andromeda.category.world": "世界",
   "config.andromeda.world.auto_planting": "自种植作物",
@@ -140,6 +147,8 @@
   "config.andromeda.blocks.guarded_loot.option.range": "检测距离",
   "config.andromeda.blocks.guarded_loot.option.allowLockPicking": "开锁器解除守卫",
   "config.andromeda.blocks.guarded_loot.option.allowLockPicking.@Tooltip": "前提是启用开锁器！",
+  "config.andromeda.blocks.guarded_loot.option.breakingHandler": "破坏行为控制",
+  "config.andromeda.blocks.guarded_loot.option.breakingHandler.@Tooltip": "玩家尝试破坏被守卫的容器时，会发生什么。",
   "config.andromeda.blocks.falling_propagule": "胎生苗掉落",
   "config.andromeda.blocks.falling_propagule.@Tooltip": "成熟后，悬挂的红树胎生苗会掉下来。",
   "config.andromeda.blocks.cactus_bottle_filling": "仙人掌取水",
@@ -236,6 +245,8 @@
   "config.andromeda.entities.boats.option.isChestBoatOn.@Tooltip": "玩家们期待已久的箱船！",
   "config.andromeda.entities.boats.option.isHopperBoatOn": "载漏斗的船",
   "config.andromeda.entities.boats.option.isHopperBoatOn.@Tooltip": "快速装入物品",
+  "config.andromeda.entities.vehicle_unentrapment": "脱离载具",
+  "config.andromeda.entities.vehicle_unentrapment.@Tooltip": "在“andromeda:escape_vehicles_on_hit”标签内的生物（默认为末影人）会在受击后脱离载具。\n载具类别需要在“andromeda:escapable_vehicle”中写入（默认为船和矿车）",
 
   "config.andromeda.category.items": "物品",
   "config.andromeda.items.tooltips": "工具提示",
@@ -282,7 +293,7 @@
   "config.andromeda.bugfixes.aligned_alternatives.@Tooltip": "在组内配方繁多时，配方组别不会再看上去那么小块了",
 
   "config.andromeda.category.mechanics": "机制",
-  "config.andromeda.mechanics.villager_gifting": "[实验性] 友好送礼",
+  "config.andromeda.mechanics.villager_gifting": "友好送礼",
   "config.andromeda.mechanics.villager_gifting.@Tooltip": "使玩家能够通过给村民送礼来恢复一定的声望值！",
   "config.andromeda.mechanics.dragon_fight": "末地龙战调整",
   "config.andromeda.mechanics.dragon_fight.option.respawnCrystals": "末影水晶再生成",
@@ -338,8 +349,12 @@
   "config.andromeda.misc.recipe_advancements_generation.option.recipeBlacklist": "ID黑名单",
   "config.andromeda.misc.recipe_advancements_generation.option.recipeBlacklist.@Tooltip": "不为下列ID的物品生成配方成就。",
   "config.andromeda.misc.minor_inconvenience": "小麻烦",
-  "config.andromeda.misc.minor_inconvenience.@Tooltip": "使玩家在受到任何伤害后爆炸",
+  "config.andromeda.misc.minor_inconvenience.@Tooltip": "使玩家在受到伤害后爆炸",
   "config.andromeda.misc.unknown": "？？？",
+  "config.andromeda.misc.tiny_storage": "[实验性] 微存储",
+  "config.andromeda.misc.tiny_storage.@Tooltip": "允许玩家在背包的2x2合成位存放至多四组物品。\n目前处于测试阶段，谨慎启用！",
+  "config.andromeda.misc.tiny_storage.option.transferMode": "转移模式",
+  "config.andromeda.misc.tiny_storage.option.transferMode.@Tooltip": "物品应当死亡保留，还是死亡掉落。",
 
   "config.andromeda.base.option.sideOnlyMode": "仅客户端模式",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "禁用所有要求服务端的特性。",
