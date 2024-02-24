@@ -1,6 +1,7 @@
 package me.melontini.andromeda.common.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import lombok.CustomLog;
 import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.ModuleManager;
@@ -9,7 +10,6 @@ import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.client.config.AutoConfigScreen;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.common.registries.AndromedaItemGroup;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 
+@CustomLog
 @Getter
 @Environment(EnvType.CLIENT)
 public class AndromedaClient {
@@ -95,7 +96,7 @@ public class AndromedaClient {
         for (String s : missing) {
             b.append('\t').append(s).append('\n');
         }
-        AndromedaLog.info("Missing tooltips:\n{}", b);
+        LOGGER.info("Missing tooltips:\n{}", b);
     }
 
     public void lateInit() {

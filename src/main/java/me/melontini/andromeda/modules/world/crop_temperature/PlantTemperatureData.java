@@ -10,7 +10,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -65,7 +64,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
         return block instanceof PlantBlock || block instanceof AbstractPlantPartBlock;
     }
 
-    public static void init() {
+    public static void init(PlantTemperature module) {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> PlantTemperatureData.PLANT_DATA.clear());
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new JsonDataLoader(Common.id("crop_temperatures")) {
@@ -81,12 +80,12 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
                 map.forEach((identifier, temperatureData) ->
                         temperatureData.blocks.forEach((block) -> PLANT_DATA.put(block, temperatureData)));
 
-                if (Debug.Keys.PRINT_MISSING_ASSIGNED_DATA.isPresent()) verifyPostLoad();
+                if (Debug.Keys.PRINT_MISSING_ASSIGNED_DATA.isPresent()) verifyPostLoad(module);
             }
         });
     }
 
-    private static void verifyPostLoad() {
+    private static void verifyPostLoad(PlantTemperature module) {
         String mapped = Mapper.mapMethod(AbstractBlock.class, "method_9514", MethodType.methodType(void.class, BlockState.class, ServerWorld.class, BlockPos.class, Random.class));
 
         List<Block> override = new ArrayList<>();
@@ -102,8 +101,8 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
             }
         });
 
-        if (!override.isEmpty()) AndromedaLog.warn("Missing crop temperatures: " + override);
-        if (!blocks.isEmpty()) AndromedaLog.warn("Possible missing crop temperatures: " + blocks);
+        if (!override.isEmpty()) module.logger().warn("Missing crop temperatures: " + override);
+        if (!blocks.isEmpty()) module.logger().warn("Possible missing crop temperatures: " + blocks);
     }
 
     private static boolean methodInHierarchyUntil(Class<?> cls, String name, Class<?> stopClass) {

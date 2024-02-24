@@ -2,7 +2,6 @@ package me.melontini.andromeda.util.mixin;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.Debug;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
 import org.spongepowered.asm.mixin.extensibility.IMixinErrorHandler;
@@ -28,7 +27,7 @@ public class ErrorHandler implements IMixinErrorHandler {
             ModuleManager.get().moduleFromConfig(mixin.getConfig().getName()).ifPresent(module -> {
                 module.config().enabled = false;
                 module.save();
-                AndromedaLog.info("Disabling module '%s'!".formatted(module.meta().id()));
+                LOGGER.info("Disabling module '%s'!".formatted(module.meta().id()));
             });
             return action;
         }

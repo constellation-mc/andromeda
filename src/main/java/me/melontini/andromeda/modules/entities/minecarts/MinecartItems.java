@@ -12,7 +12,6 @@ import me.melontini.andromeda.modules.entities.minecarts.items.NoteBlockMinecart
 import me.melontini.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem;
 import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import me.melontini.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
@@ -110,7 +109,7 @@ public class MinecartItems {
             return StringUtils.isEmpty(identifier) ? CommonRegistries.entityTypes().getDefaultId() : new Identifier(identifier);
         } catch (InvalidIdentifierException e) {
             BlockPos blockPos = mobSpawnerBlockEntity.getPos();
-            AndromedaLog.error(String.format("Invalid entity id '%s' at spawner %s:[%s,%s,%s]", identifier, Objects.requireNonNull(mobSpawnerBlockEntity.getWorld()).getRegistryKey().getValue(), blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+            ModuleManager.quick(Minecarts.class).logger().error(String.format("Invalid entity id '%s' at spawner %s:[%s,%s,%s]", identifier, Objects.requireNonNull(mobSpawnerBlockEntity.getWorld()).getRegistryKey().getValue(), blockPos.getX(), blockPos.getY(), blockPos.getZ()));
             return CommonRegistries.entityTypes().getDefaultId();
         }
     }

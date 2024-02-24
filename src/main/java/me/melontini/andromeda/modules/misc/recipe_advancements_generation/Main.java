@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import me.melontini.andromeda.common.registries.Keeper;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.advancement.Advancement;
@@ -85,7 +84,7 @@ public class Main {
         AdvancementManager advancementManager = server.getAdvancementLoader().manager;
         advancementManager.load(advancementBuilders);
 
-        AndromedaLog.info("finished generating {} recipe advancements", count.get());
+        module.logger().info("finished generating {} recipe advancements", count.get());
         advancementBuilders.clear();
     }
 
