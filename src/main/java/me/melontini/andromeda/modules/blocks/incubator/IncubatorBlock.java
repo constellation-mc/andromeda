@@ -5,6 +5,7 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -12,6 +13,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
@@ -25,12 +27,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class IncubatorBlock extends BlockWithEntity {
+public class IncubatorBlock extends BlockWithEntity implements InventoryProvider {
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     private final VoxelShape BASE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
@@ -56,13 +59,11 @@ public class IncubatorBlock extends BlockWithEntity {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack stack = player.getStackInHand(hand);
         IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
-        if (!world.isClient)
-            if (entity != null)
-                if (EggProcessingData.EGG_DATA.containsKey(stack.getItem()) && hand.equals(Hand.MAIN_HAND)) {
-                    return entity.insertEgg(stack) ? ActionResult.SUCCESS : ActionResult.FAIL;
-                } else if (stack.isEmpty() && hand.equals(Hand.MAIN_HAND)) {
-                    return entity.takeEgg(player, stack) ? ActionResult.SUCCESS : ActionResult.FAIL;
-                }
+        if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ActionResult.success(true);
+
+        if (EggProcessingData.EGG_DATA.containsKey(stack.getItem())) return entity.insertEgg(stack);
+        if (stack.isEmpty()) return entity.extractEgg(player);
+
         return ActionResult.success(false);
     }
 
@@ -126,5 +127,13 @@ public class IncubatorBlock extends BlockWithEntity {
     @Override
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
+    }
+
+    @Override
+    public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity) return incubatorBlockEntity;
+        throw AndromedaException.builder().message("Invalid block entity type! Must be an instance of %s".formatted(IncubatorBlockEntity.class.getName()))
+                .add("block_entity", blockEntity).build();
     }
 }

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;

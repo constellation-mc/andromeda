@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.items.balanced_mending.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import me.melontini.andromeda.base.Environment;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.enchantment.EnchantmentHelper;

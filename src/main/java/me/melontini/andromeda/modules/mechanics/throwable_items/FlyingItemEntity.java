@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
@@ -32,7 +33,7 @@ public class FlyingItemEntity extends ThrownItemEntity {
     protected void onCollision(HitResult hitResult) {
         if (!this.world.isClient()) {
             for (ItemBehavior behavior : ItemBehaviorManager.getBehaviors(getItem().getItem())) {
-                if (!this.isRemoved()) behavior.onCollision(getItem(), this, world, getOwner(), hitResult);
+                if (!this.isRemoved()) behavior.onCollision(getItem(), this, (ServerWorld) world, getOwner(), hitResult);
             }
         }
         this.discard();

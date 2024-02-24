@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.entities.slimes;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "slimes", category = "entities", environment = Environment.SERVER)
 public class Slimes extends Module<Slimes.Config> {

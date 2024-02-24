@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.Unscoped;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 
 @Unscoped

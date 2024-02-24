@@ -6,7 +6,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.village.VillageGossipType;
@@ -19,6 +21,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
 
 @Mixin(VillagerEntity.class)
 abstract class VillagerEntityMixin extends MerchantEntity {
@@ -40,25 +44,13 @@ abstract class VillagerEntityMixin extends MerchantEntity {
         ItemStack gift = stack.copy();
         gift.setCount(1);
 
-        if (stack.isIn(GiftTags.MAJOR_POSITIVE)) {
-            if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_POSITIVE)) {
-                this.world.sendEntityStatus(this, (byte)14);
-                if (!player.isCreative()) stack.decrement(1);
-            }
-        } else if (stack.isIn(GiftTags.MAJOR_NEGATIVE)) {
-            if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MAJOR_NEGATIVE)) {
-                this.world.sendEntityStatus(this, (byte)13);
-                if (!player.isCreative()) stack.decrement(1);
-            }
-        } else if (stack.isIn(GiftTags.MINOR_POSITIVE)) {
-            if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_POSITIVE)) {
-                this.world.sendEntityStatus(this, (byte)14);
-                if (!player.isCreative()) stack.decrement(1);
-            }
-        } else if (stack.isIn(GiftTags.MINOR_NEGATIVE)) {
-            if (andromeda$tryInsertGift(cir, player, gift, VillageGossipType.MINOR_NEGATIVE)) {
-                this.world.sendEntityStatus(this, (byte)13);
-                if (!player.isCreative()) stack.decrement(1);
+        for (Map.Entry<TagKey<Item>, GiftTags.Action> entry : GiftTags.ACTION_MAP.entrySet()) {
+            if (stack.isIn(entry.getKey())) {
+                if (andromeda$tryInsertGift(cir, player, gift, entry.getValue().type())) {
+                    this.world.sendEntityStatus(this, entry.getValue().status());
+                    if (!player.isCreative()) stack.decrement(1);
+                    break;
+                }
             }
         }
     }

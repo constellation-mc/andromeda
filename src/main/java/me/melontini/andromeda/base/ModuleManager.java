@@ -1,10 +1,10 @@
 package me.melontini.andromeda.base;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.Unscoped;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
+import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -22,9 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -35,20 +33,20 @@ public class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    private final Map<Class<?>, CompletableFuture<Module<?>>> discoveredModules;
-    private final Map<String, CompletableFuture<Module<?>>> discoveredModuleNames;
+    private final Map<Class<?>, PromiseImpl<?>> discoveredModules;
+    private final Map<String, PromiseImpl<?>> discoveredModuleNames;
 
     private final Map<Class<?>, Module<?>> modules;
     private final Map<String, Module<?>> moduleNames;
 
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
-    ModuleManager(List<Zygote> zygotes) {
+    ModuleManager(List<Module.Zygote> zygotes) {
         if (Bootstrap.INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
         Bootstrap.INSTANCE = this;
 
         this.discoveredModules = Utilities.supply(() -> {
-            var m = zygotes.stream().collect(Collectors.toMap(Zygote::type, o -> new CompletableFuture<Module<?>>(), (t, t2) -> t, LinkedHashMap::new));
+            var m = zygotes.stream().collect(Collectors.toMap(Module.Zygote::type, PromiseImpl::new, (t, t2) -> t, LinkedHashMap::new));
             return Collections.unmodifiableMap(m);
         });
         this.discoveredModuleNames = Utilities.supply(() -> {
@@ -56,10 +54,9 @@ public class ModuleManager {
             return Collections.unmodifiableMap(m);
         });
 
-        List<? extends Module<?>> sorted = zygotes.stream().map(Zygote::supplier).map(supplier -> {
-            Module<?> v = supplier.get();
-            getDiscovered(v.getClass()).orElseThrow(() -> new IllegalStateException(v.getClass().getName())).complete(Utilities.cast(v));
-            return v;
+        List<? extends Module<?>> sorted = zygotes.stream().map(Module.Zygote::supplier).map(s -> {
+            discoveredModules.get(s.get().getClass()).future().complete(Utilities.cast(s.get()));
+            return s.get();
         }).toList();
 
         this.setUpConfigs(sorted);
@@ -91,22 +88,24 @@ public class ModuleManager {
         modules.forEach(m -> {
             if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
 
-            if (m.meta().environment() == Environment.CLIENT && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
-                if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
-                        m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
+            if (m.meta().environment().isClient() && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
+                if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
+                    LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                            m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
                 return;
             }
 
             if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
-                if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
-                        "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
+                if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
+                    LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
+                            "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
             }
         });
     }
 
-    static void validateZygote(Zygote module) {
+    static void validateZygote(Module.Zygote module) {
         MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
         MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
@@ -165,8 +164,8 @@ public class ModuleManager {
     }
 
     public void cleanConfigs(Path root, Collection<? extends Module<?>> modules) {
-        Set<Path> paths = collectPaths(root.getParent(), modules);
         if (Files.exists(root)) {
+            Set<Path> paths = collectPaths(root.getParent(), modules);
             Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -193,9 +192,10 @@ public class ModuleManager {
 
     /**
      * Checks if a module is present.
+     *
      * @param cls the module class.
-     * @return if a module is enabled.
      * @param <T> the module type.
+     * @return if a module is enabled.
      */
     public <T extends Module<?>> boolean isPresent(Class<T> cls) {
         return getModule(cls).isPresent();
@@ -203,9 +203,10 @@ public class ModuleManager {
 
     /**
      * Returns the module of the given class, but only if it is enabled.
+     *
      * @param cls the module class.
-     * @return The module, if enabled, or empty if not.
      * @param <T> the module type.
+     * @return The module, if enabled, or empty if not.
      */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
@@ -214,9 +215,10 @@ public class ModuleManager {
 
     /**
      * Returns the module of the given id, but only if it is enabled.
+     *
      * @param name the module id.
+     * @param <T>  the module type.
      * @return The module, if enabled, or empty if not.
-     * @param <T> the module type.
      */
     @SuppressWarnings("unchecked")
     public <T extends Module<?>> Optional<T> getModule(String name) {
@@ -227,26 +229,28 @@ public class ModuleManager {
      * Returns the module of the given class.
      * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#SETUP}.</p>
      * <p>Due to the way Andromeda is loaded, executors must not be used to avoid deadlocking the game</p>
+     *
      * @param cls the module class.
-     * @return The module future, if discovered, or empty if not.
      * @param <T> the module type.
+     * @return The module future, if discovered, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<CompletableFuture<T>> getDiscovered(Class<T> cls) {
-        return Optional.ofNullable((CompletableFuture<T>) discoveredModules.get(cls));
+    public <T extends Module<?>> Optional<Promise<T>> getDiscovered(Class<T> cls) {
+        return Optional.ofNullable((Promise<T>) discoveredModules.get(cls));
     }
 
     /**
      * Returns the module of the given id.
      * <p>This will also return disabled modules. This should only be used during {@link Bootstrap.Status#SETUP}.</p>
      * <p>Due to the way Andromeda is loaded, executors must not be used to avoid deadlocking the game</p>
+     *
      * @param name the module id.
+     * @param <T>  the module type.
      * @return The module future, if discovered, or empty if not.
-     * @param <T> the module type.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<CompletableFuture<T>> getDiscovered(String name) {
-        return Optional.ofNullable((CompletableFuture<T>) discoveredModuleNames.get(name));
+    public <T extends Module<?>> Optional<Promise<T>> getDiscovered(String name) {
+        return Optional.ofNullable((Promise<T>) discoveredModuleNames.get(name));
     }
 
     @ApiStatus.Internal
@@ -255,8 +259,8 @@ public class ModuleManager {
     }
 
     @ApiStatus.Internal
-    public Collection<CompletableFuture<Module<?>>> all() {
-        return discoveredModules.values();
+    public Collection<Promise<?>> all() {
+        return Collections.unmodifiableCollection(discoveredModules.values());//Java generics moment
     }
 
     /**
@@ -269,9 +273,10 @@ public class ModuleManager {
     /**
      * Quickly returns a module of the given class. Useful for mixins and registration. Must never be used in non-mixin static fields and class initializers.
      * <p>This will throw an {@link IllegalStateException} if the module is not loaded.</p>
+     *
      * @param cls the module class.
-     * @return the module instance.
      * @param <T> the module time.
+     * @return the module instance.
      * @throws IllegalStateException if the module is not loaded.
      */
     public static <T extends Module<?>> T quick(Class<T> cls) {
@@ -309,17 +314,6 @@ public class ModuleManager {
     }
 
     public interface ModuleSupplier {
-        List<Zygote> get();
-    }
-
-    public record Zygote(Class<?> type, Module.Metadata meta, Supplier<? extends Module<?>> supplier) {
-
-        public Zygote(Class<?> type, Supplier<? extends Module<?>> supplier) {
-            this(type, Utilities.supply(() -> {
-                ModuleInfo info1 = type.getAnnotation(ModuleInfo.class);
-                if (info1 == null) throw new IllegalStateException("Module has no info!");
-                return new Module.Metadata(info1.name(), info1.category(), info1.environment());
-            }), supplier);
-        }
+        List<Module.Zygote> get();
     }
 }

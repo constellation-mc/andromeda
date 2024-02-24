@@ -15,6 +15,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
@@ -101,7 +102,7 @@ public class EnderDragonManager extends PersistentState implements Deserializabl
         }
 
         if (tag.contains("crystalData"))
-            crystals.addAll(Crystal.LIST_CODEC.parse(NbtOps.INSTANCE, tag.getCompound("crystalData"))
+            crystals.addAll(Crystal.LIST_CODEC.parse(NbtOps.INSTANCE, tag.getList("crystalData", NbtElement.COMPOUND_TYPE))
                     .getOrThrow(false, string -> {
                         throw new IllegalStateException(string);
                     }));

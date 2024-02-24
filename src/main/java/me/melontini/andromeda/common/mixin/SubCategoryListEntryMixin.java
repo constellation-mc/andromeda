@@ -2,8 +2,8 @@ package me.melontini.andromeda.common.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.melontini.andromeda.base.Environment;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.dark_matter.api.base.util.mixin.annotations.MixinPredicate;
 import me.melontini.dark_matter.api.base.util.mixin.annotations.Mod;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;

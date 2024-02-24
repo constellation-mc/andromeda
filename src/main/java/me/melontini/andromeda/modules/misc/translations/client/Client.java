@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import lombok.experimental.ExtensionMethod;
 import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.GitTracker;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import net.fabricmc.loader.api.FabricLoader;
@@ -43,6 +44,7 @@ public class Client {
     }
 
     public boolean shouldUpdate() {
+        if (Debug.Keys.DISABLE_NETWORK_FEATURES.isPresent()) return false;
         if (EN_US.exists()) {
             try {
                 if (ChronoUnit.HOURS.between(EN_US.getLastModifiedTime().toInstant(), Instant.now()) >= 24)

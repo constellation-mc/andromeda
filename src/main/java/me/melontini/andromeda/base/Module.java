@@ -1,11 +1,11 @@
 package me.melontini.andromeda.base;
 
-import lombok.CustomLog;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import com.google.common.base.Suppliers;
+import lombok.*;
+import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
@@ -40,8 +40,7 @@ public abstract class Module<T extends Module.BaseConfig> {
     private final Map<Class<?>, Bus<?>> busMap = new IdentityHashMap<>();
 
     protected Module() {
-        ModuleInfo info1 = this.getClass().getAnnotation(ModuleInfo.class);
-        this.info = new Metadata(info1.name(), info1.category(), info1.environment());
+        this.info = Metadata.fromAnnotation(this.getClass().getAnnotation(ModuleInfo.class));
     }
 
     public final Metadata meta() {
@@ -106,6 +105,10 @@ public abstract class Module<T extends Module.BaseConfig> {
 
     public record Metadata(String name, String category, Environment environment) {
 
+        public static Metadata fromAnnotation(ModuleInfo info) {
+            return new Metadata(info.name(), info.category(), info.environment());
+        }
+
         public String id() {
             return category() + "/" + name();
         }
@@ -127,6 +130,22 @@ public abstract class Module<T extends Module.BaseConfig> {
 
         public enum Scope {
             GLOBAL, WORLD, DIMENSION
+        }
+    }
+
+    @Value
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Accessors(fluent = true)
+    public static class Zygote {
+        Class<?> type;
+        Metadata meta;
+        Supplier<? extends Module<?>> supplier;
+
+        public static Zygote spawn(Class<?> type, Supplier<? extends Module<?>> supplier) {
+            ModuleInfo info = type.getAnnotation(ModuleInfo.class);
+            if (info == null) throw new IllegalStateException("Module has no info!");
+
+            return new Zygote(type, Metadata.fromAnnotation(info), Suppliers.memoize(supplier::get));
         }
     }
 }

@@ -4,7 +4,7 @@ import lombok.CustomLog;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import org.objectweb.asm.ClassReader;
@@ -20,7 +20,7 @@ import java.util.concurrent.ForkJoinPool;
 @CustomLog
 public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
     @Override
-    public List<ModuleManager.Zygote> get() {
+    public List<Module.Zygote> get() {
         Bootstrap.getModuleClassPath().addUrl(ModuleDiscovery.class.getProtectionDomain().getCodeSource().getLocation());
 
         List<CompletableFuture<String>> futures = new ArrayList<>();
@@ -44,7 +44,7 @@ public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
                 .map(CompletableFuture::join).filter(Objects::nonNull)
                 .map(name -> {
                     var c = Exceptions.supply(() -> Class.forName(name.replace('/', '.')));
-                    return new ModuleManager.Zygote(c, () -> Exceptions.supply(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
+                    return Module.Zygote.spawn(c, () -> Exceptions.supply(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
                             .newInstance()));
                 }).toList();
     }

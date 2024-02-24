@@ -23,9 +23,18 @@ public class CrashHandler {
     private static final Mixpanel MIXPANEL = Mixpanel.get(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
     private static final Set<String> IMPORTANT_MODS = Sets.newHashSet("andromeda", "minecraft", "fabric-api", "fabricloader", "connectormod", "forge");
 
-    private static boolean shouldReportRecursive(Throwable cause) {
-        if (cause instanceof AndromedaException e && !e.shouldReport()) return false;
-        return cause.getCause() != null && shouldReportRecursive(cause.getCause());
+    private static Flag shouldReportRecursive(Throwable cause, Flag flag) {
+        if (cause instanceof AndromedaException e) flag.mark(e.shouldReport());
+        for (StackTraceElement element : cause.getStackTrace()) {
+            if (element.isNativeMethod()) continue;
+
+            if (element.getClassName().startsWith("me.melontini.andromeda")) {
+                flag.mark(true);
+                break;
+            }
+        }
+        if (cause.getCause() != null) shouldReportRecursive(cause.getCause(), flag);
+        return flag;
     }
 
     public static Optional<JsonObject> traverse(Throwable cause) {
@@ -57,12 +66,14 @@ public class CrashHandler {
     }
 
     public static void handleCrash(Throwable cause, Context context) {
+        if (Debug.Keys.DISABLE_NETWORK_FEATURES.isPresent()) return;
+
         if (!Debug.Keys.FORCE_CRASH_REPORT_UPLOAD.isPresent()) {
             if (FabricLoader.getInstance().isDevelopmentEnvironment() || !AndromedaConfig.get().sendCrashReports)
                 return;
         }
 
-        if (!context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).map(info -> info.getClassName().startsWith("me.melontini.andromeda")).orElse(false) && !shouldReportRecursive(cause))
+        if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).filter(info -> info.getClassName().startsWith("me.melontini.andromeda")).isEmpty() && !shouldReportRecursive(cause, new Flag()).report())
             return;
         AndromedaLog.warn("Found Andromeda in trace, collecting and uploading crash report...");
 
@@ -104,6 +115,18 @@ public class CrashHandler {
             return stringWriter.toString();
         } catch (IOException e) {
             return "Failed to get cause: " + e.getMessage();
+        }
+    }
+
+    private static class Flag {
+        private Boolean report = null;
+
+        private void mark(boolean report) {
+            if (this.report == null || this.report) this.report = report;
+        }
+
+        public boolean report() {
+            return this.report != null && this.report;
         }
     }
 }

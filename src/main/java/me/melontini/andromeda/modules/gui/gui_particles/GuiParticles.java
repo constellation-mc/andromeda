@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.gui.gui_particles;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "gui_particles", category = "gui", environment = Environment.CLIENT)
 public class GuiParticles extends Module<GuiParticles.Config> {

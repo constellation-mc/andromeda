@@ -1,4 +1,4 @@
-package me.melontini.andromeda.base.annotations;
+package me.melontini.andromeda.base.util.annotations;
 
 import me.melontini.andromeda.common.config.ScopedConfigs;
 

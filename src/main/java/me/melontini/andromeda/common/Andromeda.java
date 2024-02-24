@@ -1,7 +1,6 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
 import me.melontini.andromeda.base.AndromedaConfig;
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.config.DataConfigs;
@@ -61,7 +60,8 @@ public class Andromeda {
             ServerLoginNetworking.registerGlobalReceiver(VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
                 if (Debug.Keys.SKIP_SERVER_MODULE_CHECK.isPresent()) return;
 
-                Set<String> modules = ModuleManager.get().loaded().stream().filter(m -> m.meta().environment() == Environment.BOTH).map(m -> m.meta().id()).collect(Collectors.toSet());
+                Set<String> modules = ModuleManager.get().loaded().stream().map(Module::meta)
+                        .filter(m -> m.environment().isBoth()).map(Module.Metadata::id).collect(Collectors.toSet());
                 if (!understood) {
                     if (!modules.isEmpty())
                         handler.disconnect(TextUtil.translatable("andromeda.disconnected.module_mismatch",
@@ -78,16 +78,12 @@ public class Andromeda {
                 synchronizer.waitFor(server.submit(() -> {
                     Set<String> disable = new HashSet<>();
                     for (String clientModule : clientModules) {
-                        if (!modules.contains(clientModule)) {
-                            disable.add(clientModule);
-                        }
+                        if (!modules.contains(clientModule)) disable.add(clientModule);
                     }
 
                     Set<String> enable = new HashSet<>();
                     for (String module : modules) {
-                        if (!clientModules.contains(module)) {
-                            enable.add(module);
-                        }
+                        if (!clientModules.contains(module)) enable.add(module);
                     }
 
                     if (!disable.isEmpty() || !enable.isEmpty()) {
