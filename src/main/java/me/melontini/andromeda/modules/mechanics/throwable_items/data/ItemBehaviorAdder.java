@@ -47,7 +47,7 @@ public class ItemBehaviorAdder {
         return new ServerCommandSource(
                 world.getServer(), entity.getPos(),
                 new Vec2f(entity.getPitch(), entity.getYaw()),
-                world, 4, entity.getEntityName(), TextUtil.literal(entity.getEntityName()),
+                world, 4, entity.getEntityName(), entity.getName(),
                 world.getServer(), entity);
     }
 
