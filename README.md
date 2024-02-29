@@ -1,4 +1,4 @@
-## <img src="https://us-east-1.tixte.net/uploads/melontini.tixte.co/andromeda_512.png" width="75" height="75"> Andromeda
+## <img src="https://github.com/melontini/andromeda/assets/104443436/f8724c6c-f15b-49ca-9f42-b7ae01d1e64a" width="75" height="75"> Andromeda
 
 [![Modrinth](https://img.shields.io/modrinth/dt/TseYlb0f?logo=modrinth&color=mint)](https://modrinth.com/mod/andromeda)
 [![CodeFactor](https://www.codefactor.io/repository/github/melontini/andromeda/badge)](https://www.codefactor.io/repository/github/melontini/andromeda)

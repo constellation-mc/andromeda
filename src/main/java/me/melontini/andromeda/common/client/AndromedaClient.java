@@ -70,7 +70,7 @@ public class AndromedaClient {
                 if (!animate) return;
                 drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> {
                 }, new Identifier("andromeda:textures/gui/background.png"));
-                drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(Util.getMeasuringTimeMs() * 0.05f)),
+                drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> stack.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(Util.getMeasuringTimeMs() * 0.05f)),
                         new Identifier("andromeda:textures/gui/galaxy.png"));
             } catch (Throwable t) {
                 animate = false;
