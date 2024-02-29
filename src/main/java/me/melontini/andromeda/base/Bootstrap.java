@@ -43,8 +43,6 @@ import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
 @CustomLog
 public class Bootstrap {
 
-    static ModuleManager INSTANCE;
-
     @Environment(EnvType.CLIENT)
     public static void onClient() {
         Status.update();
@@ -52,7 +50,7 @@ public class Bootstrap {
         onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            if (module.meta().environment() == me.melontini.andromeda.base.util.Environment.SERVER) continue;
+            if (module.meta().environment().isServer()) continue;
             run(() -> module.initClasses("client.Client"), (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
         }
         run(AndromedaClient::init, b -> b.message("Failed to initialize AndromedaClient!"));
@@ -65,7 +63,7 @@ public class Bootstrap {
         onMerged();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            if (module.meta().environment() == me.melontini.andromeda.base.util.Environment.CLIENT) continue;
+            if (module.meta().environment().isClient()) continue;
             run(() -> module.initClasses("server.Server"), (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
         }
     }
