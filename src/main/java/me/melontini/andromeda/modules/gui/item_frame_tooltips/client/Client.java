@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.gui.item_frame_tooltips.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
@@ -17,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Vector2i;
 
 import java.util.Collections;
 import java.util.List;
@@ -104,12 +104,12 @@ public class Client {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
 
-        int j = 0;
-        for (TooltipComponent tooltipComponent : components) {
-            j += tooltipComponent.getHeight();
-        }
-
-        DrawUtil.renderTooltipFromComponents(context, components, ((client.getWindow().getScaledWidth() / 2f) - (flow * 15)) + 15, ((client.getWindow().getScaledHeight() - j) / 2f) + 12);
+        context.drawTooltip(client.textRenderer, components, 0, 0, (screenWidth, screenHeight, sameX, sameY, width, height) -> {
+            float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
+            float smoothY = ((client.getWindow().getScaledHeight() - height) / 2f);
+            matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY, 1);
+            return new Vector2i((int) smoothX, (int) smoothY);
+        });
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();
         matrices.pop();

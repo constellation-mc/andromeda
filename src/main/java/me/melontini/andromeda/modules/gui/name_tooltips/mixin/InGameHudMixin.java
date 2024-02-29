@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.gui.name_tooltips.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -13,6 +12,7 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,7 +29,6 @@ abstract class InGameHudMixin {
     @Shadow private int heldItemTooltipFade;
     @Shadow private ItemStack currentStack;
     @Shadow private int scaledHeight;
-    @Shadow private int scaledWidth;
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
     private void andromeda$renderTooltip(DrawContext context, CallbackInfo ci) {
@@ -48,14 +47,14 @@ abstract class InGameHudMixin {
                 }
 
                 MatrixStack matrices = context.getMatrices();
-                    matrices.push();
-                    matrices.translate(0, 0, -450);
-                    matrices.scale(1, 1, 1);
-                    RenderSystem.enableBlend();
-                    RenderSystem.defaultBlendFunc();
-                    RenderSystem.setShaderColor(1, 1, 1, Math.min(l/255f, 0.8f));
-                    var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), this.currentStack);
-                    List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
+                matrices.push();
+                matrices.translate(0, 0, -450);
+                matrices.scale(1, 1, 1);
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.setShaderColor(1, 1, 1, Math.min(l / 255f, 0.8f));
+                var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), this.currentStack);
+                List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
 
                 this.currentStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
                     TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
@@ -63,15 +62,14 @@ abstract class InGameHudMixin {
                     return component;
                 })));
 
-                int j = 0;
-                int f = 0;
-                for (TooltipComponent tooltipComponent : list1) {
-                    j += tooltipComponent.getHeight();
-                    int t = tooltipComponent.getWidth(this.client.textRenderer);
-                    if (t > f) f = t;
-                }
-
-                DrawUtil.renderTooltipFromComponents(context, list1, ((this.scaledWidth - f) / 2f) - 12, (k - j + (l / 255f * 2)) + 18);
+                int finalK = k;
+                int finalL = l;
+                context.drawTooltip(client.textRenderer, list1, 0, 0, (screenWidth, screenHeight, x, y, width, height) -> {
+                    float smoothX = ((screenWidth - width) / 2f);
+                    float smoothY = (finalK - height + (finalL / 255f * 2)) + 6;
+                    matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY, 1);
+                    return new Vector2i((int) smoothX, (int) smoothY);
+                });
                 RenderSystem.setShaderColor(1, 1, 1, 1);
                 RenderSystem.disableBlend();
                 matrices.pop();
