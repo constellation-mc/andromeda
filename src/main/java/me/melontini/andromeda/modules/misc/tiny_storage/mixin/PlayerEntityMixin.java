@@ -41,17 +41,12 @@ abstract class PlayerEntityMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V"), method = "dropInventory")
     private void andromeda$dropAll(CallbackInfo ci) {
-        if (ModuleManager.get().getModule(TinyStorage.class).orElseThrow().config().transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
+        if (ModuleManager.quick(TinyStorage.class).config().transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
 
         for(int i = 0; i < this.playerScreenHandler.getCraftingInput().size(); ++i) {
-            ItemStack itemStack = this.playerScreenHandler.getCraftingInput().getStack(i);
-            if (!itemStack.isEmpty() && EnchantmentHelper.hasVanishingCurse(itemStack)) {
-                this.playerScreenHandler.getCraftingInput().removeStack(i);
-            }
-        }
-
-        for (int i = 0; i < playerScreenHandler.getCraftingInput().size(); i++) {
-            this.dropItem(playerScreenHandler.getCraftingInput().removeStack(i), true, false);
+            ItemStack stack = this.playerScreenHandler.getCraftingInput().removeStack(i);
+            if (!stack.isEmpty() && EnchantmentHelper.hasVanishingCurse(stack)) continue;
+            this.dropItem(stack, true, false);
         }
     }
 }
