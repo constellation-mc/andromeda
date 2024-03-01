@@ -4,7 +4,6 @@ import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
-import me.melontini.andromeda.util.AndromedaLog;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
@@ -31,6 +30,7 @@ import net.minecraft.world.event.GameEvent;
 
 
 public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Clearable {
+
     public ItemStack record = ItemStack.EMPTY;
 
     public JukeboxMinecartEntity(EntityType<? extends JukeboxMinecartEntity> entityType, World world) {
@@ -134,7 +134,6 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
         for (PlayerEntity player1 : world.getPlayers()) {
             ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
         }
-        AndromedaLog.devInfo(this.record);
     }
 
     @Override

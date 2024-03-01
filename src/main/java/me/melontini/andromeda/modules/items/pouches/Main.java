@@ -7,7 +7,6 @@ import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.RegistryUtil;
@@ -113,7 +112,7 @@ public class Main {
         }
     }
 
-    private static void test(BlockEntity be) {
+    private static void test(BlockEntity be, Pouches module) {
         if (be != null) {
             Field f = traverse(be.getClass());
             if (f != null) {
@@ -121,7 +120,7 @@ public class Main {
                     f.setAccessible(true);
                     VIEWABLE_BLOCKS.put(be.getType(), f);
                 } catch (Exception e) {
-                    AndromedaLog.error("{}: {}", e.getClass(), e.getLocalizedMessage());
+                    module.logger().error("{}: {}", e.getClass(), e.getLocalizedMessage());
                 }
             }
         }
@@ -137,17 +136,17 @@ public class Main {
         return null;
     }
 
-    public static void testBlocks() {
+    public static void testBlocks(Pouches module) {
         for (BlockEntityType<?> type : CommonRegistries.blockEntityTypes()) {
             var o = type.blocks.stream().findAny();
             if (o.isPresent()) {
                 try {
-                    test(type.instantiate(BlockPos.ORIGIN, o.orElseThrow().getDefaultState()));
+                    test(type.instantiate(BlockPos.ORIGIN, o.orElseThrow().getDefaultState()), module);
                 } catch (Exception e) {
-                    AndromedaLog.error("{} failed the ViewerCountManager test. {}: {}", CommonRegistries.blockEntityTypes().getId(type), e.getClass().getSimpleName(), e.getLocalizedMessage());
+                    module.logger().error("{} failed the ViewerCountManager test. {}: {}", CommonRegistries.blockEntityTypes().getId(type), e.getClass().getSimpleName(), e.getLocalizedMessage());
                 }
             } else {
-                AndromedaLog.warn("{} has no blocks?", CommonRegistries.blockEntityTypes().getId(type));
+                module.logger().warn("{} has no blocks?", CommonRegistries.blockEntityTypes().getId(type));
             }
         }
     }

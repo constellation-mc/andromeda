@@ -1,10 +1,10 @@
 package me.melontini.andromeda.common.config;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import lombok.CustomLog;
 import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+@CustomLog
 public class ScopedConfigs {
 
     public static <T extends Module.BaseConfig> T get(World world, Module<T> module) {
@@ -26,7 +27,7 @@ public class ScopedConfigs {
                 case DIMENSION -> getConfigs(sw).get(module);
             };
         }
-        AndromedaLog.error("Scoped configs requested on client! Returning un-scoped!", AndromedaException.builder()
+        LOGGER.error("Scoped configs requested on client! Returning un-scoped!", AndromedaException.builder()
                 .add("module", module.meta().id())
                 .add("world", world.getRegistryKey())
                 .build());

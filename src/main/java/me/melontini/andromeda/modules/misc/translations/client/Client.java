@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.misc.translations.client;
 
 import com.google.common.collect.Sets;
 import lombok.experimental.ExtensionMethod;
-import me.melontini.andromeda.util.AndromedaLog;
+import me.melontini.andromeda.modules.misc.translations.Translations;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.GitTracker;
@@ -35,11 +35,11 @@ public class Client {
 
     private static String languageCode = "en_us";
 
-    Client() {
+    Client(Translations module) {
         if (shouldUpdate()) {
             Set<String> languages = Sets.newHashSet("en_us");
-            Client.getSelectedLanguage().ifPresent(languages::add);
-            ForkJoinPool.commonPool().submit(() -> Client.downloadTranslations(languages));
+            Client.getSelectedLanguage(module).ifPresent(languages::add);
+            ForkJoinPool.commonPool().submit(() -> Client.downloadTranslations(languages, module));
         }
     }
 
@@ -55,18 +55,18 @@ public class Client {
         return CommonValues.updated();
     }
 
-    public static void onResourceReload(String code) {
+    public static void onResourceReload(String code, Translations module) {
         if (!languageCode.equals(code)) {
             languageCode = code;
             Set<String> languages = Sets.newHashSet("en_us");
             languages.add(code);
-            downloadTranslations(languages);
+            downloadTranslations(languages, module);
         }
     }
 
-    public static void downloadTranslations(Set<String> languages) {
+    public static void downloadTranslations(Set<String> languages, Translations module) {
         for (String language : languages) {
-            String file = downloadLang(language);
+            String file = downloadLang(language, module);
             if (!file.isEmpty()) {
                 try {
                     if (!LANG_PATH.exists()) LANG_PATH.createDirectories();
@@ -78,7 +78,7 @@ public class Client {
         }
     }
 
-    private static String downloadLang(String language) {
+    private static String downloadLang(String language, Translations module) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(URL + language + ".json"))
@@ -88,19 +88,19 @@ public class Client {
             HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                AndromedaLog.info("Couldn't download " + language + ".json" + ". Status code: " + response.statusCode() + " Body: " + response.body());
+                module.logger().info("Couldn't download " + language + ".json" + ". Status code: " + response.statusCode() + " Body: " + response.body());
                 return "";
             }
 
-            AndromedaLog.info("Downloaded " + language + ".json");
+            module.logger().info("Downloaded " + language + ".json");
             return response.body();
         } catch (IOException | InterruptedException e) {
-            AndromedaLog.error("Couldn't download " + language + ".json", e);
+            module.logger().error("Couldn't download " + language + ".json", e);
             return "";
         }
     }
 
-    public static Optional<String> getSelectedLanguage() {
+    public static Optional<String> getSelectedLanguage(Translations module) {
         try {
             if (!OPTIONS.exists()) return Optional.empty();
             for (String line : OPTIONS.readAllLines()) {
@@ -112,7 +112,7 @@ public class Client {
                     .report(false).message("Mo valid language option found!")
                     .build();
         } catch (Throwable e) {
-            AndromedaLog.error("Couldn't determine selected language!", e);
+            module.logger().error("Couldn't determine selected language!", e);
             return Optional.empty();
         }
     }

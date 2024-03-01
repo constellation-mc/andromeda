@@ -33,6 +33,8 @@ public class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
+    private static ModuleManager INSTANCE;
+
     private final Map<Class<?>, PromiseImpl<?>> discoveredModules;
     private final Map<String, PromiseImpl<?>> discoveredModuleNames;
 
@@ -42,8 +44,8 @@ public class ModuleManager {
     final Map<String, Module<?>> mixinConfigs = new HashMap<>();
 
     ModuleManager(List<Module.Zygote> zygotes) {
-        if (Bootstrap.INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
-        Bootstrap.INSTANCE = this;
+        if (INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
+        INSTANCE = this;
 
         this.discoveredModules = Utilities.supply(() -> {
             var m = zygotes.stream().collect(Collectors.toMap(Module.Zygote::type, PromiseImpl::new, (t, t2) -> t, LinkedHashMap::new));
@@ -267,7 +269,7 @@ public class ModuleManager {
      * @return a collection of all loaded modules.
      */
     public Collection<Module<?>> loaded() {
-        return modules.values();
+        return Collections.unmodifiableCollection(modules.values());
     }
 
     /**
@@ -287,7 +289,7 @@ public class ModuleManager {
      * @return The module manager.
      */
     public static ModuleManager get() {
-        return MakeSure.notNull(Bootstrap.INSTANCE, "ModuleManager requested too early!");
+        return MakeSure.notNull(INSTANCE, "ModuleManager requested too early!");
     }
 
     void print() {

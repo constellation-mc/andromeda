@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
 import me.melontini.andromeda.common.registries.Keeper;
-import me.melontini.andromeda.util.AndromedaLog;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.advancement.Advancement;
@@ -88,7 +87,7 @@ public class Main {
         mutable.putAll(map);
         server.getAdvancementLoader().advancements = Collections.unmodifiableMap(mutable);
 
-        AndromedaLog.info("finished generating {} recipe advancements", count.get());
+        module.logger().info("finished generating {} recipe advancements", count.get());
         advancementBuilders.clear();
     }
 
