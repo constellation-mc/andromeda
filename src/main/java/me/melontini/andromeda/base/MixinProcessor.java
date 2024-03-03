@@ -92,7 +92,7 @@ public class MixinProcessor {
         injectors.addProperty("maxShiftBy", 3);
         object.add("injectors", injectors);
 
-        Bus<MixinConfigEvent> bus = module.getOrCreateBus(MixinConfigEvent.class, null);
+        Bus<MixinConfigEvent> bus = module.getOrCreateBus("mixin_config_event", null);
         if (bus != null) bus.invoker().accept(object);
 
         return object;

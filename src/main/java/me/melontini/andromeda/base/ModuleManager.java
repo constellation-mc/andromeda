@@ -134,7 +134,7 @@ public class ModuleManager {
             });
             manager.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
 
-            Bus<ConfigEvent<?>> e = m.getOrCreateBus(ConfigEvent.class, null);
+            Bus<ConfigEvent<?>> e = m.getOrCreateBus("config_event", null);
             if (e != null) e.invoker().accept(Utilities.cast(manager));
 
             m.manager = Utilities.cast(manager);
@@ -309,7 +309,7 @@ public class ModuleManager {
             builder.append(joiner);
         });
         if (!categories.isEmpty()) {
-            LOGGER.info("Loaded modules: {}", builder);
+            LOGGER.info("Loading {} modules: {}", loaded().size(), builder);
             LOGGER.info("* - custom modules/categories not provided by Andromeda.");
         } else {
             LOGGER.info("No modules loaded!");
