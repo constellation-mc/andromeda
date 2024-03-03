@@ -1,6 +1,8 @@
 package me.melontini.andromeda.base;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.base.events.Bus;
+import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
@@ -43,6 +45,14 @@ import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
 @CustomLog
 public class Bootstrap {
 
+    private static void runInit(String init, Module<?> module) {
+        run(() -> {
+            Bus<InitEvent> event = module.getOrCreateBus(init + "_init_event", null);
+            if (event == null) return;
+            event.invoker().collect().forEach(module::initClass);
+        }, (b) -> b.message("Failed to execute %s!".formatted(init)).add("module", module.meta().id()));
+    }
+
     @Environment(EnvType.CLIENT)
     public static void onClient() {
         Status.update();
@@ -51,7 +61,7 @@ public class Bootstrap {
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             if (module.meta().environment().isServer()) continue;
-            run(() -> module.initClasses("client.Client"), (b) -> b.message("Failed to execute Module.onClient!").add("module", module.meta().id()));
+            runInit("client", module);
         }
         run(AndromedaClient::init, b -> b.message("Failed to initialize AndromedaClient!"));
     }
@@ -64,7 +74,7 @@ public class Bootstrap {
 
         for (Module<?> module : ModuleManager.get().loaded()) {
             if (module.meta().environment().isClient()) continue;
-            run(() -> module.initClasses("server.Server"), (b) -> b.message("Failed to execute Module.onServer!").add("module", module.meta().id()));
+            runInit("server", module);
         }
     }
 
@@ -73,7 +83,7 @@ public class Bootstrap {
             MixinEnvironment.getCurrentEnvironment().audit();
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            run(() -> module.initClasses("Merged"), (b) -> b.message("Failed to execute Module.onMerged!").add("module", module.meta().id()));
+            runInit("merged", module);
         }
     }
 
@@ -90,7 +100,7 @@ public class Bootstrap {
         }
 
         for (Module<?> module : ModuleManager.get().loaded()) {
-            run(() -> module.initClasses("Main"), (b) -> b.message("Failed to execute Module!").add("module", module.meta().id()));
+            runInit("main", module);
         }
 
         run(Andromeda::init, b -> b.message("Failed to initialize Andromeda!"));

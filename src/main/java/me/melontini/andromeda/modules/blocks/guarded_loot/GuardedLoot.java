@@ -1,16 +1,19 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.common.util.TranslationKeyProvider;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
+import java.util.List;
 import java.util.Optional;
 
 @ModuleInfo(name = "guarded_loot", category = "blocks")
 public class GuardedLoot extends Module<GuardedLoot.Config> {
 
     GuardedLoot() {
+        InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
     public static class Config extends BaseConfig {

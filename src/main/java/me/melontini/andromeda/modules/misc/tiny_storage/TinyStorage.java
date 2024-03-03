@@ -1,11 +1,13 @@
 package me.melontini.andromeda.modules.misc.tiny_storage;
 
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.util.TranslationKeyProvider;
 
+import java.util.List;
 import java.util.Optional;
 
 @Unscoped
@@ -13,6 +15,10 @@ import java.util.Optional;
 public class TinyStorage extends Module<TinyStorage.Config> {
 
     public static final ThreadLocal<Boolean> LOADING = ThreadLocal.withInitial(() -> false);
+
+    TinyStorage() {
+        InitEvent.main(this).listen(() -> List.of(Main.class));
+    }
 
     public static class Config extends BaseConfig {
         public TransferMode transferMode = TransferMode.FOLLOW_GAMERULE;
