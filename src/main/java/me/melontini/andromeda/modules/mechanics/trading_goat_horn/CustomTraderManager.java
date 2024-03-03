@@ -1,21 +1,25 @@
 package me.melontini.andromeda.modules.mechanics.trading_goat_horn;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.minecraft.world.PersistentStateHelper;
-import me.melontini.dark_matter.api.minecraft.world.interfaces.DeserializableState;
-import me.melontini.dark_matter.api.minecraft.world.interfaces.TickableState;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.*;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestTypes;
@@ -24,26 +28,25 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class CustomTraderManager extends PersistentState implements DeserializableState, TickableState {
+import static me.melontini.andromeda.common.registries.Common.id;
 
-    public static final String ID = "andromeda_trader_statemanager";
+@SuppressWarnings("UnstableApiUsage")
+public class CustomTraderManager {
 
+    public static final Codec<CustomTraderManager> CODEC = RecordCodecBuilder.create(data -> data.group(
+            Codec.INT.fieldOf("cooldown").forGetter(CustomTraderManager::getCooldown)
+    ).apply(data, CustomTraderManager::new));
+
+    public static final AttachmentType<CustomTraderManager> ATTACHMENT = AttachmentRegistry.<CustomTraderManager>builder()
+            .initializer(() -> new CustomTraderManager(0))
+            .persistent(CODEC)
+            .buildAndRegister(id("trader_state_manager"));
+
+    @Getter
     public int cooldown;
 
-    public static CustomTraderManager get(@NotNull ServerWorld world) {
-        return PersistentStateHelper.getOrCreate(world, CustomTraderManager::new, ID);
-    }
-
-    public void readNbt(@NotNull NbtCompound nbt) {
-        MakeSure.notNull(nbt);
-        this.cooldown = nbt.getInt("andromeda-trader-cooldown");
-    }
-
-    @Override
-    public NbtCompound writeNbt(@NotNull NbtCompound nbt) {
-        MakeSure.notNull(nbt);
-        nbt.putInt("andromeda-trader-cooldown", this.cooldown);
-        return nbt;
+    public CustomTraderManager(int cooldown) {
+        this.cooldown = cooldown;
     }
 
     public void tick() {
@@ -51,45 +54,40 @@ public class CustomTraderManager extends PersistentState implements Deserializab
     }
 
     public void trySpawn(ServerWorld world, ServerWorldProperties properties, PlayerEntity player) {
-        MakeSure.notNulls(world, properties, player);
-        if (cooldown == 0 && player != null) {
-            BlockPos blockPos = player.getBlockPos();
+        if (cooldown != 0 || player == null) return;
+        BlockPos blockPos = player.getBlockPos();
 
-            PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-            Optional<BlockPos> optional = pointOfInterestStorage.getPosition(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.MEETING), pos -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY);
-            BlockPos blockPos2 = optional.orElse(blockPos);
-            BlockPos blockPos3 = getNearbySpawnPos(world, blockPos2, 48);
+        PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
+        Optional<BlockPos> optional = pointOfInterestStorage.getPosition(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.MEETING), pos -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY);
+        BlockPos blockPos2 = optional.orElse(blockPos);
+        BlockPos blockPos3 = getNearbySpawnPos(world, blockPos2, 48);
 
-            if (blockPos3 != null && doesNotSuffocateAt(world, blockPos3)) {
-                if (world.getBiome(blockPos3).isIn(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) {
-                    return;
-                }
+        if (blockPos3 == null || !doesNotSuffocateAt(world, blockPos3)) return;
+        if (world.getBiome(blockPos3).isIn(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) return;
 
-                WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(world, blockPos3, SpawnReason.EVENT);
-                if (wanderingTraderEntity != null) {
-                    cooldown = 48000;
-                    for (int j = 0; j < 2; ++j) {
-                        spawnLlama(world, wanderingTraderEntity);
-                    }
+        WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(world, blockPos3, SpawnReason.EVENT);
+        if (wanderingTraderEntity == null) return;
 
-                    properties.setWanderingTraderId(wanderingTraderEntity.getUuid());
-                    wanderingTraderEntity.setDespawnDelay(48000);
-                    wanderingTraderEntity.setWanderTarget(blockPos2);
-                    wanderingTraderEntity.setPositionTarget(blockPos2, 16);
-                }
-            }
+        cooldown = 48000;
+        for (int j = 0; j < 2; ++j) {
+            spawnLlama(world, wanderingTraderEntity);
         }
+
+        properties.setWanderingTraderId(wanderingTraderEntity.getUuid());
+        wanderingTraderEntity.setDespawnDelay(48000);
+        wanderingTraderEntity.setWanderTarget(blockPos2);
+        wanderingTraderEntity.setPositionTarget(blockPos2, 16);
     }
 
     private void spawnLlama(ServerWorld world, @NotNull WanderingTraderEntity wanderingTrader) {
         MakeSure.notNulls(world, wanderingTrader);
         BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.getBlockPos(), 4);
-        if (blockPos != null) {
-            TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(world, blockPos, SpawnReason.EVENT);
-            if (traderLlamaEntity != null) {
-                traderLlamaEntity.attachLeash(wanderingTrader, true);
-            }
-        }
+        if (blockPos == null) return;
+
+        TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(world, blockPos, SpawnReason.EVENT);
+        if (traderLlamaEntity == null) return;
+
+        traderLlamaEntity.attachLeash(wanderingTrader, true);
     }
 
     @Nullable

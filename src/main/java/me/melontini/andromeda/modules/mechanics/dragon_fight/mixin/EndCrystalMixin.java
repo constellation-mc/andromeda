@@ -31,8 +31,8 @@ abstract class EndCrystalMixin extends Entity {
         if (!ModuleManager.quick(DragonFight.class).config().respawnCrystals) return;
 
         if (world.getRegistryKey() == World.END && !((ServerWorld) world).getAliveEnderDragons().isEmpty() && shouldShowBottom()) {
-            if (this.getPos().getY() > 71)
-                EnderDragonManager.get((ServerWorld) world).queueRespawn(new MutableInt(MathStuff.nextInt(1900, 3500)), this.getPos());
+            if (this.getPos().getY() <= 71) return;
+            ((ServerWorld)world).getAttachedOrCreate(EnderDragonManager.ATTACHMENT).queueRespawn(new MutableInt(MathStuff.nextInt(1900, 3500)), this.getPos());
         }
     }
 }
