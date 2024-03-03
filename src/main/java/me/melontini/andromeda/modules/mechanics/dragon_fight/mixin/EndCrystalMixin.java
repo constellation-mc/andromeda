@@ -32,7 +32,7 @@ abstract class EndCrystalMixin extends Entity {
 
         if (world.getRegistryKey() == World.END && !((ServerWorld) world).getAliveEnderDragons().isEmpty() && shouldShowBottom()) {
             if (this.getPos().getY() <= 71) return;
-            ((ServerWorld)world).getAttachedOrCreate(EnderDragonManager.ATTACHMENT).queueRespawn(new MutableInt(MathStuff.nextInt(1900, 3500)), this.getPos());
+            ((ServerWorld)world).getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get()).queueRespawn(new MutableInt(MathStuff.nextInt(1900, 3500)), this.getPos());
         }
     }
 }

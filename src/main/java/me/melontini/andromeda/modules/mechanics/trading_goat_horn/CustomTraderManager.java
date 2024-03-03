@@ -3,9 +3,9 @@ package me.melontini.andromeda.modules.mechanics.trading_goat_horn;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
+import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathStuff;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -28,8 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-import static me.melontini.andromeda.common.registries.Common.id;
-
 @SuppressWarnings("UnstableApiUsage")
 public class CustomTraderManager {
 
@@ -37,10 +35,7 @@ public class CustomTraderManager {
             Codec.INT.fieldOf("cooldown").forGetter(CustomTraderManager::getCooldown)
     ).apply(data, CustomTraderManager::new));
 
-    public static final AttachmentType<CustomTraderManager> ATTACHMENT = AttachmentRegistry.<CustomTraderManager>builder()
-            .initializer(() -> new CustomTraderManager(0))
-            .persistent(CODEC)
-            .buildAndRegister(id("trader_state_manager"));
+    public static final Keeper<AttachmentType<CustomTraderManager>> ATTACHMENT = Keeper.create();
 
     @Getter
     public int cooldown;

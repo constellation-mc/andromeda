@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -20,9 +20,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.mutable.MutableInt;
 
-import java.util.*;
-
-import static me.melontini.andromeda.common.registries.Common.id;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("UnstableApiUsage")
 @Getter
@@ -33,10 +34,7 @@ public class EnderDragonManager {
             Crystal.LIST_CODEC.fieldOf("crystals").forGetter(EnderDragonManager::getCrystals)
     ).apply(data, EnderDragonManager::new));
 
-    public static final AttachmentType<EnderDragonManager> ATTACHMENT = AttachmentRegistry.<EnderDragonManager>builder()
-            .initializer(() -> new EnderDragonManager(1, Collections.emptyList()))
-            .persistent(CODEC)
-            .buildAndRegister(id("ender_dragon_data"));
+    public static final Keeper<AttachmentType<EnderDragonManager>> ATTACHMENT = Keeper.create();
 
     private final DragonFight module = ModuleManager.quick(DragonFight.class);
     private final List<Crystal> crystals;
