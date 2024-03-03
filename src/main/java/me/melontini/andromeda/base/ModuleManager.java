@@ -41,11 +41,12 @@ public class ModuleManager {
     private final Map<Class<?>, Module<?>> modules;
     private final Map<String, Module<?>> moduleNames;
 
-    final Map<String, Module<?>> mixinConfigs = new HashMap<>();
+    private final MixinProcessor mixinProcessor;
 
     ModuleManager(List<Module.Zygote> zygotes) {
         if (INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
         INSTANCE = this;
+        this.mixinProcessor = new MixinProcessor(this);
 
         this.discoveredModules = Utilities.supply(() -> {
             var m = zygotes.stream().collect(Collectors.toMap(Module.Zygote::type, PromiseImpl::new, (t, t2) -> t, LinkedHashMap::new));
@@ -256,8 +257,8 @@ public class ModuleManager {
     }
 
     @ApiStatus.Internal
-    public Optional<Module<?>> moduleFromConfig(String name) {
-        return Optional.ofNullable(mixinConfigs.get(name));
+    public MixinProcessor getMixinProcessor() {
+        return this.mixinProcessor;
     }
 
     @ApiStatus.Internal

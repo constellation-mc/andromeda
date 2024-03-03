@@ -24,7 +24,7 @@ public class ErrorHandler implements IMixinErrorHandler {
         if (Debug.Keys.SKIP_MIXIN_ERROR_HANDLER.isPresent()) return action;
 
         if (action == ErrorAction.ERROR) {
-            ModuleManager.get().moduleFromConfig(mixin.getConfig().getName()).ifPresent(module -> {
+            ModuleManager.get().getMixinProcessor().fromConfig(mixin.getConfig().getName()).ifPresent(module -> {
                 module.config().enabled = false;
                 module.save();
                 LOGGER.info("Disabling module '%s'!".formatted(module.meta().id()));
