@@ -28,7 +28,9 @@ import net.minecraft.world.PersistentState;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 public class EnderDragonManager extends PersistentState implements DeserializableState, TickableState {
@@ -55,6 +57,7 @@ public class EnderDragonManager extends PersistentState implements Deserializabl
             int i = MathHelper.clamp(world.getPlayers().size(), 1, maxPlayers);
             if (i > maxPlayers) maxPlayers = i;
 
+            Set<Crystal> removal = new HashSet<>();
             for (Crystal pair : crystals) {
                 if (pair.timer().decrementAndGet() <= 0) {
                     LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
@@ -70,9 +73,10 @@ public class EnderDragonManager extends PersistentState implements Deserializabl
 
                     EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, pair.pos().x, pair.pos().y, pair.pos().z);
                     world.spawnEntity(endCrystalEntity);
-                    crystals.remove(pair);
+                    removal.add(pair);
                 }
             }
+            crystals.removeAll(removal);
             markDirty();
             if (module.config().scaleHealthByMaxPlayers) {
                 for (EnderDragonEntity dragon : dragons) {
