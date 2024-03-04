@@ -332,6 +332,8 @@
   "config.andromeda.gui.gui_particles.option.bundleInputParticles": "Bundle Input Particles",
   "config.andromeda.gui.item_frame_tooltips": "Item Frame Tooltips",
   "config.andromeda.gui.item_frame_tooltips.@Tooltip": "Enables in-world tooltips for item frames.",
+  "config.andromeda.gui.smooth_tooltips": "[EXP] Smooth Tooltips",
+  "config.andromeda.gui.smooth_tooltips.@Tooltip": "Makes tooltips slowly flow towards the cursor.\nCompatibility can be hit & miss, so experimental, for now.",
 
   "config.andromeda.category.misc": "Misc",
   "config.andromeda.misc.damage_backport": "/damage backport",

@@ -14,7 +14,9 @@ public class Pouches extends Module<Pouches.Config> {
 
     Pouches() {
         InitEvent.main(this).listen(() -> List.of(Main.class));
-        InitEvent.merged(this).listen(() -> List.of(Merged.class));
+
+        InitEvent.client(this).listen(() -> List.of(Merged.class));
+        InitEvent.server(this).listen(() -> List.of(Merged.class));
     }
 
     public static class Config extends BaseConfig {
