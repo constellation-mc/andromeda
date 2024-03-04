@@ -32,13 +32,5 @@ public interface InitEvent {
         }));
     }
 
-    static <T extends Module.BaseConfig, M extends Module<T>> Bus<InitEvent> merged(M module) {
-        return module.getOrCreateBus("merged_init_event", () -> new Bus<>(events -> () -> {
-            Set<Class<?>> classes = new LinkedHashSet<>();
-            events.forEach(e -> classes.addAll(e.collect()));
-            return classes;
-        }));
-    }
-
     Collection<Class<?>> collect();
 }
