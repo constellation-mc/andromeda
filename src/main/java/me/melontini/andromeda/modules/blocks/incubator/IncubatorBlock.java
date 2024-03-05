@@ -2,10 +2,10 @@ package me.melontini.andromeda.modules.blocks.incubator;
 
 import com.mojang.serialization.MapCodec;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -70,7 +70,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         if (ModuleManager.get().getModule(Unknown.class).isPresent())
-            tooltip.add(AndromedaTexts.INCUBATOR_SECRET);
+            tooltip.add(TextUtil.translatable("tooltip.andromeda.incubator[1]").formatted(Formatting.GRAY));
     }
 
     @Override

@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -43,7 +43,7 @@ public abstract class Module<T extends Module.BaseConfig> {
     @Getter
     volatile T defaultConfig;
 
-    private final Map<Class<?>, Bus<?>> busMap = new IdentityHashMap<>();
+    private final Map<String, Bus<?>> busMap = new HashMap<>();
 
     protected Module() {
         this.info = Metadata.fromAnnotation(this.getClass().getAnnotation(ModuleInfo.class));
@@ -68,33 +68,29 @@ public abstract class Module<T extends Module.BaseConfig> {
     }
 
     @ApiStatus.Internal
-    public <E> Bus<E> getOrCreateBus(Class<?> type, Supplier<Bus<E>> supplier) {
-        return (Bus<E>) busMap.computeIfAbsent(type, aClass -> supplier == null ? null : supplier.get());
+    public <E> Bus<E> getOrCreateBus(String id, Supplier<Bus<E>> supplier) {
+        return (Bus<E>) busMap.computeIfAbsent(id, aClass -> supplier == null ? null : supplier.get());
     }
 
     @SneakyThrows
-    final void initClasses(String str) {
-        try {
-            var cls = Class.forName(this.getClass().getPackageName() + "." + str, false, this.getClass().getClassLoader());
-            MakeSure.isTrue(cls.getDeclaredConstructors().length == 1);
-            var ctx = Reflect.setAccessible(cls.getDeclaredConstructors()[0]);
+    final void initClass(Class<?> cls) {
+        MakeSure.isTrue(cls.getDeclaredConstructors().length == 1);
+        var ctx = Reflect.setAccessible(cls.getDeclaredConstructors()[0]);
 
-            if (ctx.getParameterCount() == 0) {
-                AndromedaException.run(ctx::newInstance, b -> b.message("Failed to construct module class!").add("class", str));
-            } else {
-                Map<Class<?>, Object> args = Map.of(
-                        this.getClass(), this,
-                        ModuleManager.get().getConfigClass(this.getClass()), this.config()
-                );
+        if (ctx.getParameterCount() == 0) {
+            AndromedaException.run(ctx::newInstance, b -> b.message("Failed to construct module class!").add("class", cls.getName()));
+        } else {
+            Map<Class<?>, Object> args = Map.of(
+                    this.getClass(), this,
+                    ModuleManager.get().getConfigClass(this.getClass()), this.config()
+            );
 
-                List<Object> passed = new ArrayList<>(ctx.getParameterCount());
-                for (Class<?> parameterType : ctx.getParameterTypes()) {
-                    var value = MakeSure.notNull(args.get(parameterType));
-                    passed.add(value);
-                }
-                AndromedaException.run(() -> ctx.newInstance(passed.toArray(Object[]::new)), b -> b.message("Failed to construct module class!").add("class", str));
+            List<Object> passed = new ArrayList<>(ctx.getParameterCount());
+            for (Class<?> parameterType : ctx.getParameterTypes()) {
+                var value = MakeSure.notNull(args.get(parameterType));
+                passed.add(value);
             }
-        } catch (ClassNotFoundException ignored) {
+            AndromedaException.run(() -> ctx.newInstance(passed.toArray(Object[]::new)), b -> b.message("Failed to construct module class!").add("class", cls.getName()));
         }
     }
 
@@ -124,7 +120,19 @@ public abstract class Module<T extends Module.BaseConfig> {
         public Scope scope = Scope.GLOBAL;
 
         public enum Scope {
-            GLOBAL, WORLD, DIMENSION
+            GLOBAL, WORLD, DIMENSION;
+
+            public boolean isWorld() {
+                return this == WORLD;
+            }
+
+            public boolean isGlobal() {
+                return this == GLOBAL;
+            }
+
+            public boolean isDimension() {
+                return this == DIMENSION;
+            }
         }
     }
 

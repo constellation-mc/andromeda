@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 
 public class FlyingItemEntity extends ThrownItemEntity {
 
-
     public FlyingItemEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
         this.setItem(ItemStack.EMPTY);

@@ -33,11 +33,11 @@ public class Andromeda {
 
     public static void init() {
         INSTANCE = new Andromeda();
-        INSTANCE.onInitialize();
+        INSTANCE.onInitialize(ModuleManager.get());
         Support.share("andromeda:main", INSTANCE);
     }
 
-    private void onInitialize() {
+    private void onInitialize(ModuleManager manager) {
         Common.bootstrap();
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DataConfigs());
@@ -46,10 +46,10 @@ public class Andromeda {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            var list = ModuleManager.get().loaded().stream().filter(module -> module.config().scope == Module.BaseConfig.Scope.DIMENSION).toList();
-            server.getWorlds().forEach(world -> ModuleManager.get().cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda"), list));
-            ModuleManager.get().cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"),
-                    ModuleManager.get().loaded().stream().filter(module -> module.config().scope == Module.BaseConfig.Scope.WORLD).toList());
+            var list = manager.loaded().stream().filter(module -> module.config().scope.isDimension()).toList();
+            server.getWorlds().forEach(world -> manager.cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda"), list));
+            manager.cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"),
+                    manager.loaded().stream().filter(module -> module.config().scope.isWorld()).toList());
         });
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
@@ -60,8 +60,9 @@ public class Andromeda {
             ServerLoginNetworking.registerGlobalReceiver(VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {
                 if (Debug.Keys.SKIP_SERVER_MODULE_CHECK.isPresent()) return;
 
-                Set<String> modules = ModuleManager.get().loaded().stream().map(Module::meta)
-                        .filter(m -> m.environment().isBoth()).map(Module.Metadata::id).collect(Collectors.toSet());
+                Set<String> modules = manager.loaded().stream()
+                        .map(Module::meta).filter(m -> m.environment().isBoth())
+                        .map(Module.Metadata::id).collect(Collectors.toSet());
                 if (!understood) {
                     if (!modules.isEmpty())
                         handler.disconnect(TextUtil.translatable("andromeda.disconnected.module_mismatch",
@@ -76,15 +77,8 @@ public class Andromeda {
                 }
 
                 synchronizer.waitFor(server.submit(() -> {
-                    Set<String> disable = new HashSet<>();
-                    for (String clientModule : clientModules) {
-                        if (!modules.contains(clientModule)) disable.add(clientModule);
-                    }
-
-                    Set<String> enable = new HashSet<>();
-                    for (String module : modules) {
-                        if (!clientModules.contains(module)) enable.add(module);
-                    }
+                    Set<String> disable = clientModules.stream().filter(s -> !modules.contains(s)).collect(Collectors.toSet());
+                    Set<String> enable = modules.stream().filter(s -> !clientModules.contains(s)).collect(Collectors.toSet());
 
                     if (!disable.isEmpty() || !enable.isEmpty()) {
                         handler.disconnect(TextUtil.translatable("andromeda.disconnected.module_mismatch",

@@ -1,6 +1,10 @@
 package me.melontini.andromeda.common.registries;
 
+import com.google.gson.JsonElement;
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
@@ -12,6 +16,9 @@ public class Common {
 
     public static void bootstrap() {
         AndromedaItemGroup.init();
-        ResourceRegistry.init();
+
+        ResourceConditions.register(id("items_registered"), object -> JsonHelper.getArray(object, "values")
+                .asList().stream().filter(JsonElement::isJsonPrimitive)
+                .allMatch(e -> CommonRegistries.items().containsId(Identifier.tryParse(e.getAsString()))));
     }
 }

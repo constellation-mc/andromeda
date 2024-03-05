@@ -1,5 +1,6 @@
 package me.melontini.andromeda.util.mixin;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
@@ -18,6 +19,8 @@ import org.spongepowered.asm.util.Annotations;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @CustomLog
 public class AndromedaMixins {
@@ -25,6 +28,9 @@ public class AndromedaMixins {
     private static final ClassPath CLASS_PATH = Exceptions.supply(ClassPath::from);
 
     private static final IPluginPlugin MIXIN_PREDICATE = ExtendablePlugin.DefaultPlugins.mixinPredicatePlugin();
+    private static final Map<String, Predicate<ClassNode>> SPECIAL_PREDICATES = ImmutableMap.<String, Predicate<ClassNode>>builder()
+            .put("common.mixin.util.DebugTrackerMixin", node -> Debug.Keys.DISPLAY_TRACKED_VALUES.isPresent())
+            .build();
 
     public static ClassPath getClassPath() {
         return CLASS_PATH;
@@ -51,6 +57,10 @@ public class AndromedaMixins {
             Environment value = AsmUtil.getAnnotationValue(envNode, "value", Environment.ANY);
             if (!value.allows(CommonValues.environment())) return false;
         }
+
+        //TODO add to Dark Matter
+        var predicate = SPECIAL_PREDICATES.get(n.name.replace("/", ".").substring("me.melontini.andromeda.".length()));
+        if (predicate != null && !predicate.test(n)) return false;
 
         //MixinPredicate only uses the node.
         return MIXIN_PREDICATE.shouldApplyMixin(null, null, n, null);

@@ -41,11 +41,12 @@ public class ModuleManager {
     private final Map<Class<?>, Module<?>> modules;
     private final Map<String, Module<?>> moduleNames;
 
-    final Map<String, Module<?>> mixinConfigs = new HashMap<>();
+    private final MixinProcessor mixinProcessor;
 
     ModuleManager(List<Module.Zygote> zygotes) {
         if (INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
         INSTANCE = this;
+        this.mixinProcessor = new MixinProcessor(this);
 
         this.discoveredModules = Utilities.supply(() -> {
             var m = zygotes.stream().collect(Collectors.toMap(Module.Zygote::type, PromiseImpl::new, (t, t2) -> t, LinkedHashMap::new));
@@ -90,7 +91,7 @@ public class ModuleManager {
         modules.forEach(m -> {
             if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
 
-            if (m.meta().environment().isClient() && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
+            if (m.meta().environment().isClient() && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
                     LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                             m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
@@ -98,7 +99,7 @@ public class ModuleManager {
                 return;
             }
 
-            if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
+            if (m.getClass().isAnnotationPresent(Unscoped.class) && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
                     LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                             "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
@@ -133,7 +134,7 @@ public class ModuleManager {
             });
             manager.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
 
-            Bus<ConfigEvent<?>> e = m.getOrCreateBus(ConfigEvent.class, null);
+            Bus<ConfigEvent<?>> e = m.getOrCreateBus("config_event", null);
             if (e != null) e.invoker().accept(Utilities.cast(manager));
 
             m.manager = Utilities.cast(manager);
@@ -256,8 +257,8 @@ public class ModuleManager {
     }
 
     @ApiStatus.Internal
-    public Optional<Module<?>> moduleFromConfig(String name) {
-        return Optional.ofNullable(mixinConfigs.get(name));
+    public MixinProcessor getMixinProcessor() {
+        return this.mixinProcessor;
     }
 
     @ApiStatus.Internal
@@ -308,7 +309,7 @@ public class ModuleManager {
             builder.append(joiner);
         });
         if (!categories.isEmpty()) {
-            LOGGER.info("Loaded modules: {}", builder);
+            LOGGER.info("Loading {} modules: {}", loaded().size(), builder);
             LOGGER.info("* - custom modules/categories not provided by Andromeda.");
         } else {
             LOGGER.info("No modules loaded!");
