@@ -91,7 +91,7 @@ public class ModuleManager {
         modules.forEach(m -> {
             if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
 
-            if (m.meta().environment().isClient() && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
+            if (m.meta().environment().isClient() && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
                     LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                             m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
@@ -99,7 +99,7 @@ public class ModuleManager {
                 return;
             }
 
-            if (m.getClass().isAnnotationPresent(Unscoped.class) && m.config().scope != Module.BaseConfig.Scope.GLOBAL) {
+            if (m.getClass().isAnnotationPresent(Unscoped.class) && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
                     LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
                             "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);

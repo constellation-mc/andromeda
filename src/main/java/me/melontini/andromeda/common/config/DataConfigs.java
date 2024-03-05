@@ -49,7 +49,7 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
             var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
             var cls = ModuleManager.get().getConfigClass(m.getClass());
 
-            if (m.config().scope == Module.BaseConfig.Scope.WORLD) {
+            if (m.config().scope.isWorld()) {
                 if (!object.has(DEFAULT.toString()) || object.size() > 1)
                     throw new IllegalStateException("'%s' modules only support '%s' as their dimension!".formatted(Module.BaseConfig.Scope.WORLD, DEFAULT));
 
