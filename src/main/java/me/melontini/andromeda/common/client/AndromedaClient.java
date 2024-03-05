@@ -27,7 +27,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 
-import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -41,19 +41,19 @@ import static me.melontini.andromeda.common.registries.Common.id;
 public class AndromedaClient {
 
     private static AndromedaClient INSTANCE;
-    private static boolean animate = true;
+    private boolean animate = true;
 
     public static void init() {
         INSTANCE = new AndromedaClient();
-        INSTANCE.onInitializeClient();
+        INSTANCE.onInitializeClient(ModuleManager.get());
         FabricLoader.getInstance().getObjectShare().put("andromeda:client", INSTANCE);
     }
 
-    public void onInitializeClient() {
+    public void onInitializeClient(ModuleManager manager) {
         Support.run("cloth-config", () -> AutoConfigScreen::register);
         if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register();
         else {
-            ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
+            manager.all().stream().map(Promise::get).forEach(module -> {
                 switch (module.meta().environment()) {
                     case ANY, CLIENT -> {
                     }
@@ -78,29 +78,24 @@ public class AndromedaClient {
         });
     }
 
-    private static void printMissingTooltips() {
+    private void printMissingTooltips(ModuleManager manager) {
         Set<String> missing = new LinkedHashSet<>();
-        for (Promise<?> module : ModuleManager.get().all()) {
+        for (Promise<?> module : manager.all()) {
             String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
             if (!I18n.hasTranslation(m)) missing.add(m);
 
-            for (Field field : ModuleManager.get().getConfigClass(module.getClass()).getFields()) {
-                if ("enabled".equals(field.getName()) || field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
-                    continue;
-
-                String f = "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName());
-                if (!I18n.hasTranslation(f)) missing.add(f);
-            }
+            Arrays.stream(manager.getConfigClass(module.getClass()).getFields())
+                    .filter(f -> !"enabled".equals(f.getName()) && !f.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
+                    .map(field -> "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName()))
+                    .filter(I18n::hasTranslation).forEach(missing::add);
         }
         StringBuilder b = new StringBuilder();
-        for (String s : missing) {
-            b.append('\t').append(s).append('\n');
-        }
+        missing.forEach(s -> b.append('\t').append(s).append('\n'));
         LOGGER.info("Missing tooltips:\n{}", b);
     }
 
-    public void lateInit() {
-        if (Debug.Keys.PRINT_MISSING_TOOLTIPS.isPresent()) printMissingTooltips();
+    public void lateInit(ModuleManager manager) {
+        if (Debug.Keys.PRINT_MISSING_TOOLTIPS.isPresent()) printMissingTooltips(manager);
     }
 
     @Override

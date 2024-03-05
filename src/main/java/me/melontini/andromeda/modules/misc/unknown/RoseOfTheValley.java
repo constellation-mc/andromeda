@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.misc.unknown;
 
-import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
@@ -10,6 +10,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +24,7 @@ public class RoseOfTheValley extends BlockItem {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(AndromedaTexts.ROSE_OF_THE_VALLEY_TOOLTIP);
+        tooltip.add(TextUtil.translatable("tooltip.andromeda.rose_of_the_valley").formatted(Formatting.GRAY));
     }
 
     public static void handleClick(ItemStack stack, ItemStack otherStack, PlayerEntity player) {

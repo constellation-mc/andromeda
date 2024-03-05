@@ -1,7 +1,6 @@
 package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.content.ContentBuilder;
 import me.melontini.dark_matter.api.content.interfaces.DarkMatterEntries;
@@ -70,7 +69,7 @@ public class AndromedaItemGroup {
                     appendStacks(entries, itemStacks);
                 });
             })
-            .displayName(AndromedaTexts.ITEM_GROUP_NAME).optional().orElseThrow();
+            .displayName(TextUtil.translatable("itemGroup.andromeda.items")).optional().orElseThrow();
 
     public static void init() {
 

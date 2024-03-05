@@ -49,9 +49,7 @@ public class ScopedConfigs {
     @SneakyThrows
     private static Module.BaseConfig loadScoped(Path root, Module<?> module) {
         var manager = module.manager();
-        if (Files.exists(manager.resolve(root))) {
-            return manager.load(root);
-        }
+        if (Files.exists(manager.resolve(root))) return manager.load(root);
         return manager.load(FabricLoader.getInstance().getConfigDir());
     }
 
@@ -61,9 +59,7 @@ public class ScopedConfigs {
 
         module.manager().save(p, Utilities.cast(config));
 
-        if (module.config().scope == Module.BaseConfig.Scope.DIMENSION) {
-            DataConfigs.applyDataPacks(config, module, world.getRegistryKey().getValue());
-        }
+        if (!module.config().scope.isDimension()) DataConfigs.applyDataPacks(config, module, world.getRegistryKey().getValue());
         attachment.addConfig(module, config);
     }
 

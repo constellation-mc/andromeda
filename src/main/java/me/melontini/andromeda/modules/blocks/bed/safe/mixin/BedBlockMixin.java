@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.blocks.bed.safe.mixin;
 
-import me.melontini.andromeda.common.util.AndromedaTexts;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
+import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,7 +31,7 @@ abstract class BedBlockMixin extends Block {
         if (world.isClient()) return;
 
         if (!isBedWorking(world) && world.am$get(Safe.class).enabled) {
-            player.sendMessage(AndromedaTexts.SAFE_BEDS, true);
+            player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
             cir.setReturnValue(ActionResult.SUCCESS);
         }
     }

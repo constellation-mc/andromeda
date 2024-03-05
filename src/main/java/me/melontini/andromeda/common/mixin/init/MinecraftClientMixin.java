@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common.mixin.init;
 
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.common.client.AndromedaClient;
@@ -15,6 +16,6 @@ abstract class MinecraftClientMixin {
 
     @Inject(method = "method_29338", at = @At("TAIL"))
     private void andromeda$init(CallbackInfo ci) {
-        AndromedaClient.get().lateInit();
+        AndromedaClient.get().lateInit(ModuleManager.get());
     }
 }
