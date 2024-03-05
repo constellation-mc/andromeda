@@ -332,6 +332,8 @@
   "config.andromeda.gui.gui_particles.option.bundleInputParticles": "收纳袋装入粒子效果",
   "config.andromeda.gui.item_frame_tooltips": "物品展示框提示",
   "config.andromeda.gui.item_frame_tooltips.@Tooltip": "在游戏内为物品展示框添加物品提示",
+  "config.andromeda.gui.smooth_tooltips": "[实验性] 工具提示缓入",
+  "config.andromeda.gui.smooth_tooltips.@Tooltip": "工具提示将以缓入的形式进场，向光标靠拢。\n可能在兼容性上存在疏漏，暂时标记为实验性。",
 
   "config.andromeda.category.misc": "杂项",
   "config.andromeda.misc.damage_backport": "/damage指令复刻",
