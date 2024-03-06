@@ -3,6 +3,7 @@ package me.melontini.andromeda.base;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.InitEvent;
+import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
@@ -117,6 +118,7 @@ public class Bootstrap {
         });
 
         AndromedaConfig.save();
+        Experiments.save();
 
         Status.update();
 

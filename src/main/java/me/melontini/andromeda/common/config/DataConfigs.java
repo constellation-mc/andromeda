@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
@@ -42,6 +43,10 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
 
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
+        if (!Experiments.get().scopedConfigs) {
+            return;
+        }
+
         Map<Identifier, Map<Module<?>, Set<CompletableFuture<Data>>>> configs = new Object2ObjectOpenHashMap<>();
         data.forEach((id, element) -> {
             JsonObject object = element.getAsJsonObject();
@@ -104,6 +109,8 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
     }
 
     public static void apply(ServerWorld world) {
+        if (!Experiments.get().scopedConfigs) return;
+
         MakeSure.notNull(DataConfigs.CONFIGS);
         ScopedConfigs.getConfigs(world);
 
@@ -123,6 +130,8 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
     }
 
     public static void apply(MinecraftServer server) {
+        if (!Experiments.get().scopedConfigs) return;
+
         MakeSure.notNull(DataConfigs.CONFIGS);
 
         server.getWorlds().forEach(ScopedConfigs::getConfigs);
