@@ -3,6 +3,7 @@ package me.melontini.andromeda.base;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
+import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.util.Debug;
@@ -90,6 +91,11 @@ public class ModuleManager {
     private void fixScopes(Collection<? extends Module<?>> modules) {
         modules.forEach(m -> {
             if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
+
+            if (!Experiments.get().scopedConfigs && !m.config().scope.isGlobal()) {
+                throw new IllegalStateException("Module '%s' has an invalid scope (%s), enable the 'scopedConfigs' experiment first!"
+                        .formatted(m.meta().id(), m.config().scope));
+            }
 
             if (m.meta().environment().isClient() && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
@@ -187,6 +193,7 @@ public class ModuleManager {
 
         paths.add(root.resolve("andromeda/mod.json"));
         paths.add(root.resolve("andromeda/debug.json"));
+        paths.add(root.resolve("andromeda/experiments.json"));
 
         modules.forEach(module -> paths.add(module.manager().resolve(root)));
 
