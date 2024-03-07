@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
-import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -28,18 +27,18 @@ public class ItemBehaviorAdder {
 
     public static ItemBehavior dataPack(ItemBehaviorData data) {
         return (stack, fie, world, user, hitResult) -> {//default behavior to handle datapacks
-            switch (hitResult.getType()) {
-                case ENTITY -> executeCommands(world, fie, user, hitResult, data.on_entity_hit());
-                case BLOCK -> executeCommands(world, fie, user, hitResult, data.on_block_hit());
-                case MISS -> executeCommands(world, fie, user, hitResult, data.on_miss());
-            }
-            executeCommands(world, fie, user, hitResult, data.on_any_hit());
+            data.commands().shuffle().stream().findFirst().ifPresent(commands -> {
+                switch (hitResult.getType()) {
+                    case ENTITY -> executeCommands(world, fie, user, hitResult, commands.on_entity());
+                    case BLOCK -> executeCommands(world, fie, user, hitResult, commands.on_block());
+                    case MISS -> executeCommands(world, fie, user, hitResult, commands.on_miss());
+                }
+                executeCommands(world, fie, user, hitResult, commands.on_any());
+            });
 
-            sendParticlePacket(fie, fie.getPos(), data.spawn_item_particles(), stack, data.spawn_colored_particles(),
-                    ColorUtil.toColor(data.particle_colors().red(),
-                            data.particle_colors().green(),
-                            data.particle_colors().blue())
-            );
+
+            var particles = data.particles();
+            sendParticlePacket(fie, fie.getPos(), particles.item(), stack, particles.colors());
         };
     }
 
@@ -51,22 +50,22 @@ public class ItemBehaviorAdder {
                 world.getServer(), entity);
     }
 
-    private static void executeCommands(ServerWorld world, FlyingItemEntity fie, Entity user, HitResult hitResult, ItemBehaviorData.CommandHolder data) {
-        if (data == ItemBehaviorData.CommandHolder.EMPTY) return;
+    private static void executeCommands(ServerWorld world, FlyingItemEntity fie, Entity user, HitResult hitResult, ItemBehaviorData.Commands.Holder data) {
+        if (data == ItemBehaviorData.Commands.Holder.EMPTY) return;
 
-        executeCommands(world, data.item_commands(), () -> forEntity(world, fie).withSilent());
-        executeCommands(world, data.user_commands(), () -> forEntity(world, user).withSilent());
-        executeCommands(world, data.server_commands(), () -> world.getServer().getCommandSource().withSilent());
+        executeCommands(world, data.item(), () -> forEntity(world, fie).withSilent());
+        executeCommands(world, data.user(), () -> forEntity(world, user).withSilent());
+        executeCommands(world, data.server(), () -> world.getServer().getCommandSource().withSilent());
 
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
             Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity) {
-                executeCommands(world, data.hit_entity_commands(), () -> forEntity(world, entity).withSilent());
+                executeCommands(world, data.hit_entity(), () -> forEntity(world, entity).withSilent());
             }
         } else if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockHitResult hit = (BlockHitResult) hitResult;
-            executeCommands(world, data.hit_block_commands(), () -> new ServerCommandSource(
+            executeCommands(world, data.hit_block(), () -> new ServerCommandSource(
                     world.getServer(),
                     new Vec3d(hit.getBlockPos().getX(),
                             hit.getBlockPos().getY(),
@@ -85,12 +84,12 @@ public class ItemBehaviorAdder {
         }
     }
 
-    public static void sendParticlePacket(FlyingItemEntity flyingItemEntity, Vec3d pos, boolean item, ItemStack stack, boolean colored, int color) {
+    public static void sendParticlePacket(FlyingItemEntity flyingItemEntity, Vec3d pos, boolean item, ItemStack stack, int color) {
         PacketByteBuf byteBuf = PacketByteBufs.create();
         byteBuf.writeDouble(pos.getX()).writeDouble(pos.getY()).writeDouble(pos.getZ());
         byteBuf.writeBoolean(item);
         byteBuf.writeItemStack(stack);
-        byteBuf.writeBoolean(colored);
+        byteBuf.writeBoolean(color != -1);
         byteBuf.writeVarInt(color);
         for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(flyingItemEntity)) {
             ServerPlayNetworking.send(serverPlayerEntity, Main.FLYING_STACK_LANDED, byteBuf);

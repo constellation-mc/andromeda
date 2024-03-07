@@ -1,64 +1,71 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.util.MiscUtil;
+import me.melontini.dark_matter.api.base.util.ColorUtil;
 import net.minecraft.item.Item;
+import net.minecraft.util.collection.WeightedList;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
-public record ItemBehaviorData(List<Item> items, boolean disabled, boolean override_vanilla,
-                               boolean complement, int cooldown_time,
-                               CommandHolder on_entity_hit, CommandHolder on_block_hit, CommandHolder on_miss, CommandHolder on_any_hit,
-                               boolean spawn_item_particles, boolean spawn_colored_particles, ParticleColors particle_colors) {
-
+public record ItemBehaviorData(List<Item> items, boolean disabled, boolean override_vanilla, boolean complement,
+                               int cooldown, WeightedList<Commands> commands, Particles particles) {
     public static final Codec<ItemBehaviorData> CODEC = RecordCodecBuilder.create(data -> data.group(
-            Codec.either(CommonRegistries.items().getCodec(), Codec.list(CommonRegistries.items().getCodec()))
-                    .fieldOf("item_id").xmap(e -> e.map(ImmutableList::of, Function.identity()), Either::right).forGetter(ItemBehaviorData::items),
+            MiscUtil.listCodec(CommonRegistries.items().getCodec()).fieldOf("items").forGetter(ItemBehaviorData::items),
 
             Codec.BOOL.optionalFieldOf("disabled", false).forGetter(ItemBehaviorData::disabled),
             Codec.BOOL.optionalFieldOf("override_vanilla", false).forGetter(ItemBehaviorData::override_vanilla),
             Codec.BOOL.optionalFieldOf("complement", true).forGetter(ItemBehaviorData::complement),
-            Codec.INT.optionalFieldOf("cooldown_time", 50).forGetter(ItemBehaviorData::cooldown_time),
+            Codec.INT.optionalFieldOf("cooldown", 50).forGetter(ItemBehaviorData::cooldown),
 
-            CommandHolder.CODEC.optionalFieldOf("on_entity_hit", CommandHolder.EMPTY).forGetter(ItemBehaviorData::on_entity_hit),
-            CommandHolder.CODEC.optionalFieldOf("on_block_hit", CommandHolder.EMPTY).forGetter(ItemBehaviorData::on_block_hit),
-            CommandHolder.CODEC.optionalFieldOf("on_miss", CommandHolder.EMPTY).forGetter(ItemBehaviorData::on_miss),
-            CommandHolder.CODEC.optionalFieldOf("on_any_hit", CommandHolder.EMPTY).forGetter(ItemBehaviorData::on_any_hit),
-
-            Codec.BOOL.optionalFieldOf("spawn_item_particles", true).forGetter(ItemBehaviorData::spawn_item_particles),
-            Codec.BOOL.optionalFieldOf("spawn_colored_particles", false).forGetter(ItemBehaviorData::spawn_colored_particles),
-
-            ParticleColors.CODEC.optionalFieldOf("particle_colors", ParticleColors.EMPTY).forGetter(ItemBehaviorData::particle_colors)
+            MiscUtil.weightedListCodec(Commands.CODEC).optionalFieldOf("commands", new WeightedList<>()).forGetter(ItemBehaviorData::commands),
+            Particles.CODEC.optionalFieldOf("particles", Particles.EMPTY).forGetter(ItemBehaviorData::particles)
     ).apply(data, ItemBehaviorData::new));
 
-    public record ParticleColors(int red, int green, int blue) {
-        public static final Codec<ParticleColors> CODEC = RecordCodecBuilder.create(data -> data.group(
-                Codec.INT.fieldOf("red").forGetter(ParticleColors::red),
-                Codec.INT.fieldOf("green").forGetter(ParticleColors::green),
-                Codec.INT.fieldOf("blue").forGetter(ParticleColors::blue)
-        ).apply(data, ParticleColors::new));
+    public record Particles(boolean item, boolean colored, int colors) {
+        public static final Codec<Particles> CODEC = RecordCodecBuilder.create(data -> data.group(
+                Codec.BOOL.optionalFieldOf("item", true).forGetter(Particles::item),
+                Codec.BOOL.optionalFieldOf("colored", true).forGetter(Particles::colored),
+                Codec.either(Codec.INT, Codec.intRange(0, 255).listOf()).comapFlatMap(e -> e.map(DataResult::success, integers -> {
+                            if (integers.size() != 3)
+                                return DataResult.error(() -> "colors array must contain exactly 3 colors (RGB)");
+                            return DataResult.success(ColorUtil.toColor(integers.get(0), integers.get(1), integers.get(2)));
+                        }), Either::left)
+                        .optionalFieldOf("colors", -1).forGetter(Particles::colors)
+        ).apply(data, Particles::new));
 
-        public static final ParticleColors EMPTY = new ParticleColors(0,0,0);
+        public static final Particles EMPTY = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).result().orElseThrow();
     }
 
-    public record CommandHolder(List<String> item_commands, List<String> user_commands, List<String> server_commands,
-                                List<String> hit_entity_commands, List<String> hit_block_commands) {
-        public static final Codec<CommandHolder> CODEC = RecordCodecBuilder.create(data -> data.group(
-                Codec.list(Codec.STRING).optionalFieldOf("item_commands", Collections.emptyList()).forGetter(CommandHolder::item_commands),
-                Codec.list(Codec.STRING).optionalFieldOf("user_commands", Collections.emptyList()).forGetter(CommandHolder::user_commands),
-                Codec.list(Codec.STRING).optionalFieldOf("server_commands", Collections.emptyList()).forGetter(CommandHolder::server_commands),
-                Codec.list(Codec.STRING).optionalFieldOf("hit_entity_commands", Collections.emptyList()).forGetter(CommandHolder::hit_entity_commands),
-                Codec.list(Codec.STRING).optionalFieldOf("hit_block_commands", Collections.emptyList()).forGetter(CommandHolder::hit_block_commands)
-        ).apply(data, CommandHolder::new));
+    public record Commands(Holder on_entity, Holder on_block, Holder on_miss, Holder on_any) {
+        public static final Codec<Commands> CODEC = RecordCodecBuilder.create(data -> data.group(
+                Holder.CODEC.optionalFieldOf("on_entity", Holder.EMPTY).forGetter(Commands::on_entity),
+                Holder.CODEC.optionalFieldOf("on_block", Holder.EMPTY).forGetter(Commands::on_block),
+                Holder.CODEC.optionalFieldOf("on_miss", Holder.EMPTY).forGetter(Commands::on_miss),
+                Holder.CODEC.optionalFieldOf("on_any", Holder.EMPTY).forGetter(Commands::on_any)
+        ).apply(data, Commands::new));
 
-        public static final CommandHolder EMPTY = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).result().orElseThrow();
+        public static final Commands EMPTY = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).result().orElseThrow();
+
+        public record Holder(List<String> item, List<String> user, List<String> server, List<String> hit_entity,
+                             List<String> hit_block) {
+            public static final Codec<Holder> CODEC = RecordCodecBuilder.create(data -> data.group(
+                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("item", Collections.emptyList()).forGetter(Holder::item),
+                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("user", Collections.emptyList()).forGetter(Holder::user),
+                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("server", Collections.emptyList()).forGetter(Holder::server),
+                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("hit_entity", Collections.emptyList()).forGetter(Holder::hit_entity),
+                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("hit_block", Collections.emptyList()).forGetter(Holder::hit_block)
+            ).apply(data, Holder::new));
+
+            public static final Holder EMPTY = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).result().orElseThrow();
+        }
     }
 
     public static ItemBehaviorData create(JsonObject object) {

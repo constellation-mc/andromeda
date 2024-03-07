@@ -1,7 +1,15 @@
 package me.melontini.andromeda.common.util;
 
+import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.List;
+import java.util.function.Function;
 
 public class MiscUtil {
 
@@ -17,5 +25,21 @@ public class MiscUtil {
 
     public static String vec3dAsString(Vec3d vec3d) {
         return vec3d.getX() + ", " + vec3d.getY() + ", " + vec3d.getZ();
+    }
+
+    public static BlockPos vec3dAsBlockPos(Vec3d vec3d) {
+        return new BlockPos(MathHelper.floor(vec3d.x), MathHelper.floor(vec3d.y), MathHelper.floor(vec3d.z));
+    }
+
+    public static <T> Codec<List<T>> listCodec(Codec<T> codec) {
+        return Codec.either(codec, codec.listOf()).xmap(e -> e.map(ImmutableList::of, Function.identity()), Either::right);
+    }
+
+    public static <T> Codec<WeightedList<T>> weightedListCodec(Codec<T> codec) {
+        return Codec.either(codec, WeightedList.createCodec(codec)).xmap(e -> e.map(entry -> {
+            WeightedList<T> list = new WeightedList<>();
+            list.add(entry, 1);
+            return list;
+        }, Function.identity()), Either::right);
     }
 }

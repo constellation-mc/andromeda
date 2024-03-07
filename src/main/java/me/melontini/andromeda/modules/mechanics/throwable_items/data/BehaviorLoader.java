@@ -39,8 +39,8 @@ public class BehaviorLoader extends JsonDataLoader {
                 ItemBehaviorManager.addBehavior(item, ItemBehaviorAdder.dataPack(behaviorData), behaviorData.complement());
                 if (behaviorData.override_vanilla()) ItemBehaviorManager.overrideVanilla(item);
 
-                if (behaviorData.cooldown_time() != 50) {
-                    ItemBehaviorManager.addCustomCooldown(item, behaviorData.cooldown_time());
+                if (behaviorData.cooldown() != 50) {
+                    ItemBehaviorManager.addCustomCooldown(item, behaviorData.cooldown());
                 }
             }
         });

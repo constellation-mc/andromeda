@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:gray_dye",
+  "items": "minecraft:gray_dye",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 128,
-    "green": 128,
-    "blue": 128
+  "particles": {
+    "colors": [128, 128, 128]
   }
 }

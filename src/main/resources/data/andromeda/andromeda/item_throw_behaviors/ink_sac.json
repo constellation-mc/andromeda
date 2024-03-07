@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:ink_sac",
+  "items": "minecraft:ink_sac",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 24,
-    "green": 27,
-    "blue": 50
+  "particles": {
+    "colors": [24, 27, 50]
   }
 }
