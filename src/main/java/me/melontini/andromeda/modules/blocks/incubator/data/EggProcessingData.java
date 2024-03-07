@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.blocks.incubator.data;
 
 import com.google.gson.JsonElement;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,6 +8,7 @@ import lombok.SneakyThrows;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.MiscUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.entity.EntityType;
@@ -21,18 +21,12 @@ import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.profiler.Profiler;
 
 import java.util.*;
-import java.util.function.Function;
 
 public record EggProcessingData(Item item, WeightedList<Entry> entity, int time) {
 
     public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
             CommonRegistries.items().getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
-            Codec.either(Entry.CODEC, WeightedList.createCodec(Entry.CODEC)).fieldOf("entries")
-                    .xmap(e -> e.map(entry -> {
-                        WeightedList<Entry> list = new WeightedList<>();
-                        list.add(entry, 1);
-                        return list;
-                    }, Function.identity()), Either::right).forGetter(EggProcessingData::entity),
+            MiscUtil.weightedListCodec(Entry.CODEC).fieldOf("entries").forGetter(EggProcessingData::entity),
             Codec.INT.fieldOf("time").forGetter(EggProcessingData::time)
     ).apply(data, EggProcessingData::new));
 
@@ -40,7 +34,7 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, int time)
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(data -> data.group(
                 CommonRegistries.entityTypes().getCodec().fieldOf("entity").forGetter(Entry::type),
                 NbtCompound.CODEC.optionalFieldOf("nbt", new NbtCompound()).forGetter(Entry::nbt),
-                Codec.STRING.listOf().optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
+                MiscUtil.listCodec(Codec.STRING).optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
         ).apply(data, Entry::new));
     }
 

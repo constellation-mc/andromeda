@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:white_dye",
+  "items": "minecraft:white_dye",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 255,
-    "green": 255,
-    "blue": 255
+  "particles": {
+    "colors": [255, 255, 255]
   }
 }

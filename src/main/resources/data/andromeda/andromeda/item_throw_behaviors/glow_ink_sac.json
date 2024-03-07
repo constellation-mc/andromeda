@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:glow_ink_sac",
+  "items": "minecraft:glow_ink_sac",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 25,
-    "green": 49,
-    "blue": 49
+  "particles": {
+    "colors": [25, 49, 49]
   }
 }

@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:purple_dye",
+  "items": "minecraft:purple_dye",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 128,
-    "green": 0,
-    "blue": 128
+  "particles": {
+    "colors": [128, 0, 128]
   }
 }

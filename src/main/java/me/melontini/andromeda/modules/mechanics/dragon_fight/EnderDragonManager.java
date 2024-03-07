@@ -31,7 +31,7 @@ public class EnderDragonManager {
 
     public static final Codec<EnderDragonManager> CODEC = RecordCodecBuilder.create(data -> data.group(
             Codec.INT.fieldOf("maxPlayers").forGetter(EnderDragonManager::getMaxPlayers),
-            Crystal.LIST_CODEC.fieldOf("crystals").forGetter(EnderDragonManager::getCrystals)
+            Crystal.CODEC.listOf().fieldOf("crystals").forGetter(EnderDragonManager::getCrystals)
     ).apply(data, EnderDragonManager::new));
 
     public static final Keeper<AttachmentType<EnderDragonManager>> ATTACHMENT = Keeper.create();
@@ -92,6 +92,5 @@ public class EnderDragonManager {
                 Codec.INT.fieldOf("timer").xmap(MutableInt::new, MutableInt::getValue).forGetter(Crystal::timer),
                 Vec3d.CODEC.fieldOf("pos").forGetter(Crystal::pos)
         ).apply(data, Crystal::new));
-        public static final Codec<List<Crystal>> LIST_CODEC = CODEC.listOf();
     }
 }

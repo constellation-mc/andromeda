@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:yellow_dye",
+  "items": "minecraft:yellow_dye",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 255,
-    "green": 255,
-    "blue": 0
+  "particles": {
+    "colors": [255, 255, 0]
   }
 }

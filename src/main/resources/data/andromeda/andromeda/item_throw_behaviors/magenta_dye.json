@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:magenta_dye",
+  "items": "minecraft:magenta_dye",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 255,
-    "green": 0,
-    "blue": 255
+  "particles": {
+    "colors": [255, 0, 255]
   }
 }
