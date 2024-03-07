@@ -1,15 +1,14 @@
 package me.melontini.andromeda.modules.world.crop_temperature;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -27,19 +26,16 @@ import net.minecraft.world.World;
 
 import java.lang.invoke.MethodType;
 import java.util.*;
-import java.util.function.Function;
 
 public record PlantTemperatureData(List<Block> blocks, float min, float max, float aMin, float aMax) {
 
-    public static final Codec<PlantTemperatureData> CODEC = RecordCodecBuilder.
-            create(data -> data.group(
-                    Codec.either(CommonRegistries.blocks().getCodec(), Codec.list(CommonRegistries.blocks().getCodec()))
-                            .fieldOf("identifier").xmap(e -> e.map(ImmutableList::of, Function.identity()), Either::right).forGetter(PlantTemperatureData::blocks),
-                    Codec.FLOAT.fieldOf("min").forGetter(PlantTemperatureData::min),
-                    Codec.FLOAT.fieldOf("max").forGetter(PlantTemperatureData::max),
-                    Codec.FLOAT.fieldOf("aMin").forGetter(PlantTemperatureData::aMin),
-                    Codec.FLOAT.fieldOf("aMax").forGetter(PlantTemperatureData::aMax)
-            ).apply(data, PlantTemperatureData::new));
+    public static final Codec<PlantTemperatureData> CODEC = RecordCodecBuilder.create(data -> data.group(
+            MiscUtil.listCodec(CommonRegistries.blocks().getCodec()).fieldOf("identifier").forGetter(PlantTemperatureData::blocks),
+            Codec.FLOAT.fieldOf("min").forGetter(PlantTemperatureData::min),
+            Codec.FLOAT.fieldOf("max").forGetter(PlantTemperatureData::max),
+            Codec.FLOAT.fieldOf("aMin").forGetter(PlantTemperatureData::aMin),
+            Codec.FLOAT.fieldOf("aMax").forGetter(PlantTemperatureData::aMax)
+    ).apply(data, PlantTemperatureData::new));
 
     public static final Map<Block, PlantTemperatureData> PLANT_DATA = new IdentityHashMap<>();
 
