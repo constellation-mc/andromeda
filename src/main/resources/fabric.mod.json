@@ -29,6 +29,9 @@
     "main": [
       "me.melontini.andromeda.base.Bootstrap::onMain"
     ],
+    "preLaunch": [
+      "me.melontini.andromeda.base.Bootstrap::onPreLaunch"
+    ],
     "modmenu": [
       "me.melontini.andromeda.common.client.config.ModMenuIntegration"
     ],
@@ -44,12 +47,12 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric": ">=${fabric_version}",
     "minecraft": ">=${minecraft_version}"
   },
   "recommends": {
-    "cloth-config": "*",
-    "modmenu": "*"
+    "cloth-config": ">=${cloth_version}",
+    "modmenu": ">=${modmenu_version}"
   },
   "custom": {
     "lithium:options": {
