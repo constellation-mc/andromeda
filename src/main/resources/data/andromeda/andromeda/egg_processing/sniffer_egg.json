@@ -1,0 +1,7 @@
+{
+  "identifier": "minecraft:sniffer_egg",
+  "entries": {
+    "entity": "minecraft:sniffer"
+  },
+  "time": 6000
+}

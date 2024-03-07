@@ -24,13 +24,20 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.function.Supplier;
+
+@SuppressWarnings("UnstableApiUsage")
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
 
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -68,17 +75,35 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     private void spawnResult(ItemStack stack, World world, BlockState state) {
         EggProcessingData data = EggProcessingData.EGG_DATA.get(stack.getItem());
         if (data != null) {
-            Entity entity = data.entity().create(world);
+            EggProcessingData.Entry entry = data.entity().shuffle().stream().findFirst().orElseThrow();
+            Entity entity = entry.type().create(world);
             if (entity != null) {
+                entity.readNbt(entry.nbt());
                 BlockPos entityPos = pos.offset(state.get(IncubatorBlock.FACING));
                 entity.setPos(entityPos.getX() + 0.5, entityPos.getY() + 0.5, entityPos.getZ() + 0.5);
                 if (entity instanceof PassiveEntity passive) passive.setBaby(true);
+
                 stack.decrement(1);
+
                 world.spawnEntity(entity);
+                executeCommands((ServerWorld) world, entry.commands(), () -> new ServerCommandSource(
+                        world.getServer(), entity.getPos(),
+                        new Vec2f(entity.getPitch(), entity.getYaw()),
+                        (ServerWorld) world, 4, entity.getEntityName(), entity.getName(),
+                        world.getServer(), entity));
             }
         }
         this.processingTime = -1;
         this.update(state);
+    }
+
+    private static void executeCommands(ServerWorld world, Collection<String> commands, Supplier<ServerCommandSource> source) {
+        if (commands == null || commands.isEmpty()) return;
+
+        var s = source.get();
+        for (String command : commands) {
+            world.getServer().getCommandManager().executeWithPrefix(s, command);
+        }
     }
 
     private boolean isLitCampfire(BlockState state) {
