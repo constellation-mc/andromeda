@@ -1,5 +1,7 @@
 {
   "identifier": "minecraft:turtle_egg",
-  "entity": "minecraft:turtle",
+  "entries": {
+    "entity": "minecraft:turtle"
+  },
   "time": 4000
 }

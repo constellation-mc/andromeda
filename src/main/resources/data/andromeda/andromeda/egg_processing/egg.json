@@ -1,5 +1,7 @@
 {
   "identifier": "minecraft:egg",
-  "entity": "minecraft:chicken",
+  "entries": {
+    "entity": "minecraft:chicken"
+  },
   "time": 2500
 }

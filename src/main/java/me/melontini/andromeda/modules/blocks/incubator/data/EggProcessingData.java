@@ -1,9 +1,11 @@
 package me.melontini.andromeda.modules.blocks.incubator.data;
 
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.SneakyThrows;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
@@ -11,24 +13,36 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
-public record EggProcessingData(Item item, EntityType<?> entity, int time) {
+public record EggProcessingData(Item item, WeightedList<Entry> entity, int time) {
 
     public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
             CommonRegistries.items().getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
-            CommonRegistries.entityTypes().getCodec().fieldOf("entity").forGetter(EggProcessingData::entity),
+            Codec.either(Entry.CODEC, WeightedList.createCodec(Entry.CODEC)).fieldOf("entries")
+                    .xmap(e -> e.map(entry -> {
+                        WeightedList<Entry> list = new WeightedList<>();
+                        list.add(entry, 1);
+                        return list;
+                    }, Function.identity()), Either::right).forGetter(EggProcessingData::entity),
             Codec.INT.fieldOf("time").forGetter(EggProcessingData::time)
     ).apply(data, EggProcessingData::new));
+
+    public record Entry(EntityType<?> type, NbtCompound nbt, List<String> commands) {
+        public static final Codec<Entry> CODEC = RecordCodecBuilder.create(data -> data.group(
+                CommonRegistries.entityTypes().getCodec().fieldOf("entity").forGetter(Entry::type),
+                NbtCompound.CODEC.optionalFieldOf("nbt", new NbtCompound()).forGetter(Entry::nbt),
+                Codec.STRING.listOf().optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
+        ).apply(data, Entry::new));
+    }
 
     public static Map<Item, EggProcessingData> EGG_DATA = new IdentityHashMap<>();
 
@@ -37,6 +51,7 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new JsonDataLoader(Common.id("egg_processing")) {
 
+            @SneakyThrows
             @Override
             protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
                 Map<Identifier, EggProcessingData> map = new HashMap<>();//TODO dark-matter 4.0.0
@@ -46,12 +61,6 @@ public record EggProcessingData(Item item, EntityType<?> entity, int time) {
                         })));
 
                 EggProcessingData.EGG_DATA.clear();
-                //well...
-                for (Item item : CommonRegistries.items()) {
-                    if (item instanceof SpawnEggItem spawnEggItem) {
-                        EggProcessingData.EGG_DATA.putIfAbsent(spawnEggItem, new EggProcessingData(spawnEggItem, spawnEggItem.getEntityType(new NbtCompound()), 8000));
-                    }
-                }
 
                 map.forEach((identifier, data1) -> EggProcessingData.EGG_DATA.put(data1.item(), data1));
             }
