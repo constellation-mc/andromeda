@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.gui.smooth_tooltips.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.minecraft.client.MinecraftClient;
@@ -37,12 +37,10 @@ abstract class DrawContextMixin {
     @Unique
     private static Vector2d smoothPos;
 
-    @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/tooltip/TooltipPositioner;getPosition(IIIIII)Lorg/joml/Vector2ic;"), method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V")
-    private Vector2ic andromeda$smoothTooltip(TooltipPositioner instance, int w, int h, int x, int y, int i, int j, Operation<Vector2ic> original, @Share("popMatrix") LocalBooleanRef popMatrix) {
+    @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/tooltip/TooltipPositioner;getPosition(IIIIII)Lorg/joml/Vector2ic;"), method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V")
+    private Vector2ic andromeda$smoothTooltip(Vector2ic vic, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Share("popMatrix") LocalBooleanRef popMatrix) {
         if (andromeda$makeSmooth(x, y)) {
             if (smoothPos == null) smoothPos = new Vector2d(x, y);
-            var vic = original.call(instance, w, h, x, y, i, j);
-
             smoothPos.x = MathHelper.clamp(MathHelper.lerp(0.3 * client.getLastFrameDuration(), smoothPos.x, vic.x()), vic.x() - 30, vic.x() + 30);
             smoothPos.y = MathHelper.clamp(MathHelper.lerp(0.3 * client.getLastFrameDuration(), smoothPos.y, vic.y()), vic.y() - 30, vic.y() + 30);
 
@@ -51,7 +49,7 @@ abstract class DrawContextMixin {
             this.matrices.translate(smoothPos.x - (int) smoothPos.x, smoothPos.y - (int) smoothPos.y, 1);
             return new Vector2i((int) smoothPos.x, (int) smoothPos.y);
         }
-        return original.call(instance, w, h, x, y, i, j);
+        return vic;
     }
 
     @Unique
