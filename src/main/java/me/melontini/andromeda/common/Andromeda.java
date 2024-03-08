@@ -5,6 +5,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.registries.Common;
+import me.melontini.andromeda.common.util.ServerHelper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -39,6 +40,9 @@ public class Andromeda {
 
     private void onInitialize(ModuleManager manager) {
         Common.bootstrap();
+
+        ServerLifecycleEvents.SERVER_STARTING.register(ServerHelper::setContext);
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ServerHelper.setContext(null));
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DataConfigs());
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {

@@ -1,26 +1,29 @@
 package me.melontini.andromeda.modules.blocks.incubator.data;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import lombok.SneakyThrows;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.andromeda.common.util.MiscUtil;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 public record EggProcessingData(Item item, WeightedList<Entry> entity, int time) {
 
@@ -38,26 +41,35 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, int time)
         ).apply(data, Entry::new));
     }
 
-    public static Map<Item, EggProcessingData> EGG_DATA = new IdentityHashMap<>();
+    public static final Identifier RELOADER_ID = Common.id("egg_processing");
 
     public static void init() {
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> EggProcessingData.EGG_DATA.clear());
+        ServerResourceReloadersEvent.EVENT.register(context -> context.register(new Reloader(RELOADER_ID)));
+    }
 
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new JsonDataLoader(Common.id("egg_processing")) {
+    public static EggProcessingData get(MinecraftServer server, Item item) {
+        return MakeSure.notNull(server).<EggProcessingData.Reloader>am$getReloader(EggProcessingData.RELOADER_ID).get(item);
+    }
 
-            @SneakyThrows
-            @Override
-            protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-                Map<Identifier, EggProcessingData> map = new HashMap<>();//TODO dark-matter 4.0.0
-                data.forEach((identifier, object) -> map.put(identifier, CODEC.parse(JsonOps.INSTANCE, object)
-                        .getOrThrow(false, string -> {
-                            throw new RuntimeException(string);
-                        })));
+    public static class Reloader extends JsonDataLoader {
 
-                EggProcessingData.EGG_DATA.clear();
+        private Map<Item, EggProcessingData> map;
 
-                map.forEach((identifier, data1) -> EggProcessingData.EGG_DATA.put(data1.item(), data1));
-            }
-        });
+        protected Reloader(Identifier id) {
+            super(id);
+        }
+
+        public EggProcessingData get(Item item) {
+            return this.map.get(item);
+        }
+
+        @Override
+        protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
+            Map<Item, EggProcessingData> result = new IdentityHashMap<>();
+            Maps.transformValues(data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
+                throw new RuntimeException(string);
+            })).forEach((identifier, eData) -> result.put(eData.item(), eData));
+            this.map = result;
+        }
     }
 }
