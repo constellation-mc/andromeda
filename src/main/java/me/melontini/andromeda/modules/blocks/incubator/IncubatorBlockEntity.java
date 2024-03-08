@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.ServerHelper;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathStuff;
@@ -59,7 +60,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         if (world.isClient()) return;
         ItemStack stack = this.inventory.get(0);
         if (!stack.isEmpty() && this.processingTime == -1) {
-            EggProcessingData data = EggProcessingData.EGG_DATA.get(stack.getItem());
+            EggProcessingData data = EggProcessingData.get(world.getServer(), stack.getItem());
             if (data != null) {
                 this.processingTime = module.config().randomness ? (data.time() + MathStuff.nextInt(data.time() / -3, data.time() / 3)) : data.time();
                 this.update(state);
@@ -69,11 +70,11 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             this.update(state);
         }
 
-        if (this.processingTime == 0) this.spawnResult(stack, world, state);
+        if (this.processingTime == 0) this.spawnResult(stack, (ServerWorld) world, state);
     }
 
-    private void spawnResult(ItemStack stack, World world, BlockState state) {
-        EggProcessingData data = EggProcessingData.EGG_DATA.get(stack.getItem());
+    private void spawnResult(ItemStack stack, ServerWorld world, BlockState state) {
+        EggProcessingData data = EggProcessingData.get(world.getServer(), stack.getItem());
         if (data != null) {
             EggProcessingData.Entry entry = data.entity().shuffle().stream().findFirst().orElseThrow();
             Entity entity = entry.type().create(world);
@@ -86,10 +87,10 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
                 stack.decrement(1);
 
                 world.spawnEntity(entity);
-                executeCommands((ServerWorld) world, entry.commands(), () -> new ServerCommandSource(
+                executeCommands(world, entry.commands(), () -> new ServerCommandSource(
                         world.getServer(), entity.getPos(),
                         new Vec2f(entity.getPitch(), entity.getYaw()),
-                        (ServerWorld) world, 4, entity.getEntityName(), entity.getName(),
+                        world, 4, entity.getEntityName(), entity.getName(),
                         world.getServer(), entity));
             }
         }
@@ -240,7 +241,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-        return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING) && EggProcessingData.EGG_DATA.containsKey(stack.getItem());
+        return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING) && EggProcessingData.get(ServerHelper.getContext(), stack.getItem()) != null;
     }
 
     @Override
