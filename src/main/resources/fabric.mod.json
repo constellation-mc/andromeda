@@ -29,14 +29,14 @@
     "main": [
       "me.melontini.andromeda.base.Bootstrap::onMain"
     ],
+    "preLaunch": [
+      "me.melontini.andromeda.base.Bootstrap::onPreLaunch"
+    ],
     "modmenu": [
       "me.melontini.andromeda.common.client.config.ModMenuIntegration"
     ],
     "andromeda:modules": [
       "me.melontini.andromeda.modules.ModuleDiscovery"
-    ],
-    "andromeda:collect_behaviors": [
-      "me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBehaviors"
     ]
   },
   "mixins": [
@@ -44,12 +44,12 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric": ">=${fabric_version}",
     "minecraft": ">=${minecraft_version}"
   },
   "recommends": {
-    "cloth-config": "*",
-    "modmenu": "*"
+    "cloth-config": ">=${cloth_version}",
+    "modmenu": ">=${modmenu_version}"
   },
   "custom": {
     "lithium:options": {
@@ -58,6 +58,9 @@
     "loom:injected_interfaces": {
       "net/minecraft/class_1937": [
         "me/melontini/andromeda/common/config/ScopedConfigs\u0024WorldExtension"
+      ],
+      "net/minecraft/server/MinecraftServer": [
+        "me/melontini/andromeda/common/data/DataPackContentsAccessor"
       ]
     }
   }

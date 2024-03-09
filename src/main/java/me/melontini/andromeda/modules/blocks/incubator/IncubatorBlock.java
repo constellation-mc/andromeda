@@ -61,7 +61,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
         IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
         if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ActionResult.success(true);
 
-        if (EggProcessingData.EGG_DATA.containsKey(stack.getItem())) return entity.insertEgg(stack);
+        if (EggProcessingData.get(world.getServer(), stack.getItem()) != null) return entity.insertEgg(stack);
         if (stack.isEmpty()) return entity.extractEgg(player);
 
         return ActionResult.success(false);

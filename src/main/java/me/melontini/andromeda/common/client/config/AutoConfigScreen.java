@@ -5,6 +5,7 @@ import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Origin;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
@@ -53,6 +54,29 @@ public class AutoConfigScreen {
     public static void register() {
         LOGGER.info("Loading ClothConfig support!");
         saveCallback = Reflect.findField(AbstractConfigEntry.class, "saveCallback");
+    }
+
+    public static Screen getLabScreen(Screen screen) {
+        ConfigBuilder builder = ConfigBuilder.create()
+                .setParentScreen(screen)
+                .setTitle(TextUtil.translatable("config.andromeda.lab.title"))
+                .setSavingRunnable(Experiments::save)
+                .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
+
+        GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
+
+        ConfigCategory misc = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.main"));
+        Arrays.stream(Experiments.Config.class.getFields()).forEach((field) -> {
+            String opt = "config.andromeda.lab.option." + field.getName();
+            registry.getAndTransform(opt, field, Experiments.get(), Experiments.getDefault(), registry).forEach(e -> {
+                setOptionTooltip(e, opt + ".@Tooltip");
+                appendEnvInfo(e, field);
+                wrapTooltip(e);
+                misc.addEntry(e);
+            });
+        });
+
+        return builder.build();
     }
 
     public static Screen get(Screen screen) {

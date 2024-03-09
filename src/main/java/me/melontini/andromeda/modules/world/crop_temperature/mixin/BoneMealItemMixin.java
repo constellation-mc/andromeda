@@ -5,6 +5,7 @@ import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureDat
 import net.minecraft.block.Block;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,9 +22,9 @@ abstract class BoneMealItemMixin {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getBlockPos();
 
-        if (world.am$get(PlantTemperature.class).affectBoneMeal && !world.isClient()) {
+        if (!world.isClient() && world.am$get(PlantTemperature.class).affectBoneMeal) {
             Block block = world.getBlockState(pos).getBlock();
-            if (!PlantTemperatureData.roll(block, world.getBiome(pos).value().getTemperature(), world)) {
+            if (!PlantTemperatureData.roll(block, world.getBiome(pos).value().getTemperature(), (ServerWorld) world)) {
                 cir.setReturnValue(ActionResult.FAIL);
             }
         }

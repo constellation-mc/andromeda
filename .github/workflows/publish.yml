@@ -62,17 +62,15 @@ jobs:
           modrinth-unfeature-mode: subset
           modrinth-dependencies: |
             fabric-api(required)
-            cloth-config(required)
+            cloth-config(recommended)
             modmenu(recommended)
-            tooltipfix(recommended)
             dark-matter(embedded)
 
 
-          #curseforge-id: 639198
-          #curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          #curseforge-dependencies: |
-          #  fabric-api(required)
-          #  cloth-config(required)
-          #  modmenu(recommended)
-          #  tooltipfix(recommended)
-          #  dark-matter(embedded)
+          curseforge-id: 639198
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          curseforge-dependencies: |
+            fabric-api(required)
+            cloth-config(recommended)
+            modmenu(recommended)
+            dark-matter(embedded)

@@ -3,9 +3,11 @@ package me.melontini.andromeda.base;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
+import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -22,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,10 +67,10 @@ public class ModuleManager {
 
         this.setUpConfigs(sorted);
 
-        sorted.forEach(module -> {
-            module.config = Utilities.cast(module.manager.load(FabricLoader.getInstance().getConfigDir()));
-            module.defaultConfig = Utilities.cast(module.manager.createDefault());
-        });
+        CompletableFuture.allOf(sorted.stream().map(m -> CompletableFuture.runAsync(() -> {
+            m.config = Utilities.cast(m.manager.load(FabricLoader.getInstance().getConfigDir()));
+            m.defaultConfig = Utilities.cast(m.manager.createDefault());
+        })).toArray(CompletableFuture[]::new)).join();
 
         if (Debug.Keys.ENABLE_ALL_MODULES.isPresent())
             sorted.forEach(module -> module.config().enabled = true);
@@ -90,6 +93,12 @@ public class ModuleManager {
     private void fixScopes(Collection<? extends Module<?>> modules) {
         modules.forEach(m -> {
             if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
+
+            if (!Experiments.get().scopedConfigs && !m.config().scope.isGlobal()) {
+                throw AndromedaException.builder().report(false)
+                        .message("Module '%s' has an invalid scope (%s), enable the 'scopedConfigs' experiment first!".formatted(m.meta().id(), m.config().scope))
+                        .build();
+            }
 
             if (m.meta().environment().isClient() && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
@@ -187,6 +196,7 @@ public class ModuleManager {
 
         paths.add(root.resolve("andromeda/mod.json"));
         paths.add(root.resolve("andromeda/debug.json"));
+        paths.add(root.resolve("andromeda/experiments.json"));
 
         modules.forEach(module -> paths.add(module.manager().resolve(root)));
 

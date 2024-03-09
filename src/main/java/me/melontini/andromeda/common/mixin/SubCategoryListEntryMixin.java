@@ -1,7 +1,7 @@
 package me.melontini.andromeda.common.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.dark_matter.api.base.util.mixin.annotations.MixinPredicate;
@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 abstract class SubCategoryListEntryMixin {
 
     //Why am I fixing CC bugs?
-    @WrapOperation(method = "isRequiresRestart", at = @At(value = "INVOKE", target = "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"))
-    private boolean andromeda$isEdited(AbstractConfigListEntry<?> instance, Operation<Boolean> original) {
-        return original.call(instance) && instance.isEdited();
+    @ModifyExpressionValue(method = "isRequiresRestart", at = @At(value = "INVOKE", target = "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"))
+    private boolean andromeda$isEdited(boolean original, @Local AbstractConfigListEntry<?> e) {
+        return original && e.isEdited();
     }
 }

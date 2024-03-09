@@ -4,7 +4,9 @@ import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.config.DataConfigs;
+import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
 import me.melontini.andromeda.common.registries.Common;
+import me.melontini.andromeda.common.util.ServerHelper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -13,8 +15,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 
@@ -40,10 +40,10 @@ public class Andromeda {
     private void onInitialize(ModuleManager manager) {
         Common.bootstrap();
 
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DataConfigs());
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            if (DataConfigs.CONFIGS != null) DataConfigs.CONFIGS = null;
-        });
+        ServerLifecycleEvents.SERVER_STARTING.register(ServerHelper::setContext);
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ServerHelper.setContext(null));
+
+        ServerResourceReloadersEvent.EVENT.register(context -> context.register(new DataConfigs()));
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             var list = manager.loaded().stream().filter(module -> module.config().scope.isDimension()).toList();
@@ -53,7 +53,7 @@ public class Andromeda {
         });
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-            if (success) DataConfigs.apply(server);
+            if (success) DataConfigs.get(server).apply(server);
         });
 
         if (!AndromedaConfig.get().sideOnlyMode) {

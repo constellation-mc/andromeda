@@ -99,6 +99,7 @@
 
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",
+  "config.andromeda.button.wiki": "Visit the wiki!",
 
   "andromeda.disconnected.module_mismatch": "Andromeda module mismatch!\nDisable: %s\n Enable: %s\nTo join this server!",
 
@@ -364,5 +365,10 @@
   "config.andromeda.base.option.sendCrashReports": "Send Crash Reports",
   "config.andromeda.base.option.sendCrashReports.@Tooltip": "Data sent at crash: \n- Environment (e.g. client), \n- OS version (e.g. Windows 11), \n- Platform (e.g. Fabric), \n- Java (e.g. 17 Oracle Corp), \n- Bootstrap status (e.g Discovery), \n- Certain loaded mods. \nCrash reports don't have a unique profile attached.",
   "config.andromeda.base.option.debugMessages": "Enable debug messages?",
-  "config.andromeda.base.option.debugMessages.@Tooltip": "If enabled, log messages could get spammy."
+  "config.andromeda.base.option.debugMessages.@Tooltip": "If enabled, log messages could get spammy.",
+
+  "config.andromeda.lab.title": "Andromeda Lab 🧪",
+  "config.andromeda.button.lab.tooltip": "Try experimental features!",
+  "config.andromeda.lab.option.scopedConfigs": "Scoped Configs",
+  "config.andromeda.lab.option.scopedConfigs.@Tooltip": "Allows separating module configs on a per-world/dimension basis.\nConfigs can be overridden by data packs and interacted with via KubeJS.\nConsult the wiki for more info!"
 }

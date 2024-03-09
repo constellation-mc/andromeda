@@ -59,7 +59,7 @@ public class ScopedConfigs {
 
         module.manager().save(p, Utilities.cast(config));
 
-        if (!module.config().scope.isDimension()) DataConfigs.applyDataPacks(config, module, world.getRegistryKey().getValue());
+        if (!module.config().scope.isDimension()) DataConfigs.get(world.getServer()).applyDataPacks(config, module, world.getRegistryKey().getValue());
         attachment.addConfig(module, config);
     }
 

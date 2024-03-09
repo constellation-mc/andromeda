@@ -3,7 +3,7 @@ package me.melontini.andromeda.base;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.ClassPath;
@@ -13,8 +13,8 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
-import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.Support;
+import me.melontini.dark_matter.api.base.util.classes.Context;
 import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import net.fabricmc.api.EnvType;
@@ -107,57 +107,59 @@ public class Bootstrap {
     }
 
     public static void onPreLaunch() {
-        Status.update();
-        LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
-
-        //Necessary to avoid class loading related deadlock in ModuleDiscovery.
-        Exceptions.run(() -> {
-            Class.forName(ModuleInfo.class.getName());
-            Class.forName(Exceptions.class.getName());
-        });
-
-        AndromedaConfig.save();
-
-        Status.update();
-
-        List<Module.Zygote> list = new ArrayList<>(40);
-        run(() -> {
-            //This should probably be removed.
-            ServiceLoader.load(Module.class).stream().map(p -> Module.Zygote.spawn(p.type(), p::get)).forEach(list::add);
-            EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
-        }, (b) -> b.message("Failed during module discovery!"));
-
-        if (list.isEmpty()) {
-            LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
-        }
-
-        list.removeIf(m -> CommonValues.environment() == EnvType.SERVER && !m.meta().environment().allows(EnvType.SERVER));
-
-        resolveConflicts(list);
-
-        List<Module.Zygote> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
-            int i = ModuleManager.CATEGORIES.indexOf(m.meta().category());
-            return i >= 0 ? i : ModuleManager.CATEGORIES.size();
-        })).toList();
-
-        Status.update();
-
-        ModuleManager m;
         try {
-            m = new ModuleManager(sorted);
-        } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
-            throw AndromedaException.builder()
-                    .cause(t).message("Failed to initialize ModuleManager!!!")
-                    .build();
-        }
-        m.print();
-        //Scan for mixins.
-        m.loaded().forEach(module -> getModuleClassPath().addUrl(module.getClass().getProtectionDomain().getCodeSource().getLocation()));
-        run(() -> m.getMixinProcessor().addMixins(), (b) -> b.message("Failed to inject dynamic mixin configs!").message(MixinProcessor.NOTICE));
-        Support.share("andromeda:module_manager", m);
+            Status.update();
+            LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
 
-        Status.update();
-        Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
+            AndromedaConfig.save();
+            Experiments.save();
+
+            Status.update();
+
+            List<Module.Zygote> list = new ArrayList<>(40);
+            run(() -> {
+                //This should probably be removed.
+                ServiceLoader.load(Module.class).stream().map(p -> Module.Zygote.spawn(p.type(), p::get)).forEach(list::add);
+                EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
+            }, (b) -> b.message("Failed during module discovery!"));
+
+            if (list.isEmpty()) {
+                LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
+            }
+
+            list.removeIf(m -> CommonValues.environment() == EnvType.SERVER && !m.meta().environment().allows(EnvType.SERVER));
+
+            resolveConflicts(list);
+
+            List<Module.Zygote> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
+                int i = ModuleManager.CATEGORIES.indexOf(m.meta().category());
+                return i >= 0 ? i : ModuleManager.CATEGORIES.size();
+            })).toList();
+
+            Status.update();
+
+            ModuleManager m;
+            try {
+                m = new ModuleManager(sorted);
+            } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
+                throw AndromedaException.builder()
+                        .cause(t).message("Failed to initialize ModuleManager!!!")
+                        .build();
+            }
+            m.print();
+            //Scan for mixins.
+            m.loaded().forEach(module -> getModuleClassPath().addUrl(module.getClass().getProtectionDomain().getCodeSource().getLocation()));
+            run(() -> m.getMixinProcessor().addMixins(), (b) -> b.message("Failed to inject dynamic mixin configs!").message(MixinProcessor.NOTICE));
+            Support.share("andromeda:module_manager", m);
+
+            Status.update();
+            Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
+        } catch (Throwable t) {
+            var e = AndromedaException.builder().cause(t).message("Failed to bootstrap Andromeda!").build();
+            CrashHandler.handleCrash(e, Context.of());
+            e.setAppender(b -> b.append("Statuses: ").append(AndromedaException.GSON.toJson(e.getStatuses())));
+            throw e;
+        }
     }
 
     private static void resolveConflicts(Collection<Module.Zygote> list) {

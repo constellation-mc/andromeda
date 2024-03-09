@@ -26,14 +26,14 @@ abstract class ZombieEntityMixin extends HostileEntity {
     public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
         if (world.am$get(Pickup.class).enabled) {
             return original && (stack.isIn(PickupTag.ZOMBIES_PICKUP) || ModuleManager.get().getModule(ThrowableItems.class)
-                    .map(m -> handleThrowableItems(m, stack))
+                    .map(m -> handleThrowableItems(m, world, stack))
                     .orElse(false));
         }
         return original;
     }
 
     @Unique
-    private boolean handleThrowableItems(ThrowableItems m, ItemStack stack) {
-        return m.config().canZombiesThrowItems && ItemBehaviorManager.hasBehaviors(stack.getItem());
+    private boolean handleThrowableItems(ThrowableItems m, World world, ItemStack stack) {
+        return m.config().canZombiesThrowItems && ItemBehaviorManager.get(world.getServer()).hasBehaviors(stack.getItem());
     }
 }

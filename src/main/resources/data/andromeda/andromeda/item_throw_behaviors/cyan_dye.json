@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:cyan_dye",
+  "items": "minecraft:cyan_dye",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 5,
-    "green": 95,
-    "blue": 95
+  "particles": {
+    "colors": [5, 95, 95]
   }
 }

@@ -1,10 +1,7 @@
 {
-  "item_id": "minecraft:black_dye",
+  "items": "minecraft:black_dye",
   "complement": true,
-  "spawn_colored_particles": true,
-  "particle_colors": {
-    "red": 5,
-    "green": 5,
-    "blue": 8
+  "particles": {
+    "colors": [5, 5, 8]
   }
 }
