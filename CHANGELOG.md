@@ -8,6 +8,10 @@
 
 * Cleaned up the data pack syntax. Check out the wiki to see what changed!
 
+[`items/pouches`]:
+
+* Fixed rendering crash.
+
 [`general`]:
 
 * [NEW]: The Lab!
