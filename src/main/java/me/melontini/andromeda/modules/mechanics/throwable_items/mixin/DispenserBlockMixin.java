@@ -20,7 +20,7 @@ abstract class DispenserBlockMixin {
     @Inject(at = @At("TAIL"), method = "method_10008")
     private static void andromeda$throwItem(Object2ObjectOpenHashMap<Item, DispenserBehavior> map, CallbackInfo ci) {
         var b = map.defaultReturnValue();
-        map.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.get(pointer.getWorld().getServer()).hasBehaviors(stack.getItem()) ?
+        map.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.get(pointer.world().getServer()).hasBehaviors(stack.getItem()) ?
                 Main.BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
     }
 
