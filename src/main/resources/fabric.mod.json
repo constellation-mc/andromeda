@@ -37,9 +37,6 @@
     ],
     "andromeda:modules": [
       "me.melontini.andromeda.modules.ModuleDiscovery"
-    ],
-    "andromeda:collect_behaviors": [
-      "me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBehaviors"
     ]
   },
   "mixins": [

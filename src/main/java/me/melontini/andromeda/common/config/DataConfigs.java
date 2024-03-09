@@ -14,7 +14,6 @@ import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -31,15 +30,21 @@ import java.util.concurrent.CompletableFuture;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class DataConfigs extends JsonDataLoader implements IdentifiableResourceReloadListener {
+public class DataConfigs extends JsonDataLoader {
+
+    private static final Identifier DEFAULT = new Identifier(MODID, "default");
+    public static final Identifier RELOADER_ID = Common.id("scoped_config");
 
     public DataConfigs() {
-        super(Common.id("scoped_config"));
+        super(RELOADER_ID);
     }
 
-    public static Map<Identifier, Map<Module<?>, Set<Data>>> CONFIGS;
-    public static Map<Module<?>, Set<Data>> DEFAULT_CONFIGS;
-    private static final Identifier DEFAULT = new Identifier(MODID, "default");
+    public static DataConfigs get(MinecraftServer server) {
+        return server.am$getReloader(RELOADER_ID);
+    }
+
+    public Map<Identifier, Map<Module<?>, Set<Data>>> configs;
+    public Map<Module<?>, Set<Data>> defaultConfigs;
 
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
@@ -79,11 +84,11 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
                 completableFutures.forEach(future -> set.add(future.join()));
             });
         });
-        DEFAULT_CONFIGS = parsed.remove(DEFAULT);
-        CONFIGS = parsed;
+        defaultConfigs = parsed.remove(DEFAULT);
+        this.configs = parsed;
     }
 
-    private static CompletableFuture<Data> makeFuture(Gson gson, Module<?> m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
+    private CompletableFuture<Data> makeFuture(Gson gson, Module<?> m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 var instance = gson.fromJson(element, cls);
@@ -108,10 +113,10 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
     public record Data(Set<Field> fields, Module.BaseConfig config) {
     }
 
-    public static void apply(ServerWorld world) {
+    public void apply(ServerWorld world) {
         if (!Experiments.get().scopedConfigs) return;
 
-        MakeSure.notNull(DataConfigs.CONFIGS);
+        MakeSure.notNull(configs);
         ScopedConfigs.getConfigs(world);
 
         Set<CompletableFuture<?>> futures = new ReferenceOpenHashSet<>();
@@ -129,10 +134,10 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
         world.getServer().runTasks(task::isDone);
     }
 
-    public static void apply(MinecraftServer server) {
+    public void apply(MinecraftServer server) {
         if (!Experiments.get().scopedConfigs) return;
 
-        MakeSure.notNull(DataConfigs.CONFIGS);
+        MakeSure.notNull(configs);
 
         server.getWorlds().forEach(ScopedConfigs::getConfigs);
 
@@ -154,7 +159,7 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
         server.runTasks(task::isDone);
     }
 
-    private static void apply(Module.BaseConfig config, Data data) {
+    private void apply(Module.BaseConfig config, Data data) {
         data.fields().forEach((field) -> {
             try {
                 field.set(config, field.get(data.config()));
@@ -164,15 +169,15 @@ public class DataConfigs extends JsonDataLoader implements IdentifiableResourceR
         });
     }
 
-    static void applyDataPacks(Module.BaseConfig config, Module<?> m, Identifier id) {
-        if (DEFAULT_CONFIGS != null) {
-            var forModule = DEFAULT_CONFIGS.get(m);
+    void applyDataPacks(Module.BaseConfig config, Module<?> m, Identifier id) {
+        if (defaultConfigs != null) {
+            var forModule = defaultConfigs.get(m);
             if (forModule != null) {
                 for (Data tuple : forModule) apply(config, tuple);
             }
         }
 
-        var data = DataConfigs.CONFIGS.get(id);
+        var data = configs.get(id);
         if (data != null) {
             var forModule = data.get(m);
             if (forModule != null) {
