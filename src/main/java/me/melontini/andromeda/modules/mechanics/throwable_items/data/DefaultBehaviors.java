@@ -35,7 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-public class DefaultBehaviors implements Runnable {
+public class DefaultBehaviors {
 
     private static final Set<Item> DYE_ITEMS = Set.of(
             Items.RED_DYE, Items.BLUE_DYE, Items.LIGHT_BLUE_DYE,
@@ -45,9 +45,8 @@ public class DefaultBehaviors implements Runnable {
             Items.LIME_DYE, Items.MAGENTA_DYE, Items.LIGHT_GRAY_DYE,
             Items.GRAY_DYE);
 
-    @Override
-    public void run() {
-        ItemBehaviorManager.addBehavior(Items.BONE_MEAL, (stack, fie, world, user, hitResult) -> {
+    public static void init() {
+        ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult result = (BlockHitResult) hitResult;
 
@@ -56,37 +55,36 @@ public class DefaultBehaviors implements Runnable {
                         Hand.MAIN_HAND, stack, result
                 ));
             }
-        });
+        }, Items.BONE_MEAL);
 
-        ItemBehaviorManager.addBehavior(Items.INK_SAC, (stack, fie, world, user, hitResult) ->
-                addEffects(hitResult, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0)));
+        ItemBehaviorManager.register((stack, fie, world, user, hitResult) ->
+                addEffects(hitResult, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0)), Items.INK_SAC);
 
-        ItemBehaviorManager.addBehavior(Items.GLOW_INK_SAC, (stack, fie, world, user, hitResult) ->
+        ItemBehaviorManager.register((stack, fie, world, user, hitResult) ->
                 addEffects(hitResult, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0),
-                new StatusEffectInstance(StatusEffects.GLOWING, 100, 0)));
+                        new StatusEffectInstance(StatusEffects.GLOWING, 100, 0)), Items.GLOW_INK_SAC);
 
-        for (Item item : DYE_ITEMS) {
-            ItemBehaviorManager.addBehavior(item, (stack, fie, world, user, hitResult) -> {
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeItemStack(stack);
+        ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeItemStack(stack);
 
-                if (hitResult.getType() == HitResult.Type.ENTITY) {
-                    EntityHitResult entityHitResult = (EntityHitResult) hitResult;
-                    if (entityHitResult.getEntity() instanceof PlayerEntity player) {
-                        ServerPlayNetworking.send((ServerPlayerEntity) player, Main.COLORED_FLYING_STACK_LANDED, buf);
-                    }
-                } else if (hitResult.getType() == HitResult.Type.BLOCK) {
-                    Vec3d pos = hitResult.getPos();
-                    List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(((BlockHitResult) hitResult).getBlockPos()).expand(0.5), LivingEntity::isAlive);
-                    playerEntities.stream().min(Comparator.comparingDouble(player -> player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())))
-                            .ifPresent(player -> {
-                                ServerPlayNetworking.send((ServerPlayerEntity) player, Main.COLORED_FLYING_STACK_LANDED, buf);
-                            });
+            if (hitResult.getType() == HitResult.Type.ENTITY) {
+                EntityHitResult entityHitResult = (EntityHitResult) hitResult;
+                if (entityHitResult.getEntity() instanceof PlayerEntity player) {
+                    ServerPlayNetworking.send((ServerPlayerEntity) player, Main.COLORED_FLYING_STACK_LANDED, buf);
                 }
-            });
-        }
+            } else if (hitResult.getType() == HitResult.Type.BLOCK) {
+                Vec3d pos = hitResult.getPos();
+                List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(((BlockHitResult) hitResult).getBlockPos()).expand(0.5), LivingEntity::isAlive);
+                playerEntities.stream().min(Comparator.comparingDouble(player -> player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())))
+                        .ifPresent(player -> {
+                            ServerPlayNetworking.send((ServerPlayerEntity) player, Main.COLORED_FLYING_STACK_LANDED, buf);
+                        });
+            }
+        }, DYE_ITEMS);
 
-        ItemBehaviorManager.addBehaviors((stack, fie, world, user, hitResult) -> {
+
+        ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) hitResult).getEntity();
                 entity.damage(Content.bricked(user), 2);
@@ -101,7 +99,7 @@ public class DefaultBehaviors implements Runnable {
             world.spawnEntity(new ItemEntity(world, fie.getX(), fie.getY(), fie.getZ(), stack));
         }, Items.BRICK, Items.NETHER_BRICK);
 
-        ItemBehaviorManager.addBehavior(Items.FIRE_CHARGE, (stack, fie, world, user, hitResult) -> {
+        ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult result = (BlockHitResult) hitResult;
                 BlockPos blockPos = result.getBlockPos();
@@ -129,9 +127,9 @@ public class DefaultBehaviors implements Runnable {
                 Random random = world.getRandom();
                 world.playSound(null, fie.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
             }
-        });
+        }, Items.FIRE_CHARGE);
 
-        ItemBehaviorManager.addBehavior(Items.GUNPOWDER, (stack, fie, world, user, hitResult) -> world.createExplosion(user, fie.getX(), fie.getY(), fie.getZ(), 1, Explosion.DestructionType.BREAK));
+        ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> world.createExplosion(user, fie.getX(), fie.getY(), fie.getZ(), 1, Explosion.DestructionType.BREAK), Items.GUNPOWDER);
     }
 
     public static void addEffects(HitResult hitResult, Entity user, StatusEffectInstance... instances) {

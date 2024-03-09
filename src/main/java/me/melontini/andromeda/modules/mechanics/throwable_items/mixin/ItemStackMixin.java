@@ -27,18 +27,24 @@ abstract class ItemStackMixin {
     @Shadow public abstract void decrement(int amount);
 
     @Inject(at = @At("HEAD"), method = "use", cancellable = true)
-    private void andromeda$throwableBehaviour(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (ItemBehaviorManager.hasBehaviors(getItem()) && ItemBehaviorManager.overridesVanilla(getItem())) {
-            if (andromeda$runBehaviors(world, user)) {
+    private void andromeda$throwableBehavior(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
+        if (world.isClient()) return;
+
+        var manager = ItemBehaviorManager.get(world.getServer());
+        if (manager.hasBehaviors(getItem()) && manager.overridesVanilla(getItem())) {
+            if (andromeda$runBehaviors(world, manager, user)) {
                 cir.setReturnValue(TypedActionResult.success((ItemStack) (Object) this));
             }
         }
     }
 
     @ModifyReturnValue(at = @At("RETURN"), method = "use")
-    private TypedActionResult<ItemStack> andromeda$throwableBehaviour(TypedActionResult<ItemStack> original, World world, PlayerEntity user, Hand hand) {
-        if (original.getResult() == ActionResult.PASS && ItemBehaviorManager.hasBehaviors(getItem()) && !ItemBehaviorManager.overridesVanilla(getItem())) {
-            if (andromeda$runBehaviors(world, user)) {
+    private TypedActionResult<ItemStack> andromeda$throwableBehavior(TypedActionResult<ItemStack> original, World world, PlayerEntity user, Hand hand) {
+        if (world.isClient()) return original;
+
+        var manager = ItemBehaviorManager.get(world.getServer());
+        if (original.getResult() == ActionResult.PASS && manager.hasBehaviors(getItem()) && !manager.overridesVanilla(getItem())) {
+            if (andromeda$runBehaviors(world, manager, user)) {
                 return TypedActionResult.success((ItemStack) (Object) this);
             }
         }
@@ -46,7 +52,7 @@ abstract class ItemStackMixin {
     }
 
     @Unique
-    private boolean andromeda$runBehaviors(World world, PlayerEntity user) {
+    private boolean andromeda$runBehaviors(World world, ItemBehaviorManager manager, PlayerEntity user) {
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {
             var entity = new FlyingItemEntity((ItemStack) (Object) this, user, world);
@@ -55,7 +61,7 @@ abstract class ItemStackMixin {
             world.spawnEntity(entity);
         }
 
-        user.getItemCooldownManager().set(getItem(), ItemBehaviorManager.getCooldown(getItem()));
+        user.getItemCooldownManager().set(getItem(), manager.getCooldown(getItem()));
         user.incrementStat(Stats.USED.getOrCreateStat(getItem()));
 
         if (!user.getAbilities().creativeMode) {

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import me.melontini.andromeda.common.util.ServerHelper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import net.minecraft.block.DispenserBlock;
@@ -19,13 +20,16 @@ abstract class DispenserBlockMixin {
     @Inject(at = @At("TAIL"), method = "method_10008")
     private static void andromeda$throwItem(Object2ObjectOpenHashMap<Item, DispenserBehavior> map, CallbackInfo ci) {
         var b = map.defaultReturnValue();
-        map.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.hasBehaviors(stack.getItem()) ?
+        map.defaultReturnValue((pointer, stack) -> ItemBehaviorManager.get(pointer.getWorld().getServer()).hasBehaviors(stack.getItem()) ?
                 Main.BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
     }
 
     @Inject(at = @At("HEAD"), method = "getBehaviorForItem", cancellable = true)
     private void andromeda$overrideBehavior(ItemStack stack, CallbackInfoReturnable<DispenserBehavior> cir) {
-        if (ItemBehaviorManager.hasBehaviors(stack.getItem()) && ItemBehaviorManager.overridesVanilla(stack.getItem())) {
+        if (ServerHelper.getContext() == null) return;
+
+        var manager = ItemBehaviorManager.get(ServerHelper.getContext());
+        if (manager.hasBehaviors(stack.getItem()) && manager.overridesVanilla(stack.getItem())) {
             cir.setReturnValue(Main.BEHAVIOR);
         }
     }
