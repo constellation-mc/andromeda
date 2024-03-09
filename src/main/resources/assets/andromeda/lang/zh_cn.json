@@ -99,6 +99,7 @@
 
   "config.andromeda.title": "群星（%s）",
   "config.andromeda.option.enabled": "启用",
+  "config.andromeda.button.wiki": "访问维基！",
 
   "andromeda.disconnected.module_mismatch": "群星模组配置不同步！\n请禁用%s\n启用%s\n以加入此服务器！",
 
@@ -363,5 +364,10 @@
   "config.andromeda.base.option.sendCrashReports": "上传错误报告",
   "config.andromeda.base.option.sendCrashReports.@Tooltip": "崩溃时上传的数据：\n- 环境（如客户端），\n- 系统版本（如Windows 11），\n- 平台（如Fabric），\n- Java（如甲骨文Java17），\n- Bootstrap状态（如Discovery），\n- 部分载入的模组。\n错误报告不会附加特征信息。",
   "config.andromeda.base.option.debugMessages": "启用调试信息",
-  "config.andromeda.base.option.debugMessages.@Tooltip": "开启后，日志文件将被数不清的条目淹没。"
+  "config.andromeda.base.option.debugMessages.@Tooltip": "开启后，日志内容将被数不清的调试信息淹没。",
+
+  "config.andromeda.lab.title": "群星实验室 🧪",
+  "config.andromeda.button.lab.tooltip": "试试那些实验性功能！",
+  "config.andromeda.lab.option.scopedConfigs": "分化配置",
+  "config.andromeda.lab.option.scopedConfigs.@Tooltip": "使你能够逐世界、逐维度应用配置。\n这些配置可以通过数据包覆盖，也可以用KubeJS更改。\n欲知更多内容，请查阅维基！"
 }
