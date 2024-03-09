@@ -2,13 +2,13 @@ package me.melontini.andromeda.modules.blocks.incubator;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.ServerHelper;
+import me.melontini.andromeda.common.util.StorageBackCopy;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -146,7 +146,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     public ActionResult insertEgg(ItemStack stack) {
         try (Transaction transaction = Transaction.openOuter()) {
             var storage = InventoryStorage.of(this, null);
-            long i = StorageUtil.tryInsertStacking(storage, ItemVariant.of(stack), stack.getCount(), transaction);
+            long i = storage.insert(ItemVariant.of(stack), stack.getCount(), transaction);
             if (i > 0) {
                 transaction.commit();
                 this.markDirty();
@@ -160,7 +160,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     public ActionResult extractEgg(PlayerEntity player) {
         try (Transaction transaction = Transaction.openOuter()) {
             var storage = InventoryStorage.of(this, null);
-            var ra = StorageUtil.extractAny(storage, Long.MAX_VALUE, transaction);
+            var ra = StorageBackCopy.extractAny(storage, Long.MAX_VALUE, transaction);
             if (ra != null && ra.amount() > 0) {
                 transaction.commit();
                 this.markDirty();

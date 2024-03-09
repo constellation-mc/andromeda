@@ -1,19 +1,18 @@
 package me.melontini.andromeda.modules.misc.damage_backport;
 
-import me.melontini.andromeda.base.Environment;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.annotations.ModuleInfo;
-import me.melontini.andromeda.base.annotations.OldConfigKey;
-import me.melontini.andromeda.base.annotations.Unscoped;
-import me.melontini.andromeda.common.registries.Common;
+import me.melontini.andromeda.base.events.InitEvent;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.annotations.Unscoped;
+
+import java.util.List;
 
 @Unscoped
-@OldConfigKey("damageBackport")
 @ModuleInfo(name = "damage_backport", category = "misc", environment = Environment.SERVER)
 public class DamageBackport extends Module<Module.BaseConfig> {
 
-    @Override
-    public void onMain() {
-        Common.bootstrap(this, DamageCommand.class);
+    DamageBackport() {
+        InitEvent.main(this).listen(() -> List.of(DamageCommand.class));
     }
 }

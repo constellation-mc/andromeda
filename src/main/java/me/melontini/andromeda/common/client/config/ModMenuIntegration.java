@@ -6,7 +6,6 @@ import lombok.CustomLog;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -14,7 +13,6 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.particle.ParticleTypes;
@@ -49,11 +47,11 @@ public class ModMenuIntegration implements ModMenuApi {
                             screen.handleTextClick(WIKI_LINK);
                         }
                     });
-                    wiki.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.wiki")));
+                    //wiki.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.wiki")));
                     addDrawableChild(screen, wiki);
 
                     var lab = new TexturedButtonWidget(screen.width - 62, 13, 20, 20, 0, 0, 20, LAB_BUTTON_TEXTURE, 32, 64, button -> client.setScreen(AutoConfigScreen.getLabScreen(screen1)));
-                    lab.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.lab.tooltip")));
+                    //lab.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.lab.tooltip")));
                     addDrawableChild(screen, lab);
                 }
             });

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common.registries;
 
+import com.google.common.collect.Streams;
 import com.google.gson.JsonElement;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
@@ -17,8 +18,8 @@ public class Common {
     public static void bootstrap() {
         AndromedaItemGroup.init();
 
-        ResourceConditions.register(id("items_registered"), object -> JsonHelper.getArray(object, "values")
-                .asList().stream().filter(JsonElement::isJsonPrimitive)
+        ResourceConditions.register(id("items_registered"), object -> Streams.stream(JsonHelper.getArray(object, "values").iterator())
+                .filter(JsonElement::isJsonPrimitive)
                 .allMatch(e -> CommonRegistries.items().containsId(Identifier.tryParse(e.getAsString()))));
     }
 }

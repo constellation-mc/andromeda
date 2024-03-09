@@ -19,6 +19,9 @@ public class DamageCommand {
     private static final SimpleCommandExceptionType INVULNERABLE_EXCEPTION = new SimpleCommandExceptionType(TextUtil.translatable("commands.andromeda.damage.invulnerable"));
 
     public DamageCommand() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            DamageCommand.register(dispatcher);
+        });
     }
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -74,11 +77,5 @@ public class DamageCommand {
         } else {
             throw INVULNERABLE_EXCEPTION.create();
         }
-    }
-
-    public static void init() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            DamageCommand.register(dispatcher);
-        });
     }
 }

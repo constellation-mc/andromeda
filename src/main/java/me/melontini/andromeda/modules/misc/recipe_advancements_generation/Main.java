@@ -108,7 +108,7 @@ public class Main {
 
     public static @NotNull Advancement.Builder createAdvBuilder(Identifier id, Ingredient... ingredients) {
         MakeSure.notEmpty(ingredients);// shouldn't really happen
-        var builder = Advancement.Builder.createUntelemetered();
+        var builder = Advancement.Builder.create();
         builder.parent(Identifier.tryParse("minecraft:recipes/root"));
 
         List<String> names = new ArrayList<>();

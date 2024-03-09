@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerScreenHandler.class)
 abstract class PlayerScreenHandlerMixin {
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;dropInventory(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/inventory/Inventory;)V"), method = "onClosed")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;dropInventory(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/inventory/Inventory;)V"), method = "close")
     private void andromeda$doNotDrop(PlayerScreenHandler instance, PlayerEntity player, Inventory inventory) {
 
     }

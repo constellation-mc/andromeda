@@ -48,8 +48,8 @@ abstract class ItemEntityMixin {
 
             blockItem.place(new ItemPlacementContext(world, null, null, stack,
                     world.raycast(new RaycastContext(
-                            Vec3d.add(pos, 0.5, 0.5, 0.5),
-                            Vec3d.add(pos, 0.5, -0.5, 0.5),
+                            new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
+                            new Vec3d(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5),
                             RaycastContext.ShapeType.COLLIDER,
                             RaycastContext.FluidHandling.ANY,
                             entity)

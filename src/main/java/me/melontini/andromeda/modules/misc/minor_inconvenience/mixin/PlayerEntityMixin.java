@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.misc.minor_inconvenience.mixin;
 
-import me.melontini.andromeda.modules.misc.minor_inconvenience.Agony;
+import me.melontini.andromeda.modules.misc.minor_inconvenience.Main;
 import me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -22,9 +22,9 @@ abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/LivingEntity.damage (Lnet/minecraft/entity/damage/DamageSource;F)Z", shift = At.Shift.BEFORE), method = "damage", cancellable = true)
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!world.isClient && source != Agony.AGONY && world.am$get(MinorInconvenience.class).enabled) {
-            super.damage(Agony.AGONY, Float.MAX_VALUE);
-            this.world.createExplosion(null, Agony.AGONY, null, this.getBlockX() + 0.5, this.getBlockY() + 0.5, this.getBlockZ() + 0.5, 5.0F, true, Explosion.DestructionType.DESTROY);
+        if (!world.isClient && source != Main.AGONY && world.am$get(MinorInconvenience.class).enabled) {
+            super.damage(Main.AGONY, Float.MAX_VALUE);
+            this.world.createExplosion(null, Main.AGONY, null, this.getBlockX() + 0.5, this.getBlockY() + 0.5, this.getBlockZ() + 0.5, 5.0F, true, Explosion.DestructionType.DESTROY);
             cir.setReturnValue(false);
         }
     }

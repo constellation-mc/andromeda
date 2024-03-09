@@ -14,7 +14,6 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
@@ -63,7 +62,7 @@ public class Main {
         if (stack.isEmpty()) return;
         ItemStack itemStack = stack.copy();
         try (Transaction transaction = Transaction.openOuter()) {
-            long i = StorageUtil.tryInsertStacking(storage, ItemVariant.of(stack), stack.getCount(), transaction);
+            long i = storage.insert(ItemVariant.of(stack), stack.getCount(), transaction);
             if (i > 0) {
                 transaction.commit();
                 itemStack.setCount((int) (stack.getCount() - i));

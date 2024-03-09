@@ -7,12 +7,11 @@ import me.melontini.andromeda.common.data.DataPackContentsAccessor;
 import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.ResourceReloader;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.DataPackContents;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -36,9 +35,9 @@ abstract class DataPackContentsMixin implements DataPackContentsAccessor {
     private List<IdentifiableResourceReloadListener> reloaders;
 
     @Inject(at = @At("TAIL"), method = "<init>")
-    private void andromeda$addReloaders(DynamicRegistryManager.Immutable dynamicRegistryManager, FeatureSet enabledFeatures, CommandManager.RegistrationEnvironment environment, int functionPermissionLevel, CallbackInfo ci) {
+    private void andromeda$addReloaders(DynamicRegistryManager.Immutable dynamicRegistryManager, CommandManager.RegistrationEnvironment environment, int functionPermissionLevel, CallbackInfo ci) {
         List<IdentifiableResourceReloadListener> list = new ArrayList<>();
-        ServerResourceReloadersEvent.EVENT.invoker().register(new ServerResourceReloadersEvent.Context(dynamicRegistryManager, enabledFeatures, environment, list::add));
+        ServerResourceReloadersEvent.EVENT.invoker().register(new ServerResourceReloadersEvent.Context(dynamicRegistryManager, environment, list::add));
         this.reloaders = list;
 
         var cls = IdentifiableResourceReloadListener.class;

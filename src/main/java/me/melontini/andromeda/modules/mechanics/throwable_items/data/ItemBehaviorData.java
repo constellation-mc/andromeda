@@ -35,7 +35,7 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
                 Codec.BOOL.optionalFieldOf("colored", true).forGetter(Particles::colored),
                 Codec.either(Codec.INT, Codec.intRange(0, 255).listOf()).comapFlatMap(e -> e.map(DataResult::success, integers -> {
                             if (integers.size() != 3)
-                                return DataResult.error(() -> "colors array must contain exactly 3 colors (RGB)");
+                                return DataResult.error("colors array must contain exactly 3 colors (RGB)");
                             return DataResult.success(ColorUtil.toColor(integers.get(0), integers.get(1), integers.get(2)));
                         }), Either::left)
                         .optionalFieldOf("colors", -1).forGetter(Particles::colors)

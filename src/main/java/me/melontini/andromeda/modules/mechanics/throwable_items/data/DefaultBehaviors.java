@@ -87,7 +87,7 @@ public class DefaultBehaviors {
         ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) hitResult).getEntity();
-                entity.damage(Content.bricked(user), 2);
+                entity.damage(Main.bricked(user), 2);
                 if (entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 0));
                 }

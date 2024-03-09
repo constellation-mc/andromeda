@@ -1,8 +1,8 @@
 package me.melontini.andromeda.common.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.base.Environment;
-import me.melontini.andromeda.base.annotations.SpecialEnvironment;
+import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.resource.ResourceManager;

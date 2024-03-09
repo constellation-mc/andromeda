@@ -3,9 +3,8 @@ package me.melontini.andromeda.common.data;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.util.registry.DynamicRegistryManager;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -17,7 +16,7 @@ public interface ServerResourceReloadersEvent {
 
     void register(Context context);
 
-    record Context(DynamicRegistryManager.Immutable dynamicRegistryManager, FeatureSet enabledFeatures,
+    record Context(DynamicRegistryManager.Immutable dynamicRegistryManager,
                    CommandManager.RegistrationEnvironment environment, Consumer<IdentifiableResourceReloadListener> registrar) {
 
         public void register(IdentifiableResourceReloadListener listener) {
