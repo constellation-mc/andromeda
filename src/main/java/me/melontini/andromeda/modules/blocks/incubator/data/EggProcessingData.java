@@ -13,6 +13,7 @@ import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
@@ -66,6 +67,15 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, int time)
         @Override
         protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
             Map<Item, EggProcessingData> result = new IdentityHashMap<>();
+
+            for (Item item : CommonRegistries.items()) {
+                if (item instanceof SpawnEggItem egg) {
+                    WeightedList<Entry> list =  new WeightedList<>();
+                    list.add(new Entry(egg.getEntityType(new NbtCompound()), new NbtCompound(), Collections.emptyList()), 1);
+                    result.put(egg, new EggProcessingData(egg, list, 8000));
+                }
+            }
+
             Maps.transformValues(data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
                 throw new RuntimeException(string);
             })).forEach((identifier, eData) -> result.put(eData.item(), eData));
