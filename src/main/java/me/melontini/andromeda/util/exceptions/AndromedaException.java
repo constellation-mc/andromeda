@@ -169,7 +169,6 @@ public class AndromedaException extends RuntimeException {
         public AndromedaException build() {
             disableInHierarchy(cause);
 
-            //CrashHandler can't automatically handle preLaunch errors, so this is what we have to do.
             return new AndromedaException(report,
                     message.isEmpty() ? "Something went very wrong!" : StringUtils.join(message.toArray(), '\n'),
                     cause, statuses);

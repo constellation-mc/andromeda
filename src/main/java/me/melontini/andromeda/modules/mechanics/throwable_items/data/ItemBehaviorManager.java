@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
@@ -113,13 +114,10 @@ public class ItemBehaviorManager extends JsonDataLoader {
 
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-        Map<Identifier, ItemBehaviorData> map = new HashMap<>();
-        data.forEach((identifier, object) -> map.put(identifier, ItemBehaviorData.create(object.getAsJsonObject())));
-
         this.clear();
         itemBehaviors.putAll(STATIC);
 
-        map.forEach((id, behaviorData) -> {
+        Maps.transformValues(data, input -> ItemBehaviorData.create(input.getAsJsonObject())).forEach((id, behaviorData) -> {
             if (behaviorData.items().isEmpty()) return;
 
             for (Item item : behaviorData.items()) {
