@@ -13,6 +13,7 @@ import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
@@ -40,7 +41,13 @@ public class DataConfigs extends JsonDataLoader {
     }
 
     public static DataConfigs get(MinecraftServer server) {
-        return server.am$getReloader(RELOADER_ID);
+        try {
+            return server.am$getReloader(RELOADER_ID);
+        } catch (NullPointerException e) {
+            throw AndromedaException.builder().cause(e).report(false)
+                    .message("Couldn't get Scoped Configs reloader! Have you restarted the game as you were asked to?")
+                    .build();
+        }
     }
 
     public Map<Identifier, Map<Module<?>, Set<Data>>> configs;

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -70,7 +71,7 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
 
     public static ItemBehaviorData create(JsonObject object) {
         return CODEC.parse(JsonOps.INSTANCE, object).getOrThrow(false, string -> {
-            throw new RuntimeException(string);
+            throw new JsonParseException(string);
         });
     }
 }
