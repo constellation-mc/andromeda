@@ -1,8 +1,8 @@
 package me.melontini.andromeda.common.config;
 
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
@@ -55,14 +56,10 @@ public class DataConfigs extends JsonDataLoader {
 
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-        if (!Experiments.get().scopedConfigs) {
-            return;
-        }
+        if (!Experiments.get().scopedConfigs) return;
 
         Map<Identifier, Map<Module<?>, Set<CompletableFuture<Data>>>> configs = new Object2ObjectOpenHashMap<>();
-        data.forEach((id, element) -> {
-            JsonObject object = element.getAsJsonObject();
-
+        Maps.transformValues(data, JsonElement::getAsJsonObject).forEach((id, object) -> {
             var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
             var cls = ModuleManager.get().getConfigClass(m.getClass());
 
@@ -98,19 +95,16 @@ public class DataConfigs extends JsonDataLoader {
     private CompletableFuture<Data> makeFuture(Gson gson, Module<?> m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                var instance = gson.fromJson(element, cls);
-                Set<Field> config = new ReferenceOpenHashSet<>();
-                element.getAsJsonObject().entrySet().forEach(entry2 -> {
+                return new Data(element.getAsJsonObject().entrySet().stream().map(entry -> {
                     try {
-                        var f = cls.getField(entry2.getKey());
+                        var f = cls.getField(entry.getKey());
                         if (f.isAnnotationPresent(Unscoped.class))
-                            throw new IllegalStateException("Attempted to modify an unscoped field '%s'!".formatted(entry2.getKey()));
-                        config.add(f);
+                            throw new IllegalStateException("Attempted to modify an unscoped field '%s'!".formatted(entry.getKey()));
+                        return f;
                     } catch (NoSuchFieldException e) {
                         throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
                     }
-                });
-                return new Data(config, instance);
+                }).collect(Collectors.toCollection(ReferenceOpenHashSet::new)), gson.fromJson(element, cls));
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
             }
@@ -122,47 +116,39 @@ public class DataConfigs extends JsonDataLoader {
 
     public void apply(ServerWorld world) {
         if (!Experiments.get().scopedConfigs) return;
-
         MakeSure.notNull(configs);
-        ScopedConfigs.getConfigs(world);
 
-        Set<CompletableFuture<?>> futures = new ReferenceOpenHashSet<>();
-        for (Module<?> module : ModuleManager.get().loaded()) {
-            switch (module.config().scope) {
-                case WORLD -> futures.add(CompletableFuture.runAsync(() -> {
-                    if (world.getRegistryKey().equals(World.OVERWORLD))
-                        ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
-                }, Util.getMainWorkerExecutor()));
-                case DIMENSION ->
-                        CompletableFuture.runAsync(() -> ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module)), Util.getMainWorkerExecutor());
-            }
-        }
-        var task = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+        var task = CompletableFuture.allOf(ModuleManager.get().loaded().stream().filter(module -> !module.config().scope.isGlobal())
+                .map(m -> switch (m.config().scope) {
+                    case WORLD -> CompletableFuture.runAsync(() -> {
+                        if (world.getRegistryKey().equals(World.OVERWORLD))
+                            ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
+                    }, Util.getMainWorkerExecutor());
+                    case DIMENSION ->
+                            CompletableFuture.runAsync(() -> ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m)),
+                                    Util.getMainWorkerExecutor());
+                    default -> throw new IllegalStateException("Unexpected value! %s".formatted(m.config().scope));
+                }).toArray(CompletableFuture[]::new));
         world.getServer().runTasks(task::isDone);
     }
 
     public void apply(MinecraftServer server) {
         if (!Experiments.get().scopedConfigs) return;
-
         MakeSure.notNull(configs);
 
-        server.getWorlds().forEach(ScopedConfigs::getConfigs);
-
-        Set<CompletableFuture<?>> futures = new ReferenceOpenHashSet<>();
-        for (Module<?> module : ModuleManager.get().loaded()) {
-            switch (module.config().scope) {
-                case WORLD -> futures.add(CompletableFuture.runAsync(() -> {
-                    ServerWorld world = server.getWorld(World.OVERWORLD);
-                    ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
-                }, Util.getMainWorkerExecutor()));
-                case DIMENSION -> CompletableFuture.runAsync(() -> {
-                    for (ServerWorld world : server.getWorlds()) {
-                        ScopedConfigs.prepareForWorld(world, module, ScopedConfigs.getPath(world, module));
-                    }
-                }, Util.getMainWorkerExecutor());
-            }
-        }
-        var task = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+        var task = CompletableFuture.allOf(ModuleManager.get().loaded().stream().filter(module -> !module.config().scope.isGlobal())
+                .map(m -> switch (m.config().scope) {
+                    case WORLD -> CompletableFuture.runAsync(() -> {
+                        ServerWorld world = server.getWorld(World.OVERWORLD);
+                        ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
+                    }, Util.getMainWorkerExecutor());
+                    case DIMENSION -> CompletableFuture.runAsync(() -> {
+                        for (ServerWorld world : server.getWorlds()) {
+                            ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
+                        }
+                    }, Util.getMainWorkerExecutor());
+                    case GLOBAL -> throw new IllegalStateException("Unexpected value! %s".formatted(m.config().scope));
+                }).toArray(CompletableFuture[]::new));
         server.runTasks(task::isDone);
     }
 
