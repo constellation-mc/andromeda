@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
 
 @CustomLog
 public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
@@ -37,12 +36,12 @@ public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
                         return node.name.replace('/', '.');
                     }
                     return null;
-                }, ForkJoinPool.commonPool()).thenApplyAsync(name -> {
+                }).thenApplyAsync(name -> {
                     if (name == null) return null;
                     var c = Exceptions.supply(() -> Class.forName(name.replace('/', '.')));
                     return Module.Zygote.spawn(c, () -> Exceptions.supply(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
                             .newInstance()));
-                }, ForkJoinPool.commonPool())));
+                })));
 
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
                 .handle((unused, throwable) -> futures).join().stream()

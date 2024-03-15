@@ -4,7 +4,6 @@ import me.melontini.andromeda.base.MixinProcessor;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
 import org.objectweb.asm.Label;
@@ -40,7 +39,7 @@ public class ModulePlugin extends ExtendablePlugin {
     }
 
     protected void getMixins(List<String> mixins) {
-        mixins.addAll(AndromedaMixins.discoverInPackage(this.mixinPackage));
+        mixins.addAll(processor.mixinsFromPackage(this.mixinPackage));
     }
 
     @Override

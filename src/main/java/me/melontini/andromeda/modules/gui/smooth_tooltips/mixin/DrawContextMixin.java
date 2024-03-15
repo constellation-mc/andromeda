@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -35,14 +37,17 @@ abstract class DrawContextMixin {
     private MatrixStack matrices;
 
     @Unique
+    private static final SmoothTooltips m = ModuleManager.quick(SmoothTooltips.class);
+
+    @Unique
     private static Vector2d smoothPos;
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/tooltip/TooltipPositioner;getPosition(IIIIII)Lorg/joml/Vector2ic;"), method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V")
     private Vector2ic andromeda$smoothTooltip(Vector2ic vic, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Share("popMatrix") LocalBooleanRef popMatrix) {
         if (andromeda$makeSmooth(x, y)) {
             if (smoothPos == null) smoothPos = new Vector2d(x, y);
-            smoothPos.x = MathHelper.clamp(MathHelper.lerp(0.3 * client.getLastFrameDuration(), smoothPos.x, vic.x()), vic.x() - 30, vic.x() + 30);
-            smoothPos.y = MathHelper.clamp(MathHelper.lerp(0.3 * client.getLastFrameDuration(), smoothPos.y, vic.y()), vic.y() - 30, vic.y() + 30);
+            smoothPos.x = MathHelper.clamp(MathHelper.lerp(m.config().deltaX * client.getLastFrameDuration(), smoothPos.x, vic.x()), vic.x() - m.config().clampX, vic.x() + m.config().clampX);
+            smoothPos.y = MathHelper.clamp(MathHelper.lerp(m.config().deltaY * client.getLastFrameDuration(), smoothPos.y, vic.y()), vic.y() - m.config().clampY, vic.y() + m.config().clampY);
 
             popMatrix.set(true);
             this.matrices.push();

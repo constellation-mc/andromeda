@@ -5,7 +5,6 @@ import com.google.common.collect.Streams;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import me.melontini.andromeda.common.data.DataPackContentsAccessor;
 import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
-import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.ResourceReloader;
@@ -23,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Mixin(DataPackContents.class)
@@ -38,7 +38,7 @@ abstract class DataPackContentsMixin implements DataPackContentsAccessor {
     @Inject(at = @At("TAIL"), method = "<init>")
     private void andromeda$addReloaders(DynamicRegistryManager.Immutable dynamicRegistryManager, FeatureSet enabledFeatures, CommandManager.RegistrationEnvironment environment, int functionPermissionLevel, CallbackInfo ci) {
         List<IdentifiableResourceReloadListener> list = new ArrayList<>();
-        ServerResourceReloadersEvent.EVENT.invoker().register(new ServerResourceReloadersEvent.Context(dynamicRegistryManager, enabledFeatures, environment, list::add));
+        ServerResourceReloadersEvent.EVENT.invoker().register(new ServerResourceReloadersEvent.Context(dynamicRegistryManager, enabledFeatures, list::add));
         this.reloaders = list;
 
         var cls = IdentifiableResourceReloadListener.class;
@@ -48,7 +48,7 @@ abstract class DataPackContentsMixin implements DataPackContentsAccessor {
 
     @Override
     public <T extends IdentifiableResourceReloadListener> T am$getReloader(Identifier identifier) {
-        return (T) MakeSure.notNull(this.reloadersMap.get(identifier));
+        return (T) Objects.requireNonNull(this.reloadersMap.get(identifier), () -> "Missing reloader %s".formatted(identifier));
     }
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getContents")

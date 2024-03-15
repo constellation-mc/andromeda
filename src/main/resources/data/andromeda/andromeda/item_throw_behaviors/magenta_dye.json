@@ -1,7 +1,0 @@
-{
-  "items": "minecraft:magenta_dye",
-  "complement": true,
-  "particles": {
-    "colors": [255, 0, 255]
-  }
-}

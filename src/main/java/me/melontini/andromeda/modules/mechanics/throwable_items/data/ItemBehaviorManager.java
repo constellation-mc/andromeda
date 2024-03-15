@@ -1,6 +1,8 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import me.melontini.andromeda.common.util.JsonDataLoader;
@@ -97,6 +99,7 @@ public class ItemBehaviorManager extends JsonDataLoader {
     public void overrideVanilla(Item item) {
         overrideVanilla.add(item);
     }
+
     public boolean overridesVanilla(Item item) {
         return overrideVanilla.contains(item);
     }
@@ -104,22 +107,23 @@ public class ItemBehaviorManager extends JsonDataLoader {
     public void addCustomCooldown(Item item, int cooldown) {
         customCooldowns.putIfAbsent(item, cooldown);
     }
+
     public void replaceCustomCooldown(Item item, int cooldown) {
         customCooldowns.put(item, cooldown);
     }
+
     public int getCooldown(Item item) {
         return customCooldowns.getInt(item);
     }
 
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-        Map<Identifier, ItemBehaviorData> map = new HashMap<>();
-        data.forEach((identifier, object) -> map.put(identifier, ItemBehaviorData.create(object.getAsJsonObject())));
-
         this.clear();
         itemBehaviors.putAll(STATIC);
 
-        map.forEach((id, behaviorData) -> {
+        Maps.transformValues(data, input -> ItemBehaviorData.CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
+            throw new RuntimeException(string);
+        })).forEach((id, behaviorData) -> {
             if (behaviorData.items().isEmpty()) return;
 
             for (Item item : behaviorData.items()) {
@@ -128,7 +132,7 @@ public class ItemBehaviorManager extends JsonDataLoader {
                     continue;
                 }
 
-                this.addBehavior(item, ItemBehaviorAdder.dataPack(behaviorData), behaviorData.complement());
+                this.addBehavior(item, behaviorData, behaviorData.complement());
                 if (behaviorData.override_vanilla()) this.overrideVanilla(item);
 
                 if (behaviorData.cooldown() != 50) this.addCustomCooldown(item, behaviorData.cooldown());

@@ -7,6 +7,7 @@ import me.melontini.andromeda.base.events.MixinConfigEvent;
 import me.melontini.andromeda.base.util.ModulePlugin;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.andromeda.util.mixin.AndromedaMixins;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericField;
 import me.melontini.dark_matter.api.base.reflect.wrappers.GenericMethod;
 import org.jetbrains.annotations.ApiStatus;
@@ -20,8 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The MixinProcessor is responsible for injecting dynamic mixin configs.
@@ -39,6 +43,7 @@ public class MixinProcessor {
     private boolean done = false;
     private final ModuleManager manager;
     private final Map<String, Module<?>> mixinConfigs = new HashMap<>();
+    private final Map<String, List<String>> mixinClasses = new ConcurrentHashMap<>();
 
     public MixinProcessor(ModuleManager manager) {
         this.manager = manager;
@@ -49,11 +54,24 @@ public class MixinProcessor {
         return Optional.ofNullable(mixinConfigs.get(name));
     }
 
+    @ApiStatus.Internal
+    public List<String> mixinsFromPackage(String pkg) {
+        return mixinClasses.get(pkg);
+    }
+
     public void addMixins() {
         if (done) return;
+
+        CompletableFuture.allOf(manager.loaded().stream().map(module -> CompletableFuture.runAsync(() -> {
+            String pkg = module.getClass().getPackageName() + ".mixin";
+            var list = AndromedaMixins.discoverInPackage(pkg);
+            if (!list.isEmpty()) mixinClasses.put(pkg, list);
+        })).toArray(CompletableFuture[]::new)).join();
+
         IMixinService service = MixinService.getService();
         this.injectService(service);
-        this.manager.loaded().forEach((module) -> {
+
+        this.manager.loaded().stream().filter(module -> mixinClasses.containsKey(module.getClass().getPackageName() + ".mixin")).forEach((module) -> {
             JsonObject config = createConfig(module);
 
             String cfg = "andromeda_dynamic$$" + module.meta().dotted() + ".mixins.json";
