@@ -40,11 +40,11 @@ public record CommandType(Codec<Command> codec) {
 
     public static final Codec<CommandType> CODEC = Identifier.CODEC.flatXmap(identifier -> {
         CommandType type = TYPE_MAP.get(identifier);
-        if (type == null) return DataResult.error(() -> "Unknown command type: %s".formatted(identifier));
+        if (type == null) return DataResult.error("Unknown command type: %s".formatted(identifier));
         return DataResult.success(type);
     }, eventType -> {
         Identifier identifier = TYPE_MAP.inverse().get(eventType);
-        if (identifier == null) return DataResult.error(() -> "Unknown command type: %s".formatted(eventType));
+        if (identifier == null) return DataResult.error("Unknown command type: %s".formatted(eventType));
         return DataResult.success(identifier);
     });
 }

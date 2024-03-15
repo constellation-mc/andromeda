@@ -44,11 +44,11 @@ public record EventType(Codec<Event> codec) {
 
     public static final Codec<EventType> CODEC = Identifier.CODEC.flatXmap(identifier -> {
         EventType type = TYPE_MAP.get(identifier);
-        if (type == null) return DataResult.error(() -> "Unknown event type: %s".formatted(identifier));
+        if (type == null) return DataResult.error("Unknown event type: %s".formatted(identifier));
         return DataResult.success(type);
     }, eventType -> {
         Identifier identifier = TYPE_MAP.inverse().get(eventType);
-        if (identifier == null) return DataResult.error(() -> "Unknown event type: %s".formatted(eventType));
+        if (identifier == null) return DataResult.error("Unknown event type: %s".formatted(eventType));
         return DataResult.success(identifier);
     });
 }

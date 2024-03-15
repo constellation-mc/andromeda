@@ -19,7 +19,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
@@ -47,24 +46,24 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
 
     @Override
     public void onCollision(ItemStack stack, FlyingItemEntity fie, ServerWorld world, @Nullable Entity user, HitResult hitResult) {
-        LootContextParameterSet.Builder set = new LootContextParameterSet.Builder(world);
-        if (user != null) set.add(LootContextParameters.KILLER_ENTITY, user);
-        set.add(LootContextParameters.DIRECT_KILLER_ENTITY, fie);
-        set.add(LootContextParameters.TOOL, stack);
+        LootContext.Builder set = new LootContext.Builder(world);
+        if (user != null) set.parameter(LootContextParameters.KILLER_ENTITY, user);
+        set.parameter(LootContextParameters.DIRECT_KILLER_ENTITY, fie);
+        set.parameter(LootContextParameters.TOOL, stack);
 
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) hitResult;
-            set.add(LootContextParameters.BLOCK_STATE, world.getBlockState(blockHitResult.getBlockPos()));
+            set.parameter(LootContextParameters.BLOCK_STATE, world.getBlockState(blockHitResult.getBlockPos()));
             BlockEntity blockEntity = world.getBlockEntity(blockHitResult.getBlockPos());
-            if (blockEntity != null) set.add(LootContextParameters.BLOCK_ENTITY, blockEntity);
+            if (blockEntity != null) set.parameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
         }
 
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
-            set.add(LootContextParameters.THIS_ENTITY, entityHitResult.getEntity());
+            set.parameter(LootContextParameters.THIS_ENTITY, entityHitResult.getEntity());
         }
 
-        LootContext context = new LootContext.Builder(set.build(Andromeda.anyContext)).build(null);
+        LootContext context = set.build(Andromeda.anyContext);
         this.events().stream().filter(event -> event.canRun(hitResult)).forEach(event -> event.onCollision(stack, fie, world, user, hitResult, context));
     }
 

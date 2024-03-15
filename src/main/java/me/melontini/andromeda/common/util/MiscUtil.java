@@ -5,16 +5,18 @@ import com.google.gson.*;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.loot.LootGsons;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.WeightedList;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -24,12 +26,14 @@ public class MiscUtil {
 
     public static final GsonContextImpl lootContext = new GsonContextImpl(LootGsons.getConditionGsonBuilder().create());
 
-    public static final Codec<LootCondition> LOOT_CONDITION_CODEC = Codecs.JSON_ELEMENT.flatXmap(element -> {
-        if (!element.isJsonObject()) return DataResult.error(() -> "'%s' not a JsonObject".formatted(element));
+    public static final Codec<JsonElement> JSON_ELEMENT = Codec.PASSTHROUGH.xmap((dynamic) -> dynamic.convert(JsonOps.INSTANCE).getValue(), (element) -> new Dynamic<>(JsonOps.INSTANCE, element));
+
+    public static final Codec<LootCondition> LOOT_CONDITION_CODEC = JSON_ELEMENT.flatXmap(element -> {
+        if (!element.isJsonObject()) return DataResult.error("'%s' not a JsonObject".formatted(element));
         JsonObject object = element.getAsJsonObject();
 
-        LootConditionType type = Registries.LOOT_CONDITION_TYPE.get(Identifier.tryParse(object.get("condition").getAsString()));
-        if (type == null) return DataResult.error(() -> "No such condition type '%s'".formatted(object.get("condition").getAsString()));
+        LootConditionType type = Registry.LOOT_CONDITION_TYPE.get(Identifier.tryParse(object.get("condition").getAsString()));
+        if (type == null) return DataResult.error("No such condition type '%s'".formatted(object.get("condition").getAsString()));
         return DataResult.success((LootCondition) type.getJsonSerializer().fromJson(object, lootContext));
     }, condition -> {
         JsonObject object = new JsonObject();
