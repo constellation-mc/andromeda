@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,6 +20,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Screen.class)
 abstract class ScreenMixin {
 
+    @Unique
+    private static final SmoothTooltips m = ModuleManager.quick(SmoothTooltips.class);
+
     @Shadow
     private MinecraftClient client;
 
@@ -29,8 +34,8 @@ abstract class ScreenMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.BEFORE), method = "renderTooltipFromComponents")
     private void andromeda$smoothTooltip(CallbackInfo ci, @Local(argsOnly = true) MatrixStack stack, @Local(ordinal = 0, argsOnly = true) int x, @Local(ordinal = 1, argsOnly = true) int y, @Local(index = 7) LocalIntRef targetX, @Local(index = 8) LocalIntRef targetY, @Share("popMatrix") LocalBooleanRef popMatrix) {
         if (andromeda$makeSmooth(x, y)) {
-            smoothX = MathHelper.clamp(MathHelper.lerp(0.3 * client.getLastFrameDuration(), smoothX, targetX.get()), targetX.get() - 30, targetX.get() + 30);
-            smoothY = MathHelper.clamp(MathHelper.lerp(0.3 * client.getLastFrameDuration(), smoothY, targetY.get()), targetY.get() - 30, targetY.get() + 30);
+            smoothX = MathHelper.clamp(MathHelper.lerp(m.config().deltaX * client.getLastFrameDuration(), smoothX, targetX.get()), targetX.get() - m.config().clampX, targetX.get() + m.config().clampX);
+            smoothY = MathHelper.clamp(MathHelper.lerp(m.config().deltaY * client.getLastFrameDuration(), smoothY, targetY.get()), targetY.get() - m.config().clampY, targetY.get() + m.config().clampY);
 
             popMatrix.set(true);
             stack.push();
