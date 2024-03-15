@@ -1,7 +1,0 @@
-{
-  "items": "minecraft:blue_dye",
-  "complement": true,
-  "particles": {
-    "colors": [5, 36, 99]
-  }
-}

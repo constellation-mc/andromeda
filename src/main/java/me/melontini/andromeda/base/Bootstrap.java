@@ -93,6 +93,7 @@ public class Bootstrap {
             for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
                 if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$"))
                     throw AndromedaException.builder()
+                            .report(CommonValues.platform() != CommonValues.Platform.QUILT)
                             .message("Mixin failed to consume Andromeda's late configs!").message(MixinProcessor.NOTICE)
                             .add("mixin_config", config.getName())
                             .build();

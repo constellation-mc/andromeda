@@ -1,0 +1,16 @@
+{
+  "items": "minecraft:brown_dye",
+  "complement": true,
+  "events": {
+    "type": "andromeda:any",
+    "commands": [
+      {
+        "type": "andromeda:server",
+        "particles": {
+          "item": true,
+          "colors": [80, 43, 20]
+        }
+      }
+    ]
+  }
+}
