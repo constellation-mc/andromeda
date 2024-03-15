@@ -29,7 +29,7 @@ public class HitEntityCommand extends Command {
 
         return new ServerCommandSource(world.getServer(), entity.getPos(),
                 new Vec2f(entity.getPitch(), entity.getYaw()),
-                world, 4, entity.getEntityName(), entity.getName(),
+                world, 4, entity.getNameForScoreboard(), entity.getName(),
                 world.getServer(), entity).withSilent();
     }
 

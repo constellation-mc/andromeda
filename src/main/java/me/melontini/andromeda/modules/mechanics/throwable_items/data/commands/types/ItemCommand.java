@@ -23,7 +23,7 @@ public class ItemCommand extends Command {
     protected ServerCommandSource createSource(ItemStack stack, FlyingItemEntity fie, ServerWorld world, @Nullable Entity user, HitResult hitResult) {
         return new ServerCommandSource(world.getServer(), fie.getPos(),
                 new Vec2f(fie.getPitch(), fie.getYaw()),
-                world, 4, fie.getEntityName(), fie.getName(),
+                world, 4, fie.getNameForScoreboard(), fie.getName(),
                 world.getServer(), fie).withSilent();
     }
 

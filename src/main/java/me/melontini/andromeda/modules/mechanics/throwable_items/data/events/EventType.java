@@ -14,6 +14,7 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.type
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.types.EntityEvent;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.types.MissEvent;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.util.Identifier;
 
 import java.util.Collections;
@@ -31,7 +32,7 @@ public record EventType(Codec<Event> codec) {
     private static Codec<Event> create(BiFunction<List<Command>, Optional<LootCondition>, Event> function) {
         return RecordCodecBuilder.create(data -> data.group(
                 MiscUtil.listCodec(CommandType.CODEC.dispatch("type", Command::type, CommandType::codec)).optionalFieldOf("commands", Collections.emptyList()).forGetter(Event::commands),
-                MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Event::condition)
+                LootConditionTypes.CODEC.optionalFieldOf("condition").forGetter(Event::condition)
         ).apply(data, function));
     }
 

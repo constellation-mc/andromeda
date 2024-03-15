@@ -64,7 +64,7 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
             set.add(LootContextParameters.THIS_ENTITY, entityHitResult.getEntity());
         }
 
-        LootContext context = new LootContext.Builder(set.build(Andromeda.anyContext)).build(null);
+        LootContext context = new LootContext.Builder(set.build(Andromeda.anyContext)).build(Optional.empty());
         this.events().stream().filter(event -> event.canRun(hitResult)).forEach(event -> event.onCollision(stack, fie, world, user, hitResult, context));
     }
 
