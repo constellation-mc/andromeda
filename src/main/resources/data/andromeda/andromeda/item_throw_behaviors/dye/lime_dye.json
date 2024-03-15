@@ -1,0 +1,16 @@
+{
+  "items": "minecraft:lime_dye",
+  "complement": true,
+  "events": {
+    "type": "andromeda:any",
+    "commands": [
+      {
+        "type": "andromeda:server",
+        "particles": {
+          "item": true,
+          "colors": [0, 255, 0]
+        }
+      }
+    ]
+  }
+}

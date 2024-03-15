@@ -1,7 +1,0 @@
-{
-  "items": "minecraft:light_gray_dye",
-  "complement": true,
-  "particles": {
-    "colors": [200, 200, 200]
-  }
-}

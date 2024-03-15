@@ -57,13 +57,6 @@ public class DefaultBehaviors {
             }
         }, Items.BONE_MEAL);
 
-        ItemBehaviorManager.register((stack, fie, world, user, hitResult) ->
-                addEffects(hitResult, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0)), Items.INK_SAC);
-
-        ItemBehaviorManager.register((stack, fie, world, user, hitResult) ->
-                addEffects(hitResult, user, new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0),
-                        new StatusEffectInstance(StatusEffects.GLOWING, 100, 0)), Items.GLOW_INK_SAC);
-
         ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeItemStack(stack);
@@ -82,7 +75,6 @@ public class DefaultBehaviors {
                         });
             }
         }, DYE_ITEMS);
-
 
         ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
@@ -130,17 +122,5 @@ public class DefaultBehaviors {
         }, Items.FIRE_CHARGE);
 
         ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> world.createExplosion(user, fie.getX(), fie.getY(), fie.getZ(), 1, Explosion.DestructionType.BREAK), Items.GUNPOWDER);
-    }
-
-    public static void addEffects(HitResult hitResult, Entity user, StatusEffectInstance... instances) {
-        if (hitResult.getType() == HitResult.Type.ENTITY) {
-            EntityHitResult entityHitResult = (EntityHitResult) hitResult;
-            Entity entity = entityHitResult.getEntity();
-            if (entity instanceof LivingEntity livingEntity) {
-                for (StatusEffectInstance instance : instances) {
-                    livingEntity.addStatusEffect(instance, user);
-                }
-            }
-        }
     }
 }

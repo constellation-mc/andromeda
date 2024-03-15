@@ -1,7 +1,29 @@
 {
   "items": "minecraft:ink_sac",
   "complement": true,
-  "particles": {
-    "colors": [24, 27, 50]
-  }
+  "events": [
+    {
+      "type": "andromeda:entity",
+      "commands": [
+        {
+          "type": "andromeda:hit_entity",
+          "commands": [
+            "/effect give @s minecraft:blindness 5 0 true"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "andromeda:any",
+      "commands": [
+        {
+          "type": "andromeda:server",
+          "particles": {
+            "item": true,
+            "colors": [24, 27, 50]
+          }
+        }
+      ]
+    }
+  ]
 }
