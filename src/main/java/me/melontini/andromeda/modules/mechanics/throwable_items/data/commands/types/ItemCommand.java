@@ -22,7 +22,7 @@ public class ItemCommand extends Command {
         return new ServerCommandSource(world.getServer(), fie.getPos(),
                 new Vec2f(fie.getPitch(), fie.getYaw()),
                 world, 4, fie.getEntityName(), fie.getName(),
-                world.getServer(), fie).withSilent();
+                world.getServer(), fie);
     }
 
     @Override

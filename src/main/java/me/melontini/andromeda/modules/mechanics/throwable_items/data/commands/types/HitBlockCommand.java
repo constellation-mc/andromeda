@@ -33,7 +33,7 @@ public class HitBlockCommand extends Command {
                         hit.getBlockPos().getY(),
                         hit.getBlockPos().getZ()), Vec2f.ZERO,
                 world, 4, "Block", TextUtil.literal("Block"),
-                world.getServer(), context.fie()).withSilent();
+                world.getServer(), context.fie());
     }
 
     @Override

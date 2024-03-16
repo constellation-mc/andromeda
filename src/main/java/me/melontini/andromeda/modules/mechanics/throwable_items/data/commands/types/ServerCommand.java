@@ -19,7 +19,7 @@ public class ServerCommand extends Command {
     @Override
     @Nullable
     protected ServerCommandSource createSource(Context context) {
-        return context.world().getServer().getCommandSource().withSilent();
+        return context.world().getServer().getCommandSource();
     }
 
     @Override

@@ -26,7 +26,7 @@ public class UserCommand extends Command {
         return new ServerCommandSource(world.getServer(), user.getPos(),
                 new Vec2f(user.getPitch(), user.getYaw()),
                 world, 4, user.getEntityName(), user.getName(),
-                world.getServer(), user).withSilent();
+                world.getServer(), user);
     }
 
     @Override
