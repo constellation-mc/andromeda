@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 public record ItemBehaviorData(List<Item> items, boolean disabled, boolean override_vanilla, boolean complement,
-                               int cooldown, List<Event> events) implements ItemBehavior {
+                               Optional<Integer> cooldown, List<Event> events) implements ItemBehavior {
 
     public static final Codec<ItemBehaviorData> CODEC = RecordCodecBuilder.create(data -> data.group(
             ExtraCodecs.list(CommonRegistries.items().getCodec()).fieldOf("items").forGetter(ItemBehaviorData::items),
@@ -37,7 +37,7 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
             Codec.BOOL.optionalFieldOf("disabled", false).forGetter(ItemBehaviorData::disabled),
             Codec.BOOL.optionalFieldOf("override_vanilla", false).forGetter(ItemBehaviorData::override_vanilla),
             Codec.BOOL.optionalFieldOf("complement", true).forGetter(ItemBehaviorData::complement),
-            Codec.INT.optionalFieldOf("cooldown", 50).forGetter(ItemBehaviorData::cooldown),
+            Codec.INT.optionalFieldOf("cooldown").forGetter(ItemBehaviorData::cooldown),
 
             ExtraCodecs.list(EventType.CODEC.dispatch("type", Event::type, EventType::codec)).optionalFieldOf("events", Collections.emptyList()).forGetter(ItemBehaviorData::events)
     ).apply(data, ItemBehaviorData::new));
