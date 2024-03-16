@@ -1,19 +1,16 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.Event;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.EventType;
-import me.melontini.dark_matter.api.base.util.ColorUtil;
+import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -35,14 +32,14 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
                                int cooldown, List<Event> events) implements ItemBehavior {
 
     public static final Codec<ItemBehaviorData> CODEC = RecordCodecBuilder.create(data -> data.group(
-            MiscUtil.listCodec(CommonRegistries.items().getCodec()).fieldOf("items").forGetter(ItemBehaviorData::items),
+            ExtraCodecs.list(CommonRegistries.items().getCodec()).fieldOf("items").forGetter(ItemBehaviorData::items),
 
             Codec.BOOL.optionalFieldOf("disabled", false).forGetter(ItemBehaviorData::disabled),
             Codec.BOOL.optionalFieldOf("override_vanilla", false).forGetter(ItemBehaviorData::override_vanilla),
             Codec.BOOL.optionalFieldOf("complement", true).forGetter(ItemBehaviorData::complement),
             Codec.INT.optionalFieldOf("cooldown", 50).forGetter(ItemBehaviorData::cooldown),
 
-            MiscUtil.listCodec(EventType.CODEC.dispatch("type", Event::type, EventType::codec)).optionalFieldOf("events", Collections.emptyList()).forGetter(ItemBehaviorData::events)
+            ExtraCodecs.list(EventType.CODEC.dispatch("type", Event::type, EventType::codec)).optionalFieldOf("events", Collections.emptyList()).forGetter(ItemBehaviorData::events)
     ).apply(data, ItemBehaviorData::new));
 
     @Override
@@ -72,12 +69,7 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
     public record Particles(boolean item, Optional<Integer> colors) {
         public static final Codec<Particles> CODEC = RecordCodecBuilder.create(data -> data.group(
                 Codec.BOOL.optionalFieldOf("item", false).forGetter(Particles::item),
-                Codec.either(Codec.INT, Codec.intRange(0, 255).listOf()).comapFlatMap(e -> e.map(DataResult::success, integers -> {
-                            if (integers.size() != 3)
-                                return DataResult.error(() -> "colors array must contain exactly 3 colors (RGB)");
-                            return DataResult.success(ColorUtil.toColor(integers.get(0), integers.get(1), integers.get(2)));
-                        }), Either::left)
-                        .optionalFieldOf("colors").forGetter(Particles::colors)
+                ExtraCodecs.COLOR.optionalFieldOf("colors").forGetter(Particles::colors)
         ).apply(data, Particles::new));
 
         public static final Particles EMPTY = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).result().orElseThrow();

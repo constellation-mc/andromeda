@@ -9,6 +9,7 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.Command;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.CommandType;
+import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +22,8 @@ import java.util.Optional;
 public class DefaultedCommand extends Command {
 
     public static final Codec<DefaultedCommand> CODEC = RecordCodecBuilder.create(data -> data.group(
-            MiscUtil.listCodec(CommandType.DISPATCH).fieldOf("commands").forGetter(DefaultedCommand::commands),
-            MiscUtil.listCodec(CommandType.DISPATCH).fieldOf("default").forGetter(DefaultedCommand::defaultCommands),
+            ExtraCodecs.list(CommandType.DISPATCH).fieldOf("commands").forGetter(DefaultedCommand::commands),
+            ExtraCodecs.list(CommandType.DISPATCH).fieldOf("default").forGetter(DefaultedCommand::defaultCommands),
             MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Command::getCondition)
     ).apply(data, DefaultedCommand::new));
 
