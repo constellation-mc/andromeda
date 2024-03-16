@@ -15,9 +15,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextType;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 
@@ -33,7 +30,6 @@ public class Andromeda {
 
     public static final Identifier VERIFY_MODULES = new Identifier(MODID, "verify_modules");
     private static Andromeda INSTANCE;
-    public static LootContextType anyContext;
 
     public static void init() {
         INSTANCE = new Andromeda();
@@ -43,13 +39,6 @@ public class Andromeda {
 
     private void onInitialize(ModuleManager manager) {
         Common.bootstrap();
-        anyContext = LootContextTypes.register("andromeda:any", builder -> builder
-                .require(LootContextParameters.DIRECT_KILLER_ENTITY)
-                .require(LootContextParameters.TOOL)
-                .allow(LootContextParameters.KILLER_ENTITY)
-                .allow(LootContextParameters.THIS_ENTITY)
-                .allow(LootContextParameters.BLOCK_ENTITY)
-                .allow(LootContextParameters.BLOCK_STATE));
 
         ServerLifecycleEvents.SERVER_STARTING.register(ServerHelper::setContext);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> ServerHelper.setContext(null));

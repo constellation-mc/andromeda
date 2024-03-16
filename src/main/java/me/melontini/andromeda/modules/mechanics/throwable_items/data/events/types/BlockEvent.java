@@ -23,7 +23,7 @@ public class BlockEvent extends Event {
 
     @Override
     public Set<CommandType> allowed() {
-        return Set.of(CommandType.ITEM, CommandType.USER, CommandType.SERVER, CommandType.HIT_BLOCK);
+        return Set.of(CommandType.HIT_BLOCK);
     }
 
     @Override

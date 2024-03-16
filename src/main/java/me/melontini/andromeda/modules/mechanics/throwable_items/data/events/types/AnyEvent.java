@@ -23,7 +23,7 @@ public class AnyEvent extends Event {
 
     @Override
     public Set<CommandType> allowed() {
-        return Set.of(CommandType.ITEM, CommandType.USER, CommandType.SERVER);
+        return Set.of();
     }
 
     @Override

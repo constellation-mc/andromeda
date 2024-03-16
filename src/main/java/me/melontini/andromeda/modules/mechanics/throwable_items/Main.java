@@ -20,6 +20,9 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextType;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -34,6 +37,7 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public class Main {
 
     public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
+    public static final Keeper<LootContextType> ITEM_CONTEXT = Keeper.create();
 
     public static RegistryKey<DamageType> BRICKED;
 
@@ -54,6 +58,14 @@ public class Main {
         FLYING_ITEM.init(RegistryUtil.createEntityType(id("flying_item"), FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                 .dimensions(new EntityDimensions(0.25F, 0.25F, true))
                 .trackRangeChunks(4).trackedUpdateRate(10)));
+
+        ITEM_CONTEXT.init(LootContextTypes.register("andromeda:throwable_items", builder -> builder
+                .require(LootContextParameters.DIRECT_KILLER_ENTITY)
+                .require(LootContextParameters.TOOL)
+                .allow(LootContextParameters.KILLER_ENTITY)
+                .allow(LootContextParameters.THIS_ENTITY)
+                .allow(LootContextParameters.BLOCK_ENTITY)
+                .allow(LootContextParameters.BLOCK_STATE)));
 
         BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked"));
 

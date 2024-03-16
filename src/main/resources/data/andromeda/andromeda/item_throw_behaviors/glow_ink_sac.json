@@ -18,7 +18,7 @@
       "type": "andromeda:any",
       "commands": [
         {
-          "type": "andromeda:server",
+          "type": "andromeda:item",
           "particles": {
             "item": true,
             "colors": [25, 49, 49]

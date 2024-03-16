@@ -5,7 +5,7 @@
     "type": "andromeda:any",
     "commands": [
       {
-        "type": "andromeda:server",
+        "type": "andromeda:item",
         "particles": {
           "item": true,
           "colors": [0, 255, 0]
