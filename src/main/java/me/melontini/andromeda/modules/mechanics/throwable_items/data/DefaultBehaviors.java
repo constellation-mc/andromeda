@@ -16,13 +16,11 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -30,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.Comparator;
@@ -50,17 +47,6 @@ public class DefaultBehaviors {
             Items.GRAY_DYE);
 
     public static void init() {
-        ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
-            if (hitResult.getType() == HitResult.Type.BLOCK) {
-                BlockHitResult result = (BlockHitResult) hitResult;
-
-                Items.BONE_MEAL.useOnBlock(new ItemUsageContext(
-                        world, user instanceof PlayerEntity ? (PlayerEntity) user : null,
-                        Hand.MAIN_HAND, stack, result
-                ));
-            }
-        }, Items.BONE_MEAL);
-
         ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeItemStack(stack);
@@ -124,7 +110,5 @@ public class DefaultBehaviors {
                 world.playSound(null, fie.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
             }
         }, Items.FIRE_CHARGE);
-
-        ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> world.createExplosion(user, fie.getX(), fie.getY(), fie.getZ(), 1, World.ExplosionSourceType.TNT), Items.GUNPOWDER);
     }
 }

@@ -5,11 +5,10 @@
     "type": "andromeda:any",
     "commands": [
       {
-        "type": "andromeda:item",
-        "particles": {
-          "item": true,
-          "colors": [80, 43, 20]
-        }
+        "type": "andromeda:particles",
+        "selector": "andromeda:item",
+        "item": true,
+        "colors": [80, 43, 20]
       }
     ]
   }

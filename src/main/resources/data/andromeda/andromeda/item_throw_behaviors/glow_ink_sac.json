@@ -6,7 +6,8 @@
       "type": "andromeda:entity",
       "commands": [
         {
-          "type": "andromeda:hit_entity",
+          "type": "andromeda:commands",
+          "selector": "andromeda:hit_entity",
           "commands": [
             "/effect give @s minecraft:blindness 5 0 true",
             "/effect give @s minecraft:glowing 5 0 true"
@@ -18,11 +19,10 @@
       "type": "andromeda:any",
       "commands": [
         {
-          "type": "andromeda:item",
-          "particles": {
-            "item": true,
-            "colors": [25, 49, 49]
-          }
+          "type": "andromeda:particles",
+          "selector": "andromeda:item",
+          "item": true,
+          "colors": [25, 49, 49]
         }
       ]
     }

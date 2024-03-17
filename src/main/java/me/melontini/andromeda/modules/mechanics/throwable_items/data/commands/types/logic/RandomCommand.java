@@ -6,16 +6,12 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.Command;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.CommandType;
 import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.collection.WeightedList;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @Getter @Accessors(fluent = true)
@@ -31,7 +27,7 @@ public class RandomCommand extends Command {
     private final int rolls;
 
     public RandomCommand(WeightedList<Command> commands, int rolls, Optional<LootCondition> condition) {
-        super(Collections.emptyList(), ItemBehaviorData.Particles.EMPTY, condition);
+        super(condition);
         this.commands = commands;
         this.rolls = rolls;
     }
@@ -43,14 +39,9 @@ public class RandomCommand extends Command {
         boolean b = false;
         for (int i = 0; i < rolls; i++) {
             var itr = this.commands.shuffle().iterator();
-            if (itr.hasNext()) b |= itr.next().execute(context);
+            if (itr.hasNext()) b |= itr.next().tryExecute(context);
         }
         return b;
-    }
-
-    @Override
-    protected @Nullable ServerCommandSource createSource(Context context) {
-        return null;
     }
 
     @Override

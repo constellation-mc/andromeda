@@ -6,15 +6,11 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.Command;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.CommandType;
 import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.server.command.ServerCommandSource;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +27,7 @@ public class DefaultedCommand extends Command {
     private final List<Command> defaultCommands;
 
     public DefaultedCommand(List<Command> commands, List<Command> defaultCommands, Optional<LootCondition> condition) {
-        super(Collections.emptyList(), ItemBehaviorData.Particles.EMPTY, condition);
+        super(condition);
         this.commands = commands;
         this.defaultCommands = defaultCommands;
     }
@@ -42,20 +38,15 @@ public class DefaultedCommand extends Command {
 
         boolean b = false;
         for (Command command : commands) {
-            b |= command.execute(context);
+            b |= command.tryExecute(context);
         }
         if (!b) {
             for (Command defaultCommand : defaultCommands) {
-                b |= defaultCommand.execute(context);
+                b |= defaultCommand.tryExecute(context);
             }
             return b;
         }
         return true;
-    }
-
-    @Override
-    protected @Nullable ServerCommandSource createSource(Context context) {
-        return null;
     }
 
     @Override

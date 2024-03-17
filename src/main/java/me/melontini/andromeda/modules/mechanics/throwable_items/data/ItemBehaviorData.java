@@ -1,15 +1,12 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.Event;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.EventType;
 import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -39,7 +36,7 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
             Codec.BOOL.optionalFieldOf("complement", true).forGetter(ItemBehaviorData::complement),
             Codec.INT.optionalFieldOf("cooldown").forGetter(ItemBehaviorData::cooldown),
 
-            ExtraCodecs.list(EventType.CODEC.dispatch("type", Event::type, EventType::codec)).optionalFieldOf("events", Collections.emptyList()).forGetter(ItemBehaviorData::events)
+            ExtraCodecs.list(Event.CODEC).optionalFieldOf("events", Collections.emptyList()).forGetter(ItemBehaviorData::events)
     ).apply(data, ItemBehaviorData::new));
 
     @Override
@@ -64,14 +61,5 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
         LootContext context = new LootContext.Builder(set.build(Main.ITEM_CONTEXT.orThrow())).build(null);
         Context context1 = new Context(stack, fie, world, user, hitResult, context);
         this.events().stream().filter(event -> event.canRun(hitResult)).forEach(event -> event.onCollision(context1));
-    }
-
-    public record Particles(boolean item, Optional<Integer> colors) {
-        public static final Codec<Particles> CODEC = RecordCodecBuilder.create(data -> data.group(
-                Codec.BOOL.optionalFieldOf("item", false).forGetter(Particles::item),
-                ExtraCodecs.COLOR.optionalFieldOf("colors").forGetter(Particles::colors)
-        ).apply(data, Particles::new));
-
-        public static final Particles EMPTY = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).result().orElseThrow();
     }
 }
