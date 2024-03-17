@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data.commands;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
+import me.melontini.andromeda.modules.mechanics.throwable_items.Context;
 import net.minecraft.loot.condition.LootCondition;
 
 import java.util.Optional;

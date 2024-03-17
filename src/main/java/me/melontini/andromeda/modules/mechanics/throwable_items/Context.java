@@ -1,6 +1,5 @@
-package me.melontini.andromeda.modules.mechanics.throwable_items.data;
+package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;

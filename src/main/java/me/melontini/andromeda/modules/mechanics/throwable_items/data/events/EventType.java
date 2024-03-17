@@ -6,12 +6,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import me.melontini.andromeda.common.registries.Common;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.HitResult;
-
-import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
-public record EventType(Predicate<HitResult> predicate) {
+public record EventType(Identifier id) {
 
     private static final BiMap<Identifier, EventType> TYPE_MAP = HashBiMap.create();
 
@@ -25,14 +22,16 @@ public record EventType(Predicate<HitResult> predicate) {
         return DataResult.success(identifier);
     });
 
-    public static EventType register(Identifier id, Predicate<HitResult> predicate) {
-        EventType type = new EventType(predicate);
+    public static EventType register(Identifier id) {
+        EventType type = new EventType(id);
         TYPE_MAP.put(id, type);
         return type;
     }
 
-    public static final EventType BLOCK = register(Common.id("block"), result -> result.getType() == HitResult.Type.BLOCK);
-    public static final EventType ENTITY = register(Common.id("entity"), result -> result.getType() == HitResult.Type.ENTITY);
-    public static final EventType MISS = register(Common.id("miss"), result -> result.getType() == HitResult.Type.MISS);
-    public static final EventType ANY = register(Common.id("any"), result -> true);
+    public static final EventType BLOCK = register(Common.id("block"));
+    public static final EventType ENTITY = register(Common.id("entity"));
+    public static final EventType MISS = register(Common.id("miss"));
+    public static final EventType ANY = register(Common.id("any"));
+    public static final EventType TICK = register(Common.id("tick"));
+    public static final EventType THROW = register(Common.id("throw"));
 }
