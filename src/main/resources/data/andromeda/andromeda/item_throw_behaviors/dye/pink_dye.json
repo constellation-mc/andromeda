@@ -1,6 +1,5 @@
 {
   "items": "minecraft:pink_dye",
-  "complement": true,
   "events": {
     "type": "andromeda:any",
     "commands": [

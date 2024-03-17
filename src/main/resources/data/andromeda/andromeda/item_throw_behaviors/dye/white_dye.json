@@ -1,6 +1,5 @@
 {
   "items": "minecraft:white_dye",
-  "complement": true,
   "events": {
     "type": "andromeda:any",
     "commands": [

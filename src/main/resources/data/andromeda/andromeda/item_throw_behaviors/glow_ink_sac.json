@@ -1,6 +1,5 @@
 {
   "items": "minecraft:glow_ink_sac",
-  "complement": true,
   "events": [
     {
       "type": "andromeda:entity",

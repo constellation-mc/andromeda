@@ -50,7 +50,7 @@ public class ItemBehaviorManager extends JsonDataLoader {
     public static void register(Event behavior, Collection<Item> items) {
         for (Item item : items) {
             Holder holder = STATIC.computeIfAbsent(item, Holder::new);
-            holder.addBehavior(behavior, true);
+            holder.addBehavior(behavior);
         }
     }
 
@@ -60,19 +60,11 @@ public class ItemBehaviorManager extends JsonDataLoader {
         return Collections.unmodifiableList(holder.behaviors.getOrDefault(type, Collections.emptyList()));
     }
 
-    public void addBehavior(Item item, Event behavior, boolean complement) {
+    public void addBehavior(Item item, Event behavior) {
         if (disabled.contains(item)) return;
 
         Holder holder = itemBehaviors.computeIfAbsent(item, Holder::new);
-        holder.addBehavior(behavior, complement);
-    }
-
-    public void addBehavior(Item item, Event behavior) {
-        addBehavior(item, behavior, true);
-    }
-
-    public void addBehaviors(Event behavior, boolean complement, Item... items) {
-        for (Item item : items) addBehavior(item, behavior, complement);
+        holder.addBehavior(behavior);
     }
 
     public void addBehaviors(Event behavior, Item... items) {
@@ -130,13 +122,15 @@ public class ItemBehaviorManager extends JsonDataLoader {
             if (data.items().isEmpty()) return;
 
             for (Item item : data.items()) {
+                if (this.disabled.contains(item)) continue;
+
                 if (data.disabled()) {
                     this.disable(item);
                     continue;
                 }
 
                 for (Event event : data.events()) {
-                    this.addBehavior(item, event, data.complement());
+                    this.addBehavior(item, event);
                 }
                 if (data.override_vanilla()) this.overrideVanilla(item);
 
@@ -149,7 +143,6 @@ public class ItemBehaviorManager extends JsonDataLoader {
         final Map<EventType, List<Event>> behaviors;
         @Getter
         private final Item item;
-        private boolean locked;
 
         public Holder(Item item) {
             this(item, Collections.emptyMap());
@@ -160,12 +153,8 @@ public class ItemBehaviorManager extends JsonDataLoader {
             this.behaviors = new HashMap<>(behaviors);
         }
 
-        public void addBehavior(Event behavior, boolean complement) {
-            if (!this.locked) {
-                if (!complement) this.behaviors.clear();
-                this.behaviors.computeIfAbsent(behavior.type(), type -> new ArrayList<>()).add(behavior);
-                if (!complement) this.locked = true;
-            }
+        public void addBehavior(Event behavior) {
+            this.behaviors.computeIfAbsent(behavior.type(), type -> new ArrayList<>()).add(behavior);
         }
     }
 }
