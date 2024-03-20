@@ -22,6 +22,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
@@ -91,12 +93,21 @@ public class Bootstrap {
         Status.update();
         if (Mixins.getUnvisitedCount() > 0) {
             for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
-                if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$"))
-                    throw AndromedaException.builder()
-                            .report(CommonValues.platform() != CommonValues.Platform.QUILT)
+                if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$")) {
+                    boolean quilt = CommonValues.platform() == CommonValues.Platform.QUILT;
+
+                    var builder = AndromedaException.builder().report(!quilt)
                             .message("Mixin failed to consume Andromeda's late configs!").message(MixinProcessor.NOTICE)
-                            .add("mixin_config", config.getName())
-                            .build();
+                            .add("mixin_config", config.getName());
+
+                    if (!quilt) {
+                        List<String> list = FabricLoader.getInstance().getEntrypointContainers("preLaunch", PreLaunchEntrypoint.class).stream()
+                                .map(EntrypointContainer::getEntrypoint).map(Object::getClass).map(Class::getName)
+                                .toList();
+                        if (!list.isEmpty()) builder.add("before_andromeda", list);
+                    }
+                    throw builder.build();
+                }
             }
         }
 
