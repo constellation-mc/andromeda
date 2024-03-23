@@ -59,7 +59,6 @@ abstract class ItemStackMixin {
             entity.setPos(user.getX(), user.getEyeY() - 0.1F, user.getZ());
             entity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
             world.spawnEntity(entity);
-            entity.onThrow();
         }
 
         user.getItemCooldownManager().set(getItem(), manager.getCooldown(getItem()));

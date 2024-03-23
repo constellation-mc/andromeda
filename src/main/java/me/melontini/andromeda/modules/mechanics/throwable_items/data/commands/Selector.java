@@ -5,7 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.modules.mechanics.throwable_items.Context;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -26,11 +26,11 @@ public record Selector(Function<Context, ServerCommandSource> function) {
 
     public static final Codec<Selector> CODEC = Identifier.CODEC.flatXmap(identifier -> {
         Selector type = TYPE_MAP.get(identifier);
-        if (type == null) return DataResult.error(() -> "Unknown selector type: %s".formatted(identifier));
+        if (type == null) return DataResult.error(() -> "Unknown command type: %s".formatted(identifier));
         return DataResult.success(type);
     }, eventType -> {
         Identifier identifier = TYPE_MAP.inverse().get(eventType);
-        if (identifier == null) return DataResult.error(() -> "Unknown selector type: %s".formatted(eventType));
+        if (identifier == null) return DataResult.error(() -> "Unknown command type: %s".formatted(eventType));
         return DataResult.success(identifier);
     });
 

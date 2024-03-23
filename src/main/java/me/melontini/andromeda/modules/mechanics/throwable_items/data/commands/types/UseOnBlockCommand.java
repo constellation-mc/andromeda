@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.t
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.util.MiscUtil;
-import me.melontini.andromeda.modules.mechanics.throwable_items.Context;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.Command;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.CommandType;
 import net.minecraft.entity.player.PlayerEntity;

@@ -7,8 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.CustomLog;
 import lombok.Getter;
 import me.melontini.andromeda.common.util.JsonDataLoader;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.Event;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.EventType;
+import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.minecraft.item.Item;
@@ -43,39 +42,39 @@ public class ItemBehaviorManager extends JsonDataLoader {
 
     private static final Map<Item, Holder> STATIC = new IdentityHashMap<>();
 
-    public static void register(Event behavior, Item... items) {
+    public static void register(ItemBehavior behavior, Item... items) {
         register(behavior, Arrays.asList(items));
     }
 
-    public static void register(Event behavior, Collection<Item> items) {
+    public static void register(ItemBehavior behavior, Collection<Item> items) {
         for (Item item : items) {
             Holder holder = STATIC.computeIfAbsent(item, Holder::new);
             holder.addBehavior(behavior, true);
         }
     }
 
-    public List<Event> getBehaviors(Item item, EventType type) {
+    public List<ItemBehavior> getBehaviors(Item item) {
         Holder holder = itemBehaviors.get(item);
         if (holder == null) return Collections.emptyList();
-        return Collections.unmodifiableList(holder.behaviors.getOrDefault(type, Collections.emptyList()));
+        return Collections.unmodifiableList(holder.behaviors);
     }
 
-    public void addBehavior(Item item, Event behavior, boolean complement) {
+    public void addBehavior(Item item, ItemBehavior behavior, boolean complement) {
         if (disabled.contains(item)) return;
 
         Holder holder = itemBehaviors.computeIfAbsent(item, Holder::new);
         holder.addBehavior(behavior, complement);
     }
 
-    public void addBehavior(Item item, Event behavior) {
+    public void addBehavior(Item item, ItemBehavior behavior) {
         addBehavior(item, behavior, true);
     }
 
-    public void addBehaviors(Event behavior, boolean complement, Item... items) {
+    public void addBehaviors(ItemBehavior behavior, boolean complement, Item... items) {
         for (Item item : items) addBehavior(item, behavior, complement);
     }
 
-    public void addBehaviors(Event behavior, Item... items) {
+    public void addBehaviors(ItemBehavior behavior, Item... items) {
         for (Item item : items) addBehavior(item, behavior);
     }
 
@@ -135,9 +134,7 @@ public class ItemBehaviorManager extends JsonDataLoader {
                     continue;
                 }
 
-                for (Event event : data.events()) {
-                    this.addBehavior(item, event, data.complement());
-                }
+                this.addBehavior(item, data, data.complement());
                 if (data.override_vanilla()) this.overrideVanilla(item);
 
                 data.cooldown().ifPresent(integer -> this.addCustomCooldown(item, integer));
@@ -146,24 +143,24 @@ public class ItemBehaviorManager extends JsonDataLoader {
     }
 
     private static class Holder {
-        final Map<EventType, List<Event>> behaviors;
+        final List<ItemBehavior> behaviors;
         @Getter
         private final Item item;
         private boolean locked;
 
         public Holder(Item item) {
-            this(item, Collections.emptyMap());
+            this(item, Collections.emptyList());
         }
 
-        public Holder(Item item, Map<EventType, List<Event>> behaviors) {
+        public Holder(Item item, List<ItemBehavior> behaviors) {
             this.item = item;
-            this.behaviors = new HashMap<>(behaviors);
+            this.behaviors = new ArrayList<>(behaviors);
         }
 
-        public void addBehavior(Event behavior, boolean complement) {
+        public void addBehavior(ItemBehavior behavior, boolean complement) {
             if (!this.locked) {
                 if (!complement) this.behaviors.clear();
-                this.behaviors.computeIfAbsent(behavior.type(), type -> new ArrayList<>()).add(behavior);
+                this.behaviors.add(behavior);
                 if (!complement) this.locked = true;
             }
         }

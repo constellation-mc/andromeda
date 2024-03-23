@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.common.util.MiscUtil;
-import me.melontini.andromeda.modules.mechanics.throwable_items.Context;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.Command;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.CommandType;
 import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;

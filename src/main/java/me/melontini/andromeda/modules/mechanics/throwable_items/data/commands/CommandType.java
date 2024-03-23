@@ -5,7 +5,10 @@ import com.google.common.collect.HashBiMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.*;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.CommandCommand;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.ExplosionCommand;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.ParticlesCommand;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.UseOnBlockCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.AllOfCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.AnyOfCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.DefaultedCommand;
@@ -57,6 +60,4 @@ public record CommandType(Codec<Command> codec) {
     public static final CommandType DEFAULTED = constant(register(Common.id("defaulted"), DefaultedCommand.CODEC));
     public static final CommandType ALL_OF = constant(register(Common.id("all_of"), AllOfCommand.CODEC));
     public static final CommandType ANY_OF = constant(register(Common.id("any_of"), AnyOfCommand.CODEC));
-
-    public static final CommandType JAVA = constant(register(Common.id("java"), Codec.unit(new JavaCommand(context -> {}))));
 }
