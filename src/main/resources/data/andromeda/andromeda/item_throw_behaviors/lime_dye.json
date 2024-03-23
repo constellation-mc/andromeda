@@ -1,0 +1,7 @@
+{
+  "items": "minecraft:lime_dye",
+  "complement": true,
+  "particles": {
+    "colors": [0, 255, 0]
+  }
+}

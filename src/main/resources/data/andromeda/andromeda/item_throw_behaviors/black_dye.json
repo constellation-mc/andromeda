@@ -1,0 +1,7 @@
+{
+  "items": "minecraft:black_dye",
+  "complement": true,
+  "particles": {
+    "colors": [5, 5, 8]
+  }
+}

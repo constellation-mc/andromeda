@@ -1,0 +1,7 @@
+{
+  "items": "minecraft:cyan_dye",
+  "complement": true,
+  "particles": {
+    "colors": [5, 95, 95]
+  }
+}

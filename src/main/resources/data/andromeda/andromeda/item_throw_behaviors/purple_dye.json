@@ -1,0 +1,7 @@
+{
+  "items": "minecraft:purple_dye",
+  "complement": true,
+  "particles": {
+    "colors": [128, 0, 128]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "items": "minecraft:brown_dye",
+  "complement": true,
+  "particles": {
+    "colors": [80, 43, 20]
+  }
+}
