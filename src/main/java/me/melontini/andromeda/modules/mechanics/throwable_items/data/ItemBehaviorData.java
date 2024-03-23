@@ -10,6 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
+import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.item.Item;
 import net.minecraft.util.collection.WeightedList;
 
@@ -19,7 +20,7 @@ import java.util.List;
 public record ItemBehaviorData(List<Item> items, boolean disabled, boolean override_vanilla, boolean complement,
                                int cooldown, WeightedList<Commands> commands, Particles particles) {
     public static final Codec<ItemBehaviorData> CODEC = RecordCodecBuilder.create(data -> data.group(
-            MiscUtil.listCodec(CommonRegistries.items().getCodec()).fieldOf("items").forGetter(ItemBehaviorData::items),
+            ExtraCodecs.list(CommonRegistries.items().getCodec()).fieldOf("items").forGetter(ItemBehaviorData::items),
 
             Codec.BOOL.optionalFieldOf("disabled", false).forGetter(ItemBehaviorData::disabled),
             Codec.BOOL.optionalFieldOf("override_vanilla", false).forGetter(ItemBehaviorData::override_vanilla),
@@ -58,11 +59,11 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
         public record Holder(List<String> item, List<String> user, List<String> server, List<String> hit_entity,
                              List<String> hit_block) {
             public static final Codec<Holder> CODEC = RecordCodecBuilder.create(data -> data.group(
-                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("item", Collections.emptyList()).forGetter(Holder::item),
-                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("user", Collections.emptyList()).forGetter(Holder::user),
-                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("server", Collections.emptyList()).forGetter(Holder::server),
-                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("hit_entity", Collections.emptyList()).forGetter(Holder::hit_entity),
-                    MiscUtil.listCodec(Codec.STRING).optionalFieldOf("hit_block", Collections.emptyList()).forGetter(Holder::hit_block)
+                    ExtraCodecs.list(Codec.STRING).optionalFieldOf("item", Collections.emptyList()).forGetter(Holder::item),
+                    ExtraCodecs.list(Codec.STRING).optionalFieldOf("user", Collections.emptyList()).forGetter(Holder::user),
+                    ExtraCodecs.list(Codec.STRING).optionalFieldOf("server", Collections.emptyList()).forGetter(Holder::server),
+                    ExtraCodecs.list(Codec.STRING).optionalFieldOf("hit_entity", Collections.emptyList()).forGetter(Holder::hit_entity),
+                    ExtraCodecs.list(Codec.STRING).optionalFieldOf("hit_block", Collections.emptyList()).forGetter(Holder::hit_block)
             ).apply(data, Holder::new));
 
             public static final Holder EMPTY = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).result().orElseThrow();
