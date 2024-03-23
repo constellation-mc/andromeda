@@ -2,22 +2,24 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data.commands;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.mojang.datafixers.util.Function3;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.CommandCommand;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.ExplosionCommand;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.ParticlesCommand;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.UseOnBlockCommand;
+import me.melontini.andromeda.common.util.MiscUtil;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
+import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.*;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.AllOfCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.AnyOfCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.DefaultedCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.RandomCommand;
+import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
+import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public record CommandType(Codec<Command> codec) {
 
@@ -50,14 +52,21 @@ public record CommandType(Codec<Command> codec) {
         return type;
     }
 
-    public static final CommandType COMMANDS = constant(register(Common.id("commands"), CommandCommand.CODEC));
-    public static final CommandType PARTICLES = constant(register(Common.id("particles"), ParticlesCommand.CODEC));
-    public static final CommandType EXPLOSION = constant(register(Common.id("explosion"), ExplosionCommand.CODEC));
-    public static final CommandType USE_ON_BLOCK = constant(register(Common.id("use_on_block"), UseOnBlockCommand.CODEC));
-
-
+    public static final CommandType ITEM = constant(register(Common.id("item"), create(ItemCommand::new)));
+    public static final CommandType USER = constant(register(Common.id("user"), create(UserCommand::new)));
+    public static final CommandType SERVER = constant(register(Common.id("server"), create(ServerCommand::new)));
+    public static final CommandType HIT_ENTITY = register(Common.id("hit_entity"), create(HitEntityCommand::new));
+    public static final CommandType HIT_BLOCK = register(Common.id("hit_block"), create(HitBlockCommand::new));
     public static final CommandType RANDOM = constant(register(Common.id("random"), RandomCommand.CODEC));
     public static final CommandType DEFAULTED = constant(register(Common.id("defaulted"), DefaultedCommand.CODEC));
     public static final CommandType ALL_OF = constant(register(Common.id("all_of"), AllOfCommand.CODEC));
     public static final CommandType ANY_OF = constant(register(Common.id("any_of"), AnyOfCommand.CODEC));
+
+    private static Codec<Command> create(Function3<List<String>, ItemBehaviorData.Particles, Optional<LootCondition>, Command> function) {
+        return RecordCodecBuilder.create(data -> data.group(
+                ExtraCodecs.list(Codec.STRING).optionalFieldOf("commands", Collections.emptyList()).forGetter(Command::getCommands),
+                ItemBehaviorData.Particles.CODEC.optionalFieldOf("particles", ItemBehaviorData.Particles.EMPTY).forGetter(Command::getParticles),
+                MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Command::getCondition)
+        ).apply(data, function));
+    }
 }

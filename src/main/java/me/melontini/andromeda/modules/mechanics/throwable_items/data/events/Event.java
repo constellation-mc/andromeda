@@ -1,33 +1,47 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data.events;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.melontini.andromeda.common.util.MiscUtil;
+import lombok.CustomLog;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.Command;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.CommandType;
-import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.util.hit.HitResult;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-public record Event(EventType type, List<Command> commands, Optional<LootCondition> condition) {
+@CustomLog
+@Getter
+@Accessors(fluent = true)
+public abstract class Event {
 
-    public static final Codec<Event> CODEC = RecordCodecBuilder.create(data -> data.group(
-            EventType.CODEC.fieldOf("type").forGetter(Event::type),
-            ExtraCodecs.list(CommandType.DISPATCH).fieldOf("commands").forGetter(Event::commands),
-            MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Event::condition)
-    ).apply(data, Event::new));
+    private final List<Command> commands;
+    private final Optional<LootCondition> condition;
+
+    public Event(List<Command> commands, Optional<LootCondition> condition) {
+        this.commands = commands;
+        this.condition = condition;
+
+        var allowed = new HashSet<>(allowed());
+        allowed.addAll(CommandType.CONSTANT);
+        this.commands.stream().filter(command -> !allowed.contains(command.type())).findFirst().ifPresent(command -> {
+            throw new IllegalStateException("Unsupported command type: %s".formatted(CommandType.getId(command.type())));
+        });
+    }
 
     public void onCollision(Context context) {
         if (this.condition.map(condition1 -> condition1.test(context.lootContext())).orElse(true)) {
-            commands.forEach(command -> command.tryExecute(context));
+            commands.forEach(command -> command.execute(context));
         }
     }
 
-    public boolean canRun(HitResult result) {
-        return type.predicate().test(result);
-    }
+    public abstract boolean canRun(HitResult result);
+
+    public abstract Set<CommandType> allowed();
+
+    public abstract EventType type();
 }
