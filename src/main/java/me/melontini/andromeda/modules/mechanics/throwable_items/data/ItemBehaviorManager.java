@@ -119,25 +119,25 @@ public class ItemBehaviorManager extends JsonDataLoader {
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
+    protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
         this.clear();
         STATIC.forEach((item, holder) -> this.itemBehaviors.put(item, new Holder(item, holder.behaviors)));
 
-        Maps.transformValues(prepared, input -> ItemBehaviorData.CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
+        Maps.transformValues(data, input -> ItemBehaviorData.CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
             throw new RuntimeException(string);
-        })).forEach((id, data) -> {
-            if (data.items().isEmpty()) return;
+        })).forEach((id, behaviorData) -> {
+            if (behaviorData.items().isEmpty()) return;
 
-            for (Item item : data.items()) {
-                if (data.disabled()) {
+            for (Item item : behaviorData.items()) {
+                if (behaviorData.disabled()) {
                     this.disable(item);
                     continue;
                 }
 
-                this.addBehavior(item, data, data.complement());
-                if (data.override_vanilla()) this.overrideVanilla(item);
+                this.addBehavior(item, behaviorData, behaviorData.complement());
+                if (behaviorData.override_vanilla()) this.overrideVanilla(item);
 
-                data.cooldown().ifPresent(integer -> this.addCustomCooldown(item, integer));
+                if (behaviorData.cooldown() != 50) this.addCustomCooldown(item, behaviorData.cooldown());
             }
         });
     }
