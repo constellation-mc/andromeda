@@ -1,9 +1,9 @@
 package me.melontini.andromeda.modules.entities.better_furnace_minecart.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.base.util.Support;
+import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;

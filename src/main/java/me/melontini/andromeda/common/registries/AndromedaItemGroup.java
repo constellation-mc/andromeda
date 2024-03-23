@@ -1,15 +1,12 @@
 package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.content.ContentBuilder;
-import me.melontini.dark_matter.api.content.interfaces.DarkMatterEntries;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.collection.DefaultedList;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -42,7 +39,7 @@ public class AndromedaItemGroup {
                 stackMap.forEach((module, itemStacks) -> {
                     if (itemStacks.size() > 2) {
                         big.put(module, itemStacks);
-                    } else if (!itemStacks.isEmpty()){
+                    } else if (!itemStacks.isEmpty()) {
                         small.put(module, itemStacks);
                     }
                 });
@@ -60,31 +57,19 @@ public class AndromedaItemGroup {
                     stacks.addAll(itemStacks);
                     stacks.add(ItemStack.EMPTY);
                 });
-                appendStacks(entries, stacks);
+                entries.appendStacks(stacks);
 
                 big.forEach((m, itemStacks) -> {
                     ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
                     sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
                     itemStacks.add(0, sign);
-                    appendStacks(entries, itemStacks);
+                    entries.appendStacks(itemStacks);
                 });
             })
             .displayName(TextUtil.translatable("itemGroup.andromeda.items")).optional().orElseThrow();
 
     public static void init() {
 
-    }
-
-    private static void appendStacks(DarkMatterEntries stacks, Collection<ItemStack> list) {
-        if (list == null || list.isEmpty()) return; //we shouldn't add line breaks if there are no items.
-
-        int rows = MathStuff.fastCeil(list.size() / 9d);
-        stacks.addAll(list, DarkMatterEntries.Visibility.TAB);
-        int left = (rows * 9) - list.size();
-        for (int i = 0; i < left; i++) {
-            stacks.add(ItemStack.EMPTY, DarkMatterEntries.Visibility.TAB); //fill the gaps
-        }
-        stacks.addAll(DefaultedList.ofSize(9, ItemStack.EMPTY), DarkMatterEntries.Visibility.TAB); //line break
     }
 
     public static void accept(Consumer<Acceptor> consumer) {
@@ -103,6 +88,7 @@ public class AndromedaItemGroup {
         default <T extends ItemConvertible> void items(Module<?> module, List<T> items) {
             stacks(module, items.stream().map(ItemStack::new).toList());
         }
+
         default <T extends ItemConvertible> void item(Module<?> module, T item) {
             stack(module, new ItemStack(item));
         }
@@ -110,6 +96,7 @@ public class AndromedaItemGroup {
         default <T extends ItemConvertible> void keepers(Module<?> module, List<Keeper<? extends ItemConvertible>> keepers) {
             stacks(module, keepers.stream().filter(Keeper::isPresent).map(Keeper::get).map(ItemStack::new).toList());
         }
+
         default <T extends ItemConvertible> void keeper(Module<?> module, Keeper<T> keeper) {
             if (keeper.isPresent()) stack(module, new ItemStack(keeper.get()));
         }
