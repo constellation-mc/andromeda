@@ -1,5 +1,6 @@
 {
   "items": "minecraft:bone_meal",
+  "complement": true,
   "events": [
     {
       "type": "andromeda:block",

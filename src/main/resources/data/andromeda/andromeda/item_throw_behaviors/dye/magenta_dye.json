@@ -1,5 +1,6 @@
 {
   "items": "minecraft:magenta_dye",
+  "complement": true,
   "events": {
     "type": "andromeda:any",
     "commands": [

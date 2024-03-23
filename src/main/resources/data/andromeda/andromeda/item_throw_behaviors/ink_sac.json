@@ -1,5 +1,6 @@
 {
   "items": "minecraft:ink_sac",
+  "complement": true,
   "events": [
     {
       "type": "andromeda:entity",
