@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data.events;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,7 +23,24 @@ import java.util.function.BiFunction;
 
 public record EventType(Codec<Event> codec) {
 
-    private static final BiMap<Identifier, EventType> TYPE_MAP = HashBiMap.create();
+    public static final EventType BLOCK = new EventType(create(BlockEvent::new));
+    public static final EventType ENTITY = new EventType(create(EntityEvent::new));
+    public static final EventType MISS = new EventType(create(MissEvent::new));
+    public static final EventType ANY = new EventType(create(AnyEvent::new));
+
+    private static Codec<Event> create(BiFunction<List<Command>, Optional<LootCondition>, Event> function) {
+        return RecordCodecBuilder.create(data -> data.group(
+                MiscUtil.listCodec(CommandType.CODEC.dispatch("type", Command::type, CommandType::codec)).optionalFieldOf("commands", Collections.emptyList()).forGetter(Event::commands),
+                MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Event::condition)
+        ).apply(data, function));
+    }
+
+    private static final BiMap<Identifier, EventType> TYPE_MAP = ImmutableBiMap.<Identifier, EventType>builder()
+            .put(Common.id("block"), BLOCK)
+            .put(Common.id("entity"), ENTITY)
+            .put(Common.id("miss"), MISS)
+            .put(Common.id("any"), ANY)
+            .build();
 
     public static final Codec<EventType> CODEC = Identifier.CODEC.flatXmap(identifier -> {
         EventType type = TYPE_MAP.get(identifier);
@@ -34,22 +51,4 @@ public record EventType(Codec<Event> codec) {
         if (identifier == null) return DataResult.error(() -> "Unknown event type: %s".formatted(eventType));
         return DataResult.success(identifier);
     });
-
-    public static EventType register(Identifier id, Codec<Event> codec) {
-        EventType type = new EventType(codec);
-        TYPE_MAP.put(id, type);
-        return type;
-    }
-
-    public static final EventType BLOCK = register(Common.id("block"), create(BlockEvent::new));
-    public static final EventType ENTITY = register(Common.id("entity"), create(EntityEvent::new));
-    public static final EventType MISS = register(Common.id("miss"), create(MissEvent::new));
-    public static final EventType ANY = register(Common.id("any"), create(AnyEvent::new));
-
-    private static Codec<Event> create(BiFunction<List<Command>, Optional<LootCondition>, Event> function) {
-        return RecordCodecBuilder.create(data -> data.group(
-                MiscUtil.listCodec(CommandType.DISPATCH).optionalFieldOf("commands", Collections.emptyList()).forGetter(Event::commands),
-                MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Event::condition)
-        ).apply(data, function));
-    }
 }

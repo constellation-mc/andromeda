@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.CustomLog;
 import lombok.Getter;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
@@ -20,7 +19,6 @@ import java.util.*;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 
-@CustomLog
 public class ItemBehaviorManager extends JsonDataLoader {
 
     public static final Identifier RELOADER_ID = id("item_throw_behaviors");
@@ -121,7 +119,7 @@ public class ItemBehaviorManager extends JsonDataLoader {
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
         this.clear();
-        STATIC.forEach((item, holder) -> this.itemBehaviors.put(item, new Holder(item, holder.behaviors)));
+        itemBehaviors.putAll(STATIC);
 
         Maps.transformValues(data, input -> ItemBehaviorData.CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
             throw new RuntimeException(string);
@@ -143,18 +141,13 @@ public class ItemBehaviorManager extends JsonDataLoader {
     }
 
     private static class Holder {
-        final List<ItemBehavior> behaviors;
+        final List<ItemBehavior> behaviors = new ArrayList<>();
         @Getter
         private final Item item;
         private boolean locked;
 
         public Holder(Item item) {
-            this(item, Collections.emptyList());
-        }
-
-        public Holder(Item item, List<ItemBehavior> behaviors) {
             this.item = item;
-            this.behaviors = new ArrayList<>(behaviors);
         }
 
         public void addBehavior(ItemBehavior behavior, boolean complement) {

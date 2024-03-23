@@ -35,8 +35,7 @@ public class MiscUtil {
         JsonObject object = element.getAsJsonObject();
 
         LootConditionType type = Registries.LOOT_CONDITION_TYPE.get(Identifier.tryParse(object.get("condition").getAsString()));
-        if (type == null)
-            return DataResult.error(() -> "No such condition type '%s'".formatted(object.get("condition").getAsString()));
+        if (type == null) return DataResult.error(() -> "No such condition type '%s'".formatted(object.get("condition").getAsString()));
         return DataResult.success((LootCondition) type.getJsonSerializer().fromJson(object, lootContext));
     }, condition -> {
         JsonObject object = new JsonObject();

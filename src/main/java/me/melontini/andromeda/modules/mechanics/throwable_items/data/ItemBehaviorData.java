@@ -6,11 +6,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
-import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.Event;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.EventType;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
@@ -64,9 +64,8 @@ public record ItemBehaviorData(List<Item> items, boolean disabled, boolean overr
             set.add(LootContextParameters.THIS_ENTITY, entityHitResult.getEntity());
         }
 
-        LootContext context = new LootContext.Builder(set.build(Main.ITEM_CONTEXT.orThrow())).build(null);
-        Context context1 = new Context(stack, fie, world, user, hitResult, context);
-        this.events().stream().filter(event -> event.canRun(hitResult)).forEach(event -> event.onCollision(context1));
+        LootContext context = new LootContext.Builder(set.build(Andromeda.anyContext)).build(null);
+        this.events().stream().filter(event -> event.canRun(hitResult)).forEach(event -> event.onCollision(stack, fie, world, user, hitResult, context));
     }
 
     public record Particles(boolean item, Optional<Integer> colors) {

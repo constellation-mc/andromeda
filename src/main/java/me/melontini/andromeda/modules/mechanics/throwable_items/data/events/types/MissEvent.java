@@ -23,7 +23,7 @@ public class MissEvent extends Event {
 
     @Override
     public Set<CommandType> allowed() {
-        return Set.of();
+        return Set.of(CommandType.ITEM, CommandType.USER, CommandType.SERVER);
     }
 
     @Override

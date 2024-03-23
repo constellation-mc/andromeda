@@ -23,7 +23,7 @@ public class EntityEvent extends Event {
 
     @Override
     public Set<CommandType> allowed() {
-        return Set.of(CommandType.HIT_ENTITY);
+        return Set.of(CommandType.ITEM, CommandType.USER, CommandType.SERVER, CommandType.HIT_ENTITY);
     }
 
     @Override
