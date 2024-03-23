@@ -9,8 +9,8 @@ import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
@@ -30,7 +30,7 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, int time)
 
     public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
             CommonRegistries.items().getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
-            ExtraCodecs.weightedList(Entry.CODEC).fieldOf("entries").forGetter(EggProcessingData::entity),
+            MiscUtil.weightedListCodec(Entry.CODEC).fieldOf("entries").forGetter(EggProcessingData::entity),
             Codec.INT.fieldOf("time").forGetter(EggProcessingData::time)
     ).apply(data, EggProcessingData::new));
 
@@ -38,7 +38,7 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, int time)
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(data -> data.group(
                 CommonRegistries.entityTypes().getCodec().fieldOf("entity").forGetter(Entry::type),
                 NbtCompound.CODEC.optionalFieldOf("nbt", new NbtCompound()).forGetter(Entry::nbt),
-                ExtraCodecs.list(Codec.STRING).optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
+                MiscUtil.listCodec(Codec.STRING).optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
         ).apply(data, Entry::new));
     }
 

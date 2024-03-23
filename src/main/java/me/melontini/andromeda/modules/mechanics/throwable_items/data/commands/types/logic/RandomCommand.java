@@ -9,7 +9,6 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.Command;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.CommandType;
-import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.collection.WeightedList;
@@ -22,7 +21,7 @@ import java.util.Optional;
 public class RandomCommand extends Command {
 
     public static final Codec<RandomCommand> CODEC = RecordCodecBuilder.create(data -> data.group(
-            ExtraCodecs.weightedList(CommandType.DISPATCH).fieldOf("commands").forGetter(RandomCommand::commands),
+            MiscUtil.weightedListCodec(CommandType.DISPATCH).fieldOf("commands").forGetter(RandomCommand::commands),
             Codec.INT.optionalFieldOf("rolls", 1).forGetter(RandomCommand::rolls),
             MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Command::getCondition)
     ).apply(data, RandomCommand::new));

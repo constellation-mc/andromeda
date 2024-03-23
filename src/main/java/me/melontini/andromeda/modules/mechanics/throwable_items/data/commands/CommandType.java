@@ -14,7 +14,6 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.ty
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.AnyOfCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.DefaultedCommand;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.commands.types.logic.RandomCommand;
-import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +63,7 @@ public record CommandType(Codec<Command> codec) {
 
     private static Codec<Command> create(Function3<List<String>, ItemBehaviorData.Particles, Optional<LootCondition>, Command> function) {
         return RecordCodecBuilder.create(data -> data.group(
-                ExtraCodecs.list(Codec.STRING).optionalFieldOf("commands", Collections.emptyList()).forGetter(Command::getCommands),
+                MiscUtil.listCodec(Codec.STRING).optionalFieldOf("commands", Collections.emptyList()).forGetter(Command::getCommands),
                 ItemBehaviorData.Particles.CODEC.optionalFieldOf("particles", ItemBehaviorData.Particles.EMPTY).forGetter(Command::getParticles),
                 MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Command::getCondition)
         ).apply(data, function));

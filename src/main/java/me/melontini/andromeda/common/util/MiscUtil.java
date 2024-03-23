@@ -1,6 +1,8 @@
 package me.melontini.andromeda.common.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -13,6 +15,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -20,6 +23,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.function.Function;
 
 public class MiscUtil {
 
@@ -59,6 +64,18 @@ public class MiscUtil {
 
     public static RegistryEntry.Reference<DamageType> getTypeReference(World world, RegistryKey<DamageType> type) {
         return world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).getEntry(type).orElseThrow();
+    }
+
+    public static <T> Codec<List<T>> listCodec(Codec<T> codec) {
+        return Codec.either(codec, codec.listOf()).xmap(e -> e.map(ImmutableList::of, Function.identity()), Either::right);
+    }
+
+    public static <T> Codec<WeightedList<T>> weightedListCodec(Codec<T> codec) {
+        return Codec.either(codec, WeightedList.createCodec(codec)).xmap(e -> e.map(entry -> {
+            WeightedList<T> list = new WeightedList<>();
+            list.add(entry, 1);
+            return list;
+        }, Function.identity()), Either::right);
     }
 
     public static final class GsonContextImpl implements JsonSerializationContext, JsonDeserializationContext {

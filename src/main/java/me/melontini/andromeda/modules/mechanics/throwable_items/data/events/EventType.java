@@ -13,7 +13,6 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.type
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.types.BlockEvent;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.types.EntityEvent;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.events.types.MissEvent;
-import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.util.Identifier;
 
@@ -49,7 +48,7 @@ public record EventType(Codec<Event> codec) {
 
     private static Codec<Event> create(BiFunction<List<Command>, Optional<LootCondition>, Event> function) {
         return RecordCodecBuilder.create(data -> data.group(
-                ExtraCodecs.list(CommandType.DISPATCH).optionalFieldOf("commands", Collections.emptyList()).forGetter(Event::commands),
+                MiscUtil.listCodec(CommandType.DISPATCH).optionalFieldOf("commands", Collections.emptyList()).forGetter(Event::commands),
                 MiscUtil.LOOT_CONDITION_CODEC.optionalFieldOf("condition").forGetter(Event::condition)
         ).apply(data, function));
     }
