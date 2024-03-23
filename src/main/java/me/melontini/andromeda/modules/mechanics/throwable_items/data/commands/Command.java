@@ -5,7 +5,6 @@ import lombok.Getter;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.Context;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorData;
-import me.melontini.andromeda.util.Debug;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -35,7 +34,6 @@ public abstract class Command {
 
         ServerCommandSource source = createSource(context);
         if (source == null) return false;
-        if (!Debug.Keys.PRINT_DATA_COMMAND_OUTPUT.isPresent()) source = source.withSilent();
 
         if (commands != null && !commands.isEmpty()) {
             for (String command : commands) {
