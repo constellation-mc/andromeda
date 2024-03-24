@@ -102,6 +102,13 @@ jar {
     }
 }
 
+sourcesJar {
+    exclude {
+        sourceSets.main.allSource.contains it.file
+    }
+    from delombok
+}
+
 tasks.register('printVersionName') {
     doLast {
         println version.split("-")[0] + " (${version.split("-")[1]})"

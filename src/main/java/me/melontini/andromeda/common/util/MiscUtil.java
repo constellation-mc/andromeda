@@ -1,7 +1,6 @@
 package me.melontini.andromeda.common.util;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.*;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraft.entity.damage.DamageType;
@@ -14,7 +13,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.Function;
 
@@ -52,29 +50,5 @@ public class MiscUtil {
             list.add(entry, 1);
             return list;
         }, Function.identity()), Either::right);
-    }
-
-    public static final class GsonContextImpl implements JsonSerializationContext, JsonDeserializationContext {
-
-        private final Gson gson;
-
-        public GsonContextImpl(Gson gson) {
-            this.gson = gson;
-        }
-
-        @Override
-        public JsonElement serialize(Object src) {
-            return gson.toJsonTree(src);
-        }
-
-        @Override
-        public JsonElement serialize(Object src, Type typeOfSrc) {
-            return gson.toJsonTree(src, typeOfSrc);
-        }
-
-        @Override
-        public <R> R deserialize(JsonElement json, Type typeOfT) throws JsonParseException {
-            return gson.fromJson(json, typeOfT);
-        }
     }
 }

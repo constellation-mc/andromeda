@@ -10,10 +10,10 @@ import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
-import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
 import net.minecraft.block.*;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.world.ServerWorld;
@@ -28,7 +28,7 @@ import java.util.*;
 public record PlantTemperatureData(List<Block> blocks, float min, float max, float aMin, float aMax) {
 
     public static final Codec<PlantTemperatureData> CODEC = RecordCodecBuilder.create(data -> data.group(
-            MiscUtil.listCodec(CommonRegistries.blocks().getCodec()).fieldOf("identifier").forGetter(PlantTemperatureData::blocks),
+            ExtraCodecs.list(CommonRegistries.blocks().getCodec()).fieldOf("identifier").forGetter(PlantTemperatureData::blocks),
             Codec.FLOAT.fieldOf("min").forGetter(PlantTemperatureData::min),
             Codec.FLOAT.fieldOf("max").forGetter(PlantTemperatureData::max),
             Codec.FLOAT.fieldOf("aMin").forGetter(PlantTemperatureData::aMin),

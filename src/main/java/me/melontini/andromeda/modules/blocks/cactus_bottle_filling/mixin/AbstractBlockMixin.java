@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
 import me.melontini.andromeda.common.util.BlockUtil;
-import me.melontini.andromeda.common.util.ItemStackUtil;
 import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
+import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CactusBlock;

@@ -1,0 +1,7 @@
+{
+  "items": "minecraft:red_dye",
+  "complement": true,
+  "particles": {
+    "colors": [121, 28, 39]
+  }
+}
