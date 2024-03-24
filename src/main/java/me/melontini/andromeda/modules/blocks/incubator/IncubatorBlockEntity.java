@@ -114,8 +114,8 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
 
     private void tickProcessingTime(World world) {
         BlockState state = world.getBlockState(pos.down());
-        if (isLitCampfire(state)) state = world.getBlockState(pos.down().down());
-        if (isLitCampfire(state)) return;
+        if (!isLitCampfire(state)) state = world.getBlockState(pos.down().down());
+        if (!isLitCampfire(state)) return;
 
         if (world.isClient && world.random.nextInt(4) == 0) {
             double i = MathStuff.threadRandom().nextDouble(0.6) - 0.3;
