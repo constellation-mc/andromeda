@@ -303,8 +303,8 @@
   "config.andromeda.mechanics.dragon_fight.option.scaleHealthByMaxPlayers.@Tooltip": "根据最大在末地的玩家数量提升末影龙生命值。\n计算公式：floor((sqrt(500 * i)) * 10)，i为最大玩家数量。",
   "config.andromeda.mechanics.dragon_fight.option.shorterCrystalTrackRange": "更短的水晶治疗距离",
   "config.andromeda.mechanics.dragon_fight.option.shorterCrystalTrackRange.@Tooltip": "将水晶的治疗距离由32降低至24格。",
-  "config.andromeda.mechanics.dragon_fight.option.shorterSpikes": "更短的尖刺",
-  "config.andromeda.mechanics.dragon_fight.option.shorterSpikes.@Tooltip": "让新生成的尖刺更短。",
+  "config.andromeda.mechanics.dragon_fight.option.shorterSpikes": "更短的黑曜石柱",
+  "config.andromeda.mechanics.dragon_fight.option.shorterSpikes.@Tooltip": "让新生成的黑曜石柱更短。",
   "config.andromeda.mechanics.throwable_items": "可投掷物品",
   "config.andromeda.mechanics.throwable_items.@Tooltip": "使一些本来可能用不上*的物品变得可投掷",
   "config.andromeda.mechanics.throwable_items.option.blacklist": "投掷物黑名单",
@@ -335,7 +335,11 @@
   "config.andromeda.gui.item_frame_tooltips.@Tooltip": "在游戏内为物品展示框添加物品提示",
   "config.andromeda.gui.smooth_tooltips": "[实验性] 工具提示缓入",
   "config.andromeda.gui.smooth_tooltips.@Tooltip": "工具提示将以缓入的形式进场，向光标靠拢。\n可能在兼容性上存在疏漏，暂时标记为实验性。",
-
+  "config.andromeda.gui.smooth_tooltips.option.clampX": "水平移速系数",
+  "config.andromeda.gui.smooth_tooltips.option.clampY": "垂直限位系数",
+  "config.andromeda.gui.smooth_tooltips.option.deltaX": "水平移速系数",
+  "config.andromeda.gui.smooth_tooltips.option.deltaY": "垂直限位系数",
+  
   "config.andromeda.category.misc": "杂项",
   "config.andromeda.misc.damage_backport": "/damage指令复刻",
   "config.andromeda.misc.damage_backport.@Tooltip": "对高版本/damage指令的非完全复刻！",
