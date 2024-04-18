@@ -9,6 +9,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
 @FunctionalInterface
@@ -26,7 +28,7 @@ public interface ItemBehavior {
         builder.add(LootContextParameters.TOOL, stack);
         builder.add(LootContextParameters.ORIGIN, fie.getPos());
 
-        LootContext lootContext = new LootContext.Builder(builder.build(Main.CONTEXT_TYPE.orThrow())).build(null);
+        LootContext lootContext = new LootContext.Builder(builder.build(Main.CONTEXT_TYPE.orThrow())).build(Optional.empty());
         return cd.asInt(lootContext);
     }
 }

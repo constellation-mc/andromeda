@@ -28,6 +28,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -63,7 +64,7 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
             case MISS -> builder.add(LootContextParameters.ORIGIN, hitResult.getPos());
         }
 
-        LootContext lootContext = new LootContext.Builder(builder.build(Main.CONTEXT_TYPE.orThrow())).build(null);
+        LootContext lootContext = new LootContext.Builder(builder.build(Main.CONTEXT_TYPE.orThrow())).build(Optional.empty());
         EventContext context = EventContext.builder(EventType.NULL)
                 .addParameter(EventKey.LOOT_CONTEXT, lootContext)
                 .build();

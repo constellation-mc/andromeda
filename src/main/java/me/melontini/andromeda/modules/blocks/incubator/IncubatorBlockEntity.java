@@ -45,7 +45,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-@SuppressWarnings("UnstableApiUsage")
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
 
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -90,7 +89,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         builder.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.getPos()));
         builder.add(LootContextParameters.BLOCK_ENTITY, this);
 
-        LootContext context = new LootContext.Builder(builder.build(LootContextTypes.BLOCK)).build(null);
+        LootContext context = new LootContext.Builder(builder.build(LootContextTypes.BLOCK)).build(Optional.empty());
         return arithmetica.asInt(context);
     }
 

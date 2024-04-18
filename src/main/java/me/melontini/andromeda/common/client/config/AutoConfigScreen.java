@@ -10,6 +10,7 @@ import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Origin;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
+import me.melontini.andromeda.common.client.UvTexturedButtonWidget;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
@@ -32,7 +33,6 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.particle.ParticleTypes;
@@ -166,7 +166,7 @@ public class AutoConfigScreen {
                 var wiki = getWikiButton(client, screen);
                 addDrawableChild(screen, wiki);
 
-                var lab = new TexturedButtonWidget(screen.width - 62, 13, 20, 20, 0, 0, 20, LAB_BUTTON_TEXTURE, 32, 64, button -> client.setScreen(AutoConfigScreen.getLabScreen(screen1)));
+                var lab = new UvTexturedButtonWidget(screen.width - 62, 13, 20, 20, 0, 0, 20, LAB_BUTTON_TEXTURE, 32, 64, button -> client.setScreen(AutoConfigScreen.getLabScreen(screen1)));
                 lab.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.lab.tooltip")));
                 addDrawableChild(screen, lab);
             }
@@ -175,8 +175,8 @@ public class AutoConfigScreen {
     }
 
     @NotNull
-    private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
-        var wiki = new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
+    private static UvTexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
+        var wiki = new UvTexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
             if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
                 Debug.load();
                 ScreenParticleHelper.addScreenParticles(ParticleTypes.ANGRY_VILLAGER, screen.width - 30, 23, 0.5, 0.5, 0.5, 1);
