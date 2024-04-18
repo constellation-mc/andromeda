@@ -1,7 +1,0 @@
-{
-  "items": "minecraft:pink_dye",
-  "complement": true,
-  "particles": {
-    "colors": [128, 54, 92]
-  }
-}

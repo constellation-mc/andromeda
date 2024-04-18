@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.misc.tiny_storage.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.misc.tiny_storage.TinyStorage;
-import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
+import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;

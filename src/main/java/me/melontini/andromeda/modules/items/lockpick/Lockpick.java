@@ -5,7 +5,7 @@ import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.modules.items.lockpick.client.Client;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class Lockpick extends Module<Lockpick.Config> {
     }
 
     public boolean rollLockpick() {
-        return this.config().chance - 1 == 0 || MathStuff.threadRandom().nextInt(this.config().chance - 1) == 0;
+        return this.config().chance - 1 == 0 || MathUtil.threadRandom().nextInt(this.config().chance - 1) == 0;
     }
 
     public static class Config extends BaseConfig {

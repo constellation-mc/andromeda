@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.better_names.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +15,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
@@ -27,8 +27,8 @@ abstract class ItemStackMixin {
     @Shadow public abstract int getDamage();
     @Shadow public abstract Rarity getRarity();
 
-    @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip", locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list, MutableText mutableText) {
+    @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip")
+    private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, @Local MutableText mutableText) {
         if (!this.getItem().isDamageable()) {
             if (this.getCount() > 1)
                 mutableText.append(TextUtil.literal(" x" + this.getCount()).formatted(getRarity().formatting));

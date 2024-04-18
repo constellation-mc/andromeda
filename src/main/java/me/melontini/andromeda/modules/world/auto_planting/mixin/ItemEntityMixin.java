@@ -4,7 +4,7 @@ package me.melontini.andromeda.modules.world.auto_planting.mixin;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.world.auto_planting.AutoPlanting;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -39,7 +39,7 @@ abstract class ItemEntityMixin {
 
         if (world.isClient()) return;
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof PlantBlock) {
-            if (entity.age % MathStuff.nextInt(20, 101) != 0) return;
+            if (entity.age % MathUtil.nextInt(20, 101) != 0) return;
             var config = world.am$get(module);
             if (!config.enabled) return;
             if (!world.getFluidState(pos).isEmpty()) return;

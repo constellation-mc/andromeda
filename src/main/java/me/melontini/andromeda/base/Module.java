@@ -9,6 +9,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
+import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -55,7 +56,7 @@ public abstract class Module<T extends Module.BaseConfig> {
     }
 
     public final void save() {
-        manager.save(FabricLoader.getInstance().getConfigDir(), config());
+        manager.save(FabricLoader.getInstance().getConfigDir(), config(), Context.of());
     }
 
     public final boolean enabled() {
@@ -78,7 +79,7 @@ public abstract class Module<T extends Module.BaseConfig> {
         var ctx = Reflect.setAccessible(cls.getDeclaredConstructors()[0]);
 
         if (ctx.getParameterCount() == 0) {
-            AndromedaException.run(ctx::newInstance, b -> b.message("Failed to construct module class!").add("class", cls.getName()));
+            AndromedaException.run(ctx::newInstance, b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
         } else {
             Map<Class<?>, Object> args = Map.of(
                     this.getClass(), this,
@@ -90,7 +91,7 @@ public abstract class Module<T extends Module.BaseConfig> {
                 var value = MakeSure.notNull(args.get(parameterType));
                 passed.add(value);
             }
-            AndromedaException.run(() -> ctx.newInstance(passed.toArray(Object[]::new)), b -> b.message("Failed to construct module class!").add("class", cls.getName()));
+            AndromedaException.run(() -> ctx.newInstance(passed.toArray(Object[]::new)), b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
         }
     }
 

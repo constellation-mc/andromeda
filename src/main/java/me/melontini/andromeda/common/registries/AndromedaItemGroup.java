@@ -1,7 +1,7 @@
 package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.dark_matter.api.content.ContentBuilder;
+import me.melontini.dark_matter.api.item_group.ItemGroupBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
@@ -18,7 +18,7 @@ public class AndromedaItemGroup {
     private static final Set<Consumer<Acceptor>> ACCEPTORS = new LinkedHashSet<>();
 
     @SuppressWarnings("unused")
-    public static final ItemGroup GROUP = ContentBuilder.ItemGroupBuilder.create(id("group"))
+    public static final ItemGroup GROUP = ItemGroupBuilder.create(id("group"))
             .entries(entries -> {
                 Map<Module<?>, List<ItemStack>> stackMap = new LinkedHashMap<>();
                 Acceptor acceptor = (module, stack) -> {

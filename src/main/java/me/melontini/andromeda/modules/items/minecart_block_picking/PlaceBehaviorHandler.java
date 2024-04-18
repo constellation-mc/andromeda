@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.items.minecart_block_picking;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
-import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
+import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;

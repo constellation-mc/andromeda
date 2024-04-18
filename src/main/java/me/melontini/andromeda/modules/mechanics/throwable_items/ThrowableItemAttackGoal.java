@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
@@ -9,6 +8,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.EnumSet;
+
+import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
 public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
 
@@ -46,7 +47,7 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
 
     @Override
     public boolean canStart() {
-        if (ItemBehaviorManager.get(mob.world.getServer()).hasBehaviors(this.mob.getMainHandStack().getItem())) {
+        if (mob.world.getServer().dm$getReloader(RELOADER).hasBehaviors(this.mob.getMainHandStack().getItem())) {
             LivingEntity livingEntity = this.mob.getTarget();
             if (livingEntity != null && livingEntity.isAlive() && this.owner.am$cooldown() <= 0) {
                 double d = this.mob.distanceTo(livingEntity);

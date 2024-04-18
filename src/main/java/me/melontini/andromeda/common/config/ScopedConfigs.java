@@ -1,11 +1,14 @@
 package me.melontini.andromeda.common.config;
 
+import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import lombok.CustomLog;
 import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.dark_matter.api.base.config.ConfigManager;
+import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.world.ServerWorld;
@@ -18,6 +21,11 @@ import java.util.Map;
 
 @CustomLog
 public class ScopedConfigs {
+
+    public static final Context CONFIG_CONTEXT = Context.builder().put(ConfigManager.GSON, new Gson()).build();
+    public static Context getConfigContext(Module<?> module) {
+        return !module.config().scope.isGlobal() ? CONFIG_CONTEXT : Context.of();
+    }
 
     public static <T extends Module.BaseConfig> T get(World world, Module<T> module) {
         if (world instanceof ServerWorld sw) {
@@ -49,15 +57,15 @@ public class ScopedConfigs {
     @SneakyThrows
     private static Module.BaseConfig loadScoped(Path root, Module<?> module) {
         var manager = module.manager();
-        if (Files.exists(manager.resolve(root))) return manager.load(root);
-        return manager.load(FabricLoader.getInstance().getConfigDir());
+        if (Files.exists(manager.resolve(root))) return manager.load(root, getConfigContext(module));
+        return manager.load(FabricLoader.getInstance().getConfigDir(), getConfigContext(module));
     }
 
     static void prepareForWorld(ServerWorld world, Module<?> module, Path p) {
         Attachment attachment = ScopedConfigs.getConfigs(world);
         Module.BaseConfig config = ScopedConfigs.loadScoped(p, module);
 
-        module.manager().save(p, Utilities.cast(config));
+        module.manager().save(p, Utilities.cast(config), getConfigContext(module));
 
         if (!module.config().scope.isDimension()) DataConfigs.get(world.getServer()).applyDataPacks(config, module, world.getRegistryKey().getValue());
         attachment.addConfig(module, config);
@@ -86,7 +94,7 @@ public class ScopedConfigs {
 
         default <T extends Module.BaseConfig> void am$save(Module<T> module) {
             if (this instanceof ServerWorld w) {
-                module.manager().save(getPath(w, module), am$get(module));
+                module.manager().save(getPath(w, module), am$get(module), getConfigContext(module));
             }
         }
 

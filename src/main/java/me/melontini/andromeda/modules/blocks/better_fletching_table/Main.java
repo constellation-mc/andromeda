@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
-import me.melontini.dark_matter.api.content.RegistryUtil;
+import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -23,7 +23,7 @@ public class Main {
     public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.create();
 
     Main(BetterFletchingTable module) {
-        FLETCHING.init(RegistryUtil.createScreenHandler(id("fletching"), () -> FletchingScreenHandler::new));
+        FLETCHING.init(RegistryUtil.register(CommonRegistries.screenHandlers(), id("fletching"), RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
 
         Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 

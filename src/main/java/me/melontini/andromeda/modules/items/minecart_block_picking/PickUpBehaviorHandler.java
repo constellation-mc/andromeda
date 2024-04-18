@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.items.minecart_block_picking;
 
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
-import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
+import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
+import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

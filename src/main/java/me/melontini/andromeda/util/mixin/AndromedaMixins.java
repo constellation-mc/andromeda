@@ -9,9 +9,9 @@ import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.exceptions.MixinVerifyError;
 import me.melontini.dark_matter.api.base.util.Exceptions;
-import me.melontini.dark_matter.api.base.util.mixin.AsmUtil;
-import me.melontini.dark_matter.api.base.util.mixin.ExtendablePlugin;
-import me.melontini.dark_matter.api.base.util.mixin.IPluginPlugin;
+import me.melontini.dark_matter.api.mixin.AsmUtil;
+import me.melontini.dark_matter.api.mixin.ExtendablePlugin;
+import me.melontini.dark_matter.api.mixin.IPluginPlugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -63,7 +63,7 @@ public class AndromedaMixins {
         if (predicate != null && !predicate.test(n)) return false;
 
         //MixinPredicate only uses the node.
-        return MIXIN_PREDICATE.shouldApplyMixin(null, null, n, null);
+        return MIXIN_PREDICATE.shouldApplyMixin(null, null, n);
     }
 
     private static void verifyMixin(ClassNode mixinNode, String mixinClassName) {

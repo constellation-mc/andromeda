@@ -2,8 +2,8 @@ package me.melontini.andromeda.modules.entities.slimes.mixin.merge;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
-import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
+import me.melontini.dark_matter.api.base.util.MathUtil;
+import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -27,7 +27,7 @@ abstract class SlimeEntityMixin extends MobEntity {
     @Shadow public abstract void setSize(int size, boolean heal);
 
     @Unique
-    private int andromeda$mergeCD = MathStuff.nextInt(700, 2000);
+    private int andromeda$mergeCD = MathUtil.nextInt(700, 2000);
 
     protected SlimeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
@@ -56,7 +56,7 @@ abstract class SlimeEntityMixin extends MobEntity {
 
             slime.discard();
             this.setSize(size, true);
-            this.andromeda$mergeCD = MathStuff.nextInt(700, 2000);
+            this.andromeda$mergeCD = MathUtil.nextInt(700, 2000);
         }
     }
 
@@ -72,6 +72,6 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathStuff.nextInt(700, 2000));
+        this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathUtil.nextInt(700, 2000));
     }
 }

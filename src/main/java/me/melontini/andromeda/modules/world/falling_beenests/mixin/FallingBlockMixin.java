@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
-import me.melontini.dark_matter.api.minecraft.world.PlayerUtil;
+import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeehiveBlockEntity;

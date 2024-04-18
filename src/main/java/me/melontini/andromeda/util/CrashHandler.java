@@ -6,13 +6,12 @@ import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.base.util.classes.Context;
+import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import me.melontini.dark_matter.api.crash_handler.uploading.Mixpanel;
 import me.melontini.dark_matter.api.crash_handler.uploading.Uploader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.impl.util.StringUtil;
-import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,6 +20,8 @@ import java.util.*;
 
 @CustomLog
 public class CrashHandler {
+
+    public static final Context.Key<Boolean> SKIP_SERVICE = Context.key("andromeda:skip_service");
 
     private static final Mixpanel MIXPANEL = Mixpanel.get(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
     private static final Set<String> IMPORTANT_MODS = Sets.newHashSet("andromeda", "minecraft", "fabric-api", "fabricloader", "connectormod", "forge");
@@ -75,7 +76,7 @@ public class CrashHandler {
                 return;
         }
 
-        if (context.get(IMixinInfo.class, Crashlytics.Keys.MIXIN_INFO).filter(info -> info.getClassName().startsWith("me.melontini.andromeda")).isEmpty() && !shouldReportRecursive(cause, new Flag()).report())
+        if (context.get(Crashlytics.Keys.MIXIN_INFO).filter(info -> info.getClassName().startsWith("me.melontini.andromeda")).isEmpty() && !shouldReportRecursive(cause, new Flag()).report())
             return;
         LOGGER.warn("Found Andromeda in trace, collecting and uploading crash report...");
 
@@ -96,7 +97,7 @@ public class CrashHandler {
         }
         object.add("mods", mods);
 
-        if (context.get(Boolean.class, "andromeda:skip_service").orElse(false)) {
+        if (context.get(SKIP_SERVICE).orElse(false)) {
             upload(object);
         } else {
             Uploader.SERVICE.submit(() -> upload(object));

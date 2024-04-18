@@ -1,7 +1,7 @@
-## <img src="https://github.com/melontini/andromeda/assets/104443436/f8724c6c-f15b-49ca-9f42-b7ae01d1e64a" width="75" height="75"> Andromeda
+## <img src="https://github.com/constellation-mc/andromeda/assets/104443436/f8724c6c-f15b-49ca-9f42-b7ae01d1e64a" width="75" height="75"> Andromeda
 
 [![Modrinth](https://img.shields.io/modrinth/dt/TseYlb0f?logo=modrinth&color=mint)](https://modrinth.com/mod/andromeda)
-[![CodeFactor](https://www.codefactor.io/repository/github/constellation-mc/andromeda/badge)](https://www.codefactor.io/repository/github/melontini/andromeda)
+[![CodeFactor](https://www.codefactor.io/repository/github/constellation-mc/andromeda/badge)](https://www.codefactor.io/repository/github/constellation-mc/andromeda)
 ![GitHub](https://img.shields.io/github/license/constellation-mc/andromeda)
 
 ### A galaxy is a collection of things and systems. So is this mod.
@@ -22,7 +22,7 @@ https://andromeda-wiki.pages.dev/
 
 #### The mod itself:<br/>
 - [Mixpanel Analytics](https://mixpanel.com/home)
-- [Dark Matter Library](https://github.com/melontini/dark-matter). (Hey, that's me!)
+- [Dark Matter Library](https://github.com/constellation-mc/dark-matter). (Hey, that's me!)
 
 #### The wiki:<br/>
 - [VuePress](https://v2.vuepress.vuejs.org/)

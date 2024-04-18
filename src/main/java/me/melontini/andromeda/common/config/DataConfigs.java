@@ -15,6 +15,7 @@ import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -35,18 +36,18 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public class DataConfigs extends JsonDataLoader {
 
     private static final Identifier DEFAULT = new Identifier(MODID, "default");
-    public static final Identifier RELOADER_ID = Common.id("scoped_config");
+    public static final ReloaderType<DataConfigs> RELOADER = ReloaderType.create(Common.id("scoped_config"));
 
     public DataConfigs() {
-        super(RELOADER_ID);
+        super(RELOADER.identifier());
     }
 
     public static DataConfigs get(MinecraftServer server) {
         try {
-            return server.am$getReloader(RELOADER_ID);
+            return server.dm$getReloader(RELOADER);
         } catch (NullPointerException e) {
             throw AndromedaException.builder().cause(e).report(false)
-                    .message("Couldn't get Scoped Configs reloader! Have you restarted the game as you were asked to?")
+                    .translatable("scoped_configs.no_reloader")
                     .build();
         }
     }

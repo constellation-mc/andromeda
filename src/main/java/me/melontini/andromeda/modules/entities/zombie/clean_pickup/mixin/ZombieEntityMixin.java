@@ -5,7 +5,6 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.Pickup;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
-import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -14,6 +13,8 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+
+import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
 @Mixin(ZombieEntity.class)
 abstract class ZombieEntityMixin extends HostileEntity {
@@ -34,6 +35,6 @@ abstract class ZombieEntityMixin extends HostileEntity {
 
     @Unique
     private boolean handleThrowableItems(ThrowableItems m, World world, ItemStack stack) {
-        return m.config().canZombiesThrowItems && ItemBehaviorManager.get(world.getServer()).hasBehaviors(stack.getItem());
+        return m.config().canZombiesThrowItems && world.getServer().dm$getReloader(RELOADER).hasBehaviors(stack.getItem());
     }
 }

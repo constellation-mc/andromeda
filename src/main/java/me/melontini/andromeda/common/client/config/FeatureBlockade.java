@@ -1,7 +1,7 @@
 package me.melontini.andromeda.common.client.config;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.dark_matter.api.base.util.classes.Tuple;
+import me.melontini.dark_matter.api.base.util.tuple.Tuple;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.text.Text;
 

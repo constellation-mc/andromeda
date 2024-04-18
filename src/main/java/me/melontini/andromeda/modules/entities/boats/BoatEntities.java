@@ -1,11 +1,12 @@
 package me.melontini.andromeda.modules.entities.boats;
 
+import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
-import me.melontini.dark_matter.api.content.RegistryUtil;
+import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
@@ -27,9 +28,10 @@ public class BoatEntities {
     public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.create();
 
     private static @Nullable <T extends Entity> EntityType<T> boatType(boolean register, Identifier id, EntityType.EntityFactory<T> factory) {
-        return RegistryUtil.createEntityType(register, id,
-                FabricEntityTypeBuilder.create(SpawnGroup.MISC, factory)
-                        .dimensions(new EntityDimensions(1.375F, 0.5625F, true)));
+        return RegistryUtil.register(register, CommonRegistries.entityTypes(), id,
+                () -> FabricEntityTypeBuilder.create(SpawnGroup.MISC, factory)
+                        .dimensions(new EntityDimensions(1.375F, 0.5625F, true))
+                        .build());
     }
 
     public static void init(Boats.Config config) {

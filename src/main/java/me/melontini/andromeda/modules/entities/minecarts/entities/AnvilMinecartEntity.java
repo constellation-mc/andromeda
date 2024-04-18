@@ -4,7 +4,7 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -47,7 +47,7 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
     public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         int i = MathHelper.ceil(fallDistance - 1.0F);
         if (i >= 0) {
-            float f = (float) Math.min(MathStuff.fastFloor(i * 2), 40);
+            float f = (float) Math.min(MathUtil.fastFloor(i * 2), 40);
             for (Entity entity : world.getEntitiesByClass(Entity.class, this.getBoundingBox().expand(0.1), EntityPredicates.EXCEPT_SPECTATOR)) {
                 if (!(entity instanceof AbstractMinecartEntity)) {
                     entity.damage(world.getDamageSources().fallingAnvil(this), f);

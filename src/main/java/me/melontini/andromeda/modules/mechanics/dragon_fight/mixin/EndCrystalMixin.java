@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.mechanics.dragon_fight.mixin;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.EnderDragonManager;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -32,7 +32,7 @@ abstract class EndCrystalMixin extends Entity {
 
         if (world.getRegistryKey() == World.END && !((ServerWorld) world).getAliveEnderDragons().isEmpty() && shouldShowBottom()) {
             if (this.getPos().getY() <= 71) return;
-            ((ServerWorld)world).getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get()).queueRespawn(new MutableInt(MathStuff.nextInt(1900, 3500)), this.getPos());
+            ((ServerWorld)world).getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get()).queueRespawn(new MutableInt(MathUtil.nextInt(1900, 3500)), this.getPos());
         }
     }
 }

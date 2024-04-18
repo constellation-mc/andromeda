@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import me.melontini.andromeda.common.registries.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -90,8 +90,8 @@ public class CustomTraderManager {
         BlockPos blockPos = null;
 
         for (int i = 0; i < 10; ++i) {
-            int x = pos.getX() + MathStuff.threadRandom().nextInt(range * 2) - range;
-            int z = pos.getZ() + MathStuff.threadRandom().nextInt(range * 2) - range;
+            int x = pos.getX() + MathUtil.threadRandom().nextInt(range * 2) - range;
+            int z = pos.getZ() + MathUtil.threadRandom().nextInt(range * 2) - range;
             int y = world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z);
             BlockPos blockPos2 = new BlockPos(x, y, z);
             if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) {

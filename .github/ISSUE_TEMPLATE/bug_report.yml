@@ -2,6 +2,7 @@ name: Bug Report
 description: File a bug report
 title: "[Bug]: "
 labels: ["bug"]
+projects: ["constellation-mc/2"]
 body:
   - type: markdown
     attributes:

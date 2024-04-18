@@ -7,9 +7,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Bootstrap;
+import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.util.CommonValues;
-import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
+import me.melontini.andromeda.util.EarlyLanguage;
+import me.melontini.dark_matter.api.base.util.functions.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Prop;
+import me.melontini.dark_matter.api.crash_handler.Props;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -64,7 +67,7 @@ public class AndromedaException extends RuntimeException {
     @SuppressWarnings("unused")
     public static AndromedaException moduleException(Throwable t, String module) {
         return AndromedaException.builder()
-                .message("Andromeda module caught a mixin handler exception! There's no guarantee that this is Andromeda's fault.")
+                .translatable("mixin_processor.handler_failed")
                 .cause(t).add("module", module).build();
     }
 
@@ -95,10 +98,10 @@ public class AndromedaException extends RuntimeException {
         private static final Map<String, Consumer<Builder>> DEFAULT_KEYS = Map.of(
                 "bootstrap_status", b -> b.add("bootstrap_status", Bootstrap.Status.get()),
                 "platform", b -> b.add("platform", CommonValues.platform()),
-                prop(Prop.ENVIRONMENT), b -> b.add(Prop.ENVIRONMENT),
-                prop(Prop.OS), b -> b.add(Prop.OS),
-                prop(Prop.JAVA_VERSION), b -> b.add(Prop.JAVA_VERSION),
-                prop(Prop.JAVA_VENDOR), b -> b.add(Prop.JAVA_VENDOR)
+                prop(Props.ENVIRONMENT), b -> b.add(Props.ENVIRONMENT),
+                prop(Props.OS), b -> b.add(Props.OS),
+                prop(Props.JAVA_VERSION), b -> b.add(Props.JAVA_VERSION),
+                prop(Props.JAVA_VENDOR), b -> b.add(Props.JAVA_VENDOR)
         );
 
         private static String prop(Prop prop) {
@@ -115,7 +118,17 @@ public class AndromedaException extends RuntimeException {
             DEFAULT_KEYS.values().forEach(c -> c.accept(this));
         }
 
-        public Builder message(String message) {
+        public Builder translatable(String key, Object... args) {
+            this.message.add(EarlyLanguage.translate("andromeda.exception." + key, args));
+            return this;
+        }
+
+        public Builder translatable(Module<?> module, String key, Object... args) {
+            this.message.add(EarlyLanguage.translate("andromeda.%s.exception.%s".formatted(module.meta().dotted(), key), args));
+            return this;
+        }
+
+        public Builder literal(String message) {
             this.message.add(message);
             return this;
         }

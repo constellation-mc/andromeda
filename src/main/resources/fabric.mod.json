@@ -11,8 +11,8 @@
     "Rad233"
   ],
   "contact": {
-    "sources": "https://github.com/melontini/andromeda",
-    "issues": "https://github.com/melontini/andromeda/issues",
+    "sources": "https://github.com/constellation-mc/andromeda",
+    "issues": "https://github.com/constellation-mc/andromeda/issues",
     "homepage": "https://andromeda-wiki.pages.dev/"
   },
   "license": "MIT",
@@ -45,11 +45,14 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": ">=${fabric_version}",
-    "minecraft": ">=${minecraft_version}"
+    "minecraft": ">=${minecraft_version}",
+    "dark-matter-base": "*",
+    "dark-matter-minecraft": "*"
   },
   "recommends": {
     "cloth-config": ">=${cloth_version}",
-    "modmenu": ">=${modmenu_version}"
+    "modmenu": ">=${modmenu_version}",
+    "commander": ">=${commander_version}"
   },
   "custom": {
     "lithium:options": {
@@ -58,9 +61,6 @@
     "loom:injected_interfaces": {
       "net/minecraft/class_1937": [
         "me/melontini/andromeda/common/config/ScopedConfigs\u0024WorldExtension"
-      ],
-      "net/minecraft/server/MinecraftServer": [
-        "me/melontini/andromeda/common/data/DataPackContentsAccessor"
       ]
     }
   }

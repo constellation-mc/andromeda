@@ -1,0 +1,21 @@
+{
+  "items": "minecraft:white_dye",
+  "complement": true,
+  "events": [
+    {
+      "event": "any",
+      "commands": {
+        "type": "andromeda:particles",
+        "selector": "minecraft:direct_killer_entity",
+        "colors": [255, 255, 255]
+      }
+    },
+    {
+      "event": "entity",
+      "commands": {
+        "type": "andromeda:item_plop",
+        "selector": "minecraft:this_entity"
+      }
+    }
+  ]
+}

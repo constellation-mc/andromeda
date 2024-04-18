@@ -1,7 +1,8 @@
 name: Crash Report
 description: File a crash report
 title: "[Crash]: "
-labels: ["crash"]
+labels: ["crash", "p: medium"]
+projects: ["constellation-mc/2"]
 body:
   - type: markdown
     attributes:

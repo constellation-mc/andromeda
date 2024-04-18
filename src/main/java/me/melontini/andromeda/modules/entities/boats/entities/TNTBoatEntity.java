@@ -4,6 +4,7 @@ import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.dark_matter.api.base.util.Support;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
@@ -46,6 +47,12 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
         this.prevZ = z;
     }
 
+    private final Runnable explode = Support.support(EnvType.CLIENT, () -> () -> {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeUuid(this.getUuid());
+        ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
+    }, () -> this::explode);
+
     @Override
     public void tick() {
         if (this.fuseTicks > 0) {
@@ -58,11 +65,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
         if (this.horizontalCollision) {
             if ((this.getFirstPassenger() instanceof PlayerEntity)) {
-                Support.runEnv(() -> () -> {
-                    PacketByteBuf buf = PacketByteBufs.create();
-                    buf.writeUuid(this.getUuid());
-                    ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
-                }, () -> this::explode);
+                this.explode.run();
             } else {
                 this.explode();
             }

@@ -4,7 +4,7 @@ import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import java.util.HashSet;
 import java.util.Set;
 
-import static me.melontini.dark_matter.api.base.util.MathStuff.threadRandom;
+import static me.melontini.dark_matter.api.base.util.MathUtil.threadRandom;
 
 public class Client {
 
@@ -90,7 +90,7 @@ public class Client {
             ItemStack dye = buf.readItemStack();
             client.execute(() -> {
                 int a = client.getWindow().getScaledWidth();
-                ScreenParticleHelper.addParticle(new DyeParticle(MathStuff.nextDouble(a / 2d - (a / 3d), a / 2d + a / 3d), client.getWindow().getScaledHeight() / 2d, 0, 0, dye));
+                ScreenParticleHelper.addParticle(new DyeParticle(MathUtil.nextDouble(a / 2d - (a / 3d), a / 2d + a / 3d), client.getWindow().getScaledHeight() / 2d, 0, 0, dye));
             });
         });
     }

@@ -9,6 +9,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.screen.ScreenHandlerType;
 
 public class CommonRegistries {
 
@@ -34,5 +35,9 @@ public class CommonRegistries {
 
     public static Registry<StatusEffect> statusEffects() {
         return Registries.STATUS_EFFECT;
+    }
+
+    public static Registry<ScreenHandlerType<?>> screenHandlers() {
+        return Registries.SCREEN_HANDLER;
     }
 }

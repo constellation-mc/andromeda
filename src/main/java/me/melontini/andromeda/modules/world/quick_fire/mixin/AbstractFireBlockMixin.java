@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(FireBlock.class)
 abstract class AbstractFireBlockMixin extends AbstractFireBlock {
@@ -28,17 +27,17 @@ abstract class AbstractFireBlockMixin extends AbstractFireBlock {
     }
 
     @ModifyVariable(method = "trySpreadingFire", at = @At(value = "LOAD"), index = 3, argsOnly = true)
-    public int andromeda$spreadFire0(int value, @Local World world) {
+    public int andromeda$spreadFire0(int value, @Local(argsOnly = true) World world) {
         return world.am$get(QuickFire.class).enabled ? (int) (value * 0.8) : value;
     }
 
     @ModifyExpressionValue(method = "trySpreadingFire", at = @At(value = "CONSTANT", args = "intValue=10"))
-    public int andromeda$spreadFire01(int value, @Local World world) {
+    public int andromeda$spreadFire01(int value, @Local(argsOnly = true) World world) {
         return world.am$get(QuickFire.class).enabled ? (int) Math.ceil(value / 3d) : value;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/block/FireBlock.trySpreadingFire (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/util/math/random/Random;I)V", ordinal = 0, shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT, method = "scheduledTick")
-    public void andromeda$trySpreadBlocks(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci, BlockState blockState, boolean bl, int i, int j, boolean bl2, int k) {
+    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/block/FireBlock.trySpreadingFire (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/util/math/random/Random;I)V", ordinal = 0, shift = At.Shift.BEFORE), method = "scheduledTick")
+    public void andromeda$trySpreadBlocks(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci, @Local(index = 7) int i, @Local(index = 10) int k) {
         if (world.am$get(QuickFire.class).enabled) {
             for (int x = -3; x < 3; x++) {
                 for (int y = -3; y < 3; y++) {

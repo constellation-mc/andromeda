@@ -11,10 +11,13 @@ import me.melontini.andromeda.base.util.annotations.Origin;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.CommonValues;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
@@ -25,35 +28,45 @@ import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
-import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static me.melontini.andromeda.common.client.config.ModMenuIntegration.*;
+
 @CustomLog
 public class AutoConfigScreen {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static Optional<Field> saveCallback;
+    private static final Optional<Field> saveCallback;
     private static final ThreadLocal<Set<Runnable>> saveQueue = ThreadLocal.withInitial(HashSet::new);
 
     static {
-        if (!FabricLoader.getInstance().isModLoaded("cloth-config")) {
+        saveCallback = Support.fallback("cloth-config", () -> {
+            LOGGER.info("Loading ClothConfig support!");
+            return Reflect.findField(AbstractConfigEntry.class, "saveCallback").or(() -> {
+                LOGGER.error("AutoConfigScreen#saveCallback field is was not found! Selective config saves will not be available!");
+                return Optional.empty();
+            });
+        }, () -> {
             LOGGER.error("AutoConfigScreen class loaded without Cloth Config!");
-        }
-    }
-
-    public static void register() {
-        LOGGER.info("Loading ClothConfig support!");
-        saveCallback = Reflect.findField(AbstractConfigEntry.class, "saveCallback");
+            return Optional.empty();
+        });
     }
 
     public static Screen getLabScreen(Screen screen) {
@@ -79,9 +92,9 @@ public class AutoConfigScreen {
         return builder.build();
     }
 
-    public static Screen get(Screen screen) {
+    public static Screen get(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
-                .setParentScreen(screen)
+                .setParentScreen(parent)
                 .setTitle(TextUtil.translatable("config.andromeda.title", CommonValues.version().split("-")[0]))
                 .setSavingRunnable(AutoConfigScreen::powerSave)
                 .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
@@ -147,7 +160,33 @@ public class AutoConfigScreen {
             });
         });
 
+        Screen screen = builder.build();
+        ScreenEvents.AFTER_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
+            if (screen == screen1) {
+                var wiki = getWikiButton(client, screen);
+                addDrawableChild(screen, wiki);
+
+                var lab = new TexturedButtonWidget(screen.width - 62, 13, 20, 20, 0, 0, 20, LAB_BUTTON_TEXTURE, 32, 64, button -> client.setScreen(AutoConfigScreen.getLabScreen(screen1)));
+                lab.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.lab.tooltip")));
+                addDrawableChild(screen, lab);
+            }
+        });
         return builder.build();
+    }
+
+    @NotNull
+    private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
+        var wiki = new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
+            if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
+                Debug.load();
+                ScreenParticleHelper.addScreenParticles(ParticleTypes.ANGRY_VILLAGER, screen.width - 30, 23, 0.5, 0.5, 0.5, 1);
+                LOGGER.info("Reloaded Debug Keys!");
+            } else {
+                screen.handleTextClick(WIKI_LINK);
+            }
+        });
+        wiki.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.wiki")));
+        return wiki;
     }
 
     private static void wrapSaveCallback(AbstractConfigEntry<?> e, Runnable saveFunc) {

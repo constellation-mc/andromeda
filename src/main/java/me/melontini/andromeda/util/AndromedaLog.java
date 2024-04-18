@@ -8,7 +8,7 @@ public class AndromedaLog {
     private static final boolean prefix = (!Utilities.isDev() && CommonValues.platform() != CommonValues.Platform.CONNECTOR);
 
     public static PrependingLogger factory() {
-        Class<?> cls = Utilities.getCallerClass(2);
+        Class<?> cls = Utilities.getCallerClass(2).orElseThrow();
         String[] split = cls.getName().split("\\.");
 
         String caller = split[split.length - 1];

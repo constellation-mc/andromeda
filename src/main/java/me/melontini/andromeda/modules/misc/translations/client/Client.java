@@ -5,9 +5,9 @@ import lombok.experimental.ExtensionMethod;
 import me.melontini.andromeda.modules.misc.translations.Translations;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.EarlyLanguage;
 import me.melontini.andromeda.util.GitTracker;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,7 +15,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -24,11 +23,6 @@ import java.util.concurrent.ForkJoinPool;
 
 @ExtensionMethod(Files.class)
 public class Client {
-
-    public static final Path TRANSLATION_PACK = CommonValues.hiddenPath().resolve("andromeda_translations");
-    public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
-    private static final Path EN_US = LANG_PATH.resolve("en_us.json");
-    private static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
 
     private static final String URL = GitTracker.RAW_URL + "/" + GitTracker.OWNER + "/" + GitTracker.REPO + "/" + GitTracker.getDefaultBranch() + "/src/main/resources/assets/andromeda/lang/";
     private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
@@ -45,9 +39,9 @@ public class Client {
 
     public boolean shouldUpdate() {
         if (Debug.Keys.DISABLE_NETWORK_FEATURES.isPresent()) return false;
-        if (EN_US.exists()) {
+        if (Translations.EN_US.exists()) {
             try {
-                if (ChronoUnit.HOURS.between(EN_US.getLastModifiedTime().toInstant(), Instant.now()) >= 24)
+                if (ChronoUnit.HOURS.between(Translations.EN_US.getLastModifiedTime().toInstant(), Instant.now()) >= 24)
                     return true;
             } catch (Exception ignored) {
             }
@@ -69,8 +63,8 @@ public class Client {
             String file = downloadLang(language, module);
             if (!file.isEmpty()) {
                 try {
-                    if (!LANG_PATH.exists()) LANG_PATH.createDirectories();
-                    LANG_PATH.resolve(language + ".json").writeString(file);
+                    if (!Translations.LANG_PATH.exists()) Translations.LANG_PATH.createDirectories();
+                    Translations.LANG_PATH.resolve(language + ".json").writeString(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -102,17 +96,17 @@ public class Client {
 
     public static Optional<String> getSelectedLanguage(Translations module) {
         try {
-            if (!OPTIONS.exists()) return Optional.empty();
-            for (String line : OPTIONS.readAllLines()) {
+            if (!Translations.OPTIONS.exists()) return Optional.empty();
+            for (String line : Translations.OPTIONS.readAllLines()) {
                 if (line.matches("^lang:\\w+_\\w+")) {
                     return Optional.of(line.replace("lang:", ""));
                 }
             }
             throw AndromedaException.builder()
-                    .report(false).message("Mo valid language option found!")
+                    .report(false).translatable(module, "no_valid_lang")
                     .build();
         } catch (Throwable e) {
-            module.logger().error("Couldn't determine selected language!", e);
+            module.logger().error(EarlyLanguage.translate(module, "failed_lang_acquire"), e);
             return Optional.empty();
         }
     }

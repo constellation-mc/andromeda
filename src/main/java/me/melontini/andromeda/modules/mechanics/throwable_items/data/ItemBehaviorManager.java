@@ -2,15 +2,16 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
-import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.Utilities;
+import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
@@ -20,19 +21,15 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class ItemBehaviorManager extends JsonDataLoader {
 
-    public static final Identifier RELOADER_ID = id("item_throw_behaviors");
-
-    public static ItemBehaviorManager get(MinecraftServer server) {
-        return MakeSure.notNull(server).am$getReloader(RELOADER_ID);
-    }
+    public static final ReloaderType<ItemBehaviorManager> RELOADER = ReloaderType.create(id("item_throw_behaviors"));
 
     public ItemBehaviorManager() {
-        super(RELOADER_ID);
+        super(RELOADER.identifier());
     }
 
     private final Map<Item, Holder> itemBehaviors = new IdentityHashMap<>();
-    private final Object2IntOpenHashMap<Item> customCooldowns = Utilities.consume(new Object2IntOpenHashMap<>(), map -> {
-        map.defaultReturnValue(50);
+    private final Object2ObjectMap<Item, Arithmetica> customCooldowns = Utilities.supply(new Object2ObjectOpenHashMap<>(), map -> {
+        map.defaultReturnValue(Arithmetica.constant(50));
     });
     private final Set<Item> overrideVanilla = new HashSet<>();
     private final Set<Item> disabled = new HashSet<>();
@@ -102,14 +99,14 @@ public class ItemBehaviorManager extends JsonDataLoader {
         return overrideVanilla.contains(item);
     }
 
-    public void addCustomCooldown(Item item, int cooldown) {
+    public void addCustomCooldown(Item item, Arithmetica cooldown) {
         customCooldowns.putIfAbsent(item, cooldown);
     }
-    public void replaceCustomCooldown(Item item, int cooldown) {
+    public void replaceCustomCooldown(Item item, Arithmetica cooldown) {
         customCooldowns.put(item, cooldown);
     }
-    public int getCooldown(Item item) {
-        return customCooldowns.getInt(item);
+    public Arithmetica getCooldown(Item item) {
+        return customCooldowns.get(item);
     }
 
     @Override
@@ -118,18 +115,18 @@ public class ItemBehaviorManager extends JsonDataLoader {
         itemBehaviors.putAll(STATIC);
 
         Maps.transformValues(data, input -> ItemBehaviorData.create(input.getAsJsonObject())).forEach((id, behaviorData) -> {
-            if (behaviorData.items().isEmpty()) return;
+            if (behaviorData.parameters().items().isEmpty()) return;
 
-            for (Item item : behaviorData.items()) {
-                if (behaviorData.disabled()) {
+            for (Item item : behaviorData.parameters().items()) {
+                if (behaviorData.parameters().disabled()) {
                     this.disable(item);
                     continue;
                 }
 
-                this.addBehavior(item, ItemBehaviorAdder.dataPack(behaviorData), behaviorData.complement());
-                if (behaviorData.override_vanilla()) this.overrideVanilla(item);
+                this.addBehavior(item, behaviorData, behaviorData.parameters().complement());
+                if (behaviorData.parameters().override_vanilla()) this.overrideVanilla(item);
 
-                if (behaviorData.cooldown() != 50) this.addCustomCooldown(item, behaviorData.cooldown());
+                this.addCustomCooldown(item, behaviorData.parameters().cooldown());
             }
         });
     }

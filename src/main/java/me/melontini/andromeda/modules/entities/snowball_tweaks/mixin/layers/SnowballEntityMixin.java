@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.layers;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
-import me.melontini.dark_matter.api.base.util.mixin.annotations.ConstructDummy;
+import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

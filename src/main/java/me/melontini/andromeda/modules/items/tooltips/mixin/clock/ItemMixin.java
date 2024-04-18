@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.items.tooltips.mixin.clock;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
@@ -31,8 +31,8 @@ abstract class ItemMixin {
         if (world != null && world.isClient) {
             if (stack.getItem() == Items.CLOCK) {
                 //totally not stolen from here https://bukkit.org/threads/how-can-i-convert-minecraft-long-time-to-real-hours-and-minutes.122912/
-                int i = MathStuff.fastFloor((world.getTimeOfDay() / 1000d + 8) % 24);
-                int j = MathStuff.fastFloor(60 * (world.getTimeOfDay() % 1000d) / 1000);
+                int i = MathUtil.fastFloor((world.getTimeOfDay() / 1000d + 8) % 24);
+                int j = MathUtil.fastFloor(60 * (world.getTimeOfDay() % 1000d) / 1000);
                 tooltip.add(TextUtil.translatable("tooltip.andromeda.clock", String.format("%02d:%02d", i, j)).formatted(Formatting.GRAY));
             }
         }

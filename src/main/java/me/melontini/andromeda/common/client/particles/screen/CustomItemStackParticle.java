@@ -1,6 +1,5 @@
 package me.melontini.andromeda.common.client.particles.screen;
 
-import me.melontini.dark_matter.api.base.util.MathStuff;
 import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
@@ -9,10 +8,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class CustomItemStackParticle extends ItemStackParticle {
-    private final int seed;
     public CustomItemStackParticle(double x, double y, double velX, double velY, ItemStack stack) {
         super(x, y, velX, velY, stack);
-        this.seed = MathStuff.threadRandom().nextInt();
     }
 
     @Override

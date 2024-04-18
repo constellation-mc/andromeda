@@ -1,15 +1,16 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
+import com.google.common.collect.Sets;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.config.DataConfigs;
-import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.ServerHelper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
+import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -43,7 +44,7 @@ public class Andromeda {
         ServerLifecycleEvents.SERVER_STARTING.register(ServerHelper::setContext);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> ServerHelper.setContext(null));
 
-        ServerResourceReloadersEvent.EVENT.register(context -> context.register(new DataConfigs()));
+        ServerReloadersEvent.EVENT.register(context -> context.register(new DataConfigs()));
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             var list = manager.loaded().stream().filter(module -> module.config().scope.isDimension()).toList();
@@ -77,8 +78,8 @@ public class Andromeda {
                 }
 
                 synchronizer.waitFor(server.submit(() -> {
-                    Set<String> disable = clientModules.stream().filter(s -> !modules.contains(s)).collect(Collectors.toSet());
-                    Set<String> enable = modules.stream().filter(s -> !clientModules.contains(s)).collect(Collectors.toSet());
+                    Set<String> disable = Sets.difference(clientModules, modules);
+                    Set<String> enable = Sets.difference(modules, clientModules);
 
                     if (!disable.isEmpty() || !enable.isEmpty()) {
                         handler.disconnect(TextUtil.translatable("andromeda.disconnected.module_mismatch",

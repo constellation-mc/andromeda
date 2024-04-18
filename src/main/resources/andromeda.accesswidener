@@ -36,6 +36,9 @@ accessible field net/minecraft/block/spawner/MobSpawnerLogic spawnEntry Lnet/min
 # entities/villagers_follow_emeralds  mechanics/throwable_items
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
 
+# mechanics/throwable_items
+accessible method net/minecraft/loot/context/LootContextTypes register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/loot/context/LootContextType;
+
 # entities/bee_flower_duplication
 accessible method net/minecraft/entity/passive/BeeEntity$PollinateGoal isRunning ()Z
 accessible method net/minecraft/entity/passive/BeeEntity$PollinateGoal completedPollination ()Z

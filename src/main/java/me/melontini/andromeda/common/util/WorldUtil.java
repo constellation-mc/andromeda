@@ -1,7 +1,7 @@
 package me.melontini.andromeda.common.util;
 
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.minecraft.data.NbtBuilder;
+import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

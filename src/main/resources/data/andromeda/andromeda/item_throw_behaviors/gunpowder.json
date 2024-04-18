@@ -1,0 +1,14 @@
+{
+  "items": "minecraft:gunpowder",
+  "complement": true,
+  "events": {
+    "event": "any",
+    "commands": {
+      "type": "commander:commands",
+      "selector": "minecraft:direct_killer_entity",
+      "commands": [
+        "/cmd:explode ~ ~ ~ 1"
+      ]
+    }
+  }
+}

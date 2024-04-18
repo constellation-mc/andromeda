@@ -7,8 +7,10 @@ import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.EarlyLanguage;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
+import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
@@ -68,7 +70,7 @@ public class ModuleManager {
         this.setUpConfigs(sorted);
 
         CompletableFuture.allOf(sorted.stream().map(m -> CompletableFuture.runAsync(() -> {
-            m.config = Utilities.cast(m.manager.load(FabricLoader.getInstance().getConfigDir()));
+            m.config = Utilities.cast(m.manager.load(FabricLoader.getInstance().getConfigDir(), Context.of()));
             m.defaultConfig = Utilities.cast(m.manager.createDefault());
         })).toArray(CompletableFuture[]::new)).join();
 
@@ -96,22 +98,20 @@ public class ModuleManager {
 
             if (!Experiments.get().scopedConfigs && !m.config().scope.isGlobal()) {
                 throw AndromedaException.builder().report(false)
-                        .message("Module '%s' has an invalid scope (%s), enable the 'scopedConfigs' experiment first!".formatted(m.meta().id(), m.config().scope))
+                        .translatable("module_manager.scoped_configs_disabled", m.meta().id(), m.config().scope)
                         .build();
             }
 
             if (m.meta().environment().isClient() && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
-                    LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
-                            m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
+                    LOGGER.error(EarlyLanguage.translate("andromeda.module_manager.invalid_scope", m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL));
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
                 return;
             }
 
             if (m.getClass().isAnnotationPresent(Unscoped.class) && !m.config().scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
-                    LOGGER.error("{} Module '{}' has an invalid scope ({}), must be {}",
-                            "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL);
+                    LOGGER.error(EarlyLanguage.translate("andromeda.module_manager.invalid_scope", "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL));
                 m.config().scope = Module.BaseConfig.Scope.GLOBAL;
             }
         });
@@ -183,7 +183,7 @@ public class ModuleManager {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (file.toString().endsWith(".json") && !Files.isHidden(file) && !paths.contains(file)) {
                         Files.delete(file);
-                        LOGGER.info("Removed {} as it doesn't belong to any module!", FabricLoader.getInstance().getGameDir().relativize(file));
+                        LOGGER.info(EarlyLanguage.translate("andromeda.module_manager.removed_unlinked_config", FabricLoader.getInstance().getGameDir().relativize(file)));
                     }
                     return super.visitFile(file, attrs);
                 }
@@ -304,7 +304,7 @@ public class ModuleManager {
     }
 
     void print() {
-        Map<String, Set<Module<?>>> categories = Utilities.consume(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
+        Map<String, Set<Module<?>>> categories = Utilities.supply(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
                 map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 
         StringBuilder builder = new StringBuilder();
@@ -319,10 +319,10 @@ public class ModuleManager {
             builder.append(joiner);
         });
         if (!categories.isEmpty()) {
-            LOGGER.info("Loading {} modules: {}", loaded().size(), builder);
-            LOGGER.info("* - custom modules/categories not provided by Andromeda.");
+            LOGGER.info(EarlyLanguage.translate("andromeda.module_manager.loading_modules", loaded().size()) +" {}", builder);
+            LOGGER.info("* - %s".formatted(EarlyLanguage.translate("andromeda.module_manager.custom_modules")));
         } else {
-            LOGGER.info("No modules loaded!");
+            LOGGER.info(EarlyLanguage.translate("andromeda.module_manager.no_modules"));
         }
     }
 

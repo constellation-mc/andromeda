@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
 import me.melontini.dark_matter.api.glitter.particles.AbstractScreenParticle;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,8 @@ public class DyeParticle extends AbstractScreenParticle {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        MatrixStack matrices = context.getMatrices();
         float scale = MathHelper.lerp(delta, oldScale, this.scale);
         float offset = MathHelper.lerp(delta, oldOffset, this.offset);
         matrices.push();

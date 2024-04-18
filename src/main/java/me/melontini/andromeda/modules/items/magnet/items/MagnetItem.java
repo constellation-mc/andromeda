@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.magnet.items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -39,9 +39,14 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class MagnetItem extends Item {
+
+    private static final BiConsumer<ItemStack, PlayerEntity> ITEM_PARTICLES = Support.support(EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
+    private static final Consumer<PlayerEntity> UPGRADE_PARTICLES = Support.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
 
     public MagnetItem(Settings settings) {
         super(settings);
@@ -58,7 +63,7 @@ public class MagnetItem extends Item {
                 this.playRemoveOneSound(player);
             } else {
                 addFirst(stack, itemStack);
-                Support.run(EnvType.CLIENT, () -> () -> itemParticles(itemStack, player));
+                ITEM_PARTICLES.accept(itemStack, player);
                 this.playInsertSound(player);
             }
             return true;
@@ -74,7 +79,7 @@ public class MagnetItem extends Item {
                 this.playRemoveOneSound(player);
             } else {
                 addFirst(stack, otherStack);
-                Support.run(EnvType.CLIENT, () -> () -> itemParticles(otherStack, player));
+                ITEM_PARTICLES.accept(otherStack, player);
                 this.playInsertSound(player);
             }
             return true;
@@ -83,7 +88,7 @@ public class MagnetItem extends Item {
             if (otherStack.isOf(Items.HEART_OF_THE_SEA)) {
                 if (incrementLevel(stack)) {
                     otherStack.decrement(1);
-                    Support.run(EnvType.CLIENT, () -> () -> upgradeParticles(player));
+                    UPGRADE_PARTICLES.accept(player);
                     playUpgradeSound(player);
                 }
                 return true;
@@ -157,7 +162,7 @@ public class MagnetItem extends Item {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) {
             if (nbt.contains(LEVEL_KEY))
-                return MathStuff.clamp(nbt.getInt(LEVEL_KEY), 0, 5);
+                return MathUtil.clamp(nbt.getInt(LEVEL_KEY), 0, 5);
         }
         return 1;
     }

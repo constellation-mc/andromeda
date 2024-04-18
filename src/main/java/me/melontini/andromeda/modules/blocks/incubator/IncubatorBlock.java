@@ -61,7 +61,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
         IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
         if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ActionResult.success(true);
 
-        if (EggProcessingData.get(world.getServer(), stack.getItem()) != null) return entity.insertEgg(stack);
+        if (world.getServer().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null) return entity.insertEgg(stack);
         if (stack.isEmpty()) return entity.extractEgg(player);
 
         return ActionResult.success(false);
@@ -133,7 +133,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
     public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity) return incubatorBlockEntity;
-        throw AndromedaException.builder().message("Invalid block entity type! Must be an instance of %s".formatted(IncubatorBlockEntity.class.getName()))
+        throw AndromedaException.builder().literal("Invalid block entity type! Must be an instance of %s".formatted(IncubatorBlockEntity.class.getName()))
                 .add("block_entity", blockEntity).build();
     }
 }

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.put_out_fire;
 
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.sound.SoundEvents;
@@ -24,7 +24,7 @@ abstract class SnowballEntityMixin {
         Entity entity = entityHitResult.getEntity();
         if (entity.isOnFire()) {
             entity.extinguish();
-            entity.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (MathStuff.threadRandom().nextFloat() - MathStuff.threadRandom().nextFloat()) * 0.4F);
+            entity.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (MathUtil.threadRandom().nextFloat() - MathUtil.threadRandom().nextFloat()) * 0.4F);
         }
     }
 }

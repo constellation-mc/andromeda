@@ -7,6 +7,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.modules.blocks.incubator.client.Client;
+import me.melontini.andromeda.util.CommanderSupport;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class Incubator extends Module<Incubator.Config> {
     Incubator() {
         InitEvent.main(this).listen(() -> List.of(Main.class));
         InitEvent.client(this).listen(() -> List.of(Client.class));
+
+        CommanderSupport.require(this);
     }
 
     public static class Config extends BaseConfig {

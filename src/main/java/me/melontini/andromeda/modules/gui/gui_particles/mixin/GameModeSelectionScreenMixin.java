@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
-import me.melontini.dark_matter.api.base.util.MathStuff;
+import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
@@ -41,7 +41,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
     private static final List<ItemStack> ANDROMEDA$SPECTATOR = Lists.newArrayList(Items.ENDER_EYE.getDefaultStack());
 
     @Unique
-    private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>> ANDROMEDA$GAME_MODE_STACKS = Utilities.consume(new EnumMap<>(GameModeSelectionScreen.GameModeSelection.class), map -> {
+    private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>> ANDROMEDA$GAME_MODE_STACKS = Utilities.supply(new EnumMap<>(GameModeSelectionScreen.GameModeSelection.class), map -> {
         map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> CommonRegistries.items().getRandom(Random.create()).orElseThrow().value().getDefaultStack());
         map.put(GameModeSelectionScreen.GameModeSelection.ADVENTURE, () -> Utilities.pickAtRandom(ANDROMEDA$ADVENTURE));
         map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));
@@ -69,7 +69,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
                 if (ANDROMEDA$GAME_MODE_STACKS.containsKey(gameMode)) {
                     ScreenParticleHelper.addParticles(() -> new ItemStackParticle(
                             x, y,
-                            MathStuff.nextDouble(-2, 2), MathStuff.nextDouble(-2, 2),
+                            MathUtil.nextDouble(-2, 2), MathUtil.nextDouble(-2, 2),
                             ANDROMEDA$GAME_MODE_STACKS.get(gameMode).get()), 5);
                 } else {
                     ScreenParticleHelper.addParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 10);

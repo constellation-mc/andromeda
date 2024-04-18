@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.melt;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
-import me.melontini.dark_matter.api.base.util.mixin.annotations.ConstructDummy;
+import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;

@@ -3,9 +3,14 @@ package me.melontini.andromeda.modules.blocks.incubator;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.ServerHelper;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
+import me.melontini.commander.api.command.Command;
+import me.melontini.commander.api.event.EventContext;
+import me.melontini.commander.api.event.EventKey;
+import me.melontini.commander.api.event.EventType;
+import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.minecraft.data.NbtUtil;
+import me.melontini.dark_matter.api.base.util.MathUtil;
+import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
@@ -20,23 +25,25 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 @SuppressWarnings("UnstableApiUsage")
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
@@ -60,9 +67,10 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         if (world.isClient()) return;
         ItemStack stack = this.inventory.get(0);
         if (!stack.isEmpty() && this.processingTime == -1) {
-            EggProcessingData data = EggProcessingData.get(world.getServer(), stack.getItem());
+            EggProcessingData data = world.getServer().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
             if (data != null) {
-                this.processingTime = module.config().randomness ? (data.time() + MathStuff.nextInt(data.time() / -3, data.time() / 3)) : data.time();
+                int time = getTime(data.time(), stack);
+                this.processingTime = module.config().randomness ? (time + MathUtil.nextInt(time / -3, time / 3)) : time;
                 this.update(state);
             }
         } else if (stack.isEmpty() && this.processingTime != -1) {
@@ -73,8 +81,21 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         if (this.processingTime == 0) this.spawnResult(stack, (ServerWorld) world, state);
     }
 
+    private int getTime(Arithmetica arithmetica, ItemStack stack) {
+        if (arithmetica.toSource().left().isPresent()) return arithmetica.asInt(null);
+
+        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld) world);
+        builder.add(LootContextParameters.BLOCK_STATE, this.getCachedState());
+        builder.add(LootContextParameters.TOOL, stack);
+        builder.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.getPos()));
+        builder.add(LootContextParameters.BLOCK_ENTITY, this);
+
+        LootContext context = new LootContext.Builder(builder.build(LootContextTypes.BLOCK)).build(null);
+        return arithmetica.asInt(context);
+    }
+
     private void spawnResult(ItemStack stack, ServerWorld world, BlockState state) {
-        EggProcessingData data = EggProcessingData.get(world.getServer(), stack.getItem());
+        EggProcessingData data = world.getServer().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
         if (data != null) {
             EggProcessingData.Entry entry = data.entity().shuffle().stream().findFirst().orElseThrow();
             Entity entity = entry.type().create(world);
@@ -84,26 +105,32 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
                 entity.setPos(entityPos.getX() + 0.5, entityPos.getY() + 0.5, entityPos.getZ() + 0.5);
                 if (entity instanceof PassiveEntity passive) passive.setBaby(true);
 
-                stack.decrement(1);
-
                 world.spawnEntity(entity);
-                executeCommands(world, entry.commands(), () -> new ServerCommandSource(
-                        world.getServer(), entity.getPos(),
-                        new Vec2f(entity.getPitch(), entity.getYaw()),
-                        world, 4, entity.getNameForScoreboard(), entity.getName(),
-                        world.getServer(), entity));
+                executeCommands(entry, world, stack, entity);
+
+                stack.decrement(1);
             }
         }
         this.processingTime = -1;
         this.update(state);
     }
 
-    private static void executeCommands(ServerWorld world, Collection<String> commands, Supplier<ServerCommandSource> source) {
-        if (commands == null || commands.isEmpty()) return;
+    private void executeCommands(EggProcessingData.Entry entry, ServerWorld world, ItemStack stack, Entity entity) {
+        if (entry.commands().isEmpty()) return;
 
-        var s = source.get();
-        for (String command : commands) {
-            world.getServer().getCommandManager().executeWithPrefix(s, command);
+        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world);
+        builder.add(LootContextParameters.BLOCK_STATE, this.getCachedState());
+        builder.add(LootContextParameters.TOOL, stack);
+        builder.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.getPos()));
+        builder.add(LootContextParameters.BLOCK_ENTITY, this);
+        builder.add(LootContextParameters.THIS_ENTITY, entity);
+
+        EventContext context = EventContext.builder(EventType.NULL)
+                .addParameter(EventKey.LOOT_CONTEXT, new LootContext.Builder(builder
+                        .build(LootContextTypes.BLOCK))
+                .build(Optional.empty())).build();
+        for (Command.Conditioned command : entry.commands()) {
+            command.execute(context);
         }
     }
 
@@ -118,8 +145,8 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         if (!isLitCampfire(state)) return;
 
         if (world.isClient && world.random.nextInt(4) == 0) {
-            double i = MathStuff.threadRandom().nextDouble(0.6) - 0.3;
-            double j = MathStuff.threadRandom().nextDouble(0.6) - 0.3;
+            double i = MathUtil.threadRandom().nextDouble(0.6) - 0.3;
+            double j = MathUtil.threadRandom().nextDouble(0.6) - 0.3;
             world.addParticle(ParticleTypes.SMOKE, (pos.getX() + 0.5) + i, pos.getY() + 0.5, (pos.getZ() + 0.5) + j, 0F, 0.07F, 0F);
             return;
         }
@@ -241,7 +268,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-        return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING) && EggProcessingData.get(ServerHelper.getContext(), stack.getItem()) != null;
+        return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING) && ServerHelper.getContext().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null;
     }
 
     @Override

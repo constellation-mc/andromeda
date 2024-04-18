@@ -8,7 +8,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,6 +25,8 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Shadow public abstract int getSize();
 
+    @Shadow protected abstract ParticleEffect getParticles();
+
     protected SlimeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -36,6 +38,6 @@ abstract class SlimeEntityMixin extends MobEntity {
 
         StatusEffectInstance effectInstance = new StatusEffectInstance(StatusEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);
         target.addStatusEffect(effectInstance);
-        ((ServerWorld) world).spawnParticles(ParticleTypes.ITEM_SLIME, target.getX(), target.getY(), target.getZ(), 5, 0.2, 0.7, 0.2, 0.4);
+        ((ServerWorld) world).spawnParticles(getParticles(), target.getX(), target.getY(), target.getZ(), 5, 0.2, 0.7, 0.2, 0.4);
     }
 }

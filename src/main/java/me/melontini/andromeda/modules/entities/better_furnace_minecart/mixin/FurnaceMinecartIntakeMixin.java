@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.entities.better_furnace_minecart.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
+import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
@@ -30,10 +31,9 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
     private static final BetterFurnaceMinecart am$bfm = ModuleManager.quick(BetterFurnaceMinecart.class);
 
     //stfu IDEA.
-    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "JavaReflectionMemberAccess"})
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
     @Unique
-    private static final Optional<Field> fb$pauseFuel = Support.getWeak("fabrication", () -> () ->
-            FurnaceMinecartEntity.class.getDeclaredField("fabrication$pauseFuel"));
+    private static final Optional<Field> fb$pauseFuel = Support.fallback("fabrication", () -> Reflect.findField(FurnaceMinecartEntity.class, "fabrication$pauseFuel"), Optional::empty);
 
 
     @Shadow public int fuel;

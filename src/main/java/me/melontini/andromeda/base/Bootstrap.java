@@ -6,16 +6,13 @@ import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
-import me.melontini.andromeda.util.ClassPath;
-import me.melontini.andromeda.util.CommonValues;
-import me.melontini.andromeda.util.CrashHandler;
-import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixin.AndromedaMixins;
+import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.Support;
-import me.melontini.dark_matter.api.base.util.classes.Context;
-import me.melontini.dark_matter.api.base.util.classes.ThrowingRunnable;
+import me.melontini.dark_matter.api.base.util.functions.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,7 +22,6 @@ import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.IOException;
@@ -52,7 +48,7 @@ public class Bootstrap {
             Bus<InitEvent> event = module.getOrCreateBus(init + "_init_event", null);
             if (event == null) return;
             event.invoker().collect().forEach(module::initClass);
-        }, (b) -> b.message("Failed to execute %s!".formatted(init)).add("module", module.meta().id()));
+        }, (b) -> b.literal("Failed to execute %s!".formatted(init)).add("module", module.meta().id()));
     }
 
     @Environment(EnvType.CLIENT)
@@ -65,7 +61,7 @@ public class Bootstrap {
             if (module.meta().environment().isServer()) continue;
             runInit("client", module);
         }
-        run(AndromedaClient::init, b -> b.message("Failed to initialize AndromedaClient!"));
+        run(AndromedaClient::init, b -> b.literal("Failed to initialize AndromedaClient!"));
     }
 
     @Environment(EnvType.SERVER)
@@ -81,9 +77,6 @@ public class Bootstrap {
     }
 
     private static void onMerged() {
-        if (Debug.Keys.VERIFY_MIXINS.isPresent())
-            MixinEnvironment.getCurrentEnvironment().audit();
-
         for (Module<?> module : ModuleManager.get().loaded()) {
             runInit("merged", module);
         }
@@ -97,7 +90,7 @@ public class Bootstrap {
                     boolean quilt = CommonValues.platform() == CommonValues.Platform.QUILT;
 
                     var builder = AndromedaException.builder().report(!quilt)
-                            .message("Mixin failed to consume Andromeda's late configs!").message(MixinProcessor.NOTICE)
+                            .literal("Mixin failed to consume Andromeda's late configs!").translatable(MixinProcessor.NOTICE)
                             .add("mixin_config", config.getName());
 
                     if (!quilt) {
@@ -115,13 +108,13 @@ public class Bootstrap {
             runInit("main", module);
         }
 
-        run(Andromeda::init, b -> b.message("Failed to initialize Andromeda!"));
+        run(Andromeda::init, b -> b.literal("Failed to initialize Andromeda!"));
     }
 
     public static void onPreLaunch() {
         try {
             Status.update();
-            LOGGER.info("Andromeda({}) on {}({})", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version());
+            LOGGER.info(EarlyLanguage.translate("andromeda.bootstrap.loading", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version()));
 
             AndromedaConfig.save();
             Experiments.save();
@@ -133,10 +126,10 @@ public class Bootstrap {
                 //This should probably be removed.
                 ServiceLoader.load(Module.class).stream().map(p -> Module.Zygote.spawn(p.type(), p::get)).forEach(list::add);
                 EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
-            }, (b) -> b.message("Failed during module discovery!"));
+            }, (b) -> b.literal("Failed during module discovery!"));
 
             if (list.isEmpty()) {
-                LOGGER.error("Andromeda couldn't discover any modules! This should not happen!");
+                LOGGER.error(EarlyLanguage.translate("andromeda.bootstrap.no_modules"));
             }
 
             list.removeIf(m -> CommonValues.environment() == EnvType.SERVER && !m.meta().environment().allows(EnvType.SERVER));
@@ -155,19 +148,19 @@ public class Bootstrap {
                 m = new ModuleManager(sorted);
             } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
                 throw AndromedaException.builder()
-                        .cause(t).message("Failed to initialize ModuleManager!!!")
+                        .cause(t).literal("Failed to initialize ModuleManager!!!")
                         .build();
             }
             m.print();
             //Scan for mixins.
             m.loaded().forEach(module -> getModuleClassPath().addUrl(module.getClass().getProtectionDomain().getCodeSource().getLocation()));
-            run(() -> m.getMixinProcessor().addMixins(), (b) -> b.message("Failed to inject dynamic mixin configs!").message(MixinProcessor.NOTICE));
+            run(() -> m.getMixinProcessor().addMixins(), (b) -> b.literal("Failed to inject dynamic mixin configs!").translatable(MixinProcessor.NOTICE));
             Support.share("andromeda:module_manager", m);
 
             Status.update();
             Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
         } catch (Throwable t) {
-            var e = AndromedaException.builder().cause(t).message("Failed to bootstrap Andromeda!").build();
+            var e = AndromedaException.builder().cause(t).literal("Failed to bootstrap Andromeda!").build();
             CrashHandler.handleCrash(e, Context.of());
             e.setAppender(b -> b.append("Statuses: ").append(AndromedaException.GSON.toJson(e.getStatuses())));
             throw e;
@@ -183,14 +176,14 @@ public class Bootstrap {
             var id = ids.put(module.meta().id(), module);
             if (id != null)
                 throw AndromedaException.builder()
-                        .message("Duplicate module IDs!")
+                        .literal("Duplicate module IDs!")
                         .add("identifier", module.meta().id()).add("module", id.type()).add("duplicate", module.type())
                         .build();
 
             var pkg = packages.put(module.type().getPackageName(), module);
             if (pkg != null)
                 throw AndromedaException.builder()
-                        .message("Duplicate module packages!")
+                        .literal("Duplicate module packages!")
                         .add("package", module.type().getPackageName()).add("module", pkg.type()).add("duplicate", module.type())
                         .build();
         }

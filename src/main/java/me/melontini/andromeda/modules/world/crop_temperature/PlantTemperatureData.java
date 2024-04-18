@@ -7,13 +7,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.data.ServerResourceReloadersEvent;
 import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.JsonDataLoader;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Mapper;
-import me.melontini.dark_matter.api.base.util.MathStuff;
-import me.melontini.dark_matter.api.minecraft.data.ExtraCodecs;
+import me.melontini.dark_matter.api.base.util.MathUtil;
+import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
+import me.melontini.dark_matter.api.data.loading.ReloaderType;
+import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import net.minecraft.block.*;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.world.ServerWorld;
@@ -35,16 +36,16 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
             Codec.FLOAT.fieldOf("aMax").forGetter(PlantTemperatureData::aMax)
     ).apply(data, PlantTemperatureData::new));
 
-    public static final Identifier RELOADER_ID = Common.id("crop_temperatures");
+    public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Common.id("crop_temperatures"));
 
     public static boolean roll(Block block, float temp, ServerWorld world) {
         if (!world.am$get(PlantTemperature.class).enabled) return false;
 
         if (isPlant(block)) {
-            PlantTemperatureData data = world.getServer().<Reloader>am$getReloader(RELOADER_ID).get(block);
+            PlantTemperatureData data = world.getServer().dm$getReloader(RELOADER).get(block);
             if (data != null) {
                 if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
-                    return MathStuff.nextInt(0, 1) != 0;
+                    return MathUtil.nextInt(0, 1) != 0;
                 } else
                     return (!(temp > data.aMax())) && (!(temp < data.aMin()));
             }
@@ -57,7 +58,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
     }
 
     public static void init(PlantTemperature module) {
-        ServerResourceReloadersEvent.EVENT.register(context -> context.registrar().accept(new Reloader(RELOADER_ID, module)));
+        ServerReloadersEvent.EVENT.register(context -> context.register(new Reloader(module)));
     }
 
     private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
@@ -87,13 +88,13 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
         return !stopClass.equals(cls.getSuperclass()) && methodInHierarchyUntil(cls.getSuperclass(), name, stopClass);
     }
 
-    static class Reloader extends JsonDataLoader {
+    public static class Reloader extends JsonDataLoader {
 
         private Map<Block, PlantTemperatureData> map;
         private final PlantTemperature module;
 
-        protected Reloader(Identifier id, PlantTemperature module) {
-            super(id);
+        protected Reloader(PlantTemperature module) {
+            super(RELOADER.identifier());
             this.module = module;
         }
 
