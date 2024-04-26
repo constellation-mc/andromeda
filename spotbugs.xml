@@ -18,4 +18,8 @@
         <Class name="me.melontini.andromeda.base.ModuleManager" />
         <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
     </Match>
+    <Match>
+        <Class name="me.melontini.andromeda.modules.misc.recipe_advancements_generation.Main" />
+        <Bug pattern="BC_IMPOSSIBLE_CAST" />
+    </Match>
 </FindBugsFilter>
