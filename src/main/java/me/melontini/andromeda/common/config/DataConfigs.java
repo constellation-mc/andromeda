@@ -12,7 +12,7 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
@@ -27,13 +27,14 @@ import net.minecraft.world.World;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class DataConfigs extends JsonDataLoader {
+public class DataConfigs extends IdentifiedJsonDataLoader {
 
     private static final Identifier DEFAULT = new Identifier(MODID, "default");
     public static final ReloaderType<DataConfigs> RELOADER = ReloaderType.create(Common.id("scoped_config"));
@@ -45,7 +46,7 @@ public class DataConfigs extends JsonDataLoader {
     public static DataConfigs get(MinecraftServer server) {
         try {
             return server.dm$getReloader(RELOADER);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             throw AndromedaException.builder().cause(e).report(false)
                     .translatable("scoped_configs.no_reloader")
                     .build();
@@ -62,7 +63,7 @@ public class DataConfigs extends JsonDataLoader {
         Map<Identifier, Map<Module<?>, Set<CompletableFuture<Data>>>> configs = new Object2ObjectOpenHashMap<>();
         Maps.transformValues(data, JsonElement::getAsJsonObject).forEach((id, object) -> {
             var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
-            var cls = ModuleManager.get().getConfigClass(m.getClass());
+            var cls = ModuleManager.getConfigClass(m.getClass());
 
             if (m.config().scope.isWorld()) {
                 if (!object.has(DEFAULT.toString()) || object.size() > 1)
@@ -122,7 +123,7 @@ public class DataConfigs extends JsonDataLoader {
         var task = CompletableFuture.allOf(ModuleManager.get().loaded().stream().filter(module -> !module.config().scope.isGlobal())
                 .map(m -> switch (m.config().scope) {
                     case WORLD -> CompletableFuture.runAsync(() -> {
-                        if (world.getRegistryKey().equals(World.OVERWORLD))
+                        if (World.OVERWORLD.equals(world.getRegistryKey()))
                             ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
                     }, Util.getMainWorkerExecutor());
                     case DIMENSION ->
@@ -140,7 +141,7 @@ public class DataConfigs extends JsonDataLoader {
         var task = CompletableFuture.allOf(ModuleManager.get().loaded().stream().filter(module -> !module.config().scope.isGlobal())
                 .map(m -> switch (m.config().scope) {
                     case WORLD -> CompletableFuture.runAsync(() -> {
-                        ServerWorld world = server.getWorld(World.OVERWORLD);
+                        ServerWorld world = server.getOverworld();
                         ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
                     }, Util.getMainWorkerExecutor());
                     case DIMENSION -> CompletableFuture.runAsync(() -> {
@@ -171,7 +172,7 @@ public class DataConfigs extends JsonDataLoader {
             }
         }
 
-        var data = configs.get(id);
+        var data = Objects.requireNonNull(configs).get(id);
         if (data != null) {
             var forModule = data.get(m);
             if (forModule != null) {

@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util.mixin;
+package me.melontini.andromeda.util.mixins;
 
 import lombok.CustomLog;
 import me.melontini.andromeda.base.ModuleManager;

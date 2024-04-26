@@ -1,0 +1,23 @@
+
+name: publish
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "The type of this version. e.g alpha"
+        type: choice
+        default: BETA
+        options:
+          - STABLE
+          - BETA
+          - ALPHA
+          - NONE
+        required: false
+
+jobs:
+  publish:
+    uses: constellation-mc/actions/.github/workflows/mc-publish.yml@main
+    with:
+      java: 17
+      version_type: ${{ inputs.version_type }}
+    secrets: inherit

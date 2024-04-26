@@ -7,18 +7,17 @@ import me.melontini.andromeda.base.events.MixinConfigEvent;
 import me.melontini.andromeda.base.util.ModulePlugin;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.andromeda.util.mixin.AndromedaMixins;
+import me.melontini.andromeda.util.mixins.AndromedaMixins;
 import me.melontini.dark_matter.api.mixin.VirtualMixins;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.FabricUtil;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,8 +47,9 @@ public class MixinProcessor {
     }
 
     @ApiStatus.Internal
-    public List<String> mixinsFromPackage(String pkg) {
-        return mixinClasses.get(pkg);
+    public List<String> mixinsFromPackage(@Nullable String pkg) {
+        if (pkg == null) return Collections.emptyList();
+        return mixinClasses.getOrDefault(pkg, Collections.emptyList());
     }
 
     public void addMixins() {
@@ -63,7 +63,7 @@ public class MixinProcessor {
             JsonObject config = createConfig(module);
 
             String cfg = "andromeda_dynamic$$" + module.meta().dotted();
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(config.toString().getBytes())) {
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(config.toString().getBytes(StandardCharsets.UTF_8))) {
                 acceptor.add(cfg, bais);
                 this.mixinConfigs.put(cfg, module);
             } catch (IOException e) {
@@ -94,7 +94,7 @@ public class MixinProcessor {
         object.add("injectors", injectors);
 
         Bus<MixinConfigEvent> bus = module.getOrCreateBus("mixin_config_event", null);
-        if (bus != null) bus.invoker().accept(object);
+        if (bus != null) bus.invoker().accept(this.manager, object);
 
         return object;
     }

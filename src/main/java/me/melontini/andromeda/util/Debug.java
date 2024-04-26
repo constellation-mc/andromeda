@@ -4,7 +4,7 @@ import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.util.mixin.ErrorHandler;
+import me.melontini.andromeda.util.mixins.ErrorHandler;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.Context;
 import net.fabricmc.loader.api.FabricLoader;
@@ -18,7 +18,7 @@ public class Debug {
 
     private static final ConfigManager<Holder> MANAGER = ConfigManager.of(Holder.class, "andromeda/debug", Holder::new)
             .onSave((config, path) -> registry.forEach((string, key) -> key.isPresent = config.keys.contains(key.getKey()) || System.getProperty("andromeda." + key.getKey()) != null))
-            .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s debug config!".formatted(stage.toString().toLowerCase()), e));
+            .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s debug config!".formatted(stage.toString().toLowerCase(Locale.ROOT)), e));
 
     private static Holder CONFIG;
 

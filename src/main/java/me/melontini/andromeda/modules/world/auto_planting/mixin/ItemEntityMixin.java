@@ -24,8 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
 abstract class ItemEntityMixin {
-    @Unique
-    private static final AutoPlanting module = ModuleManager.quick(AutoPlanting.class);
+    @Unique private static final AutoPlanting module = ModuleManager.quick(AutoPlanting.class);
 
     @Shadow
     public abstract ItemStack getStack();

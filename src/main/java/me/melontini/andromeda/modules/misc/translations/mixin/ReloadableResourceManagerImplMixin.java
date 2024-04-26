@@ -27,8 +27,7 @@ abstract class ReloadableResourceManagerImplMixin {
 
         packs.set(new ArrayList<>(packs.get()));
         packs.get().add(new DirectoryResourcePack("Andromeda Translations", Translations.TRANSLATION_PACK, true) {
-            @Nullable
-            @Override
+            @Nullable @Override
             public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
                 return null;
             }

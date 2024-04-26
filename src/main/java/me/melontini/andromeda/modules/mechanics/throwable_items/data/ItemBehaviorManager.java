@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
-import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -19,7 +19,7 @@ import java.util.*;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 
-public class ItemBehaviorManager extends JsonDataLoader {
+public class ItemBehaviorManager extends IdentifiedJsonDataLoader {
 
     public static final ReloaderType<ItemBehaviorManager> RELOADER = ReloaderType.create(id("item_throw_behaviors"));
 
@@ -27,14 +27,14 @@ public class ItemBehaviorManager extends JsonDataLoader {
         super(RELOADER.identifier());
     }
 
-    private final Map<Item, Holder> itemBehaviors = new IdentityHashMap<>();
+    private final IdentityHashMap<Item, Holder> itemBehaviors = new IdentityHashMap<>();
     private final Object2ObjectMap<Item, Arithmetica> customCooldowns = Utilities.supply(new Object2ObjectOpenHashMap<>(), map -> {
         map.defaultReturnValue(Arithmetica.constant(50));
     });
     private final Set<Item> overrideVanilla = new HashSet<>();
     private final Set<Item> disabled = new HashSet<>();
 
-    private static final Map<Item, Holder> STATIC = new IdentityHashMap<>();
+    private static final IdentityHashMap<Item, Holder> STATIC = new IdentityHashMap<>();
 
     public static void register(ItemBehavior behavior, Item... items) {
         register(behavior, Arrays.asList(items));

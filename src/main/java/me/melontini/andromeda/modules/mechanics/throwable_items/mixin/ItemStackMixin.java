@@ -55,8 +55,7 @@ abstract class ItemStackMixin {
         return original;
     }
 
-    @Unique
-    private boolean andromeda$runBehaviors(World world, ItemBehaviorManager manager, PlayerEntity user) {
+    @Unique private boolean andromeda$runBehaviors(World world, ItemBehaviorManager manager, PlayerEntity user) {
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         var entity = new FlyingItemEntity((ItemStack) (Object) this, user, world);

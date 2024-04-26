@@ -20,8 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SlimeEntity.class)
 abstract class SlimeEntityMixin extends MobEntity {
-    @Unique
-    private static final Slimes am$slimes = ModuleManager.quick(Slimes.class);
+    @Unique private static final Slimes am$slimes = ModuleManager.quick(Slimes.class);
 
     @Shadow public abstract int getSize();
 
@@ -38,6 +37,6 @@ abstract class SlimeEntityMixin extends MobEntity {
 
         StatusEffectInstance effectInstance = new StatusEffectInstance(StatusEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);
         target.addStatusEffect(effectInstance);
-        ((ServerWorld) world).spawnParticles(getParticles(), target.getX(), target.getY(), target.getZ(), 5, 0.2, 0.7, 0.2, 0.4);
+        if (world.getTime() % 3 == 0) ((ServerWorld) world).spawnParticles(getParticles(), target.getX(), target.getY(), target.getZ(), 5, 0.2, 0.7, 0.2, 0);
     }
 }

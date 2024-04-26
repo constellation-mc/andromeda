@@ -103,7 +103,15 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
                 var subscriptions = input.get("events");
                 if (subscriptions == null) return DataResult.error(() -> "Missing required 'events' field!");
 
-                return Subscription.LIST_CODEC.parse(ops, subscriptions).map(subscription1 -> new ItemBehaviorData(parameters1, subscription1));
+                return Subscription.LIST_CODEC.parse(ops, subscriptions).flatMap(subscriptions1 -> {
+                    for (Subscription subscription : subscriptions1) {
+                        for (Command.Conditioned command : subscription.commands) {
+                            var r = command.validate(EventType.NULL);
+                            if (r.error().isPresent()) return r.map(unused -> null);
+                        }
+                    }
+                    return DataResult.success(subscriptions1);
+                }).map(subscription1 -> new ItemBehaviorData(parameters1, subscription1));
             }).map(Function.identity());
         }
 

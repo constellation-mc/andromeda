@@ -1,13 +1,11 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
-import me.melontini.andromeda.common.util.MiscUtil;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TntBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
@@ -34,7 +32,7 @@ public class DefaultBehaviors {
                 BlockHitResult result = (BlockHitResult) hitResult;
 
                 Items.BONE_MEAL.useOnBlock(new ItemUsageContext(
-                        world, user instanceof PlayerEntity ? (PlayerEntity) user : null,
+                        world, user instanceof PlayerEntity player ? player : null,
                         Hand.MAIN_HAND, stack, result
                 ));
             }
@@ -43,7 +41,7 @@ public class DefaultBehaviors {
         ItemBehaviorManager.register((stack, fie, world, user, hitResult) -> {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) hitResult).getEntity();
-                entity.damage(new DamageSource(MiscUtil.getTypeReference(world, BRICKED), user), 2);
+                entity.damage(world.getDamageSources().create(BRICKED, user), 2);
                 if (entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 0));
                 }

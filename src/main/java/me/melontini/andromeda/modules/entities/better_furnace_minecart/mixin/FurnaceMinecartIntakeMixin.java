@@ -27,13 +27,11 @@ import static me.melontini.dark_matter.api.base.util.Exceptions.supply;
 
 @Mixin(FurnaceMinecartEntity.class)
 abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
-    @Unique
-    private static final BetterFurnaceMinecart am$bfm = ModuleManager.quick(BetterFurnaceMinecart.class);
+    @Unique private static final BetterFurnaceMinecart am$bfm = ModuleManager.quick(BetterFurnaceMinecart.class);
 
     //stfu IDEA.
-    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
-    @Unique
-    private static final Optional<Field> fb$pauseFuel = Support.fallback("fabrication", () -> Reflect.findField(FurnaceMinecartEntity.class, "fabrication$pauseFuel"), Optional::empty);
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @Unique private static final Optional<Field> fb$pauseFuel = Support.fallback("fabrication", () -> Reflect.findField(FurnaceMinecartEntity.class, "fabrication$pauseFuel"), Optional::empty);
 
 
     @Shadow public int fuel;
@@ -51,8 +49,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
                 if (fb$pauseFuel.map(f -> supply(() -> f.getInt(this)) > 0).orElse(false)) return;
 
                 AbstractMinecartEntity entity = this.world
-                        .getEntitiesByClass(AbstractMinecartEntity.class, this.getBoundingBox().expand(1.5, 0, 1.5), minecart -> minecart instanceof Inventory)
-                        .stream()
+                        .getEntitiesByClass(AbstractMinecartEntity.class, this.getBoundingBox().expand(1.5, 0, 1.5), Inventory.class::isInstance).stream()
                         .min(Comparator.comparingDouble(value -> value.squaredDistanceTo(this)))
                         .orElse(null);
 

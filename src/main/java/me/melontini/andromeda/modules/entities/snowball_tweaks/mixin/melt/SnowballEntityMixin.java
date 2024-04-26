@@ -17,8 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SnowballEntity.class)
 abstract class SnowballEntityMixin extends ThrownItemEntity {
-    @Unique
-    private static final Snowballs am$snow = ModuleManager.quick(Snowballs.class);
+    @Unique private static final Snowballs am$snow = ModuleManager.quick(Snowballs.class);
 
     public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);

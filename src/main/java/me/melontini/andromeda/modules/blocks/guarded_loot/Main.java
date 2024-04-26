@@ -46,8 +46,7 @@ public class Main {
         if (!config.enabled) return Collections.emptyList();
 
         return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range), Entity::isAlive).stream()
-                .filter(livingEntity -> livingEntity instanceof Monster)
-                .toList();
+                .filter(Monster.class::isInstance).toList();
     }
 
     public static boolean checkLockPicking(PlayerEntity player) {

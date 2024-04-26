@@ -10,6 +10,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
+import static java.util.Objects.requireNonNull;
+
 public class FlyingItemEntity extends ThrownItemEntity {
 
     public FlyingItemEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
@@ -31,7 +33,7 @@ public class FlyingItemEntity extends ThrownItemEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         if (!this.world.isClient()) {
-            for (ItemBehavior behavior : this.world.getServer().dm$getReloader(ItemBehaviorManager.RELOADER).getBehaviors(getItem().getItem())) {
+            for (ItemBehavior behavior : requireNonNull(this.world.getServer()).dm$getReloader(ItemBehaviorManager.RELOADER).getBehaviors(getItem().getItem())) {
                 if (!this.isRemoved()) behavior.onCollision(getItem(), this, (ServerWorld) world, getOwner(), hitResult);
             }
         }

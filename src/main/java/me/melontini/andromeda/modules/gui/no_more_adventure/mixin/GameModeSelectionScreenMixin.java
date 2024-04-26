@@ -15,8 +15,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
         super(title);
     }
 
-    @Unique
-    private final GameModeSelectionScreen.GameModeSelection[] andromeda$gameModeSelections = ArrayUtils.removeElement(GameModeSelectionScreen.GameModeSelection.values(), GameModeSelectionScreen.GameModeSelection.ADVENTURE);
+    @Unique private final GameModeSelectionScreen.GameModeSelection[] andromeda$gameModeSelections = ArrayUtils.removeElement(GameModeSelectionScreen.GameModeSelection.values(), GameModeSelectionScreen.GameModeSelection.ADVENTURE);
 
     @ModifyExpressionValue(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;VALUES:[Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;"))
     private GameModeSelectionScreen.GameModeSelection[] andromeda$modValues(GameModeSelectionScreen.GameModeSelection[] original) {

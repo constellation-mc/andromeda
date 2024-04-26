@@ -32,8 +32,7 @@ import java.util.Optional;
 abstract class FallingBlockMixin extends Entity {
 
     @Shadow
-    @Nullable
-    public NbtCompound blockEntityData;
+    @Nullable public NbtCompound blockEntityData;
     @Shadow
     private BlockState block;
 

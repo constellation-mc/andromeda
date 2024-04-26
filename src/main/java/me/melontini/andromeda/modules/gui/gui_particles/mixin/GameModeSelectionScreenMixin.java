@@ -28,20 +28,15 @@ import java.util.function.Supplier;
 
 @Mixin(GameModeSelectionScreen.class)
 abstract class GameModeSelectionScreenMixin extends Screen {
-    @Unique
-    private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);
+    @Unique private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);
 
     @Shadow protected abstract void init();
 
-    @Unique
-    private static final List<ItemStack> ANDROMEDA$ADVENTURE = Lists.newArrayList(Items.COMPASS.getDefaultStack(), Items.MAP.getDefaultStack(), Items.FILLED_MAP.getDefaultStack());
-    @Unique
-    private static final List<ItemStack> ANDROMEDA$SURVIVAL = Lists.newArrayList(Items.IRON_SWORD.getDefaultStack(), Items.APPLE.getDefaultStack(), Items.DIAMOND.getDefaultStack(), Items.LEATHER_BOOTS.getDefaultStack(), Items.ROTTEN_FLESH.getDefaultStack(), Items.ENDER_PEARL.getDefaultStack());
-    @Unique
-    private static final List<ItemStack> ANDROMEDA$SPECTATOR = Lists.newArrayList(Items.ENDER_EYE.getDefaultStack());
+    @Unique private static final List<ItemStack> ANDROMEDA$ADVENTURE = Lists.newArrayList(Items.COMPASS.getDefaultStack(), Items.MAP.getDefaultStack(), Items.FILLED_MAP.getDefaultStack());
+    @Unique private static final List<ItemStack> ANDROMEDA$SURVIVAL = Lists.newArrayList(Items.IRON_SWORD.getDefaultStack(), Items.APPLE.getDefaultStack(), Items.DIAMOND.getDefaultStack(), Items.LEATHER_BOOTS.getDefaultStack(), Items.ROTTEN_FLESH.getDefaultStack(), Items.ENDER_PEARL.getDefaultStack());
+    @Unique private static final List<ItemStack> ANDROMEDA$SPECTATOR = Lists.newArrayList(Items.ENDER_EYE.getDefaultStack());
 
-    @Unique
-    private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>> ANDROMEDA$GAME_MODE_STACKS = Utilities.supply(new EnumMap<>(GameModeSelectionScreen.GameModeSelection.class), map -> {
+    @Unique private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>> ANDROMEDA$GAME_MODE_STACKS = Utilities.supply(new EnumMap<>(GameModeSelectionScreen.GameModeSelection.class), map -> {
         map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> CommonRegistries.items().getRandom(Random.create()).orElseThrow().value().getDefaultStack());
         map.put(GameModeSelectionScreen.GameModeSelection.ADVENTURE, () -> Utilities.pickAtRandom(ANDROMEDA$ADVENTURE));
         map.put(GameModeSelectionScreen.GameModeSelection.SURVIVAL, () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));

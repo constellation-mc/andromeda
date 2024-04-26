@@ -53,7 +53,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
             this.scheduleVelocityUpdate();
             this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-            boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity) source.getAttacker()).getAbilities().creativeMode;
+            boolean bl = source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode;
             if (bl || this.getDamageWobbleStrength() > 40.0F) {
                 this.stopPlaying();
                 if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
@@ -97,8 +97,8 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
     }
 
     public void stopPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(this.getUuid());
+        PacketByteBuf buf = PacketByteBufs.create()
+                .writeUuid(this.getUuid());
 
         for (PlayerEntity player1 : world.getPlayers()) {
             ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
@@ -106,9 +106,9 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
     }
 
     public void startPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(this.uuid);
-        buf.writeItemStack(this.record);
+        PacketByteBuf buf = PacketByteBufs.create()
+                .writeUuid(this.uuid)
+                .writeItemStack(this.record);
 
         for (PlayerEntity player1 : world.getPlayers()) {
             ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);

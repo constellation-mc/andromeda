@@ -42,8 +42,7 @@ public class HopperBoatEntity extends ChestBoatEntity implements Hopper {
         this.prevZ = z;
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new HopperScreenHandler(i, playerInventory, this);
     }

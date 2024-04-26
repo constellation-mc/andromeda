@@ -7,9 +7,5 @@ import net.minecraft.registry.RegistryKeys;
 import static me.melontini.andromeda.common.registries.Common.id;
 
 public class Main {
-    public static RegistryKey<DamageType> AGONY;
-
-    Main() {
-        Main.AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("agony"));
-    }
+    public static final RegistryKey<DamageType> AGONY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("agony"));
 }

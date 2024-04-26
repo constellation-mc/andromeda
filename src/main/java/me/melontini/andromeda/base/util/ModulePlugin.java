@@ -34,10 +34,12 @@ public class ModulePlugin extends ExtendablePlugin {
         plugins.add(DefaultPlugins.constructDummyPlugin());
     }
 
+    @Override
     protected void onPluginLoad(String mixinPackage) {
         this.mixinPackage = mixinPackage;
     }
 
+    @Override
     protected void getMixins(List<String> mixins) {
         mixins.addAll(processor.mixinsFromPackage(this.mixinPackage));
     }

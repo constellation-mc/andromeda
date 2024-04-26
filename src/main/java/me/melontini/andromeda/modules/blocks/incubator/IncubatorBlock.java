@@ -32,6 +32,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 @SuppressWarnings("deprecation")
 public class IncubatorBlock extends BlockWithEntity implements InventoryProvider {
 
@@ -61,7 +63,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
         IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
         if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ActionResult.success(true);
 
-        if (world.getServer().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null) return entity.insertEgg(stack);
+        if (requireNonNull(world.getServer()).dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null) return entity.insertEgg(stack);
         if (stack.isEmpty()) return entity.extractEgg(player);
 
         return ActionResult.success(false);
@@ -118,8 +120,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
         return VoxelShapes.union(BASE_SHAPE, GLASS_SHAPE);
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new IncubatorBlockEntity(pos, state);
     }

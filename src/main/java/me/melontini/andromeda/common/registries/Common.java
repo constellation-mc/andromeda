@@ -15,8 +15,6 @@ public class Common {
     }
 
     public static void bootstrap() {
-        AndromedaItemGroup.init();
-
         ResourceConditions.register(id("items_registered"), object -> JsonHelper.getArray(object, "values")
                 .asList().stream().filter(JsonElement::isJsonPrimitive)
                 .allMatch(e -> CommonRegistries.items().containsId(Identifier.tryParse(e.getAsString()))));

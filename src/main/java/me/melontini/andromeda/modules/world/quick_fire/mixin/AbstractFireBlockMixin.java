@@ -26,7 +26,7 @@ abstract class AbstractFireBlockMixin extends AbstractFireBlock {
         super(settings, damage);
     }
 
-    @ModifyVariable(method = "trySpreadingFire", at = @At(value = "LOAD"), index = 3, argsOnly = true)
+    @ModifyVariable(method = "trySpreadingFire", at = @At("LOAD"), index = 3, argsOnly = true)
     public int andromeda$spreadFire0(int value, @Local(argsOnly = true) World world) {
         return world.am$get(QuickFire.class).enabled ? (int) (value * 0.8) : value;
     }

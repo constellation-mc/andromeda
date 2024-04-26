@@ -25,8 +25,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
     @Shadow @Nullable BlockPos flowerPos;
     @Shadow BeeEntity.PollinateGoal pollinateGoal;
 
-    @Unique
-    private int andromeda$plantingCoolDown;
+    @Unique private int andromeda$plantingCoolDown;
 
     protected BeeEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
@@ -53,8 +52,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
         if (nbt.contains("AM-plantingCoolDown")) this.andromeda$plantingCoolDown = nbt.getInt("AM-plantingCoolDown");
     }
 
-    @Unique
-    private void andromeda$growFlower() {
+    @Unique private void andromeda$growFlower() {
         if (this.flowerPos != null) {
             BlockState flowerState = world.getBlockState(flowerPos);
             BeeFlowerDuplication.Config config = world.am$get(BeeFlowerDuplication.class);
@@ -96,8 +94,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
         }
     }
 
-    @Unique
-    private boolean andromeda$canPlant() {
+    @Unique private boolean andromeda$canPlant() {
         return this.andromeda$plantingCoolDown == 0;
     }
 }

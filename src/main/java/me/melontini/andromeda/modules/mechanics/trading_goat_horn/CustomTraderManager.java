@@ -3,8 +3,8 @@ package me.melontini.andromeda.modules.mechanics.trading_goat_horn;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
+import lombok.NonNull;
 import me.melontini.andromeda.common.registries.Keeper;
-import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.entity.EntityType;
@@ -23,7 +23,6 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestTypes;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -74,8 +73,7 @@ public class CustomTraderManager {
         wanderingTraderEntity.setPositionTarget(blockPos2, 16);
     }
 
-    private void spawnLlama(ServerWorld world, @NotNull WanderingTraderEntity wanderingTrader) {
-        MakeSure.notNulls(world, wanderingTrader);
+    private void spawnLlama(@NonNull ServerWorld world, @NonNull WanderingTraderEntity wanderingTrader) {
         BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.getBlockPos(), 4);
         if (blockPos == null) return;
 
@@ -85,8 +83,7 @@ public class CustomTraderManager {
         traderLlamaEntity.attachLeash(wanderingTrader, true);
     }
 
-    @Nullable
-    private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
+    @Nullable private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
         BlockPos blockPos = null;
 
         for (int i = 0; i < 10; ++i) {

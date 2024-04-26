@@ -26,8 +26,8 @@ public class CampfireEffects extends Module<CampfireEffects.Config> {
         @AllArgsConstructor
         @NoArgsConstructor
         public static class Effect {
-            public String identifier;
-            public int amplifier;
+            public String identifier = "minecraft:regeneration";
+            public int amplifier = 0;
         }
     }
 }

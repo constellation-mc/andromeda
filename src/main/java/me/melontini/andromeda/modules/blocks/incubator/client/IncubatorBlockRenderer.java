@@ -36,6 +36,7 @@ public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBloc
                 case WEST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
                 case EAST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
                 case SOUTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0));
+                default -> throw new IllegalStateException(String.valueOf(state.get(IncubatorBlock.FACING)));
             }
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-45));
             if (entity.processingTime > -1 && !entity.inventory.get(0).isEmpty()) {

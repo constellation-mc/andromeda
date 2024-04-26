@@ -15,11 +15,9 @@ import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -45,6 +43,7 @@ public abstract class Module<T extends Module.BaseConfig> {
     volatile T defaultConfig;
 
     private final Map<String, Bus<?>> busMap = new HashMap<>();
+    private final IdentityHashMap<Class<?>, Object> objectMap = new IdentityHashMap<>();
 
     protected Module() {
         this.info = Metadata.fromAnnotation(this.getClass().getAnnotation(ModuleInfo.class));
@@ -56,11 +55,11 @@ public abstract class Module<T extends Module.BaseConfig> {
     }
 
     public final void save() {
-        manager.save(FabricLoader.getInstance().getConfigDir(), config(), Context.of());
+        manager().save(FabricLoader.getInstance().getConfigDir(), config(), Context.of());
     }
 
     public final boolean enabled() {
-        return config.enabled;
+        return config().enabled;
     }
 
     @Override
@@ -69,8 +68,12 @@ public abstract class Module<T extends Module.BaseConfig> {
     }
 
     @ApiStatus.Internal
-    public <E> Bus<E> getOrCreateBus(String id, Supplier<Bus<E>> supplier) {
+    public <E> Bus<E> getOrCreateBus(String id, @Nullable Supplier<Bus<E>> supplier) {
         return (Bus<E>) busMap.computeIfAbsent(id, aClass -> supplier == null ? null : supplier.get());
+    }
+
+    public <O> O getObject(Class<O> cls) {
+        return cls.cast(this.objectMap.get(cls));
     }
 
     @SneakyThrows
@@ -79,11 +82,11 @@ public abstract class Module<T extends Module.BaseConfig> {
         var ctx = Reflect.setAccessible(cls.getDeclaredConstructors()[0]);
 
         if (ctx.getParameterCount() == 0) {
-            AndromedaException.run(ctx::newInstance, b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
+            AndromedaException.run(() -> this.objectMap.put(cls, ctx.newInstance()), b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
         } else {
             Map<Class<?>, Object> args = Map.of(
                     this.getClass(), this,
-                    ModuleManager.get().getConfigClass(this.getClass()), this.config()
+                    ModuleManager.getConfigClass(this.getClass()), this.config()
             );
 
             List<Object> passed = new ArrayList<>(ctx.getParameterCount());
@@ -91,7 +94,7 @@ public abstract class Module<T extends Module.BaseConfig> {
                 var value = MakeSure.notNull(args.get(parameterType));
                 passed.add(value);
             }
-            AndromedaException.run(() -> ctx.newInstance(passed.toArray(Object[]::new)), b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
+            AndromedaException.run(() -> this.objectMap.put(cls, ctx.newInstance(passed.toArray(Object[]::new))), b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
         }
     }
 

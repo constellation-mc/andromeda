@@ -36,11 +36,9 @@ abstract class DrawContextMixin {
     @Final
     private MatrixStack matrices;
 
-    @Unique
-    private static final SmoothTooltips m = ModuleManager.quick(SmoothTooltips.class);
+    @Unique private static final SmoothTooltips m = ModuleManager.quick(SmoothTooltips.class);
 
-    @Unique
-    private static Vector2d smoothPos;
+    @Unique private static Vector2d smoothPos;
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/tooltip/TooltipPositioner;getPosition(IIIIII)Lorg/joml/Vector2ic;"), method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V")
     private Vector2ic andromeda$smoothTooltip(Vector2ic vic, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Share("popMatrix") LocalBooleanRef popMatrix) {
@@ -57,8 +55,7 @@ abstract class DrawContextMixin {
         return vic;
     }
 
-    @Unique
-    private boolean andromeda$makeSmooth(int x, int y) {
+    @Unique private boolean andromeda$makeSmooth(int x, int y) {
         double mX = (this.client.mouse.getX() * this.client.getWindow().getScaledWidth() / this.client.getWindow().getWidth());
         if ((int) mX != x) return false;
         double mY = (this.client.mouse.getY() * this.client.getWindow().getScaledHeight() / this.client.getWindow().getHeight());

@@ -52,18 +52,12 @@ abstract class ItemEntityMixin extends Entity {
     @Final
     private static TrackedData<ItemStack> STACK;
 
-    @Unique
-    private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
-    @Unique
-    private static final Tuple<BeaconBlockEntity, Integer> ANDROMEDA$NULL_BEACON = Tuple.of(null, 0);
-    @Unique
-    private final List<Block> beaconBlocks = List.of(Blocks.DIAMOND_BLOCK, Blocks.NETHERITE_BLOCK);
-    @Unique
-    private int andromeda$ascensionTicks;
-    @Unique
-    private ItemEntity andromeda$itemEntity;
-    @Unique
-    private Tuple<BeaconBlockEntity, Integer> andromeda$beacon = ANDROMEDA$NULL_BEACON;
+    @Unique private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
+    @Unique private static final Tuple<BeaconBlockEntity, Integer> ANDROMEDA$NULL_BEACON = Tuple.of(null, 0);
+    @Unique private final List<Block> beaconBlocks = List.of(Blocks.DIAMOND_BLOCK, Blocks.NETHERITE_BLOCK);
+    @Unique private int andromeda$ascensionTicks;
+    @Unique private ItemEntity andromeda$itemEntity;
+    @Unique private Tuple<BeaconBlockEntity, Integer> andromeda$beacon = ANDROMEDA$NULL_BEACON;
 
 
     public ItemEntityMixin(EntityType<?> type, World world) {
@@ -110,9 +104,9 @@ abstract class ItemEntityMixin extends Entity {
                             ItemEntity entity = new ItemEntity(world, andromeda$itemEntity.getX(), andromeda$itemEntity.getY(), andromeda$itemEntity.getZ(), newStack);
                             world.spawnEntity(entity);
 
-                            PacketByteBuf buf = PacketByteBufs.create();
-                            buf.writeVarInt(andromeda$itemEntity.getId());
-                            buf.writeItemStack(targetStack);
+                            PacketByteBuf buf = PacketByteBufs.create()
+                                    .writeVarInt(andromeda$itemEntity.getId())
+                                    .writeItemStack(targetStack);
                             for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
                                 ServerPlayNetworking.send(serverPlayerEntity, Main.NOTIFY_CLIENT, buf);
                             }
@@ -150,8 +144,7 @@ abstract class ItemEntityMixin extends Entity {
         }
     }
 
-    @Unique
-    private boolean andromeda$beaconCheck() {
+    @Unique private boolean andromeda$beaconCheck() {
         BlockEntity entity = world.getBlockEntity(new BlockPos((int) getX(), world.getTopY(Heightmap.Type.WORLD_SURFACE, getBlockPos().getX(), getBlockPos().getZ()) - 1, (int) getZ()));
         if (entity instanceof BeaconBlockEntity beaconBlock) {
             this.andromeda$beacon = Tuple.of(beaconBlock, BlockUtil.getLevelFromBlocks(world, beaconBlock.getPos(), beaconBlocks));

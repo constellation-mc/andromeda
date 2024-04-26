@@ -26,8 +26,7 @@ import java.util.Optional;
 @Mixin(GoatHornItem.class)
 abstract class GoatHornMixin {
 
-    @Unique
-    private static final Identifier SING_ID = new Identifier("minecraft:sing_goat_horn");
+    @Unique private static final Identifier SING_ID = new Identifier("minecraft:sing_goat_horn");
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V", shift = At.Shift.BEFORE), method = "use")
     private void andromeda$wanderingGoatHorn(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, @Local Optional<? extends RegistryEntry<Instrument>> optional) {

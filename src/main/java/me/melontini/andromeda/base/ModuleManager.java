@@ -6,6 +6,7 @@ import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.EarlyLanguage;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
@@ -16,6 +17,7 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -38,7 +40,7 @@ public class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
 
-    private static ModuleManager INSTANCE;
+    @Nullable static ModuleManager INSTANCE;
 
     private final Map<Class<?>, PromiseImpl<?>> discoveredModules;
     private final Map<String, PromiseImpl<?>> discoveredModuleNames;
@@ -49,8 +51,6 @@ public class ModuleManager {
     private final MixinProcessor mixinProcessor;
 
     ModuleManager(List<Module.Zygote> zygotes) {
-        if (INSTANCE != null) throw new IllegalStateException("ModuleManager already initialized!");
-        INSTANCE = this;
         this.mixinProcessor = new MixinProcessor(this);
 
         this.discoveredModules = Utilities.supply(() -> {
@@ -70,8 +70,8 @@ public class ModuleManager {
         this.setUpConfigs(sorted);
 
         CompletableFuture.allOf(sorted.stream().map(m -> CompletableFuture.runAsync(() -> {
-            m.config = Utilities.cast(m.manager.load(FabricLoader.getInstance().getConfigDir(), Context.of()));
-            m.defaultConfig = Utilities.cast(m.manager.createDefault());
+            m.config = Utilities.cast(m.manager().load(FabricLoader.getInstance().getConfigDir(), Context.of()));
+            m.defaultConfig = Utilities.cast(m.manager().createDefault());
         })).toArray(CompletableFuture[]::new)).join();
 
         if (Debug.Keys.ENABLE_ALL_MODULES.isPresent())
@@ -126,25 +126,21 @@ public class ModuleManager {
     private void setUpConfigs(Collection<? extends Module<?>> modules) {
         modules.forEach(m -> {
             var manager = makeManager(m);
-            manager.onLoad((config1, path) -> {
+            manager.onLoad((config, path) -> {
                 if (AndromedaConfig.get().sideOnlyMode) {
-                    switch (m.meta().environment()) {
-                        case BOTH -> config1.enabled = false;
-                        case CLIENT -> {
-                            if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT)
-                                config1.enabled = false;
-                        }
-                        case SERVER -> {
-                            if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER)
-                                config1.enabled = false;
-                        }
+                    var env = m.meta().environment();
+                    if (CommonValues.environment() == EnvType.CLIENT) {
+                        if (env.isServer()) config.enabled = false;
+                    } else {
+                        if (env.isClient()) config.enabled = false;
                     }
+                    if (env.isBoth()) config.enabled = false;
                 }
             });
-            manager.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(), m.meta().id()), e));
+            manager.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(Locale.ROOT), m.meta().id()), e));
 
             Bus<ConfigEvent<?>> e = m.getOrCreateBus("config_event", null);
-            if (e != null) e.invoker().accept(Utilities.cast(manager));
+            if (e != null) e.invoker().accept(this, Utilities.cast(manager));
 
             m.manager = Utilities.cast(manager);
         });
@@ -164,7 +160,7 @@ public class ModuleManager {
      * @param m the module class.
      * @return the config class.
      */
-    public Class<? extends Module.BaseConfig> getConfigClass(Class<?> m) {
+    public static Class<? extends Module.BaseConfig> getConfigClass(Class<?> m) {
         if (m.getGenericSuperclass() instanceof ParameterizedType pt) {
             for (Type ta : pt.getActualTypeArguments()) {
                 if (ta instanceof Class<?> cls && Module.BaseConfig.class.isAssignableFrom(cls)) {
@@ -177,7 +173,7 @@ public class ModuleManager {
 
     public void cleanConfigs(Path root, Collection<? extends Module<?>> modules) {
         if (Files.exists(root)) {
-            Set<Path> paths = collectPaths(root.getParent(), modules);
+            Set<Path> paths = collectPaths(Objects.requireNonNull(root.getParent(), () -> "Root config folder? %s".formatted(root)), modules);
             Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -277,6 +273,8 @@ public class ModuleManager {
     }
 
     /**
+     * Returns a collection of all loaded modules.
+     *
      * @return a collection of all loaded modules.
      */
     public Collection<Module<?>> loaded() {
@@ -297,14 +295,16 @@ public class ModuleManager {
     }
 
     /**
+     * Returns The module manager.
+     *
      * @return The module manager.
      */
     public static ModuleManager get() {
-        return MakeSure.notNull(INSTANCE, "ModuleManager requested too early!");
+        return Objects.requireNonNull(INSTANCE, "ModuleManager requested too early!");
     }
 
     void print() {
-        Map<String, Set<Module<?>>> categories = Utilities.supply(new LinkedHashMap<>(), map -> get().loaded().forEach(m ->
+        Map<String, Set<Module<?>>> categories = Utilities.supply(new LinkedHashMap<>(), map -> loaded().forEach(m ->
                 map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 
         StringBuilder builder = new StringBuilder();

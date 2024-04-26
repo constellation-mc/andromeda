@@ -55,8 +55,7 @@ abstract class VillagerEntityMixin extends MerchantEntity {
         }
     }
 
-    @Unique
-    private boolean andromeda$tryInsertGift(CallbackInfoReturnable<ActionResult> cir, PlayerEntity player, ItemStack stack, VillageGossipType type) {
+    @Unique private boolean andromeda$tryInsertGift(CallbackInfoReturnable<ActionResult> cir, PlayerEntity player, ItemStack stack, VillageGossipType type) {
         if (this.getInventory().canInsert(stack)) {
             this.getInventory().addStack(stack);
             this.gossip.startGossip(player.getUuid(), type, 3);

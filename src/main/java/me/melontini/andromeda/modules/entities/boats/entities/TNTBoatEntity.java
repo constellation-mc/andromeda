@@ -48,8 +48,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     }
 
     private final Runnable explode = Support.support(EnvType.CLIENT, () -> () -> {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(this.getUuid());
+        PacketByteBuf buf = PacketByteBufs.create().writeUuid(this.getUuid());
         ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
     }, () -> this::explode);
 
@@ -99,7 +98,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
             this.scheduleVelocityUpdate();
             this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-            boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity) source.getAttacker()).getAbilities().creativeMode;
+            boolean bl = source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode;
             if (bl) {
                 this.discard();
                 return false;

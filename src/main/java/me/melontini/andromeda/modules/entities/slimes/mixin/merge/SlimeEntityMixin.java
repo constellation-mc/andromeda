@@ -20,14 +20,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SlimeEntity.class)
 abstract class SlimeEntityMixin extends MobEntity {
-    @Unique
-    private static final Slimes am$slimes = ModuleManager.quick(Slimes.class);
+    @Unique private static final Slimes am$slimes = ModuleManager.quick(Slimes.class);
 
     @Shadow public abstract int getSize();
     @Shadow public abstract void setSize(int size, boolean heal);
 
-    @Unique
-    private int andromeda$mergeCD = MathUtil.nextInt(700, 2000);
+    @Unique private int andromeda$mergeCD = MathUtil.nextInt(700, 2000);
 
     protected SlimeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);

@@ -56,7 +56,7 @@ abstract class FurnaceMinecartMixin {
         nbt.putInt(key, this.fuel);
     }
 
-    @Inject(at = @At(value = "TAIL"), method = "readCustomDataFromNbt")
+    @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
         this.fuel = nbt.getInt("Fuel");
     }

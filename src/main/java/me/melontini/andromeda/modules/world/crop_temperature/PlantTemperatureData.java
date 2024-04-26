@@ -8,7 +8,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -22,6 +22,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodType;
 import java.util.*;
@@ -47,7 +48,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
                 if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
                     return MathUtil.nextInt(0, 1) != 0;
                 } else
-                    return (!(temp > data.aMax())) && (!(temp < data.aMin()));
+                    return !(temp > data.aMax()) && !(temp < data.aMin());
             }
         }
         return true;
@@ -77,8 +78,8 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
             }
         });
 
-        if (!override.isEmpty()) module.logger().warn("Missing crop temperatures: " + override);
-        if (!blocks.isEmpty()) module.logger().warn("Possible missing crop temperatures: " + blocks);
+        if (!override.isEmpty()) module.logger().warn("Missing crop temperatures: " + override.stream().map(block -> CommonRegistries.blocks().getId(block)).toList());
+        if (!blocks.isEmpty()) module.logger().warn("Possible missing crop temperatures: " + blocks.stream().map(block -> CommonRegistries.blocks().getId(block)).toList());
     }
 
     private static boolean methodInHierarchyUntil(Class<?> cls, String name, Class<?> stopClass) {
@@ -88,9 +89,9 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
         return !stopClass.equals(cls.getSuperclass()) && methodInHierarchyUntil(cls.getSuperclass(), name, stopClass);
     }
 
-    public static class Reloader extends JsonDataLoader {
+    public static class Reloader extends IdentifiedJsonDataLoader {
 
-        private Map<Block, PlantTemperatureData> map;
+        @Nullable private IdentityHashMap<Block, PlantTemperatureData> map;
         private final PlantTemperature module;
 
         protected Reloader(PlantTemperature module) {
@@ -98,13 +99,13 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
             this.module = module;
         }
 
-        public PlantTemperatureData get(Block block) {
-            return this.map.get(block);
+        public @Nullable PlantTemperatureData get(Block block) {
+            return Objects.requireNonNull(this.map).get(block);
         }
 
         @Override
         protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-            Map<Block, PlantTemperatureData> result = new IdentityHashMap<>();
+            IdentityHashMap<Block, PlantTemperatureData> result = new IdentityHashMap<>();
             Maps.transformValues(data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
                 throw new JsonParseException(string);
             })).forEach((identifier, temperatureData) -> temperatureData.blocks.forEach((block) -> result.put(block, temperatureData)));

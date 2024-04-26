@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.magnet.items;
 
+import com.google.common.collect.ImmutableSet;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -38,10 +39,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class MagnetItem extends Item {
 
@@ -198,7 +201,7 @@ public class MagnetItem extends Item {
             NbtList nbtList = nbt.getList("Items", NbtElement.STRING_TYPE);
             return nbtList.stream().map(NbtString.class::cast)
                     .map(s -> CommonRegistries.items().get(new Identifier(s.asString())))
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
+                    .collect(ImmutableSet.toImmutableSet());
         }
     }
 

@@ -1,75 +1,20 @@
 package me.melontini.andromeda.common.registries;
 
 import me.melontini.andromeda.base.Module;
-import me.melontini.dark_matter.api.item_group.ItemGroupBuilder;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
-
-import static me.melontini.andromeda.common.registries.Common.id;
 
 public class AndromedaItemGroup {
 
-    private static final Set<Consumer<Acceptor>> ACCEPTORS = new LinkedHashSet<>();
+    private static final List<Consumer<Acceptor>> ACCEPTORS = new ArrayList<>();
 
-    @SuppressWarnings("unused")
-    public static final ItemGroup GROUP = ItemGroupBuilder.create(id("group"))
-            .entries(entries -> {
-                Map<Module<?>, List<ItemStack>> stackMap = new LinkedHashMap<>();
-                Acceptor acceptor = (module, stack) -> {
-                    if (!stack.isEmpty()) {
-                        stackMap.computeIfAbsent(module, module1 -> new ArrayList<>()).add(stack);
-                    }
-                };
-                ACCEPTORS.forEach(consumer -> consumer.accept(acceptor));
-
-                Map<Module<?>, List<ItemStack>> small = new LinkedHashMap<>();
-                Map<Module<?>, List<ItemStack>> big = new LinkedHashMap<>();
-
-                if (stackMap.isEmpty()) {
-                    entries.add(Items.BARRIER);
-                    return;
-                }
-
-                stackMap.forEach((module, itemStacks) -> {
-                    if (itemStacks.size() > 2) {
-                        big.put(module, itemStacks);
-                    } else if (!itemStacks.isEmpty()) {
-                        small.put(module, itemStacks);
-                    }
-                });
-
-                if (small.isEmpty() && big.isEmpty()) {
-                    entries.add(Items.BARRIER);
-                    return;
-                }
-
-                List<ItemStack> stacks = new ArrayList<>();
-                small.forEach((m, itemStacks) -> {
-                    ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
-                    stacks.add(sign);
-                    stacks.addAll(itemStacks);
-                    stacks.add(ItemStack.EMPTY);
-                });
-                entries.appendStacks(stacks);
-
-                big.forEach((m, itemStacks) -> {
-                    ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                    sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
-                    itemStacks.add(0, sign);
-                    entries.appendStacks(itemStacks);
-                });
-            })
-            .displayName(TextUtil.translatable("itemGroup.andromeda.items")).optional().orElseThrow();
-
-    public static void init() {
-
+    public static List<Consumer<Acceptor>> getAcceptors() {
+        return Collections.unmodifiableList(ACCEPTORS);
     }
 
     public static void accept(Consumer<Acceptor> consumer) {
@@ -94,11 +39,11 @@ public class AndromedaItemGroup {
         }
 
         default <T extends ItemConvertible> void keepers(Module<?> module, List<Keeper<? extends ItemConvertible>> keepers) {
-            stacks(module, keepers.stream().filter(Keeper::isPresent).map(Keeper::get).map(ItemStack::new).toList());
+            stacks(module, keepers.stream().filter(Keeper::isPresent).map(Keeper::orThrow).map(ItemStack::new).toList());
         }
 
         default <T extends ItemConvertible> void keeper(Module<?> module, Keeper<T> keeper) {
-            if (keeper.isPresent()) stack(module, new ItemStack(keeper.get()));
+            if (keeper.isPresent()) stack(module, new ItemStack(keeper.orThrow()));
         }
     }
 }

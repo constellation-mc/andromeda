@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.misc.translations.client;
 
 import com.google.common.collect.Sets;
-import lombok.experimental.ExtensionMethod;
 import me.melontini.andromeda.modules.misc.translations.Translations;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
@@ -19,9 +18,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 
-@ExtensionMethod(Files.class)
 public class Client {
 
     private static final String URL = GitTracker.RAW_URL + "/" + GitTracker.OWNER + "/" + GitTracker.REPO + "/" + GitTracker.getDefaultBranch() + "/src/main/resources/assets/andromeda/lang/";
@@ -33,17 +32,21 @@ public class Client {
         if (shouldUpdate()) {
             Set<String> languages = Sets.newHashSet("en_us");
             Client.getSelectedLanguage(module).ifPresent(languages::add);
-            ForkJoinPool.commonPool().submit(() -> Client.downloadTranslations(languages, module));
+            CompletableFuture.runAsync(() -> Client.downloadTranslations(languages, module), ForkJoinPool.commonPool()).handle((unused, throwable) -> {
+                if (throwable != null) module.logger().error("Failed to download translations!", throwable);
+                return null;
+            });
         }
     }
 
     public boolean shouldUpdate() {
         if (Debug.Keys.DISABLE_NETWORK_FEATURES.isPresent()) return false;
-        if (Translations.EN_US.exists()) {
+        if (Files.exists(Translations.EN_US)) {
             try {
-                if (ChronoUnit.HOURS.between(Translations.EN_US.getLastModifiedTime().toInstant(), Instant.now()) >= 24)
+                if (ChronoUnit.HOURS.between(Files.getLastModifiedTime(Translations.EN_US).toInstant(), Instant.now()) >= 24)
                     return true;
             } catch (Exception ignored) {
+                return CommonValues.updated();
             }
         } else return true;
         return CommonValues.updated();
@@ -63,8 +66,8 @@ public class Client {
             String file = downloadLang(language, module);
             if (!file.isEmpty()) {
                 try {
-                    if (!Translations.LANG_PATH.exists()) Translations.LANG_PATH.createDirectories();
-                    Translations.LANG_PATH.resolve(language + ".json").writeString(file);
+                    if (!Files.exists(Translations.LANG_PATH)) Files.createDirectories(Translations.LANG_PATH);
+                    Files.writeString(Translations.LANG_PATH.resolve(language + ".json"), file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -96,8 +99,8 @@ public class Client {
 
     public static Optional<String> getSelectedLanguage(Translations module) {
         try {
-            if (!Translations.OPTIONS.exists()) return Optional.empty();
-            for (String line : Translations.OPTIONS.readAllLines()) {
+            if (!Files.exists(Translations.OPTIONS)) return Optional.empty();
+            for (String line : Files.readAllLines(Translations.OPTIONS)) {
                 if (line.matches("^lang:\\w+_\\w+")) {
                     return Optional.of(line.replace("lang:", ""));
                 }

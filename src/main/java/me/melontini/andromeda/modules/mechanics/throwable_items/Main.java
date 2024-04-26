@@ -42,7 +42,7 @@ public class Main implements ServerReloadersEvent {
 
     public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
 
-    public static RegistryKey<DamageType> BRICKED;
+    public static final RegistryKey<DamageType> BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked"));
 
     public static final Identifier FLYING_STACK_LANDED = new Identifier(MODID, "flying_stack_landed");
     public static final Identifier ITEMS_WITH_BEHAVIORS = new Identifier(MODID, "items_with_behaviors");
@@ -65,8 +65,6 @@ public class Main implements ServerReloadersEvent {
         FLYING_ITEM.init(RegistryUtil.register(CommonRegistries.entityTypes(), id("flying_item"), () -> FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                 .dimensions(new EntityDimensions(0.25F, 0.25F, true))
                 .trackRangeChunks(4).trackedUpdateRate(10).build()));
-
-        BRICKED = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bricked"));
 
         CONTEXT_TYPE.init(LootContextTypes.register("andromeda:throwable_items", builder -> builder
                 .require(LootContextParameters.ORIGIN).require(LootContextParameters.DIRECT_KILLER_ENTITY)
@@ -93,9 +91,8 @@ public class Main implements ServerReloadersEvent {
     }
 
     private static PacketByteBuf sendItemsS2CPacket(ItemBehaviorManager manger) {
-        var packet = PacketByteBufs.create();
         var items = manger.itemsWithBehaviors();
-        packet.writeVarInt(items.size());
+        var packet = PacketByteBufs.create().writeVarInt(items.size());
         for (Item item : items) {
             packet.writeIdentifier(CommonRegistries.items().getId(item));
         }

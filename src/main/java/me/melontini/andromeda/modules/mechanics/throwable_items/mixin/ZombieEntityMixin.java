@@ -22,8 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ZombieEntity.class)
 abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
 
-    @Unique
-    private int andromeda$cooldown = 0;
+    @Unique private int andromeda$cooldown = 0;
 
     protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -53,9 +52,7 @@ abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob
         this.getMainHandStack().decrement(1);
     }
 
-    @Unique
-    @NotNull
-    private FlyingItemEntity andromeda$getFlyingItemEntity(LivingEntity target) {
+    @Unique @NotNull private FlyingItemEntity andromeda$getFlyingItemEntity(LivingEntity target) {
         var entity = new FlyingItemEntity(this.getMainHandStack(), this, world);
         entity.setPos(this.getX(), this.getEyeY() - 0.1F, this.getZ());
         double d = target.getX() - this.getX();

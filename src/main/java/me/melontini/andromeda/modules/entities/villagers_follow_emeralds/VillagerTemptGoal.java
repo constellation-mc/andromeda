@@ -12,7 +12,7 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class VillagerTemptGoal extends TemptGoal {
 
-    public static TagKey<Item> TEMPTING = TagKey.of(TagUtil.key("item"), id("tempting_for_villagers"));
+    public static final TagKey<Item> TEMPTING = TagKey.of(TagUtil.key("item"), id("tempting_for_villagers"));
 
     public VillagerTemptGoal(VillagerEntity entity, double speed, Ingredient food, boolean canBeScared) {
         super(entity, speed, food, canBeScared);

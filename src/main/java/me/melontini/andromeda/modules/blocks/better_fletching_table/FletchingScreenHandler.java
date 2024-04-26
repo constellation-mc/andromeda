@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.blocks.better_fletching_table;
 
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,11 +12,11 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.screen.slot.Slot;
 
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FletchingScreenHandler extends ForgingScreenHandler {
 
@@ -48,7 +49,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
     }
 
     //This should probably be data-driven, but whatever.
-    private static final Map<Ingredient, Map<Ingredient, Function<ItemStack, ItemStack>>> RECIPES = new IdentityHashMap<>();
+    private static final Map<Ingredient, Map<Ingredient, Function<ItemStack, ItemStack>>> RECIPES = new HashMap<>();
 
     public static void addRecipe(Function<ItemStack, ItemStack> consumer, Ingredient ingredient, Ingredient input) {
         RECIPES.computeIfAbsent(input, i -> new IdentityHashMap<>()).put(ingredient, consumer);
@@ -58,8 +59,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
     public void updateResult() {
         ItemStack stack = getSlot(0).getStack();
 
-        var lookup = RECIPES.entrySet().stream().filter(e -> e.getKey().test(stack))
-                .flatMap(e -> e.getValue().entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        var lookup = RECIPES.entrySet().stream().filter(e -> e.getKey().test(stack)).flatMap(e -> e.getValue().entrySet().stream()).collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
         if (lookup.isEmpty()) {
             getSlot(2).setStack(ItemStack.EMPTY);
             return;

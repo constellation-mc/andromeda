@@ -22,8 +22,7 @@ import java.util.List;
 
 @Mixin(Item.class)
 abstract class ItemMixin {
-    @Unique
-    private static final Tooltips am$tooltips = ModuleManager.quick(Tooltips.class);
+    @Unique private static final Tooltips am$tooltips = ModuleManager.quick(Tooltips.class);
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
         if (!am$tooltips.config().clock) return;

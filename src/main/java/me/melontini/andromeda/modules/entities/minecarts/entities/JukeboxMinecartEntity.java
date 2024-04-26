@@ -69,7 +69,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
             this.scheduleVelocityUpdate();
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
             this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-            boolean isCreativePlayer = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity) source.getAttacker()).getAbilities().creativeMode;
+            boolean isCreativePlayer = source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode;
             if (isCreativePlayer || this.getDamageWobbleStrength() > 40.0F) {
                 this.removeAllPassengers();
                 this.stopPlaying();
@@ -118,8 +118,8 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     }
 
     public void stopPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(this.getUuid());
+        PacketByteBuf buf = PacketByteBufs.create()
+                .writeUuid(this.getUuid());
 
         for (PlayerEntity player1 : world.getPlayers()) {
             ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
@@ -127,9 +127,9 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     }
 
     public void startPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(this.uuid);
-        buf.writeItemStack(this.record);
+        PacketByteBuf buf = PacketByteBufs.create()
+                .writeUuid(this.uuid)
+                .writeItemStack(this.record);
 
         for (PlayerEntity player1 : world.getPlayers()) {
             ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);

@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ abstract class InGameHudMixin {
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.setShaderColor(1, 1, 1, Math.min(l / 255f, 0.8f));
                 var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), this.currentStack);
-                List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
+                List<TooltipComponent> list1 = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toCollection(ArrayList::new));
 
                 this.currentStack.getTooltipData().ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
                     TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);

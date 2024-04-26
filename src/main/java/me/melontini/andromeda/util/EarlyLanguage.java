@@ -1,7 +1,7 @@
 package me.melontini.andromeda.util;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
 import me.melontini.andromeda.base.Module;
@@ -10,10 +10,7 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class EarlyLanguage {
@@ -47,16 +44,18 @@ public class EarlyLanguage {
 
     @SneakyThrows
     private static Map<String, String> load(String locale) {
-        var opt = getPath(locale);
-        if (opt.isEmpty()) return Collections.emptyMap();
-        JsonObject object = JsonParser.parseReader(Files.newBufferedReader(opt.get())).getAsJsonObject();
-
-        return Maps.transformValues(object.asMap(), input -> TOKEN_PATTERN.matcher(input.getAsString()).replaceAll("%$1s"));
+        var list = getPath(locale);
+        if (list.isEmpty()) return Collections.emptyMap();
+        Map<String, JsonElement> map = new HashMap<>();
+        for (Path path : list) map.putAll(JsonParser.parseReader(Files.newBufferedReader(path)).getAsJsonObject().asMap());
+        return Collections.unmodifiableMap(Maps.transformValues(map, input -> TOKEN_PATTERN.matcher(input.getAsString()).replaceAll("%$1s")));
     }
 
-    private static Optional<Path> getPath(String locale) {
-        var path = Translations.LANG_PATH.resolve(locale + ".json");
-        if (Files.exists(path)) return Optional.of(path);
-        return CommonValues.mod().findPath("assets/andromeda/lang/" + locale + ".json");
+    private static List<Path> getPath(String locale) {
+        List<Path> list = new ArrayList<>();
+        CommonValues.mod().findPath("assets/andromeda/lang/" + locale + ".json").ifPresent(list::add);
+        var update_path = Translations.LANG_PATH.resolve(locale + ".json");
+        if (Files.exists(update_path)) list.add(update_path);
+        return list;
     }
 }

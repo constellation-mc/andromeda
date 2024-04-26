@@ -17,8 +17,7 @@ abstract class FurnaceMinecartEntityMixin {
 
     @Shadow public int fuel;
 
-    @Unique
-    private static final MinecartSpeedControl am$module = ModuleManager.quick(MinecartSpeedControl.class);
+    @Unique private static final MinecartSpeedControl am$module = ModuleManager.quick(MinecartSpeedControl.class);
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void andromeda$subtract(CallbackInfo ci) {

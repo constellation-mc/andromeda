@@ -14,11 +14,9 @@ import me.melontini.dark_matter.api.base.util.functions.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Prop;
 import me.melontini.dark_matter.api.crash_handler.Props;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 @CustomLog
@@ -35,7 +33,7 @@ public class AndromedaException extends RuntimeException {
         this(false, "Empty ctx called! This must never happen!!!", null, new JsonObject());
     }
 
-    private AndromedaException(boolean report, String message, Throwable cause, JsonObject statuses) {
+    private AndromedaException(boolean report, String message, @Nullable Throwable cause, JsonObject statuses) {
         super(message, cause);
         this.report = report;
         this.statuses = statuses;
@@ -51,7 +49,7 @@ public class AndromedaException extends RuntimeException {
         return b.toString();
     }
 
-    public void setAppender(Consumer<StringBuilder> b) {
+    public void setAppender(@Nullable Consumer<StringBuilder> b) {
         this.appender = b;
     }
 
@@ -105,11 +103,11 @@ public class AndromedaException extends RuntimeException {
         );
 
         private static String prop(Prop prop) {
-            return prop.name().toLowerCase();
+            return prop.name().toLowerCase(Locale.ROOT);
         }
 
         private final List<String> message = new ArrayList<>();
-        private Throwable cause;
+        @Nullable private Throwable cause;
         private boolean report = true;
 
         private final JsonObject statuses = new JsonObject();
@@ -145,7 +143,7 @@ public class AndromedaException extends RuntimeException {
 
         public Builder add(Prop... props) {
             for (Prop prop : props) {
-                statuses.addProperty(prop.name().toLowerCase(), prop.get());
+                statuses.addProperty(prop.name().toLowerCase(Locale.ROOT), prop.get());
             }
             return this;
         }
@@ -169,7 +167,7 @@ public class AndromedaException extends RuntimeException {
             return this;
         }
 
-        private void disableInHierarchy(Throwable cause) {
+        private void disableInHierarchy(@Nullable Throwable cause) {
             if (cause == null) return;
             if (cause instanceof AndromedaException e) {
                 for (String defaultKey : DEFAULT_KEYS.keySet()) {

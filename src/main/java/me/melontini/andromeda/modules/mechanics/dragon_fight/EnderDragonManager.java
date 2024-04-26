@@ -78,7 +78,7 @@ public class EnderDragonManager {
         if (!module.config().scaleHealthByMaxPlayers) return;
         for (EnderDragonEntity dragon : dragons) {
             EntityAttributeInstance inst = dragon.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
-            MakeSure.notNull(inst, "Ender Dragon has no attributes?").setBaseValue(Math.floor((Math.sqrt(500 * maxPlayers)) * 10));
+            MakeSure.notNull(inst, "Ender Dragon has no attributes?").setBaseValue(Math.floor(Math.sqrt(500 * maxPlayers) * 10));
         }
     }
 

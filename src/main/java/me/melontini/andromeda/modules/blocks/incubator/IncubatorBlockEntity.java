@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.util.ServerHelper;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.event.EventContext;
@@ -43,7 +43,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
 
@@ -66,7 +69,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         if (world.isClient()) return;
         ItemStack stack = this.inventory.get(0);
         if (!stack.isEmpty() && this.processingTime == -1) {
-            EggProcessingData data = world.getServer().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
+            EggProcessingData data = requireNonNull(world.getServer()).dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
             if (data != null) {
                 int time = getTime(data.time(), stack);
                 this.processingTime = module.config().randomness ? (time + MathUtil.nextInt(time / -3, time / 3)) : time;
@@ -127,7 +130,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         EventContext context = EventContext.builder(EventType.NULL)
                 .addParameter(EventKey.LOOT_CONTEXT, new LootContext.Builder(builder
                         .build(LootContextTypes.BLOCK))
-                .build(Optional.empty())).build();
+                        .build(Optional.empty())).build();
         for (Command.Conditioned command : entry.commands()) {
             command.execute(context);
         }
@@ -267,11 +270,13 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-        return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING) && ServerHelper.getContext().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null;
+        return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING) &&
+                requireNonNull(Andromeda.get().getCurrentServer())
+                        .dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null;
     }
 
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING);
+        return dir != Objects.requireNonNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING);
     }
 }

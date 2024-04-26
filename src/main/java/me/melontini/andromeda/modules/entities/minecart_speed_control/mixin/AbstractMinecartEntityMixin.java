@@ -11,8 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(AbstractMinecartEntity.class)
 abstract class AbstractMinecartEntityMixin {
 
-    @Unique
-    private static final MinecartSpeedControl am$module = ModuleManager.quick(MinecartSpeedControl.class);
+    @Unique private static final MinecartSpeedControl am$module = ModuleManager.quick(MinecartSpeedControl.class);
 
     @ModifyReturnValue(method = "getMaxSpeed", at = @At("RETURN"))
     private double andromeda$getMaxSpeed(double original) {

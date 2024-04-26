@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+import static java.util.Objects.requireNonNull;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
 @Mixin(ZombieEntity.class)
@@ -33,8 +34,7 @@ abstract class ZombieEntityMixin extends HostileEntity {
         return original;
     }
 
-    @Unique
-    private boolean handleThrowableItems(ThrowableItems m, World world, ItemStack stack) {
-        return m.config().canZombiesThrowItems && world.getServer().dm$getReloader(RELOADER).hasBehaviors(stack.getItem());
+    @Unique private boolean handleThrowableItems(ThrowableItems m, World world, ItemStack stack) {
+        return m.config().canZombiesThrowItems && requireNonNull(world.getServer()).dm$getReloader(RELOADER).hasBehaviors(stack.getItem());
     }
 }

@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.CustomLog;
-import lombok.experimental.ExtensionMethod;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,7 +19,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @CustomLog
-@ExtensionMethod(Files.class)
 public class GitTracker {
 
     public static final String OWNER = "melontini";
@@ -42,16 +40,17 @@ public class GitTracker {
     static {
         Path lastResponse = CommonValues.hiddenPath().resolve("git-response.json");
         if (shouldUpdate(lastResponse)) tryUpdateGitInfo(lastResponse);
-        if (lastResponse.exists()) tryUpdateInfoFromJson(lastResponse);
+        if (Files.exists(lastResponse)) tryUpdateInfoFromJson(lastResponse);
     }
 
     public static boolean shouldUpdate(Path lastResponse) {
         if (Debug.Keys.DISABLE_NETWORK_FEATURES.isPresent()) return false;
-        if (lastResponse.exists()) {
+        if (Files.exists(lastResponse)) {
             try {
-                if (ChronoUnit.HOURS.between(lastResponse.getLastModifiedTime().toInstant(), Instant.now()) >= 24)
+                if (ChronoUnit.HOURS.between(Files.getLastModifiedTime(lastResponse).toInstant(), Instant.now()) >= 24)
                     return true;
             } catch (Exception ignored) {
+                return CommonValues.updated();
             }
         } else return true;
         return CommonValues.updated();
@@ -59,13 +58,15 @@ public class GitTracker {
 
     private static void tryUpdateInfoFromJson(Path lastResponse) {
         try {
-            JsonObject object = (JsonObject) JsonParser.parseString(lastResponse.readString());
+            JsonObject object = (JsonObject) JsonParser.parseString(Files.readString(lastResponse));
 
             if (object.has("default_branch")) {
                 DEFAULT_BRANCH = object.get("default_branch").getAsString();
                 LOGGER.info("Default branch is: {}", DEFAULT_BRANCH);
             }
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            LOGGER.error("Failed to update info from JSON!", e);
+        }
     }
 
     private static void tryUpdateGitInfo(Path lastResponse) {
@@ -86,8 +87,9 @@ public class GitTracker {
                 if (!PRESERVE_KEYS.contains(s)) jsonResponse.remove(s);
             }
 
-            if (!lastResponse.exists()) lastResponse.getParent().createDirectories();
-            lastResponse.writeString(jsonResponse.toString());
+            var parent = lastResponse.getParent();
+            if (parent != null && !Files.exists(parent)) Files.createDirectories(parent);
+            Files.writeString(lastResponse, jsonResponse.toString());
         } catch (Exception e) {
             LOGGER.warn("Couldn't update git info", e);
         }

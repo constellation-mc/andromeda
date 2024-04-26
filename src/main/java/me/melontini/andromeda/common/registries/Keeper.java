@@ -1,5 +1,7 @@
 package me.melontini.andromeda.common.registries;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -9,7 +11,7 @@ public class Keeper<T> {
 
     private volatile boolean initialized;
 
-    private T value;
+    private @Nullable T value;
 
     private final Set<Consumer<T>> consumers = new HashSet<>();
 
@@ -36,7 +38,7 @@ public class Keeper<T> {
         return this;
     }
 
-    public void init(T value) {
+    public void init(@Nullable T value) {
         if (!initialized) {
             synchronized (this) {
                 if (!initialized) {
@@ -50,7 +52,7 @@ public class Keeper<T> {
         }
     }
 
-    public T get() {
+    public @Nullable T get() {
         return this.value;
     }
 

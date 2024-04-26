@@ -26,22 +26,22 @@ import java.util.List;
 
 @Mixin(Item.class)
 abstract class ItemMixin {
-    @Unique
-    private static final Tooltips am$tooltips = ModuleManager.quick(Tooltips.class);
+    @Unique private static final Tooltips am$tooltips = ModuleManager.quick(Tooltips.class);
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
         if (!am$tooltips.config().recoveryCompass) return;
 
         if (world != null) if (world.isClient) {
-            if (stack.getItem() == Items.RECOVERY_COMPASS && MinecraftClient.getInstance().player != null) {
-                var optional = MinecraftClient.getInstance().player.getLastDeathPos();
+            var player = MinecraftClient.getInstance().player;
+            if (stack.getItem() == Items.RECOVERY_COMPASS && player != null) {
+                var optional = player.getLastDeathPos();
                 if (optional.isPresent()) {
                     GlobalPos globalPos = optional.get();
 
                     double dist;
                     if (world.getRegistryKey() == globalPos.getDimension()) {
                         Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
-                        dist = MiscUtil.horizontalDistanceTo(MinecraftClient.getInstance().player.getPos(), compassPos);
+                        dist = MiscUtil.horizontalDistanceTo(player.getPos(), compassPos);
                     } else {
                         dist = MathUtil.threadRandom().nextGaussian() * 0.1;
                     }

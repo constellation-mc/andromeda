@@ -3,7 +3,7 @@
   "minVersion": "0.8.5",
   "package": "me.melontini.andromeda.common.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "me.melontini.andromeda.util.mixin.AndromedaMixinPlugin",
+  "plugin": "me.melontini.andromeda.util.mixins.AndromedaMixinPlugin",
   "mixins": [
   ],
   "client": [

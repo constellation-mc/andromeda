@@ -7,8 +7,8 @@ import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.BlockadesEvent;
 import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
-import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.item_group.ItemGroupAnimaton;
@@ -50,21 +50,21 @@ public class AndromedaClient {
 
     public void onInitializeClient(ModuleManager manager) {
         var blockade = FeatureBlockade.get();
-        if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register();
+        if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register(manager);
         else {
             manager.all().stream().map(Promise::get).forEach(module -> {
                 switch (module.meta().environment()) {
                     case ANY, CLIENT -> {
                     }
-                    default -> blockade.explain(module, "enabled", () -> true,
+                    default -> blockade.explain(module, "enabled", (moduleManager) -> true,
                             blockade.andromeda("side_only_enabled"));
                 }
             });
         }
-        BlockadesEvent.BUS.invoker().explain(blockade);
+        BlockadesEvent.BUS.invoker().explain(manager, blockade);
 
         ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), CommonValues.mod(), ResourcePackActivationType.NORMAL);
-        ItemGroupAnimaton.setIconAnimation(AndromedaItemGroup.GROUP, (group, context, itemX, itemY, selected, isTopRow) -> {
+        ItemGroupAnimaton.setIconAnimation(Andromeda.get().group, (group, context, itemX, itemY, selected, isTopRow) -> {
             try {
                 if (!animate) return;
                 drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> {
@@ -83,7 +83,7 @@ public class AndromedaClient {
             String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
             if (!I18n.hasTranslation(m)) missing.add(m);
 
-            Arrays.stream(manager.getConfigClass(module.getClass()).getFields())
+            Arrays.stream(ModuleManager.getConfigClass(module.getClass()).getFields())
                     .filter(f -> !"enabled".equals(f.getName()) && !f.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
                     .map(field -> "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName()))
                     .filter(I18n::hasTranslation).forEach(missing::add);

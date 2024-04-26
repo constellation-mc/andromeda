@@ -12,6 +12,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import static java.util.Objects.requireNonNull;
+
 public class PotionUtil {
 
     public static @NotNull StatusEffect getStatusEffect(World world, Identifier id) {
@@ -19,9 +21,8 @@ public class PotionUtil {
         if (effect == null) {
             CampfireEffects m = ModuleManager.quick(CampfireEffects.class);
 
-            ServerHelper.broadcastToOps(world.getServer(), TextUtil.literal((
-                            "(Andromeda) Couldn't get StatusEffect from identifier '%s'. " +
-                                    "\nReturning 'regeneration' and resetting config ('%s') to default!")
+            ServerHelper.broadcastToOps(requireNonNull(world.getServer()), TextUtil.literal((
+                            "(Andromeda) Couldn't get StatusEffect from identifier '%s'.%nReturning 'regeneration' and resetting config ('%s') to default!")
                             .formatted(id, FabricLoader.getInstance().getGameDir().relativize(ScopedConfigs.getPath(world, m))))
                     .formatted(Formatting.RED));
 

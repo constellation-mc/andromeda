@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import me.melontini.andromeda.common.util.ServerHelper;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
@@ -27,9 +27,10 @@ abstract class DispenserBlockMixin {
 
     @Inject(at = @At("HEAD"), method = "getBehaviorForItem", cancellable = true)
     private void andromeda$overrideBehavior(ItemStack stack, CallbackInfoReturnable<DispenserBehavior> cir) {
-        if (ServerHelper.getContext() == null) return;
+        var server = Andromeda.get().getCurrentServer();
+        if (server == null) return;
 
-        var manager = ServerHelper.getContext().dm$getReloader(RELOADER);
+        var manager = server.dm$getReloader(RELOADER);
         if (manager.hasBehaviors(stack.getItem()) && manager.overridesVanilla(stack.getItem())) {
             cir.setReturnValue(Main.BEHAVIOR);
         }

@@ -14,14 +14,14 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class PickUpBehaviorHandler {
 
-    private static final Map<Block, PickUpBehavior> PICK_UP_BEHAVIOR_MAP = new IdentityHashMap<>();
+    private static final IdentityHashMap<Block, PickUpBehavior> PICK_UP_BEHAVIOR_MAP = new IdentityHashMap<>();
 
     public static void registerPickUpBehavior(Block block, PickUpBehavior pickUpBehavior) {
         PICK_UP_BEHAVIOR_MAP.put(block, pickUpBehavior);
@@ -62,6 +62,6 @@ public class PickUpBehaviorHandler {
     }
 
     public interface PickUpBehavior {
-        ItemStack pickUp(BlockState state, World world, BlockPos pos);
+        @Nullable ItemStack pickUp(BlockState state, World world, BlockPos pos);
     }
 }

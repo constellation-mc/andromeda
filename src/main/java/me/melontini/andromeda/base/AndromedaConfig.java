@@ -6,11 +6,13 @@ import me.melontini.dark_matter.api.base.util.Context;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.util.Locale;
+
 @CustomLog
 public class AndromedaConfig {
 
     private static final ConfigManager<Config> MANAGER = ConfigManager.of(Config.class, "andromeda/mod", Config::new)
-            .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s main Andromeda config (mod.json)!".formatted(stage.toString().toLowerCase()), e));
+            .exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s main Andromeda config (mod.json)!".formatted(stage.toString().toLowerCase(Locale.ROOT)), e));
     private static final Config CONFIG = MANAGER.load(FabricLoader.getInstance().getConfigDir(), Context.of());
     private static final Config DEFAULT = MANAGER.createDefault();
 

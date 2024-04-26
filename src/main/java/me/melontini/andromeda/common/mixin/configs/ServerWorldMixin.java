@@ -17,8 +17,7 @@ abstract class ServerWorldMixin implements ScopedConfigs.AttachmentGetter {
 
     @Shadow @NotNull public abstract MinecraftServer getServer();
 
-    @Unique
-    private final ScopedConfigs.Attachment andromeda$configs = new ScopedConfigs.Attachment();
+    @Unique private final ScopedConfigs.Attachment andromeda$configs = new ScopedConfigs.Attachment();
 
     @Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/world/ServerWorld;chunkManager:Lnet/minecraft/server/world/ServerChunkManager;", ordinal = 0, shift = At.Shift.AFTER), method = "<init>")
     private void andromeda$initStates(CallbackInfo ci) {

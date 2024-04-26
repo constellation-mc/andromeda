@@ -19,7 +19,7 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public class Main {
 
     public static final Keeper<Item> INFINITE_TOTEM = Keeper.create();
-    public static Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.create();
+    public static final Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.create();
 
     public static final Identifier USED_CUSTOM_TOTEM = new Identifier(MODID, "used_custom_totem");
     public static final Identifier NOTIFY_CLIENT = new Identifier(MODID, "notify_client_about_stuff_please");

@@ -92,10 +92,10 @@ public class MinecartItems {
         });
     }
 
-    @Nullable
-    @Unique
-    private static Identifier andromeda$getEntityId(MobSpawnerBlockEntity mobSpawnerBlockEntity) {
-        String identifier = mobSpawnerBlockEntity.getLogic().spawnEntry.getNbt().getString("id");
+    @Nullable @Unique private static Identifier andromeda$getEntityId(MobSpawnerBlockEntity mobSpawnerBlockEntity) {
+        var entry = mobSpawnerBlockEntity.getLogic().spawnEntry;
+        if (entry == null) return CommonRegistries.entityTypes().getDefaultId();
+        String identifier = entry.entity().getString("id");
 
         try {
             return StringUtils.isEmpty(identifier) ? CommonRegistries.entityTypes().getDefaultId() : new Identifier(identifier);

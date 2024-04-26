@@ -12,18 +12,21 @@ import me.melontini.dark_matter.api.crash_handler.uploading.Mixpanel;
 import me.melontini.dark_matter.api.crash_handler.uploading.Uploader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.impl.util.StringUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @CustomLog
 public class CrashHandler {
 
     public static final Context.Key<Boolean> SKIP_SERVICE = Context.key("andromeda:skip_service");
 
-    private static final Mixpanel MIXPANEL = Mixpanel.get(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE=")), true);
+    private static final Mixpanel MIXPANEL = Mixpanel.get(new String(Base64.getDecoder().decode("NGQ3YWVhZGRjN2M5M2JkNzhiODRmNDViZWI3Y2NlOTE="), StandardCharsets.UTF_8), true);
     private static final Set<String> IMPORTANT_MODS = Sets.newHashSet("andromeda", "minecraft", "fabric-api", "fabricloader", "connectormod", "forge");
 
     private static Flag shouldReportRecursive(Throwable cause, Flag flag) {
@@ -100,7 +103,10 @@ public class CrashHandler {
         if (context.get(SKIP_SERVICE).orElse(false)) {
             upload(object);
         } else {
-            Uploader.SERVICE.submit(() -> upload(object));
+            CompletableFuture.runAsync(() -> upload(object), Uploader.SERVICE).handle((unused, throwable) -> {
+                if (throwable != null) LOGGER.error("Failed to upload crash report!", throwable);
+                return null;
+            });
         }
     }
 
@@ -122,7 +128,7 @@ public class CrashHandler {
     }
 
     private static class Flag {
-        private Boolean report = null;
+        @Nullable private Boolean report = null;
 
         private void mark(boolean report) {
             if (this.report == null || this.report) this.report = report;

@@ -31,6 +31,10 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
@@ -116,7 +120,7 @@ public class PouchEntity extends ThrownItemEntity {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(POUCH_TYPE, Type.SEED.ordinal());
+        this.dataTracker.startTracking(POUCH_TYPE, Type.SEED.syncId);
     }
 
     @Override
@@ -129,7 +133,7 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     public void setPouchType(Type type) {
-        this.dataTracker.set(POUCH_TYPE, type.ordinal());
+        this.dataTracker.set(POUCH_TYPE, type.syncId);
     }
 
     @Override
@@ -145,12 +149,12 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     public enum Type {
-        SEED(new Identifier(MODID, "pouches/seeds"), Main.SEED_POUCH),
-        SAPLING(new Identifier(MODID, "pouches/saplings"), Main.SAPLING_POUCH),
-        FLOWER(new Identifier(MODID, "pouches/flowers"), Main.FLOWER_POUCH),
-        CUSTOM(null, Main.SPECIAL_POUCH) {
+        SEED(0, new Identifier(MODID, "pouches/seeds"), Main.SEED_POUCH),
+        SAPLING(1, new Identifier(MODID, "pouches/saplings"), Main.SAPLING_POUCH),
+        FLOWER(2, new Identifier(MODID, "pouches/flowers"), Main.FLOWER_POUCH),
+        CUSTOM(3, null, Main.SPECIAL_POUCH) {
             @Override
-            public Identifier getLootId(ItemStack stack) {
+            public @NotNull Identifier getLootId(ItemStack stack) {
                 NbtCompound nbt = stack.getNbt();
                 if (nbt != null && nbt.contains("CustomLootId")) {
                     return new Identifier(nbt.getString("CustomLootId"));
@@ -162,29 +166,31 @@ public class PouchEntity extends ThrownItemEntity {
         private static final Int2ObjectMap<Type> LOOKUP = Utilities.supply(() -> {
             Int2ObjectMap<Type> map = new Int2ObjectOpenHashMap<>();
             for (Type value : Type.values()) {
-                map.put(value.ordinal(), value);
+                map.put(value.syncId, value);
             }
             return map;
         });
 
-        private final Identifier lootId;
+        private final int syncId;
+        @Nullable private final Identifier lootId;
         private final Keeper<PouchItem> defaultItem;
 
-        Type(Identifier lootId, Keeper<PouchItem> defaultItem) {
+        Type(int syncId, @Nullable Identifier lootId, Keeper<PouchItem> defaultItem) {
+            this.syncId = syncId;
             this.lootId = lootId;
             this.defaultItem = defaultItem;
         }
 
-        public Identifier getLootId(ItemStack stack) {
-            return lootId;
+        public @NotNull Identifier getLootId(ItemStack stack) {
+            return Objects.requireNonNull(lootId);
         }
 
         public PouchItem getDefaultItem() {
             return defaultItem.orThrow();
         }
 
-        public static Type getType(int ordinal) {
-            return LOOKUP.get(ordinal);
+        public static Type getType(int syncId) {
+            return LOOKUP.get(syncId);
         }
     }
 }

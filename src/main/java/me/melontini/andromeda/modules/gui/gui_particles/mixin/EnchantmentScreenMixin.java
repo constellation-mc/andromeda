@@ -18,8 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EnchantmentScreen.class)
 abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentScreenHandler> {
-    @Unique
-    private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);
+    @Unique private static final GuiParticles am$guip = ModuleManager.quick(GuiParticles.class);
     public EnchantmentScreenMixin(EnchantmentScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }

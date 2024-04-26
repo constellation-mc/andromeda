@@ -15,11 +15,11 @@ public class Main {
                 .buildAndRegister(id("trader_state_manager")));
 
         ServerWorldEvents.LOAD.register((server, world) -> {
-            if (world.getRegistryKey() == World.OVERWORLD) world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get());
+            if (World.OVERWORLD.equals(world.getRegistryKey())) world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get());
         });
 
         ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (world.getRegistryKey() == World.OVERWORLD) world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).tick();
+            if (World.OVERWORLD.equals(world.getRegistryKey())) world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).tick();
         });
     }
 }

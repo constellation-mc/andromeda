@@ -14,12 +14,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class PlaceBehaviorHandler {
 
-    private static final Map<Item, PlaceBehavior> PLACE_BEHAVIOR_MAP = new IdentityHashMap<>();
+    private static final IdentityHashMap<Item, PlaceBehavior> PLACE_BEHAVIOR_MAP = new IdentityHashMap<>();
 
     public static void registerPlaceBehavior(Item item, PlaceBehavior placeBehavior) {
         PLACE_BEHAVIOR_MAP.put(item, placeBehavior);

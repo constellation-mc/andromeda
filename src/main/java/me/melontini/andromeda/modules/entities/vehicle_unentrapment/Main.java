@@ -12,8 +12,8 @@ import static me.melontini.andromeda.common.registries.Common.id;
 
 public class Main {
 
-    public static TagKey<EntityType<?>> ESCAPE_VEHICLES_ON_HIT = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escape_vehicles_on_hit"));
-    public static TagKey<EntityType<?>> ESCAPABLE_VEHICLES = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escapable_vehicles"));
+    public static final TagKey<EntityType<?>> ESCAPE_VEHICLES_ON_HIT = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escape_vehicles_on_hit"));
+    public static final TagKey<EntityType<?>> ESCAPABLE_VEHICLES = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escapable_vehicles"));
 
     Main() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {

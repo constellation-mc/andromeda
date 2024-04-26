@@ -18,6 +18,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector2i;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +29,9 @@ import java.util.stream.Collectors;
 
 public class Client {
 
-    private static Supplier<List<TooltipComponent>> action;
-    private static float tooltipFlow;
-    private static float oldTooltipFlow;
+    private Supplier<List<TooltipComponent>> action;
+    private float tooltipFlow;
+    private float oldTooltipFlow;
 
     Client() {
         inGameTooltips();
@@ -49,7 +50,7 @@ public class Client {
         ENTITY_LOOKUP.put(predicate, function);
     }
 
-    private static void inGameTooltips() {
+    private void inGameTooltips() {
         HudRenderCallback.EVENT.register((context, delta) -> {
             if (MinecraftClient.getInstance().currentScreen == null) {
                 var client = MinecraftClient.getInstance();
@@ -65,7 +66,7 @@ public class Client {
             if (frameStack.isEmpty()) return Collections.emptyList();
 
             var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), frameStack);
-            List<TooltipComponent> components = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
+            List<TooltipComponent> components = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toCollection(ArrayList::new));
 
             frameStack.getTooltipData().ifPresent(datax -> components.add(1, Utilities.supply(() -> {
                 TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
@@ -78,8 +79,7 @@ public class Client {
 
     private static final Map<Predicate<EntityHitResult>, Function<EntityHitResult, List<TooltipComponent>>> ENTITY_LOOKUP = new Reference2ObjectOpenHashMap<>();
 
-    private static void getCast(HitResult cast) {
-
+    private void getCast(HitResult cast) {
         if (cast != null) if (cast.getType() == HitResult.Type.ENTITY) {
             EntityHitResult hitResult = (EntityHitResult) cast;
             var opt = ENTITY_LOOKUP.entrySet().stream().filter(p -> p.getKey().test(hitResult)).findFirst();
@@ -91,7 +91,7 @@ public class Client {
         action = null;
     }
 
-    private static void renderFromComponents(MinecraftClient client, DrawContext context, List<TooltipComponent> components) {
+    private void renderFromComponents(MinecraftClient client, DrawContext context, List<TooltipComponent> components) {
         if (components.isEmpty()) return;
 
         float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);

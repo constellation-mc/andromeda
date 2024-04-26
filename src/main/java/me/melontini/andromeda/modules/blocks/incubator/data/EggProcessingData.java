@@ -7,7 +7,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.registries.Common;
-import me.melontini.andromeda.common.util.JsonDataLoader;
+import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
@@ -21,6 +21,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.profiler.Profiler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -49,21 +50,21 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmeti
         ServerReloadersEvent.EVENT.register(context -> context.register(new Reloader()));
     }
 
-    public static class Reloader extends JsonDataLoader {
+    public static class Reloader extends IdentifiedJsonDataLoader {
 
-        private Map<Item, EggProcessingData> map;
+        private IdentityHashMap<Item, EggProcessingData> map = new IdentityHashMap<>();
 
         protected Reloader() {
             super(RELOADER.identifier());
         }
 
-        public EggProcessingData get(Item item) {
+        public @Nullable EggProcessingData get(Item item) {
             return this.map.get(item);
         }
 
         @Override
         protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-            Map<Item, EggProcessingData> result = new IdentityHashMap<>();
+            IdentityHashMap<Item, EggProcessingData> result = new IdentityHashMap<>();
 
             for (Item item : CommonRegistries.items()) {
                 if (item instanceof SpawnEggItem egg) {

@@ -1,5 +1,6 @@
-package me.melontini.andromeda.util.mixin;
+package me.melontini.andromeda.util.mixins;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.util.Environment;
@@ -25,16 +26,12 @@ import java.util.function.Predicate;
 @CustomLog
 public class AndromedaMixins {
 
-    private static final ClassPath CLASS_PATH = Exceptions.supply(ClassPath::from);
+    public static final ClassPath CLASS_PATH = Exceptions.supply(ClassPath::from);
 
     private static final IPluginPlugin MIXIN_PREDICATE = ExtendablePlugin.DefaultPlugins.mixinPredicatePlugin();
     private static final Map<String, Predicate<ClassNode>> SPECIAL_PREDICATES = ImmutableMap.<String, Predicate<ClassNode>>builder()
             .put("common.mixin.util.DebugTrackerMixin", node -> Debug.Keys.DISPLAY_TRACKED_VALUES.isPresent())
             .build();
-
-    public static ClassPath getClassPath() {
-        return CLASS_PATH;
-    }
 
     public static List<String> discoverInPackage(String pck) {
         return CLASS_PATH.getTopLevelRecursive(pck).stream()
@@ -46,7 +43,7 @@ public class AndromedaMixins {
                 })
                 .filter(AndromedaMixins::checkNode)
                 .map((n) -> n.name.replace('/', '.').substring((pck + ".").length()))
-                .toList();
+                .collect(ImmutableList.toImmutableList());
     }
 
     public static boolean checkNode(ClassNode n) {

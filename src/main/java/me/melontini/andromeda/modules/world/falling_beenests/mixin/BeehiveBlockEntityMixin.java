@@ -24,8 +24,7 @@ import static me.melontini.andromeda.common.util.WorldUtil.trySpawnFallingBeeNes
 @Mixin(BeehiveBlockEntity.class)
 abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
-    @Unique
-    private boolean andromeda$FromFallen;
+    @Unique private boolean andromeda$FromFallen;
 
     public BeehiveBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);

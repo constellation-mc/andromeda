@@ -30,12 +30,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static me.melontini.andromeda.common.registries.Common.id;
 
@@ -47,10 +45,11 @@ public class Main {
     public static final Keeper<PouchItem> SPECIAL_POUCH = Keeper.create();
     public static final Keeper<EntityType<PouchEntity>> POUCH = Keeper.create();
 
-    public static final Map<BlockEntityType<?>, Field> VIEWABLE_BLOCKS = new HashMap<>();
+    private static final Map<BlockEntityType<?>, Field> VIEWABLE_BLOCKS = new HashMap<>();
+    public static final Map<BlockEntityType<?>, Field> VIEWABLE_VIEW = Collections.unmodifiableMap(VIEWABLE_BLOCKS);
 
     public static int getViewCount(BlockEntity be) {
-        Field f = Main.VIEWABLE_BLOCKS.get(be.getType());
+        Field f = Main.VIEWABLE_VIEW.get(be.getType());
         if (f != null) {
             ViewerCountManager vcm = (ViewerCountManager) Exceptions.supply(() -> f.get(be));
             return vcm.getViewerCount();
@@ -123,7 +122,7 @@ public class Main {
         }
     }
 
-    private static Field traverse(Class<?> cls) {
+    private static @Nullable Field traverse(Class<?> cls) {
         for (Field f : cls.getDeclaredFields()) {
             if (f.getType() == ViewerCountManager.class) {
                 return f;
