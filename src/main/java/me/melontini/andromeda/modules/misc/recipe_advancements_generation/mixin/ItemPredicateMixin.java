@@ -13,8 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemPredicate.class)
 abstract class ItemPredicateMixin implements ItemPredicateAccessor {
 
-    @Unique
-    private Ingredient andromeda$ingredient;//Really stretching records over here.
+    @Unique private Ingredient andromeda$ingredient;//Really stretching records over here.
 
     @Inject(at = @At("HEAD"), method = "test", cancellable = true)
     private void andromeda$test(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {

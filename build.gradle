@@ -73,7 +73,7 @@ dependencies {
     }
 
     testmodImplementation sourceSets.main.output
-    testmodRemapImplementation "me.melontini:handy-tests:0.1.0-1.20.1-build.4"
+    testmodRemapImplementation "me.melontini:handy-tests:0.1.0-1.20.4-build.5"
 }
 
 tasks.register("spotbugs", SpotBugsTask) { task ->
