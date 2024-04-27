@@ -1,0 +1,28 @@
+[versions]
+dark-matter = "4.0.1-1.20.1-build.76"
+
+[libraries]
+fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.15.10" }
+fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.92.1+1.20.1" }
+
+dark-matter-base = { group = "me.melontini", name = "dark-matter-base", version.ref = "dark-matter" }
+dark-matter-mixin = { group = "me.melontini", name = "dark-matter-mixin", version.ref = "dark-matter" }
+dark-matter-minecraft = { group = "me.melontini", name = "dark-matter-minecraft", version.ref = "dark-matter" }
+dark-matter-crash-handler = { group = "me.melontini", name = "dark-matter-crash-handler", version.ref = "dark-matter" }
+dark-matter-data = { group = "me.melontini", name = "dark-matter-data", version.ref = "dark-matter" }
+dark-matter-mirage = { group = "me.melontini", name = "dark-matter-mirage", version.ref = "dark-matter" }
+dark-matter-glitter = { group = "me.melontini", name = "dark-matter-glitter", version.ref = "dark-matter" }
+dark-matter-item-group = { group = "me.melontini", name = "dark-matter-item-group", version.ref = "dark-matter" }
+
+commander = { group = "me.melontini", name = "commander", version = "0.3.1-1.20.1-build.3" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version = "7.2.1" }
+cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "11.1.106" }
+
+handy-tests = { group = "me.melontini", name = "handy-tests", version = "0.1.0-1.20.1-build.4" }
+
+[plugins]
+fabric-loom = { id = "fabric-loom", version = "1.6.11" }
+lombok = { id = "io.freefair.lombok", version = "8.6"}
+spotbugs-base = { id = "com.github.spotbugs-base", version = "6.0.12" }
+spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
+modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "0.5.1" }

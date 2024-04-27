@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util;
+package me.melontini.andromeda.util.commander;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.BlockadesEvent;

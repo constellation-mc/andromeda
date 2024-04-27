@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.modules.mechanics.throwable_items.client.Client;
-import me.melontini.andromeda.util.CommanderSupport;
+import me.melontini.andromeda.util.commander.CommanderSupport;
 
 import java.util.List;
 

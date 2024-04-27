@@ -3,18 +3,17 @@ import me.modmuss50.mpp.ReleaseType
 import net.fabricmc.loom.api.RemapConfigurationSettings
 
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    alias libs.plugins.fabric.loom
     id 'maven-publish'
-    id 'io.freefair.lombok' version '8.3'
-    id 'com.github.spotbugs-base' version '6.0.12'
-    id 'com.diffplug.spotless' version '6.25.0'
-    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
+    alias libs.plugins.lombok
+    alias libs.plugins.spotbugs.base
+    alias libs.plugins.spotless
+    alias libs.plugins.modmuss50.publish
 }
 
 def local = !System.getenv().containsKey("GITHUB_RUN_NUMBER")
 
 version = "${project.mod_version}-${project.minecraft_version}-${local ? 'local' : "build.${System.getenv("GITHUB_RUN_NUMBER")}"}"
-loader_version = project.loader_version
 group = project.maven_group
 
 apply from: "https://raw.githubusercontent.com/constellation-mc/artifacts/main/artifacts.groovy"
@@ -55,25 +54,25 @@ dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation libs.fabric.loader
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation libs.fabric.api
 
-    def dmModules = ["base", "mixin", "minecraft", "crash-handler", "data", "mirage", "glitter", "item-group"]
-    for (final def module in dmModules) {
-        modApi include("me.melontini:dark-matter-${module}:${project.dark_matter}")
+    def dm = libs.dark.matter
+    [dm.base, dm.mixin, dm.minecraft, dm.crash.handler, dm.data, dm.mirage, dm.glitter, dm.item.group].each {
+        modApi it
+        include it
     }
 
-    modApi "me.melontini:commander:${project.commander_version}"
-
-    modApi "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
+    modApi libs.commander
+    modApi libs.modmenu
+    modApi(libs.cloth.config) {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
     testmodImplementation sourceSets.main.output
-    testmodRemapImplementation "me.melontini:handy-tests:0.1.0-1.20.4-build.5"
+    testmodRemapImplementation libs.handy.tests
 }
 
 tasks.register("spotbugs", SpotBugsTask) { task ->
@@ -157,11 +156,11 @@ processResources {
     def map = [
             "version": project.version,
             "minecraft_version": project.minecraft_version,
-            "loader_version": project.loader_version,
-            "fabric_version": project.fabric_version,
-            "cloth_version": project.cloth_version,
-            "modmenu_version": project.modmenu_version,
-            "commander_version": project.commander_version
+            "loader_version": libs.fabric.loader.get().version,
+            "fabric_version": libs.fabric.api.get().version,
+            "cloth_version": libs.cloth.config.get().version,
+            "modmenu_version": libs.modmenu.get().version,
+            "commander_version": libs.commander.get().version
     ]
     inputs.properties(map)
     filteringCharset "UTF-8"
@@ -242,6 +241,16 @@ publishMods {
     modrinth {
         projectId = "TseYlb0f"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        minecraftVersions.add("${project.minecraft_version}")
+
+        requires("fabric-api")
+        optional("cloth-config")
+        optional("modmenu")
+        embeds("dark-matter")
+    }
+    curseforge {
+        projectId = "639198"
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         minecraftVersions.add("${project.minecraft_version}")
 
         requires("fabric-api")

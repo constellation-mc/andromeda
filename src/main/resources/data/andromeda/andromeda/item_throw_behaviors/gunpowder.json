@@ -4,11 +4,25 @@
   "events": {
     "event": "any",
     "commands": {
-      "type": "commander:commands",
-      "selector": "minecraft:direct_killer_entity",
-      "commands": [
-        "/cmd:explode ~ ~ ~ 1"
-      ]
+      "type": "commander:defaulted",
+      "then": {
+        "type": "commander:commands",
+        "selector": "minecraft:direct_killer_entity",
+        "commands": [
+          "/cmd:explode ~ ~ ~ 1"
+        ]
+      },
+      "commands": {
+        "type": "commander:commands",
+        "condition": {
+          "condition": "commander:expression",
+          "value": "hasContext(\"killer_entity\")"
+        },
+        "selector": "minecraft:direct_killer_entity",
+        "commands": [
+          "/cmd:explode ${{ killer_entity.getUUID }} ~ ~ ~ 1"
+        ]
+      }
     }
   }
 }

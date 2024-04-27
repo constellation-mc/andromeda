@@ -1,0 +1,28 @@
+version: 2
+registries:
+  fabric:
+    url: "https://maven.fabricmc.net/"
+    type: maven-repository
+  gradle-plugins:
+    url: "https://plugins.gradle.org/m2/"
+    type: maven-repository
+  maven-central:
+    url: "https://repo1.maven.org/maven2/"
+    type: maven-repository
+
+updates:
+  - package-ecosystem: gradle
+    registries:
+      - fabric
+      - gradle-plugins
+      - maven-central
+    ignore:
+      - dependency-name: me.melontini:dark-matter*
+      - dependency-name: com.terraformersmc:modmenu
+      - dependency-name: me.shedaniel.cloth:cloth-config-fabric
+      - dependency-name: me.melontini:handy-tests
+      - dependency-name: me.melontini:commander
+      - dependency-name: net.fabricmc.fabric-api:fabric-api
+    directory: /
+    schedule:
+      interval: weekly
