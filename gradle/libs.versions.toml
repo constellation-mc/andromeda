@@ -21,7 +21,7 @@ cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", ver
 handy-tests = { group = "me.melontini", name = "handy-tests", version = "0.1.0-1.20.1-build.4" }
 
 [plugins]
-fabric-loom = { id = "fabric-loom", version = "1.6-SNAPSHOT" }
+fabric-loom = { id = "fabric-loom", version = "1.6.11" }
 lombok = { id = "io.freefair.lombok", version = "8.6"}
 spotbugs-base = { id = "com.github.spotbugs-base", version = "6.0.12" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
