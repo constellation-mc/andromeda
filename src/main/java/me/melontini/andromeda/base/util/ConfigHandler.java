@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
@@ -132,14 +133,10 @@ public class ConfigHandler {
         this.configs.putAll(Maps.transformValues(configs, CompletableFuture::join));
     }
 
+    @RequiredArgsConstructor
     public static final class Entry<C extends Module.BaseConfig> {
         public final C c;
         public final BootstrapConfig e;
-
-        public Entry(C config, BootstrapConfig ext) {
-            this.c = config;
-            this.e = ext;
-        }
     }
 
     public static <C> GsonContext<C> context(Codec<C> codec) {

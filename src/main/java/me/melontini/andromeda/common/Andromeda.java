@@ -4,16 +4,21 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
 import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.commander.CommanderNumberIntermediary;
+import me.melontini.andromeda.util.commander.ConstantNumberIntermediary;
+import me.melontini.andromeda.util.commander.NumberIntermediary;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -60,6 +65,13 @@ public class Andromeda {
 
     @Getter
     private @Nullable MinecraftServer currentServer;
+
+    public static void preMain() {
+        ConfigGsonEvent.BUS.listen(builder -> {
+            Codec<NumberIntermediary> codec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
+            builder.registerTypeAdapter(NumberIntermediary.class, ConfigHandler.context(codec));
+        });
+    }
 
     public static void init() {
         var instance = new Andromeda();

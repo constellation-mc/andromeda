@@ -107,6 +107,8 @@ public class Bootstrap {
             }
         }
 
+        run(Andromeda::preMain, b -> b.literal("Failed to pre-initialize Andromeda!"));
+
         var manager = ModuleManager.get();
         ConfigHandler handler = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), manager.all().stream().map(Promise::get).toList());
         handler.loadAll();
