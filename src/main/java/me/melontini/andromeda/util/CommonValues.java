@@ -25,7 +25,7 @@ public class CommonValues {
 
     private static final Supplier<ModContainer> MOD_CONTAINER = Suppliers.memoize(() -> FabricLoader.getInstance().getModContainer(MODID).orElseThrow());
     private static final Supplier<String> MOD_VERSION = Suppliers.memoize(() -> mod().getMetadata().getVersion().getFriendlyString());
-    private static final Supplier<Boolean> MOD_UPDATED = Suppliers.memoize(CommonValues::updated);
+    private static final Supplier<Boolean> MOD_UPDATED = Suppliers.memoize(CommonValues::checkUpdate);
 
     private static final Supplier<Path> HIDDEN_PATH = Suppliers.memoize(() -> {
         var path = FabricLoader.getInstance().getGameDir().resolve(".andromeda");
