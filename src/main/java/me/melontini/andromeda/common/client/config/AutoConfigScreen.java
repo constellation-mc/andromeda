@@ -2,20 +2,19 @@ package me.melontini.andromeda.common.client.config;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
+import com.google.gson.JsonPrimitive;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.BootstrapConfig;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.Experiments;
-import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.base.util.*;
 import me.melontini.andromeda.base.util.annotations.Origin;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.commander.NumberIntermediary;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -26,10 +25,8 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.gui.DefaultGuiProviders;
 import me.shedaniel.autoconfig.gui.DefaultGuiTransformers;
 import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
-import me.shedaniel.clothconfig2.api.AbstractConfigEntry;
-import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
+import me.shedaniel.autoconfig.util.Utils;
+import me.shedaniel.clothconfig2.api.*;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.MinecraftClient;
@@ -38,7 +35,9 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -71,6 +70,8 @@ public class AutoConfigScreen {
             return Optional.empty();
         });
     }
+
+    private static final ConfigEntryBuilder ENTRY_BUILDER = ConfigEntryBuilder.create();
 
     public static Screen getLabScreen(Screen screen) {
         ConfigBuilder builder = ConfigBuilder.create()
@@ -108,6 +109,7 @@ public class AutoConfigScreen {
 
         GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
         var root = Andromeda.rootHandler();
+        registerCustom(registry, root);
 
         ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
             List<Field> fields = new ArrayList<>(Arrays.asList(ModuleManager.getConfigClass(module.getClass()).getFields()));
@@ -194,7 +196,57 @@ public class AutoConfigScreen {
         return screen;
     }
 
-    @NotNull private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
+    private static void registerCustom(GuiRegistry registry, ConfigHandler root) {
+        //TODO This is a hack, is incredibly ugly and slow.
+        registry.registerTypeProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
+            NumberIntermediary i = Utils.getUnsafely(field, config);
+            var p = root.getGson().toJsonTree(i, NumberIntermediary.class).getAsJsonPrimitive();
+
+            NumberIntermediary i1 = Utils.getUnsafely(field, defaults);
+            var p1 = root.getGson().toJsonTree(i1, NumberIntermediary.class).getAsJsonPrimitive();
+
+            return Collections.singletonList(ENTRY_BUILDER.startStrField(Text.translatable(i18n), p.getAsString()).setDefaultValue(p1::getAsString)
+                    .setErrorSupplier(s -> {
+                        try {
+                            NumberIntermediary.FACTORY.apply(Double.parseDouble(s));
+                            return Optional.empty();
+                        } catch (Exception e) {
+                            try {
+                                root.getGson().fromJson(new JsonPrimitive(s), NumberIntermediary.class);
+                            } catch (Exception e1) {
+                                return Optional.of(TextUtil.literal(e1.getLocalizedMessage()));
+                            }
+                        }
+                        return Optional.empty();
+                    })
+                    .setSaveConsumer((newValue) -> {
+                        try {
+                            Utils.setUnsafely(field, config, NumberIntermediary.FACTORY.apply(Double.parseDouble(newValue)));
+                        } catch (Exception e) {
+                            Utils.setUnsafely(field, config, root.getGson().fromJson(new JsonPrimitive(newValue), NumberIntermediary.class));
+                        }
+                    }).build());
+        }, NumberIntermediary.class);
+
+        registry.registerTypeProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
+            StatusEffect effect = Utils.getUnsafely(field, config);
+            StatusEffect def = Utils.getUnsafely(field, defaults);
+            return Collections.singletonList(ENTRY_BUILDER.startStrField(TextUtil.translatable(i18n), Registries.STATUS_EFFECT.getId(effect).toString())
+                    .setDefaultValue(Registries.STATUS_EFFECT.getId(def).toString())
+                    .setErrorSupplier(s -> {
+                        var r = Identifier.validate(s);
+                        if (r.error().isPresent())
+                            return Optional.of(TextUtil.literal(r.error().orElseThrow().message()));
+                        if (Registries.STATUS_EFFECT.get(r.result().orElseThrow()) == null)
+                            return Optional.of(TextUtil.translatable("text.cloth-config.error_cannot_save"));
+                        return Optional.empty();
+                    })
+                    .setSaveConsumer(s -> Utils.setUnsafely(field, config, Registries.STATUS_EFFECT.get(new Identifier(s)))).build());
+        }, StatusEffect.class);
+    }
+
+    @NotNull
+    private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
         var wiki = new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
             if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
                 Debug.load();

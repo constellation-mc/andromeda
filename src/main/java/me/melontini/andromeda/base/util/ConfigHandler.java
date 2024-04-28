@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.melontini.andromeda.base.Module;
@@ -29,6 +30,7 @@ public class ConfigHandler {
 
     private final Path path;
     private final Collection<? extends Module<?>> modules;
+    @Getter
     private final Gson gson;
 
     @Setter
