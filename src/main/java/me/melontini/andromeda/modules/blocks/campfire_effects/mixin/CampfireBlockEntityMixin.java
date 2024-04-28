@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.blocks.campfire_effects.mixin;
 
 import me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects;
-import me.melontini.andromeda.modules.blocks.campfire_effects.PotionUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
@@ -9,7 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -41,7 +39,7 @@ abstract class CampfireBlockEntityMixin {
 
                     for (LivingEntity player : entities) {
                         for (CampfireEffects.Config.Effect effect : effects) {
-                            StatusEffectInstance effectInstance = new StatusEffectInstance(PotionUtil.getStatusEffect(world, Identifier.tryParse(effect.identifier)),
+                            StatusEffectInstance effectInstance = new StatusEffectInstance(effect.effect,
                                     200, effect.amplifier, true, false, true);
                             player.addStatusEffect(effectInstance);
                         }

@@ -7,6 +7,7 @@ import com.mojang.serialization.JsonOps;
 import lombok.Setter;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import net.minecraft.util.Identifier;
 
@@ -37,6 +38,7 @@ public class ConfigHandler {
         this.modules = modules;
         var builder = new GsonBuilder().setPrettyPrinting();
         builder.registerTypeAdapter(Identifier.class, new GsonContext<>(Identifier.CODEC));
+        ConfigGsonEvent.BUS.invoker().accept(builder);
         this.gson = builder.create();
     }
 
@@ -140,20 +142,24 @@ public class ConfigHandler {
         }
     }
 
+    public static <C> GsonContext<C> context(Codec<C> codec) {
+        return new GsonContext<>(codec);
+    }
+
     public record GsonContext<C>(Codec<C> codec) implements JsonSerializer<C>, JsonDeserializer<C> {
 
         @Override
         public C deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return this.codec.parse(JsonOps.INSTANCE, json).getOrThrow(false, s -> {
-                throw new JsonParseException(s);
-            });
+            var r = this.codec.parse(JsonOps.INSTANCE, json);
+            if (r.error().isPresent()) throw new JsonParseException(r.error().orElseThrow().message());
+            return r.result().orElseThrow();
         }
 
         @Override
         public JsonElement serialize(C src, Type typeOfSrc, JsonSerializationContext context) {
-            return codec.encodeStart(JsonOps.INSTANCE, src).getOrThrow(false, s -> {
-                throw new IllegalStateException(s);
-            });
+            var r = codec.encodeStart(JsonOps.INSTANCE, src);
+            if (r.error().isPresent()) throw new IllegalStateException(r.error().orElseThrow().message());
+            return r.result().orElseThrow();
         }
     }
 }
