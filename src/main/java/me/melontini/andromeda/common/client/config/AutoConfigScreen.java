@@ -245,8 +245,7 @@ public class AutoConfigScreen {
         }, StatusEffect.class);
     }
 
-    @NotNull
-    private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
+    @NotNull private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
         var wiki = new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
             if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
                 Debug.load();
