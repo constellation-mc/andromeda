@@ -3,7 +3,6 @@ package me.melontini.andromeda.common.config;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
@@ -16,7 +15,7 @@ import net.minecraft.world.World;
 @CustomLog
 public class ScopedConfigs {
 
-    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T, BootstrapConfig> get(World world, Module<T> module) {
+    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T> get(World world, Module<T> module) {
         if (world instanceof ServerWorld sw) {
             return switch (Andromeda.getConfig(module).e.scope) {
                 case GLOBAL -> Andromeda.getConfig(module);
@@ -32,15 +31,15 @@ public class ScopedConfigs {
     }
 
     public interface WorldExtension {
-        default <T extends Module.BaseConfig> ConfigHandler.Entry<T, BootstrapConfig> am$get(Class<? extends Module<T>> cls) {
+        default <T extends Module.BaseConfig> ConfigHandler.Entry<T> am$get(Class<? extends Module<T>> cls) {
             return am$get(ModuleManager.quick(cls));
         }
 
-        default ConfigHandler.Entry<?, BootstrapConfig> am$get(String module) {
+        default ConfigHandler.Entry<?> am$get(String module) {
             return am$get(ModuleManager.get().getModule(module).orElseThrow(() -> new IllegalStateException("Module %s not found".formatted(module))));
         }
 
-        default <T extends Module.BaseConfig> ConfigHandler.Entry<T, BootstrapConfig> am$get(Module<T> module) {
+        default <T extends Module.BaseConfig> ConfigHandler.Entry<T> am$get(Module<T> module) {
             return ScopedConfigs.get((World) this, module);
         }
 
@@ -49,12 +48,12 @@ public class ScopedConfigs {
         }
     }
 
-    public static ConfigHandler<BootstrapConfig> getConfigs(ServerWorld world) {
+    public static ConfigHandler getConfigs(ServerWorld world) {
         return ((AttachmentGetter)world).andromeda$getConfigs();
     }
 
     public interface AttachmentGetter {
-        ConfigHandler<BootstrapConfig> andromeda$getConfigs();
+        ConfigHandler andromeda$getConfigs();
     }
 
     public static void init() {

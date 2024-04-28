@@ -125,20 +125,20 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
         return field;
     }
 
-    public record Data(Set<Field> cFields, Set<Field> eFields, ConfigHandler.Entry<?, BootstrapConfig> config) {
+    public record Data(Set<Field> cFields, Set<Field> eFields, ConfigHandler.Entry<?> config) {
     }
 
     public void apply(ScopedConfigs.AttachmentGetter getter, Identifier identifier) {
         if (!Experiments.get().scopedConfigs) return;
         MakeSure.notNull(configs);
 
-        ConfigHandler<BootstrapConfig> attachment = getter.andromeda$getConfigs();
+        ConfigHandler attachment = getter.andromeda$getConfigs();
         attachment.loadAll();
         attachment.forEach((entry, module) -> applyDataPacks(entry, module, identifier));
         attachment.saveAll();
     }
 
-    private void apply(ConfigHandler.Entry<?, BootstrapConfig> config, Data data) {
+    private void apply(ConfigHandler.Entry<?> config, Data data) {
         data.cFields().forEach((field) -> {
             try {
                 field.set(config.c, field.get(data.config().c));
@@ -156,7 +156,7 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
         });
     }
 
-    void applyDataPacks(ConfigHandler.Entry<?, BootstrapConfig> config, Module<?> m, Identifier id) {
+    void applyDataPacks(ConfigHandler.Entry<?> config, Module<?> m, Identifier id) {
         if (defaultConfigs != null) {
             var forModule = defaultConfigs.get(m);
             if (forModule != null) {

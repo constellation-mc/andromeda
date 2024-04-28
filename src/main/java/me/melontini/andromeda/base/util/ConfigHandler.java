@@ -20,23 +20,21 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
-public class ConfigHandler<E> {
+public class ConfigHandler {
 
-    private final Map<Module<?>, Entry<?, E>> configs = new IdentityHashMap<>();
-    private final Map<Module<?>, Entry<?, E>> defaultConfigs = new IdentityHashMap<>();
+    private final Map<Module<?>, Entry<?>> configs = new IdentityHashMap<>();
+    private final Map<Module<?>, Entry<?>> defaultConfigs = new IdentityHashMap<>();
 
     private final Path path;
-    private final Class<E> extension;
     private final Collection<? extends Module<?>> modules;
     private final Gson gson;
 
     @Setter
-    private ConfigHandler<E> root;
+    private ConfigHandler root;
 
-    public ConfigHandler(Path path, Collection<? extends Module<?>> modules, Class<E> extension) {
+    public ConfigHandler(Path path, Collection<? extends Module<?>> modules) {
         this.path = path;
         this.modules = modules;
-        this.extension = extension;
         var builder = new GsonBuilder().setPrettyPrinting();
         builder.registerTypeAdapter(Identifier.class, new GsonContext<>(Identifier.CODEC));
         this.gson = builder.create();
@@ -46,26 +44,26 @@ public class ConfigHandler<E> {
         return this.path.resolve("andromeda/" + module.meta().id() + ".json");
     }
 
-    public <T extends Module.BaseConfig> Entry<T, E> get(Class<? extends Module<T>> cls) {
+    public <T extends Module.BaseConfig> Entry<T> get(Class<? extends Module<T>> cls) {
         return get(ModuleManager.quick(cls));
     }
 
-    public <T extends Module.BaseConfig> Entry<T, E> get(Module<T> module) {
-        return (Entry<T, E>) this.configs.get(module);
+    public <T extends Module.BaseConfig> Entry<T> get(Module<T> module) {
+        return (Entry<T>) this.configs.get(module);
     }
 
-    public <T extends Module.BaseConfig> Entry<T, E> getDefault(Class<? extends Module<T>> cls) {
+    public <T extends Module.BaseConfig> Entry<T> getDefault(Class<? extends Module<T>> cls) {
         return get(ModuleManager.quick(cls));
     }
 
-    public <T extends Module.BaseConfig> Entry<T, E> getDefault(Module<T> module) {
-        var entry = (Entry<T, E>) this.defaultConfigs.get(module);
+    public <T extends Module.BaseConfig> Entry<T> getDefault(Module<T> module) {
+        var entry = (Entry<T>) this.defaultConfigs.get(module);
         if (entry == null) {
             if (root != null) return root.getDefault(module);
 
             synchronized (this.defaultConfigs) {
                 entry = Exceptions.supply(() -> {
-                    var ext = this.extension.getConstructor().newInstance();
+                    var ext = BootstrapConfig.class.getConstructor().newInstance();
                     var c = ModuleManager.getConfigClass(module.getClass()).getConstructor().newInstance();
 
                     return new Entry<>((T) c, ext);
@@ -76,7 +74,7 @@ public class ConfigHandler<E> {
         return entry;
     }
 
-    public void forEach(BiConsumer<ConfigHandler.Entry<?, E>, Module<?>> consumer) {
+    public void forEach(BiConsumer<ConfigHandler.Entry<?>, Module<?>> consumer) {
         this.configs.forEach((module, eEntry) -> consumer.accept(eEntry, module));
     }
 
@@ -91,23 +89,23 @@ public class ConfigHandler<E> {
         Files.writeString(path, this.gson.toJson(ext));
     }
 
-    public <T extends Module.BaseConfig> Entry<T, E> parse(JsonElement element, Module<T> module) {
+    public <T extends Module.BaseConfig> Entry<T> parse(JsonElement element, Module<T> module) {
         if (!element.isJsonObject()) throw new IllegalStateException("Not a JsonObject!");
 
         JsonObject object = element.getAsJsonObject();
-        var ext = this.gson.fromJson(object, this.extension);
+        var ext = this.gson.fromJson(object, BootstrapConfig.class);
         var c = this.gson.fromJson(object, ModuleManager.getConfigClass(module.getClass()));
         return new Entry<>((T) c, ext);
     }
 
-    private <T extends Module.BaseConfig> Entry<T, E> load(Module<T> module) throws IOException {
+    private <T extends Module.BaseConfig> Entry<T> load(Module<T> module) throws IOException {
         if (!this.modules.contains(module)) throw new IllegalStateException(module.meta().id());
         var path = resolve(module);
         if (!Files.exists(path)) {
             if (root != null) return root.load(module);
 
             return Exceptions.supply(() -> {
-                var ext = this.extension.getConstructor().newInstance();
+                var ext = BootstrapConfig.class.getConstructor().newInstance();
                 var c = ModuleManager.getConfigClass(module.getClass()).getConstructor().newInstance();
                 return new Entry<>((T) c, ext);
             });
@@ -125,18 +123,18 @@ public class ConfigHandler<E> {
     }
 
     public void loadAll() {
-        Map<Module<?>, CompletableFuture<Entry<?, E>>> configs = new IdentityHashMap<>();
+        Map<Module<?>, CompletableFuture<Entry<?>>> configs = new IdentityHashMap<>();
         for (Module<?> module : this.modules) {
             configs.put(module, CompletableFuture.supplyAsync(() -> Exceptions.supply(() -> this.load(module))));
         }
         this.configs.putAll(Maps.transformValues(configs, CompletableFuture::join));
     }
 
-    public static final class Entry<C extends Module.BaseConfig, E> {
+    public static final class Entry<C extends Module.BaseConfig> {
         public final C c;
-        public final E e;
+        public final BootstrapConfig e;
 
-        public Entry(C config, E ext) {
+        public Entry(C config, BootstrapConfig ext) {
             this.c = config;
             this.e = ext;
         }

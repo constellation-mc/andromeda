@@ -1,7 +1,6 @@
 package me.melontini.andromeda.common.mixin.configs;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.config.DataConfigs;
@@ -34,21 +33,20 @@ abstract class ServerWorldMixin extends World implements ScopedConfigs.Attachmen
 
     @Shadow @NotNull public abstract MinecraftServer getServer();
 
-    @Unique private ConfigHandler<BootstrapConfig> andromeda$configs;
+    @Unique private ConfigHandler andromeda$configs;
 
     @Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/world/ServerWorld;chunkManager:Lnet/minecraft/server/world/ServerChunkManager;", ordinal = 0, shift = At.Shift.AFTER), method = "<init>")
     private void andromeda$initStates(CallbackInfo ci) {
-        this.andromeda$configs = new ConfigHandler<>(
+        this.andromeda$configs = new ConfigHandler(
                 getServer().session.getWorldDirectory(this.getRegistryKey()).resolve("world_config"),
-                ModuleManager.get().loaded().stream().filter(m -> Andromeda.getConfig(m).e.scope.isDimension()).toList(),
-                BootstrapConfig.class);
+                ModuleManager.get().loaded().stream().filter(m -> Andromeda.getConfig(m).e.scope.isDimension()).toList());
 
         this.andromeda$configs.setRoot(Andromeda.rootHandler());
         DataConfigs.get(this.getServer()).apply(this, this.getRegistryKey().getValue());
     }
 
     @Override
-    public ConfigHandler<BootstrapConfig> andromeda$getConfigs() {
+    public ConfigHandler andromeda$getConfigs() {
         return andromeda$configs;
     }
 }

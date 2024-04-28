@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
@@ -109,7 +108,7 @@ public class Bootstrap {
         }
 
         var manager = ModuleManager.get();
-        ConfigHandler<BootstrapConfig> handler = new ConfigHandler<>(FabricLoader.getInstance().getConfigDir(), manager.all().stream().map(Promise::get).toList(), BootstrapConfig.class);
+        ConfigHandler handler = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), manager.all().stream().map(Promise::get).toList());
         handler.loadAll();
         manager.configGetter = new CG(handler);
         Support.share("andromeda:root_handler", handler);

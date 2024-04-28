@@ -8,7 +8,6 @@ import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
@@ -45,17 +44,17 @@ public class Andromeda {
 
     public static final Keeper<ItemGroup> GROUP = Keeper.create();
 
-    private static final Supplier<ConfigHandler<BootstrapConfig>> ROOT_HANDLER = Suppliers.memoize(() -> (ConfigHandler<BootstrapConfig>) FabricLoader.getInstance().getObjectShare().get("andromeda:root_handler"));
+    private static final Supplier<ConfigHandler> ROOT_HANDLER = Suppliers.memoize(() -> (ConfigHandler) FabricLoader.getInstance().getObjectShare().get("andromeda:root_handler"));
 
-    public static ConfigHandler<BootstrapConfig> rootHandler() {
+    public static ConfigHandler rootHandler() {
         return ROOT_HANDLER.get();
     }
 
-    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T, BootstrapConfig> getConfig(Class<? extends Module<T>> cls) {
+    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Class<? extends Module<T>> cls) {
         return rootHandler().get(cls);
     }
 
-    public static  <T extends Module.BaseConfig> ConfigHandler.Entry<T, BootstrapConfig> getConfig(Module<T> module) {
+    public static  <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Module<T> module) {
         return rootHandler().get(module);
     }
 

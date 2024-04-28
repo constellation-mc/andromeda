@@ -5,7 +5,7 @@ import me.melontini.andromeda.base.util.ConfigHandler;
 
 import java.util.function.Function;
 
-record CG(ConfigHandler<BootstrapConfig> handler) implements Function<Module<?>, BootstrapConfig> {
+record CG(ConfigHandler handler) implements Function<Module<?>, BootstrapConfig> {
 
     @Override
     public BootstrapConfig apply(Module<?> module) {
