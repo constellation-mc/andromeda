@@ -1,7 +1,6 @@
 package me.melontini.andromeda.common.config;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -9,6 +8,8 @@ import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.util.BootstrapConfig;
+import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.Andromeda;
@@ -18,25 +19,19 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class DataConfigs extends IdentifiedJsonDataLoader {
 
-    private static final Identifier DEFAULT = new Identifier(MODID, "default");
+    public static final Identifier DEFAULT = new Identifier(MODID, "default");
     public static final ReloaderType<DataConfigs> RELOADER = ReloaderType.create(Andromeda.id("scoped_config"));
 
     public DataConfigs() {
@@ -65,20 +60,23 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
             var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
             var cls = ModuleManager.getConfigClass(m.getClass());
 
-            if (m.config().scope.isWorld()) {
+            if (Andromeda.getConfig(m).e.scope.isWorld()) {
                 if (!object.has(DEFAULT.toString()) || object.size() > 1)
-                    throw new IllegalStateException("'%s' modules only support '%s' as their dimension!".formatted(Module.BaseConfig.Scope.WORLD, DEFAULT));
+                    throw new IllegalStateException("'%s' modules only support '%s' as their dimension!".formatted(BootstrapConfig.Scope.WORLD, DEFAULT));
 
                 var map = configs.computeIfAbsent(DEFAULT, identifier -> new Reference2ObjectOpenHashMap<>());
                 map.computeIfAbsent(m, module -> new ReferenceLinkedOpenHashSet<>())
-                        .add(makeFuture(this.gson, m, cls, object.get(DEFAULT.toString())));
-            } else {
+                        .add(makeFuture(m, cls, object.get(DEFAULT.toString())));
+                return;
+            } else if (Andromeda.getConfig(m).e.scope.isDimension()) {
                 object.entrySet().forEach(entry -> {
                     var map = configs.computeIfAbsent(Identifier.tryParse(entry.getKey()), string -> new Reference2ObjectOpenHashMap<>());
                     map.computeIfAbsent(m, module -> new ReferenceLinkedOpenHashSet<>())
-                            .add(makeFuture(this.gson, m, cls, entry.getValue()));
+                            .add(makeFuture(m, cls, entry.getValue()));
                 });
+                return;
             }
+            throw new IllegalStateException("%s has an invalid scope!".formatted(m.meta().id()));
         });
 
         Map<Identifier, Map<Module<?>, Set<Data>>> parsed = new Object2ObjectOpenHashMap<>();
@@ -94,89 +92,84 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
         this.configs = parsed;
     }
 
-    private CompletableFuture<Data> makeFuture(Gson gson, Module<?> m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
+    private CompletableFuture<Data> makeFuture(Module<?> m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                return new Data(element.getAsJsonObject().entrySet().stream().map(entry -> {
+                var parsed = Andromeda.rootHandler().parse(element, m);
+                var specified = new HashSet<>(element.getAsJsonObject().keySet());
+
+                ReferenceOpenHashSet<Field> bootstrap = new ReferenceOpenHashSet<>();
+                ReferenceOpenHashSet<Field> config = new ReferenceOpenHashSet<>();
+
+                for (String field : specified) {
                     try {
-                        var f = cls.getField(entry.getKey());
-                        if (f.isAnnotationPresent(Unscoped.class))
-                            throw new IllegalStateException("Attempted to modify an unscoped field '%s'!".formatted(entry.getKey()));
-                        return f;
+                        bootstrap.add(assertScoped(BootstrapConfig.class.getField(field)));
                     } catch (NoSuchFieldException e) {
-                        throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
+                        try {
+                            config.add(assertScoped(cls.getField(field)));
+                        } catch (NoSuchFieldException e1) {
+                            throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e1);
+                        }
                     }
-                }).collect(Collectors.toCollection(ReferenceOpenHashSet::new)), gson.fromJson(element, cls));
+                }
+                return new Data(config, bootstrap, parsed);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
             }
         }, Util.getMainWorkerExecutor());
     }
 
-    public record Data(Set<Field> fields, Module.BaseConfig config) {
+    private static Field assertScoped(Field field) {
+        if (field.isAnnotationPresent(Unscoped.class))
+            throw new IllegalStateException("Attempted to modify an unscoped field '%s'!".formatted(field.getName()));
+        return field;
     }
 
-    public void apply(ServerWorld world) {
+    public record Data(Set<Field> cFields, Set<Field> eFields, ConfigHandler.Entry<?, BootstrapConfig> config) {
+    }
+
+    public void apply(ScopedConfigs.AttachmentGetter getter, Identifier identifier) {
         if (!Experiments.get().scopedConfigs) return;
         MakeSure.notNull(configs);
 
-        var task = CompletableFuture.allOf(ModuleManager.get().loaded().stream().filter(module -> !module.config().scope.isGlobal())
-                .map(m -> switch (m.config().scope) {
-                    case WORLD -> CompletableFuture.runAsync(() -> {
-                        if (World.OVERWORLD.equals(world.getRegistryKey()))
-                            ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
-                    }, Util.getMainWorkerExecutor());
-                    case DIMENSION ->
-                            CompletableFuture.runAsync(() -> ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m)),
-                                    Util.getMainWorkerExecutor());
-                    default -> throw new IllegalStateException("Unexpected value! %s".formatted(m.config().scope));
-                }).toArray(CompletableFuture[]::new));
-        world.getServer().runTasks(task::isDone);
+        ConfigHandler<BootstrapConfig> attachment = getter.andromeda$getConfigs();
+        attachment.loadAll();
+        attachment.forEach((entry, module) -> applyDataPacks(entry, module, identifier));
+        attachment.saveAll();
     }
 
-    public void apply(MinecraftServer server) {
-        if (!Experiments.get().scopedConfigs) return;
-        MakeSure.notNull(configs);
-
-        var task = CompletableFuture.allOf(ModuleManager.get().loaded().stream().filter(module -> !module.config().scope.isGlobal())
-                .map(m -> switch (m.config().scope) {
-                    case WORLD -> CompletableFuture.runAsync(() -> {
-                        ServerWorld world = server.getOverworld();
-                        ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
-                    }, Util.getMainWorkerExecutor());
-                    case DIMENSION -> CompletableFuture.runAsync(() -> {
-                        for (ServerWorld world : server.getWorlds()) {
-                            ScopedConfigs.prepareForWorld(world, m, ScopedConfigs.getPath(world, m));
-                        }
-                    }, Util.getMainWorkerExecutor());
-                    case GLOBAL -> throw new IllegalStateException("Unexpected value! %s".formatted(m.config().scope));
-                }).toArray(CompletableFuture[]::new));
-        server.runTasks(task::isDone);
-    }
-
-    private void apply(Module.BaseConfig config, Data data) {
-        data.fields().forEach((field) -> {
+    private void apply(ConfigHandler.Entry<?, BootstrapConfig> config, Data data) {
+        data.cFields().forEach((field) -> {
             try {
-                field.set(config, field.get(data.config()));
+                field.set(config.c, field.get(data.config().c));
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to apply config data for module '%s'".formatted(config.getClass().getSimpleName()), e);
+                throw new RuntimeException("Failed to apply config data for module '%s'".formatted(config.c.getClass().getSimpleName()), e);
+            }
+        });
+
+        data.eFields().forEach((field) -> {
+            try {
+                field.set(config.e, field.get(data.config().e));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to apply config data for module '%s'".formatted(config.e.getClass().getSimpleName()), e);
             }
         });
     }
 
-    void applyDataPacks(Module.BaseConfig config, Module<?> m, Identifier id) {
+    void applyDataPacks(ConfigHandler.Entry<?, BootstrapConfig> config, Module<?> m, Identifier id) {
         if (defaultConfigs != null) {
             var forModule = defaultConfigs.get(m);
             if (forModule != null) {
-                for (Data tuple : forModule) apply(config, tuple);
+                for (Data data : forModule) apply(config, data);
             }
         }
+        if (id.equals(DEFAULT)) return;
 
         var data = Objects.requireNonNull(configs).get(id);
         if (data != null) {
             var forModule = data.get(m);
             if (forModule != null) {
-                for (Data tuple : forModule) apply(config, tuple);
+                for (Data data1 : forModule) apply(config, data1);
             }
         }
     }

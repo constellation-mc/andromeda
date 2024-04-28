@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.entities.better_furnace_minecart.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +32,7 @@ abstract class FurnaceMinecartMixin {
         FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
         if (FuelRegistry.INSTANCE.get(item) != null) {
             int itemFuel = FuelRegistry.INSTANCE.get(item);
-            if ((this.fuel + (itemFuel * 2.25)) <= ModuleManager.quick(BetterFurnaceMinecart.class).config().maxFuel) {
+            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.getConfig(ModuleManager.quick(BetterFurnaceMinecart.class)).c.maxFuel) {
                 if (!player.getAbilities().creativeMode) {
                     ItemStack reminder = stack.getRecipeRemainder();
                     if (!reminder.isEmpty())

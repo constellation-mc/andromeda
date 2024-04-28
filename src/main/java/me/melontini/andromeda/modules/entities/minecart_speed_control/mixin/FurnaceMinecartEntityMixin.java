@@ -23,7 +23,7 @@ abstract class FurnaceMinecartEntityMixin {
     private void andromeda$subtract(CallbackInfo ci) {
         if (!((AbstractMinecartEntity) (Object) this).getWorld().isClient()) {
             if (fuel > 0) {
-                fuel -= ((AbstractMinecartEntity) (Object) this).getWorld().am$get(am$module).additionalFurnaceFuel;
+                fuel -= ((AbstractMinecartEntity) (Object) this).getWorld().am$get(am$module).c.additionalFurnaceFuel;
             }
         }
     }
@@ -31,7 +31,7 @@ abstract class FurnaceMinecartEntityMixin {
     @ModifyReturnValue(method = "getMaxSpeed", at = @At("RETURN"))
     private double andromeda$getMaxSpeed(double original) {
         if (!((AbstractMinecartEntity) (Object) this).getWorld().isClient()) {
-            return original * ((AbstractMinecartEntity) (Object) this).getWorld().am$get(am$module).furnaceModifier;
+            return original * ((AbstractMinecartEntity) (Object) this).getWorld().am$get(am$module).c.furnaceModifier;
         }
         return original;
     }

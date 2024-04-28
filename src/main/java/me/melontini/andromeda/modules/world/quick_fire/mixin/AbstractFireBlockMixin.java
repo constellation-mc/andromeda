@@ -28,17 +28,17 @@ abstract class AbstractFireBlockMixin extends AbstractFireBlock {
 
     @ModifyVariable(method = "trySpreadingFire", at = @At("LOAD"), index = 3, argsOnly = true)
     public int andromeda$spreadFire0(int value, @Local(argsOnly = true) World world) {
-        return world.am$get(QuickFire.class).enabled ? (int) (value * 0.8) : value;
+        return world.am$get(QuickFire.class).e.enabled ? (int) (value * 0.8) : value;
     }
 
     @ModifyExpressionValue(method = "trySpreadingFire", at = @At(value = "CONSTANT", args = "intValue=10"))
     public int andromeda$spreadFire01(int value, @Local(argsOnly = true) World world) {
-        return world.am$get(QuickFire.class).enabled ? (int) Math.ceil(value / 3d) : value;
+        return world.am$get(QuickFire.class).e.enabled ? (int) Math.ceil(value / 3d) : value;
     }
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/block/FireBlock.trySpreadingFire (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/util/math/random/Random;I)V", ordinal = 0, shift = At.Shift.BEFORE), method = "scheduledTick")
     public void andromeda$trySpreadBlocks(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci, @Local(index = 7) int i, @Local(index = 10) int k) {
-        if (world.am$get(QuickFire.class).enabled) {
+        if (world.am$get(QuickFire.class).e.enabled) {
             for (int x = -3; x < 3; x++) {
                 for (int y = -3; y < 3; y++) {
                     for (int z = -3; z < 3; z++) {

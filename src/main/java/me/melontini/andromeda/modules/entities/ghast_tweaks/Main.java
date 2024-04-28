@@ -10,7 +10,7 @@ public class Main {
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
             if (entity instanceof GhastEntity) {
                 var c = entity.world.am$get(module);
-                if (c.explodeOnDeath) entity.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), c.explosionPower, World.ExplosionSourceType.MOB);
+                if (c.c.explodeOnDeath) entity.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), c.c.explosionPower, World.ExplosionSourceType.MOB);
             }
         });
     }

@@ -30,7 +30,7 @@ abstract class BedBlockMixin extends Block {
     public void andromeda$onUse(BlockState state, @NotNull World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         if (world.isClient()) return;
 
-        if (!isBedWorking(world) && world.am$get(Safe.class).enabled) {
+        if (!isBedWorking(world) && world.am$get(Safe.class).e.enabled) {
             player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
             cir.setReturnValue(ActionResult.SUCCESS);
         }

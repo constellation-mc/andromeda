@@ -46,7 +46,7 @@ abstract class FallingBlockMixin extends Entity {
         BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
         if (blockEntity == null) return;
 
-        if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity && this.world.am$get(CanBeeNestsFall.class).enabled) {
+        if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity && this.world.am$get(CanBeeNestsFall.class).e.enabled) {
             if (this.block.getBlock() != Blocks.BEE_NEST) return;
             if (blockEntityData == null || !blockEntityData.getBoolean("AM-FromFallenBlock")) return;
 

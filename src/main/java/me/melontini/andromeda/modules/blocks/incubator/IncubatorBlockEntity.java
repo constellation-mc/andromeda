@@ -72,7 +72,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
             EggProcessingData data = requireNonNull(world.getServer()).dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
             if (data != null) {
                 int time = getTime(data.time(), stack);
-                this.processingTime = module.config().randomness ? (time + MathUtil.nextInt(time / -3, time / 3)) : time;
+                this.processingTime = Andromeda.getConfig(module).c.randomness ? (time + MathUtil.nextInt(time / -3, time / 3)) : time;
                 this.update(state);
             }
         } else if (stack.isEmpty() && this.processingTime != -1) {

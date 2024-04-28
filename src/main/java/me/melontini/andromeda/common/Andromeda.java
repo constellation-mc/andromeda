@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
@@ -7,13 +8,14 @@ import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.config.DataConfigs;
+import me.melontini.andromeda.base.util.BootstrapConfig;
+import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Support;
-import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -21,17 +23,18 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.WorldSavePath;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
@@ -41,6 +44,20 @@ public class Andromeda {
     @Nullable private static Andromeda INSTANCE;
 
     public static final Keeper<ItemGroup> GROUP = Keeper.create();
+
+    private static final Supplier<ConfigHandler<BootstrapConfig>> ROOT_HANDLER = Suppliers.memoize(() -> (ConfigHandler<BootstrapConfig>) FabricLoader.getInstance().getObjectShare().get("andromeda:root_handler"));
+
+    public static ConfigHandler<BootstrapConfig> rootHandler() {
+        return ROOT_HANDLER.get();
+    }
+
+    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T, BootstrapConfig> getConfig(Class<? extends Module<T>> cls) {
+        return rootHandler().get(cls);
+    }
+
+    public static  <T extends Module.BaseConfig> ConfigHandler.Entry<T, BootstrapConfig> getConfig(Module<T> module) {
+        return rootHandler().get(module);
+    }
 
     @Getter
     private @Nullable MinecraftServer currentServer;
@@ -70,18 +87,7 @@ public class Andromeda {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.currentServer = server);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> this.currentServer = null);
 
-        ServerReloadersEvent.EVENT.register(context -> context.register(new DataConfigs()));
-
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            var list = manager.loaded().stream().filter(module -> module.config().scope.isDimension()).toList();
-            server.getWorlds().forEach(world -> manager.cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda"), list));
-            manager.cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"),
-                    manager.loaded().stream().filter(module -> module.config().scope.isWorld()).toList());
-        });
-
-        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-            if (success) DataConfigs.get(server).apply(server);
-        });
+        ScopedConfigs.init();
 
         if (!AndromedaConfig.get().sideOnlyMode) {
             ServerLoginNetworking.registerGlobalReceiver(VERIFY_MODULES, (server, handler, understood, buf, synchronizer, responseSender) -> {

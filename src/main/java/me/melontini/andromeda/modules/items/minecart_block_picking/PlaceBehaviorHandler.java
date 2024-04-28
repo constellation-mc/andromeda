@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.items.minecart_block_picking;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -48,7 +49,7 @@ public class PlaceBehaviorHandler {
         registerPlaceBehavior(Items.FURNACE_MINECART, (stack, world, d, e, f, g, pos) -> {
             FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE);
 
-            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m -> m.config().maxFuel).orElse(32000));
+            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m -> Andromeda.getConfig(m).c.maxFuel).orElse(32000));
             furnaceMinecart.pushX = furnaceMinecart.getX() - pos.getX();
             furnaceMinecart.pushZ = furnaceMinecart.getZ() - pos.getZ();
             if (stack.hasCustomName()) furnaceMinecart.setCustomName(stack.getName());

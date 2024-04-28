@@ -18,8 +18,8 @@ abstract class SnowballEntityMixin {
     private void andromeda$extinguish(EntityHitResult entityHitResult, CallbackInfo ci) {
         if (entityHitResult.getEntity().world.isClient()) return;
 
-        Snowballs.Config config = entityHitResult.getEntity().world.am$get(Snowballs.class);
-        if (!config.enabled || !config.extinguish) return;
+        var config = entityHitResult.getEntity().world.am$get(Snowballs.class);
+        if (!config.e.enabled || !config.c.extinguish) return;
 
         Entity entity = entityHitResult.getEntity();
         if (entity.isOnFire()) {

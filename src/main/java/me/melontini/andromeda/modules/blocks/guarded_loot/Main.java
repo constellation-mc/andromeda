@@ -30,7 +30,7 @@ public class Main {
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
             if (player.getAbilities().creativeMode) return true;
 
-            if (blockEntity instanceof LootableContainerBlockEntity && world.am$get(GuardedLoot.class).breakingHandler == GuardedLoot.BreakingHandler.UNBREAKABLE) {
+            if (blockEntity instanceof LootableContainerBlockEntity && world.am$get(GuardedLoot.class).c.breakingHandler == GuardedLoot.BreakingHandler.UNBREAKABLE) {
                 var monsters = checkMonsterLock(world, pos);
                 if (monsters.isEmpty() || checkLockPicking(player)) return true;
                 handleLockedContainer(player, monsters);
@@ -43,15 +43,15 @@ public class Main {
     //TODO fix igloos. Maybe check reach?
     public static List<LivingEntity> checkMonsterLock(World world, BlockPos pos) {
         var config = world.am$get(GuardedLoot.class);
-        if (!config.enabled) return Collections.emptyList();
+        if (!config.e.enabled) return Collections.emptyList();
 
-        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range), Entity::isAlive).stream()
+        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.c.range), Entity::isAlive).stream()
                 .filter(Monster.class::isInstance).toList();
     }
 
     public static boolean checkLockPicking(PlayerEntity player) {
         return ModuleManager.get().getModule(Lockpick.class).map(m -> {
-            if (player.world.am$get(GuardedLoot.class).allowLockPicking) {
+            if (player.world.am$get(GuardedLoot.class).c.allowLockPicking) {
                 if (player.getMainHandStack().isOf(LockpickItem.INSTANCE.orThrow())) {
                     return LockpickItem.INSTANCE.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
                 }

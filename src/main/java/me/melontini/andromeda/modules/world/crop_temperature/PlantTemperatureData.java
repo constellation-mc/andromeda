@@ -40,7 +40,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
     public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Andromeda.id("crop_temperatures"));
 
     public static boolean roll(Block block, float temp, ServerWorld world) {
-        if (!world.am$get(PlantTemperature.class).enabled) return false;
+        if (!world.am$get(PlantTemperature.class).e.enabled) return false;
 
         if (isPlant(block)) {
             PlantTemperatureData data = world.getServer().dm$getReloader(RELOADER).get(block);

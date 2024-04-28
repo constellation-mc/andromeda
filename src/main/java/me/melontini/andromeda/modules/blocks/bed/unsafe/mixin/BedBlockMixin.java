@@ -15,7 +15,6 @@ abstract class BedBlockMixin {
     private boolean andromeda$explode(boolean original, @Local World world) {
         if (world.isClient()) return original;
 
-        var config = world.am$get(Unsafe.class);
-        return !config.enabled && original;
+        return !world.am$get(Unsafe.class).e.enabled && original;
     }
 }

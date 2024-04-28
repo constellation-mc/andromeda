@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.client.MinecraftClient;
@@ -18,7 +19,7 @@ abstract class BundleItemMixin {
 
     @Inject(at = @At("RETURN"), method = "addToBundle")
     private static void andromeda$spawnParticles(ItemStack bundle, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
-        if (cir.getReturnValueI() > 0 && ModuleManager.quick(GuiParticles.class).config().bundleInputParticles) {
+        if (cir.getReturnValueI() > 0 && Andromeda.getConfig(ModuleManager.quick(GuiParticles.class)).c.bundleInputParticles) {
             var client = MinecraftClient.getInstance();
             if (client.isOnThread() && client.currentScreen != null) {
                 int x = (int) (client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth());

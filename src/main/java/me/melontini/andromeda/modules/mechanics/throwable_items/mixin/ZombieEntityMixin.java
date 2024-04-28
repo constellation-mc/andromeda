@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.mechanics.throwable_items.*;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.entity.EntityType;
@@ -30,8 +31,8 @@ abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob
 
     @Inject(at = @At("HEAD"), method = "initCustomGoals")
     private void andromeda$initCustomGoals(CallbackInfo ci) {
-        if (ModuleManager.quick(ThrowableItems.class).config().canZombiesThrowItems)
-            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, ModuleManager.quick(ThrowableItems.class).config().zombieThrowInterval, 4, 16));
+        if (Andromeda.getConfig(ModuleManager.quick(ThrowableItems.class)).c.canZombiesThrowItems)
+            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Andromeda.getConfig(ModuleManager.quick(ThrowableItems.class)).c.zombieThrowInterval, 4, 16));
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
@@ -41,7 +42,7 @@ abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob
 
     @Override
     public void am$throwItem(LivingEntity target, float pullProgress) {
-        if (!ModuleManager.quick(ThrowableItems.class).config().canZombiesThrowItems) return;
+        if (!Andromeda.getConfig(ModuleManager.quick(ThrowableItems.class)).c.canZombiesThrowItems) return;
 
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 

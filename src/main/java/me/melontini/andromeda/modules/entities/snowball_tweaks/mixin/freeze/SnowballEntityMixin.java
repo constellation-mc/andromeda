@@ -17,8 +17,8 @@ abstract class SnowballEntityMixin {
     private void andromeda$applyFreezing(EntityHitResult entityHitResult, CallbackInfo ci) {
         if (entityHitResult.getEntity().world.isClient()) return;
 
-        Snowballs.Config config = entityHitResult.getEntity().world.am$get(Snowballs.class);
-        if (!config.enabled || !config.freeze) return;
+        var config = entityHitResult.getEntity().world.am$get(Snowballs.class);
+        if (!config.e.enabled || !config.c.freeze) return;
 
         Entity entity = entityHitResult.getEntity();
         if (entity instanceof LivingEntity livingEntity) {

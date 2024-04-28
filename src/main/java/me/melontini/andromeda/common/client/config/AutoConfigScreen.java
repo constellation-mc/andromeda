@@ -6,17 +6,18 @@ import lombok.CustomLog;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Origin;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
-import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -106,39 +107,42 @@ public class AutoConfigScreen {
         var eb = builder.entryBuilder();
 
         GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
+        var root = Andromeda.rootHandler();
 
         ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
-            List<Field> fields = new ArrayList<>(MakeSure.notEmpty(Arrays.asList(ModuleManager.get().getConfigClass(module.getClass()).getFields())));
+            List<Field> fields = new ArrayList<>(Arrays.asList(ModuleManager.getConfigClass(module.getClass()).getFields()));
             fields.removeIf(field -> field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class));
             fields.sort(Comparator.comparingInt(value -> !"enabled".equals(value.getName()) ? 1 : 0));
 
             var category = getOrCreateCategoryForField(module, builder);
             String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
 
-            if (fields.size() <= 1) {
-                registry.getAndTransform(moduleText, fields.get(0), module.config(), module.defaultConfig(), registry)
-                        .forEach(e -> {
-                            if (checkOptionManager(e, module, fields.get(0))) {
-                                setModuleTooltip(e, module);
-                                appendEnvInfo(e, module.meta().environment());
-                            }
-                            appendDeprecationInfo(e, module);
-                            appendOrigin(e, module);
-                            wrapTooltip(e);
-                            wrapSaveCallback(e, module::save);
-                            category.addEntry(e);
-                        });
-            } else {
+            var config = Andromeda.getConfig(module);
+            var defaultConfig = Andromeda.rootHandler().getDefault(module);
+
+            Field enabled = Exceptions.supply(() -> BootstrapConfig.class.getField("enabled"));
+            var f = registry.getAndTransform(moduleText, enabled, config.e, defaultConfig.e, registry);
+            if (!fields.isEmpty()) {
                 List<AbstractConfigListEntry<?>> list = new ArrayList<>();
+                registry.getAndTransform("config.andromeda.option.enabled", enabled, config.e, defaultConfig.e, registry).forEach(e -> {
+                    if (checkOptionManager(e, module, enabled)) {
+                        setOptionTooltip(e, "config.andromeda.option.enabled.@Tooltip");
+                        appendEnvInfo(e, enabled);
+                    }
+                    wrapTooltip(e);
+                    wrapSaveCallback(e, () -> Exceptions.run(() -> root.save(module)));
+                    list.add(e);
+                });
+
                 fields.forEach((field) -> {
-                    String opt = "enabled".equals(field.getName()) ? "config.andromeda.option.enabled" : "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
-                    registry.getAndTransform(opt, field, module.config(), module.defaultConfig(), registry).forEach(e -> {
+                    String opt = "config.andromeda.%s.option.%s".formatted(module.meta().dotted(), field.getName());
+                    registry.getAndTransform(opt, field, config.c, defaultConfig.c, registry).forEach(e -> {
                         if (checkOptionManager(e, module, field)) {
                             setOptionTooltip(e, opt + ".@Tooltip");
                             appendEnvInfo(e, field);
                         }
                         wrapTooltip(e);
-                        wrapSaveCallback(e, module::save);
+                        wrapSaveCallback(e, () -> Exceptions.run(() -> root.save(module)));
                         list.add(e);
                     });
                 });
@@ -149,6 +153,18 @@ public class AutoConfigScreen {
                 appendEnvInfo(built, module.meta().environment());
                 wrapTooltip(built);
                 category.addEntry(built);
+            } else {
+                f.forEach(e -> {
+                    if (checkOptionManager(e, module, enabled)) {
+                        setModuleTooltip(e, module);
+                        appendEnvInfo(e, module.meta().environment());
+                    }
+                    appendDeprecationInfo(e, module);
+                    appendOrigin(e, module);
+                    wrapTooltip(e);
+                    wrapSaveCallback(e, () -> Exceptions.run(() -> root.save(module)));
+                    category.addEntry(e);
+                });
             }
         });
 
@@ -305,7 +321,8 @@ public class AutoConfigScreen {
             return;
         }
         AndromedaConfig.save();
-        ModuleManager.get().all().forEach(future -> future.get().save());
+        var root = Andromeda.rootHandler();
+        ModuleManager.get().all().forEach(future -> Exceptions.run(() -> root.save(future.get())));
     }
 
     private static ConfigCategory getOrCreateCategoryForField(Module<?> info, ConfigBuilder screenBuilder) {

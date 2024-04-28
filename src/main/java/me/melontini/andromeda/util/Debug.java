@@ -3,7 +3,7 @@ package me.melontini.andromeda.util;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.util.mixins.ErrorHandler;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.Context;
@@ -82,7 +82,7 @@ public class Debug {
          */
         public static final Key ENABLE_ALL_MODULES = make("enableAllModules");
         /**
-         * Forces all configs to be in {@link Module.BaseConfig.Scope#DIMENSION}.
+         * Forces all configs to be in {@link BootstrapConfig.Scope#DIMENSION}.
          */
         public static final Key FORCE_DIMENSION_SCOPE = make("forceDimensionScope");
         /**

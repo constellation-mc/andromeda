@@ -4,16 +4,14 @@ import com.google.common.base.Suppliers;
 import lombok.*;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
+import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
-import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,13 +33,6 @@ public abstract class Module<T extends Module.BaseConfig> {
     @Getter
     private final PrependingLogger logger;
 
-    @Getter
-    volatile ConfigManager<T> manager;
-    @Getter
-    volatile T config;
-    @Getter
-    volatile T defaultConfig;
-
     private final Map<String, Bus<?>> busMap = new HashMap<>();
     private final IdentityHashMap<Class<?>, Object> objectMap = new IdentityHashMap<>();
 
@@ -52,14 +43,6 @@ public abstract class Module<T extends Module.BaseConfig> {
 
     public final Metadata meta() {
         return info;
-    }
-
-    public final void save() {
-        manager().save(FabricLoader.getInstance().getConfigDir(), config(), Context.of());
-    }
-
-    public final boolean enabled() {
-        return config().enabled;
     }
 
     @Override
@@ -84,9 +67,11 @@ public abstract class Module<T extends Module.BaseConfig> {
         if (ctx.getParameterCount() == 0) {
             AndromedaException.run(() -> this.objectMap.put(cls, ctx.newInstance()), b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
         } else {
+            var c = Andromeda.getConfig(this);
             Map<Class<?>, Object> args = Map.of(
                     this.getClass(), this,
-                    ModuleManager.getConfigClass(this.getClass()), this.config()
+                    BootstrapConfig.class, c.e,
+                    ModuleManager.getConfigClass(this.getClass()), c.c
             );
 
             List<Object> passed = new ArrayList<>(ctx.getParameterCount());
@@ -113,32 +98,7 @@ public abstract class Module<T extends Module.BaseConfig> {
         }
     }
 
-    @Getter
-    @Setter
-    public static class BaseConfig {
-
-        @ConfigEntry.Gui.RequiresRestart
-        public boolean enabled = false;
-
-        @ConfigEntry.Gui.Excluded
-        public Scope scope = Scope.GLOBAL;
-
-        public enum Scope {
-            GLOBAL, WORLD, DIMENSION;
-
-            public boolean isWorld() {
-                return this == WORLD;
-            }
-
-            public boolean isGlobal() {
-                return this == GLOBAL;
-            }
-
-            public boolean isDimension() {
-                return this == DIMENSION;
-            }
-        }
-    }
+    public static class BaseConfig { }
 
     @Value
     @AllArgsConstructor(access = AccessLevel.PRIVATE)

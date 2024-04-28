@@ -16,10 +16,8 @@ public class NameTooltips extends Module<Module.BaseConfig> {
     NameTooltips() {
         ToBooleanFunction<ModuleManager> iceberg = (manager) -> testModVersion(this, "minecraft", ">=1.20") && testModVersion(this, "iceberg", "<1.1.13");
 
-        ConfigEvent.forModule(this).listen((moduleManager, manager) -> {
-            manager.onSave((config, path) -> {
-                if (iceberg.getAsBoolean(moduleManager)) config.enabled = false;
-            });
+        ConfigEvent.bootstrap(this).listen((moduleManager, config) -> {
+            if (iceberg.getAsBoolean(moduleManager)) config.enabled = false;
         });
         BlockadesEvent.BUS.listen((manager, blockade) -> {
             blockade.explain(this, "enabled", iceberg, blockade.andromeda("iceberg"));

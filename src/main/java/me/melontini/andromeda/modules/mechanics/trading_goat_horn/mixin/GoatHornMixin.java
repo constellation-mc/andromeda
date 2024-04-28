@@ -34,7 +34,7 @@ abstract class GoatHornMixin {
         if (!Objects.equals(identifier, SING_ID)) return;
 
         ServerWorld sw = (ServerWorld) world;
-        if (!sw.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) || !world.am$get(GoatHorn.class).enabled) return;
+        if (!sw.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) || !world.am$get(GoatHorn.class).e.enabled) return;
 
         sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).trySpawn((ServerWorld) world, sw.getServer().getSaveProperties().getMainWorldProperties(), user);
     }

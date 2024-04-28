@@ -43,7 +43,7 @@ abstract class AbstractBlockMixin {
                     }
                 }
 
-                if (!world.isClient() && world.am$get(CactusFiller.class).enabled) {
+                if (!world.isClient() && world.am$get(CactusFiller.class).e.enabled) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
                     player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 

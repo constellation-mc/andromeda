@@ -34,7 +34,7 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
     private static void andromeda$fallingHive(@NotNull World world, BlockPos pos, BlockState state, BeehiveBlockEntity beehiveBlockEntity, CallbackInfo ci) {
         if (state.getBlock() != Blocks.BEE_NEST) return;
 
-        if (world.am$get(CanBeeNestsFall.class).enabled && world.random.nextInt(32000) == 0) {
+        if (world.am$get(CanBeeNestsFall.class).e.enabled && world.random.nextInt(32000) == 0) {
             if (!world.getBlockState(pos.offset(Direction.DOWN)).isAir()) return;
 
             BlockState up = world.getBlockState(pos.offset(Direction.UP));

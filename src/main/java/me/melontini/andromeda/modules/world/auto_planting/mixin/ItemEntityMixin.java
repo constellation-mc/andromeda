@@ -40,9 +40,9 @@ abstract class ItemEntityMixin {
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof PlantBlock) {
             if (entity.age % MathUtil.nextInt(20, 101) != 0) return;
             var config = world.am$get(module);
-            if (!config.enabled) return;
+            if (!config.e.enabled) return;
             if (!world.getFluidState(pos).isEmpty()) return;
-            if (config.blacklistMode == config.idList.contains(CommonRegistries.items().getId(stack.getItem()).toString()))
+            if (config.c.blacklistMode == config.c.idList.contains(CommonRegistries.items().getId(stack.getItem()).toString()))
                 return;
 
             blockItem.place(new ItemPlacementContext(world, null, null, stack,

@@ -37,8 +37,8 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
     public void andromeda$onBlockHit(CallbackInfo ci) {
         if (world.isClient()) return;
 
-        Snowballs.Config config = world.am$get(am$snow);
-        if (!config.enabled || !config.layers) return;
+        var config = world.am$get(am$snow);
+        if (!config.e.enabled || !config.c.layers) return;
 
         Vec3d pos = this.getPos();
         Vec3d vec3d = pos.add(this.getVelocity());

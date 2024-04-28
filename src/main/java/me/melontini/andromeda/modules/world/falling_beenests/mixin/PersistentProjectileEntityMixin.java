@@ -30,7 +30,7 @@ abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
         BlockPos pos = blockHitResult.getBlockPos();
         BlockState state = world.getBlockState(pos);
 
-        if (state.getBlock() == Blocks.BEE_NEST && !world.isClient() && world.am$get(CanBeeNestsFall.class).enabled) {
+        if (state.getBlock() == Blocks.BEE_NEST && !world.isClient() && world.am$get(CanBeeNestsFall.class).e.enabled) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) world.getBlockEntity(pos);
             if (beehiveBlockEntity == null) return;
 

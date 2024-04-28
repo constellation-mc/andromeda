@@ -26,6 +26,6 @@ abstract class ZombieEntityMixin extends HostileEntity {
     private void andromeda$initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, NbtCompound entityNbt, CallbackInfoReturnable<EntityData> cir) {
         if (world.isClient()) return;
 
-        if (world.toServerWorld().am$get(Pickup.class).enabled) this.setCanPickUpLoot(true);
+        if (world.toServerWorld().am$get(Pickup.class).e.enabled) this.setCanPickUpLoot(true);
     }
 }

@@ -18,7 +18,7 @@ public class Main {
     Main() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
             World world = entity.getWorld();
-            if (world.am$get(VehicleUnentrapment.class).enabled) {
+            if (world.am$get(VehicleUnentrapment.class).e.enabled) {
                 if (source.getAttacker() == null || entity instanceof PlayerEntity) return true;
                 if (!entity.getType().isIn(ESCAPE_VEHICLES_ON_HIT)) return true;
 

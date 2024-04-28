@@ -14,14 +14,12 @@ import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 public class Unsafe extends Module<Module.BaseConfig> {
 
     Unsafe() {
-        ToBooleanFunction<ModuleManager> supplier = (manager) -> manager.getDiscovered(Safe.class).map(Promise::get).filter(Module::enabled).isPresent();
+        ToBooleanFunction<ModuleManager> supplier = (manager) -> manager.getDiscovered(Safe.class).map(Promise::get).filter(safe -> manager.getConfig(safe).enabled()).isPresent();
 
-        ConfigEvent.forModule(this).listen((moduleManager, manager) -> {
-            manager.onSave((config, path) -> {
-                if (supplier.getAsBoolean(moduleManager)) {
-                    config.enabled = false;
-                }
-            });
+        ConfigEvent.bootstrap(this).listen((moduleManager, config) -> {
+            if (supplier.getAsBoolean(moduleManager)) {
+                config.enabled = false;
+            }
         });
         BlockadesEvent.BUS.listen((manager, blockade) -> {
             blockade.explain(this, "enabled", supplier, blockade.andromeda("module_conflict"));

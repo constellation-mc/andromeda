@@ -29,15 +29,15 @@ abstract class CampfireBlockEntityMixin {
         if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
                     var config = world.am$get(CampfireEffects.class);
-                    if (!config.enabled) return;
+                    if (!config.e.enabled) return;
 
                     List<LivingEntity> entities = new ArrayList<>();
-                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(config.effectsRange), entity -> {
-                        if ((entity instanceof PassiveEntity && config.affectsPassive) || entity instanceof PlayerEntity) {
+                    world.getEntityLookup().forEachIntersects(new Box(pos).expand(config.c.effectsRange), entity -> {
+                        if ((entity instanceof PassiveEntity && config.c.affectsPassive) || entity instanceof PlayerEntity) {
                             entities.add((LivingEntity) entity);
                         }
                     });
-                    List<CampfireEffects.Config.Effect> effects = config.effectList;
+                    List<CampfireEffects.Config.Effect> effects = config.c.effectList;
 
                     for (LivingEntity player : entities) {
                         for (CampfireEffects.Config.Effect effect : effects) {

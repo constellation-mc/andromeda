@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.entity.EquipmentSlot;
@@ -22,10 +23,9 @@ public class LockpickItem extends Item {
     }
 
     public boolean tryUse(Lockpick module, ItemStack stack, LivingEntity user, Hand hand) {
-        if (module.enabled() && hand == Hand.MAIN_HAND) {
-
+        if (Andromeda.getConfig(module).e.enabled() && hand == Hand.MAIN_HAND) {
             if (!(user instanceof PlayerEntity p && p.getAbilities().creativeMode)) {
-                if (module.config().breakAfterUse) {
+                if (Andromeda.getConfig(module).c.breakAfterUse) {
                     if (!user.world.isClient())
                         user.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
 
@@ -41,7 +41,7 @@ public class LockpickItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         Lockpick module = ModuleManager.quick(Lockpick.class);
-        if (entity instanceof MerchantEntity merchant && module.config().villagerInventory) {
+        if (entity instanceof MerchantEntity merchant && Andromeda.getConfig(module).c.villagerInventory) {
             if (tryUse(module, stack, user, hand)) {
                 if (user.world.isClient()) return ActionResult.SUCCESS;
 

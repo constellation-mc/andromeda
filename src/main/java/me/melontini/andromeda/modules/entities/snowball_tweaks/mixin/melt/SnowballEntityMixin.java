@@ -29,8 +29,8 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
     public void andromeda$melt(CallbackInfo ci) {
         if (world.isClient() || !this.isOnFire()) return;
 
-        Snowballs.Config config = world.am$get(am$snow);
-        if (!config.enabled || !config.melt) return;
+        var config = world.am$get(am$snow);
+        if (!config.e.enabled || !config.c.melt) return;
 
         ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.4);
         this.discard();

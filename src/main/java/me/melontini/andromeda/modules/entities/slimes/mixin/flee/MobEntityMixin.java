@@ -20,8 +20,8 @@ abstract class MobEntityMixin extends Entity {
     @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=90"), method = "lookAtEntity")
     private float andromeda$rotateSlime(float original, Entity targetEntity, float maxYawChange, float maxPitchChange) {
         if ((MobEntity) (Object) this instanceof SlimeEntity slime && !(targetEntity instanceof SlimeEntity)) {
-            Slimes.Config config = world.am$get(Slimes.class);
-            if (config.enabled && config.flee && slime.isSmall()) {
+            var config = world.am$get(Slimes.class);
+            if (config.e.enabled && config.c.flee && slime.isSmall()) {
                 return 270;
             }
         }

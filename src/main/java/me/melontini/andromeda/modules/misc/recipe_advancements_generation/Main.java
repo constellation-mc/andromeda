@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -54,11 +55,11 @@ public class Main {
         for (List<Recipe<?>> list : lists) {
             futures.add(CompletableFuture.runAsync(() -> {
                 for (Recipe<?> recipe : list) {
-                    if (module.config().namespaceBlacklist.contains(recipe.getId().getNamespace()))
+                    if (Andromeda.getConfig(module).c.namespaceBlacklist.contains(recipe.getId().getNamespace()))
                         continue;
-                    if (module.config().recipeBlacklist.contains(recipe.getId().toString()))
+                    if (Andromeda.getConfig(module).c.recipeBlacklist.contains(recipe.getId().toString()))
                         continue;
-                    if (recipe.isIgnoredInRecipeBook() && module.config().ignoreRecipesHiddenInTheRecipeBook)
+                    if (recipe.isIgnoredInRecipeBook() && Andromeda.getConfig(module).c.ignoreRecipesHiddenInTheRecipeBook)
                         continue;
 
                     var handler = RECIPE_TYPE_HANDLERS.get(recipe.getType());
@@ -126,7 +127,7 @@ public class Main {
         builder.criterion("has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.create(), id));
 
         String[][] reqs;
-        if (MODULE.orThrow().config().requireAllItems) {
+        if (Andromeda.getConfig(MODULE.orThrow()).c.requireAllItems) {
             reqs = new String[names.size()][2];
             for (int i = 0; i < names.size(); i++) {
                 String s = names.get(i);

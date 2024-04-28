@@ -21,7 +21,7 @@ public class VillagerTemptGoal extends TemptGoal {
     @Override
     public boolean canStart() {
         if (this.mob.world.isClient()) return false;
-        if (!this.mob.world.am$get(VillagersFollowEmeralds.class).enabled) return false;
+        if (!this.mob.world.am$get(VillagersFollowEmeralds.class).e.enabled) return false;
 
         if (this.cooldown > 0) {
             --this.cooldown;

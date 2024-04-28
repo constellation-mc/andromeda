@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.block.BlockState;
@@ -32,7 +33,7 @@ abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V", ordinal = 0), method = "onTakeOutput")
     private void andromeda$particles(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        if (!ModuleManager.quick(GuiParticles.class).config().anvilScreenParticles) return;
+        if (!Andromeda.getConfig(ModuleManager.quick(GuiParticles.class)).c.anvilScreenParticles) return;
 
         if (MinecraftClient.getInstance().isOnThread() && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {
             BlockState state = Blocks.ANVIL.getDefaultState();
