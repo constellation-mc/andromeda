@@ -22,7 +22,7 @@ abstract class LootableContainerBlockEntityMixin extends LockableContainerBlockE
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSpectator()Z"), method = "checkUnlocked")
     private boolean lockedIfMonstersNearby(boolean locked, @Local(argsOnly = true) PlayerEntity player) {
-        var monsters = checkMonsterLock(player.world, this.getPos());
+        var monsters = checkMonsterLock(player.world, this.getCachedState(), player, this.getPos(), this);
         if (monsters.isEmpty() || player.getAbilities().creativeMode || checkLockPicking(player)) return locked;
 
         handleLockedContainer(player, monsters);
