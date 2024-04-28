@@ -21,8 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class MinecraftServerMixin implements ScopedConfigs.AttachmentGetter {
 
     @Shadow @Final public LevelStorage.Session session;
-    @Unique
-    private ConfigHandler andromeda$configs;
+    @Unique private ConfigHandler andromeda$configs;
 
     @Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/MinecraftServer;session:Lnet/minecraft/world/level/storage/LevelStorage$Session;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER), method = "<init>")
     private void andromeda$initStates(CallbackInfo ci) {
