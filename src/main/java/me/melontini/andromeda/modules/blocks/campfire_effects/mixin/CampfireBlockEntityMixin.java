@@ -59,7 +59,7 @@ abstract class CampfireBlockEntityMixin {
 
                     for (LivingEntity player : entities) {
                         for (CampfireEffects.Config.Effect effect : effects) {
-                            StatusEffectInstance effectInstance = new StatusEffectInstance(effect.effect,
+                            StatusEffectInstance effectInstance = new StatusEffectInstance(effect.identifier,
                                     200, effect.amplifier.asInt(supplier), true, false, true);
                             player.addStatusEffect(effectInstance);
                         }

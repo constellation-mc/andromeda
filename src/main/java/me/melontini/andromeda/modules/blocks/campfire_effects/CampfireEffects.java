@@ -36,7 +36,7 @@ public class CampfireEffects extends Module<CampfireEffects.Config> {
         @AllArgsConstructor
         @NoArgsConstructor
         public static class Effect {
-            public StatusEffect effect = StatusEffects.REGENERATION;
+            public StatusEffect identifier = StatusEffects.REGENERATION;
             public NumberIntermediary amplifier = NumberIntermediary.of(0d);
         }
     }
