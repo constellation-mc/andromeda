@@ -14,7 +14,7 @@ import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
-import me.melontini.andromeda.util.commander.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -29,6 +29,7 @@ import me.shedaniel.autoconfig.util.Utils;
 import me.shedaniel.clothconfig2.api.*;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -36,8 +37,10 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -46,8 +49,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static me.melontini.andromeda.common.client.config.ModMenuIntegration.*;
 
@@ -107,9 +114,10 @@ public class AutoConfigScreen {
 
         var eb = builder.entryBuilder();
 
-        GuiRegistry registry = DefaultGuiTransformers.apply(DefaultGuiProviders.apply(new GuiRegistry()));
+        GuiRegistry registry = new GuiRegistry();
         var root = Andromeda.rootHandler();
         registerCustom(registry, root);
+        DefaultGuiTransformers.apply(DefaultGuiProviders.apply(registry));
 
         ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
             List<Field> fields = new ArrayList<>(Arrays.asList(ModuleManager.getConfigClass(module.getClass()).getFields()));
@@ -228,21 +236,68 @@ public class AutoConfigScreen {
                     }).build());
         }, NumberIntermediary.class);
 
-        registry.registerTypeProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
-            StatusEffect effect = Utils.getUnsafely(field, config);
-            StatusEffect def = Utils.getUnsafely(field, defaults);
-            return Collections.singletonList(ENTRY_BUILDER.startStrField(TextUtil.translatable(i18n), Registries.STATUS_EFFECT.getId(effect).toString())
-                    .setDefaultValue(Registries.STATUS_EFFECT.getId(def).toString())
+        registry.registerPredicateProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
+            List<Identifier> vals = Utils.getUnsafely(field, config);
+            List<Identifier> def = Utils.getUnsafely(field, defaults);
+
+            return Collections.singletonList(ENTRY_BUILDER.startStrList(Text.translatable(i18n), vals.stream().map(Identifier::toString).toList())
+                    .setDefaultValue(() -> def.stream().map(Identifier::toString).toList())
+                    .setCellErrorSupplier(s -> {
+                        var r = Identifier.validate(s);
+                        if (r.error().isPresent()) return Optional.of(TextUtil.literal(r.error().orElseThrow().message()));
+                        return Optional.empty();
+                    })
+                    .setSaveConsumer((newValue) -> Utils.setUnsafely(field, config, newValue.stream().map(Identifier::new).toList())).build());
+        }, isListOfType(Identifier.class));
+
+        forRegistry(registry, Item.class, Registries.ITEM);
+        forRegistry(registry, Block.class, Registries.BLOCK);
+        forRegistry(registry, StatusEffect.class, Registries.STATUS_EFFECT);
+    }
+
+    private static <T> void forRegistry(GuiRegistry guiRegistry, Class<T> type, Registry<T> registry) {
+        guiRegistry.registerTypeProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
+            T effect = Utils.getUnsafely(field, config);
+            T def = Utils.getUnsafely(field, defaults);
+            return Collections.singletonList(ENTRY_BUILDER.startStrField(TextUtil.translatable(i18n), registry.getId(effect).toString())
+                    .setDefaultValue(registry.getId(def).toString())
                     .setErrorSupplier(s -> {
                         var r = Identifier.validate(s);
                         if (r.error().isPresent())
                             return Optional.of(TextUtil.literal(r.error().orElseThrow().message()));
-                        if (Registries.STATUS_EFFECT.get(r.result().orElseThrow()) == null)
+                        if (!registry.containsId(r.result().orElseThrow()))
                             return Optional.of(TextUtil.translatable("text.cloth-config.error_cannot_save"));
                         return Optional.empty();
                     })
-                    .setSaveConsumer(s -> Utils.setUnsafely(field, config, Registries.STATUS_EFFECT.get(new Identifier(s)))).build());
-        }, StatusEffect.class);
+                    .setSaveConsumer(s -> Utils.setUnsafely(field, config, registry.get(new Identifier(s)))).build());
+        }, type);
+
+        guiRegistry.registerPredicateProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
+            List<T> vals = Utils.getUnsafely(field, config);
+            List<T> def = Utils.getUnsafely(field, defaults);
+
+            return Collections.singletonList(ENTRY_BUILDER.startStrList(Text.translatable(i18n), vals.stream().map(item -> registry.getId(item).toString()).toList())
+                    .setDefaultValue(() -> def.stream().map(item -> registry.getId(item).toString()).toList())
+                    .setCellErrorSupplier(s -> {
+                        var r = Identifier.validate(s);
+                        if (r.error().isPresent()) return Optional.of(TextUtil.literal(r.error().orElseThrow().message()));
+                        if (!registry.containsId(r.result().orElseThrow()))
+                            return Optional.of(TextUtil.translatable("text.cloth-config.error_cannot_save"));
+                        return Optional.empty();
+                    })
+                    .setSaveConsumer((newValue) -> Utils.setUnsafely(field, config, newValue.stream().map(Identifier::new).map(registry::get).toList())).build());
+        }, isListOfType(type));
+    }
+
+    private static Predicate<Field> isListOfType(Type... types) {
+        return (field) -> {
+            if (List.class.isAssignableFrom(field.getType()) && field.getGenericType() instanceof ParameterizedType) {
+                Type[] args = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+                return args.length == 1 && Stream.of(types).anyMatch((type) -> Objects.equals(args[0], type));
+            } else {
+                return false;
+            }
+        };
     }
 
     @NotNull private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {

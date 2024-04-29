@@ -57,7 +57,7 @@ public class Main {
                 for (Recipe<?> recipe : list) {
                     if (Andromeda.getConfig(module).c.namespaceBlacklist.contains(recipe.getId().getNamespace()))
                         continue;
-                    if (Andromeda.getConfig(module).c.recipeBlacklist.contains(recipe.getId().toString()))
+                    if (Andromeda.getConfig(module).c.recipeBlacklist.contains(recipe.getId()))
                         continue;
                     if (recipe.isIgnoredInRecipeBook() && Andromeda.getConfig(module).c.ignoreRecipesHiddenInTheRecipeBook)
                         continue;

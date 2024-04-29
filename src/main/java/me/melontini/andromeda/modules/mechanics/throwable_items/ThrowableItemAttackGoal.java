@@ -1,9 +1,16 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
+import lombok.CustomLog;
+import me.melontini.andromeda.common.Andromeda;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +20,7 @@ import java.util.EnumSet;
 import static java.util.Objects.requireNonNull;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
+@CustomLog
 public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
 
     private final ItemThrowerMob<T> owner;
@@ -20,28 +28,20 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     @Nullable private LivingEntity target;
 
     private final double mobSpeed;
-    private final int minInterval;
-    private final int maxInterval;
     private final float minRange;
     private final float range;
 
     private int seenTargetTicks;
     private int updateCountdownTicks;
 
-    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int intervalTicks, float range) {
-        this(mob, mobSpeed, intervalTicks, intervalTicks, 0, range);
+    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, float range) {
+        this(mob, mobSpeed, 0, range);
     }
 
-    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int intervalTicks, float minRange, float range) {
-        this(mob, mobSpeed, intervalTicks, intervalTicks, minRange, range);
-    }
-
-    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int minInterval, int maxInterval, float minRange, float range) {
+    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, float minRange, float range) {
         this.owner = mob;
         this.mob = (MobEntity) mob;
         this.mobSpeed = mobSpeed;
-        this.minInterval = minInterval;
-        this.maxInterval = maxInterval;
         this.minRange = minRange;
         this.range = range;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
@@ -112,12 +112,20 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
             float f = (float) Math.sqrt(d) / this.range;
             float g = MathHelper.clamp(f, 0.1F, 1.0F);
             this.owner.am$throwItem(requireNonNull(this.target), g);
-            this.updateCountdownTicks = MathHelper.floor(f * (this.maxInterval - this.minInterval) + this.minInterval);
+            this.updateCountdownTicks = MathHelper.floor(f * getInterval());
         } else if (this.updateCountdownTicks < 0) {
-            this.updateCountdownTicks = MathHelper.floor(
-                    MathHelper.lerp(Math.sqrt(d) / this.range, this.minInterval, this.maxInterval)
-            );
+            this.updateCountdownTicks = MathHelper.floor(getInterval());
         }
     }
 
+    public double getInterval() {
+        return Andromeda.getConfig(ThrowableItems.class).c.zombieThrowInterval.asDouble(() -> {
+            LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) this.mob.world)
+                    .add(LootContextParameters.ORIGIN, this.mob.getPos())
+                    .add(LootContextParameters.THIS_ENTITY, this.mob)
+                    .build(LootContextTypes.COMMAND);
+
+            return new LootContext.Builder(set).build(null);
+        });
+    }
 }

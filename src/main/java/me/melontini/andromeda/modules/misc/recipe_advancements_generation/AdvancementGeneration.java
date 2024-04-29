@@ -4,6 +4,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +24,6 @@ public class AdvancementGeneration extends Module<AdvancementGeneration.Config> 
 
         public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");
 
-        public List<String> recipeBlacklist = Arrays.asList();
+        public List<Identifier> recipeBlacklist = Arrays.asList();
     }
 }

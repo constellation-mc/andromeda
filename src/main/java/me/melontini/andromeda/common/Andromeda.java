@@ -16,9 +16,9 @@ import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
-import me.melontini.andromeda.util.commander.CommanderNumberIntermediary;
-import me.melontini.andromeda.util.commander.ConstantNumberIntermediary;
-import me.melontini.andromeda.util.commander.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.CommanderNumberIntermediary;
+import me.melontini.andromeda.util.commander.number.ConstantNumberIntermediary;
+import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -28,7 +28,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -70,6 +73,9 @@ public class Andromeda {
         ConfigGsonEvent.BUS.listen(builder -> {
             Codec<NumberIntermediary> codec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
             builder.registerTypeAdapter(NumberIntermediary.class, ConfigHandler.context(codec));
+            builder.registerTypeAdapter(Identifier.class, ConfigHandler.context(Identifier.CODEC));
+            builder.registerTypeAdapter(StatusEffect.class, ConfigHandler.context(Registries.STATUS_EFFECT.getCodec()));
+            builder.registerTypeAdapter(Item.class, ConfigHandler.context(Registries.ITEM.getCodec()));
         });
     }
 

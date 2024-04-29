@@ -5,6 +5,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Origin;
+import net.minecraft.item.Item;
 
 import java.util.List;
 
@@ -19,6 +20,6 @@ public class AutoPlanting extends Module<AutoPlanting.Config> {
 
         public boolean blacklistMode = true;
 
-        public List<String> idList = Lists.newArrayList();
+        public List<Item> idList = Lists.newArrayList();
     }
 }

@@ -11,7 +11,6 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.dark_matter.api.base.util.Exceptions;
-import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -40,7 +39,6 @@ public class ConfigHandler {
         this.path = path;
         this.modules = modules;
         var builder = new GsonBuilder().setPrettyPrinting();
-        builder.registerTypeAdapter(Identifier.class, new GsonContext<>(Identifier.CODEC));
         ConfigGsonEvent.BUS.invoker().accept(builder);
         this.gson = builder.create();
     }

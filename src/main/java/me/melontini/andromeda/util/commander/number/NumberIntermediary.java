@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util.commander;
+package me.melontini.andromeda.util.commander.number;
 
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.Support;

@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.entities.snowball_tweaks;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.util.commander.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 
 @ModuleInfo(name = "snowball_tweaks", category = "entities", environment = Environment.SERVER)
 public class Snowballs extends Module<Snowballs.Config> {

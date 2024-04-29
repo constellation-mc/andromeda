@@ -4,7 +4,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.util.commander.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 
 import java.util.List;
 

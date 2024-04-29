@@ -8,6 +8,7 @@ import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.modules.mechanics.throwable_items.client.Client;
 import me.melontini.andromeda.util.commander.CommanderSupport;
+import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
         @SpecialEnvironment(Environment.SERVER)
         public boolean canZombiesThrowItems = true;
         @SpecialEnvironment(Environment.SERVER)
-        public int zombieThrowInterval = 40;
+        public NumberIntermediary zombieThrowInterval = NumberIntermediary.of(40);
         @SpecialEnvironment(Environment.BOTH)
         public boolean tooltip = true;
     }

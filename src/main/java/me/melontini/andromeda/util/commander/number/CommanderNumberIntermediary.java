@@ -1,4 +1,4 @@
-package me.melontini.andromeda.util.commander;
+package me.melontini.andromeda.util.commander.number;
 
 import com.mojang.serialization.Codec;
 import lombok.Getter;

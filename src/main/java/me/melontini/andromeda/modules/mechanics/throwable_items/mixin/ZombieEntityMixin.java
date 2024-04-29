@@ -32,7 +32,7 @@ abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob
     @Inject(at = @At("HEAD"), method = "initCustomGoals")
     private void andromeda$initCustomGoals(CallbackInfo ci) {
         if (Andromeda.getConfig(ModuleManager.quick(ThrowableItems.class)).c.canZombiesThrowItems)
-            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, Andromeda.getConfig(ModuleManager.quick(ThrowableItems.class)).c.zombieThrowInterval, 4, 16));
+            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, 4, 16));
     }
 
     @Inject(at = @At("HEAD"), method = "tick")

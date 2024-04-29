@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.world.auto_planting.mixin;
 
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.world.auto_planting.AutoPlanting;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.block.PlantBlock;
@@ -42,7 +41,7 @@ abstract class ItemEntityMixin {
             var config = world.am$get(module);
             if (!config.e.enabled) return;
             if (!world.getFluidState(pos).isEmpty()) return;
-            if (config.c.blacklistMode == config.c.idList.contains(CommonRegistries.items().getId(stack.getItem()).toString()))
+            if (config.c.blacklistMode == config.c.idList.contains(stack.getItem()))
                 return;
 
             blockItem.place(new ItemPlacementContext(world, null, null, stack,
