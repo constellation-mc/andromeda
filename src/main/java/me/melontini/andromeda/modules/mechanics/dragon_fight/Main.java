@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 import java.util.Collections;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class Main {
     Main() {

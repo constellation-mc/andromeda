@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;

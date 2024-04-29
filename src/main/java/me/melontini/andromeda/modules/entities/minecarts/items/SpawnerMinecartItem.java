@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.minecarts.items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;

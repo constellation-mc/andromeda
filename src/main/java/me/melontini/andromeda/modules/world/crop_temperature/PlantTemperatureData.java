@@ -6,8 +6,8 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Mapper;
@@ -37,7 +37,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
             Codec.FLOAT.fieldOf("aMax").forGetter(PlantTemperatureData::aMax)
     ).apply(data, PlantTemperatureData::new));
 
-    public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Common.id("crop_temperatures"));
+    public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Andromeda.id("crop_temperatures"));
 
     public static boolean roll(Block block, float temp, ServerWorld world) {
         if (!world.am$get(PlantTemperature.class).enabled) return false;

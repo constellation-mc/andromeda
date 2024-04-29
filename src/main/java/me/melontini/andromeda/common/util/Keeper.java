@@ -1,4 +1,4 @@
-package me.melontini.andromeda.common.registries;
+package me.melontini.andromeda.common.util;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -12,4 +12,6 @@
 
 * Fixed merging of early translations.
 * Fixed Lab and Wiki buttons in the config screen.
+* Added an option to disable Andromeda's item group.
 * Updated Dark Matter.
+* Updated Chinese translation. Courtesy of [Rad586](https://github.com/Rad586).

@@ -1,15 +1,14 @@
 package me.melontini.andromeda.modules.items.pouches;
 
+import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.AndromedaItemGroup;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -35,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class Main {
 
@@ -91,8 +90,7 @@ public class Main {
         Trades.register();
 
         List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
-        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, new ArrayList<>(l)));
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> l.stream().filter(Keeper::isPresent).map(Keeper::get).forEach(entries::add));
+        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, new ArrayList<>(l)));
 
         var behavior = new ProjectileDispenserBehavior() {
             @Override

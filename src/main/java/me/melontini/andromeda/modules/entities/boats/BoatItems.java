@@ -1,11 +1,10 @@
 package me.melontini.andromeda.modules.entities.boats;
 
+import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.AndromedaItemGroup;
 import me.melontini.andromeda.modules.entities.boats.items.AndromedaBoatItem;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class BoatItems {
 
@@ -34,8 +33,7 @@ public class BoatItems {
             Optional.ofNullable(RegistryUtil.register(config.isHopperBoatOn, CommonRegistries.items(), boatId(value, "hopper"),
                     () -> new AndromedaBoatItem<>(BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().maxCount(1)))).ifPresent(list::add);
         }
-        AndromedaItemGroup.accept(acceptor -> acceptor.items(module, list));
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> list.forEach(entries::add));
+        AndromedaItemGroup.accept(acceptor -> acceptor.items(module, ItemGroups.TOOLS, list));
     }
 
     public static Identifier boatId(BoatEntity.Type type, String boat) {

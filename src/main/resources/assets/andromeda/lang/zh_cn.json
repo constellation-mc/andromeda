@@ -106,7 +106,6 @@
 
     "config.andromeda.entities.zombie.clean_pickup": "僵尸不再拾起垃圾",
     "config.andromeda.entities.zombie.clean_pickup.@Tooltip": "防止僵尸捡起没用的物品。\n“有用”的物品包括：工具，护甲以及可投掷物品（若有启用这个特性）\n还有“andromeda:zombies_pickup”标签。",
-
     "config.andromeda.entities.zombie.all_pick_up": "所有僵尸均可拾起物品",
     "config.andromeda.entities.zombie.all_pick_up.@Tooltip": "无视难度设置，允许所有僵尸拾起物品。",
 
@@ -237,6 +236,13 @@
     "entity.andromeda.hopper_boat": "载漏斗的船",
     "entity.andromeda.tnt_boat": "载TNT的船",
 
+    "config.andromeda.entities.ghast_tweaks": "恶魂调整",
+    "config.andromeda.entities.ghast_tweaks.@Tooltip": "各种与恶魂有关的调整。",
+    "config.andromeda.entities.ghast_tweaks.option.explodeOnDeath": "死亡爆炸",
+    "config.andromeda.entities.ghast_tweaks.option.explodeOnDeath.@Tooltip": "恶魂将在死亡时爆炸。",
+    "config.andromeda.entities.ghast_tweaks.option.explosionPower": "爆炸强度",
+    "config.andromeda.entities.ghast_tweaks.option.explosionPower.@Tooltip": "恶魂的爆炸强度。默认等同于TNT。",
+
     "config.andromeda.entities.vehicle_unentrapment": "脱离载具",
     "config.andromeda.entities.vehicle_unentrapment.@Tooltip": "在“andromeda:escape_vehicles_on_hit”标签内的生物（默认为末影人）会在受击后脱离载具。\n载具类别需要在“andromeda:escapable_vehicle”中写入（默认为船和矿车）",
 
@@ -300,8 +306,10 @@
     "item.andromeda.special_pouch": "神秘袋",
   
     "config.andromeda.category.bugfixes": "Bug修复",
+
     "config.andromeda.bugfixes.advancement_shadow": "独立成就阴影渲染",
     "config.andromeda.bugfixes.advancement_shadow.@Tooltip": "还记得当鼠标移动到成就上时显示的阴影吗？\n现在它不会再因为帧率变动而改变动画速度了。",
+
     "config.andromeda.bugfixes.aligned_alternatives": "对齐配方界面",
     "config.andromeda.bugfixes.aligned_alternatives.@Tooltip": "在组内配方繁多时，配方组别不会再看上去那么小块了",
   
@@ -338,7 +346,6 @@
 
     "config.andromeda.gui.name_tooltips": "工具提示样式",
     "config.andromeda.gui.name_tooltips.@Tooltip": "在物品栏中选择物品时，展示其工具提示而非名称",
-
     "config.andromeda.gui.no_more_adventure": "无冒险模式",
     "config.andromeda.gui.no_more_adventure.@Tooltip": "从游戏模式切换界面移除“冒险模式”选项",
 
@@ -364,12 +371,12 @@
     "config.andromeda.gui.smooth_tooltips.option.deltaY": "垂直限位系数",
     
     "config.andromeda.category.misc": "杂项",
-
     "config.andromeda.misc.damage_backport": "/damage指令复刻",
     "config.andromeda.misc.damage_backport.@Tooltip": "对高版本/damage指令的非完全复刻！",
-
     "config.andromeda.misc.translations": "翻译更新",
     "config.andromeda.misc.translations.@Tooltip": "尝试从github下载最新版的翻译文件",
+    "andromeda.misc.translations.exception.no_valid_lang": "无法找到有效的语言选项！",
+    "andromeda.misc.translations.failed_lang_acquire": "无法使用所选语言！",
 
     "config.andromeda.misc.recipe_advancements_generation": "自动生成配方成就",
     "config.andromeda.misc.recipe_advancements_generation.@Tooltip": "尝试为绝大部分配方生成配方成就。",
@@ -407,6 +414,8 @@
   
     "config.andromeda.lab.title": "群星实验室 🧪",
     "config.andromeda.button.lab.tooltip": "试试那些实验性功能！",
+    "config.andromeda.base.option.itemGroup": "专有物品组别",
+    "config.andromeda.base.option.itemGroup.@Tooltip": "群星的物品将被单独放到一个组别里。\n即使禁用，你也可以在原版的物品组别里找到这些物品。",
     "config.andromeda.lab.option.scopedConfigs": "分化配置",
     "config.andromeda.lab.option.scopedConfigs.@Tooltip": "使你能够逐世界、逐维度应用配置。\n这些配置可以通过数据包覆盖，也可以用KubeJS更改。\n欲知更多内容，请查阅维基！",
 

@@ -31,6 +31,8 @@ public class AndromedaConfig {
     public static class Config {
         @ConfigEntry.Gui.RequiresRestart
         public boolean sideOnlyMode = false;
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean itemGroup = true;
         public boolean sendCrashReports = true;
     }
 }

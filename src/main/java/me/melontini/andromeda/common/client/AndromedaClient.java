@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 @CustomLog
 @Getter
@@ -64,7 +64,7 @@ public class AndromedaClient {
         BlockadesEvent.BUS.invoker().explain(manager, blockade);
 
         ResourceManagerHelper.registerBuiltinResourcePack(id("dark"), CommonValues.mod(), ResourcePackActivationType.NORMAL);
-        ItemGroupAnimaton.setIconAnimation(Andromeda.get().group, (group, context, itemX, itemY, selected, isTopRow) -> {
+        Andromeda.GROUP.ifPresent(g -> ItemGroupAnimaton.setIconAnimation(g, (group, context, itemX, itemY, selected, isTopRow) -> {
             try {
                 if (!animate) return;
                 drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> {
@@ -74,7 +74,7 @@ public class AndromedaClient {
             } catch (Throwable t) {
                 animate = false;
             }
-        });
+        }));
     }
 
     private void printMissingTooltips(ModuleManager manager) {

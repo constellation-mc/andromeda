@@ -4,7 +4,7 @@ import me.melontini.andromeda.common.util.TagUtil;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class PickupTag {
 

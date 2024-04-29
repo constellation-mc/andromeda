@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBehaviors;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemPlopEffect;
@@ -34,7 +34,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 

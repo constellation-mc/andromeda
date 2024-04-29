@@ -7,7 +7,7 @@ import net.minecraft.village.VillageGossipType;
 
 import java.util.Map;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class GiftTags {
     public static final TagKey<Item> MAJOR_POSITIVE = TagKey.of(TagUtil.key("item"), id("villager_gifts/major_positive"));

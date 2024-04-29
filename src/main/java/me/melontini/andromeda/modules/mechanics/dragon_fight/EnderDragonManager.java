@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.entity.EntityType;

@@ -17,7 +17,7 @@ import net.minecraft.util.profiler.Profiler;
 
 import java.util.*;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class ItemBehaviorManager extends IdentifiedJsonDataLoader {
 

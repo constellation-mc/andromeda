@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.misc.unknown;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.AbstractBlock;
@@ -10,7 +10,7 @@ import net.minecraft.block.FlowerBlock;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Rarity;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class Main {
 

@@ -1,9 +1,9 @@
 package me.melontini.andromeda.modules.entities.minecarts;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.AndromedaItemGroup;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import me.melontini.andromeda.modules.entities.minecarts.items.AndromedaMinecartItem;
 import me.melontini.andromeda.modules.entities.minecarts.items.JukeboxMinecartItem;
@@ -15,7 +15,6 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.entity.JukeboxBlockEntity;
@@ -35,7 +34,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 import java.util.Objects;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class MinecartItems {
 
@@ -51,8 +50,7 @@ public class MinecartItems {
         JUKEBOX_MINECART.init(RegistryUtil.register(config.isJukeboxMinecartOn, CommonRegistries.items(), id("jukebox_minecart"), () -> new JukeboxMinecartItem(new FabricItemSettings().maxCount(1))));
 
         var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
-        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, List.copyOf(l)));
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> l.stream().filter(Keeper::isPresent).map(Keeper::get).forEach(entries::add));
+        AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, List.copyOf(l)));
 
         ModuleManager.get().getModule(MinecartBlockPicking.class).ifPresent(m -> {
             SPAWNER_MINECART.ifPresent(item -> PickUpBehaviorHandler.registerPickUpBehavior(Blocks.SPAWNER, (state, world, pos) -> {

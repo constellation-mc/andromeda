@@ -11,7 +11,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
-import me.melontini.andromeda.common.registries.Common;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -37,7 +37,7 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 public class DataConfigs extends IdentifiedJsonDataLoader {
 
     private static final Identifier DEFAULT = new Identifier(MODID, "default");
-    public static final ReloaderType<DataConfigs> RELOADER = ReloaderType.create(Common.id("scoped_config"));
+    public static final ReloaderType<DataConfigs> RELOADER = ReloaderType.create(Andromeda.id("scoped_config"));
 
     public DataConfigs() {
         super(RELOADER.identifier());

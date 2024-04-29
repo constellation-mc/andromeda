@@ -5,8 +5,8 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Common;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.expression.Arithmetica;
@@ -44,7 +44,7 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmeti
         ).apply(data, Entry::new));
     }
 
-    public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Common.id("egg_processing"));
+    public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Andromeda.id("egg_processing"));
 
     public static void init() {
         ServerReloadersEvent.EVENT.register(context -> context.register(new Reloader()));

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;

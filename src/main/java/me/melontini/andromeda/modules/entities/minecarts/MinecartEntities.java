@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.minecarts;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import me.melontini.andromeda.modules.entities.minecarts.entities.JukeboxMinecartEntity;
 import me.melontini.andromeda.modules.entities.minecarts.entities.NoteBlockMinecartEntity;
@@ -11,7 +11,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class MinecartEntities {
 

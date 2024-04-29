@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class BoatEntities {
 

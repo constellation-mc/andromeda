@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.blocks.better_fletching_table;
 import com.google.common.collect.Sets;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.Set;
 
-import static me.melontini.andromeda.common.registries.Common.id;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class Main {
 

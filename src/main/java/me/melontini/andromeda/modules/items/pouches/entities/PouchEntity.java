@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.items.pouches.entities;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import me.melontini.andromeda.common.registries.Keeper;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.pouches.Main;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
