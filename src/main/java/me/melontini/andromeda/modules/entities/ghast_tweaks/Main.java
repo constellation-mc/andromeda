@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.ghast_tweaks;
 
+import com.google.common.base.Suppliers;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.loot.context.LootContext;
@@ -15,14 +16,18 @@ public class Main {
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
             if (entity instanceof GhastEntity) {
                 var c = entity.world.am$get(module);
-                if (c.c.explodeOnDeath) entity.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), c.c.explosionPower.asFloat(() -> {
+                if (!c.e.enabled) return;
+
+                var supplier = Suppliers.memoize(() -> {
                     LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) entity.world)
                             .add(LootContextParameters.ORIGIN, entity.getPos())
                             .add(LootContextParameters.THIS_ENTITY, entity)
                             .build(LootContextTypes.COMMAND);
 
                     return new LootContext.Builder(set).build(null);
-                }), World.ExplosionSourceType.MOB);
+                });
+
+                if (c.c.explodeOnDeath.asBoolean(supplier)) entity.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), c.c.explosionPower.asFloat(supplier), World.ExplosionSourceType.MOB);
             }
         });
     }

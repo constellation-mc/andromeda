@@ -4,9 +4,9 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
-import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.items.lockpick.client.Client;
-import me.melontini.dark_matter.api.base.util.MathUtil;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 
 import java.util.List;
 
@@ -19,16 +19,11 @@ public class Lockpick extends Module<Lockpick.Config> {
         InitEvent.client(this).listen(() -> List.of(Client.class));
     }
 
-    public boolean rollLockpick() {
-        var c = Andromeda.getConfig(this).c;
-        return c.chance - 1 == 0 || MathUtil.threadRandom().nextInt(c.chance - 1) == 0;
-    }
-
     public static class Config extends BaseConfig {
 
-        public int chance = 3;
+        public NumberIntermediary chance = NumberIntermediary.of(3);
 
-        public boolean breakAfterUse = true;
+        public BooleanIntermediary breakAfterUse = BooleanIntermediary.of(true);
 
         public boolean villagerInventory = true;
     }

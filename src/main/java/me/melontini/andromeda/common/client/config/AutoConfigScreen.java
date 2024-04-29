@@ -14,6 +14,7 @@ import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
@@ -235,6 +236,43 @@ public class AutoConfigScreen {
                         }
                     }).build());
         }, NumberIntermediary.class);
+
+        TreeMap<String, BooleanIntermediary> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        var trueInt = BooleanIntermediary.of(true);
+        var falseInt = BooleanIntermediary.of(false);
+        map.put("true", trueInt);
+        map.put("false", falseInt);
+        map.put("yes", trueInt);
+        map.put("no", falseInt);
+        map.put("on", trueInt);
+        map.put("off", falseInt);
+
+        registry.registerTypeProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
+            BooleanIntermediary i = Utils.getUnsafely(field, config);
+            var p = root.getGson().toJsonTree(i, BooleanIntermediary.class).getAsJsonPrimitive();
+
+            BooleanIntermediary i1 = Utils.getUnsafely(field, defaults);
+            var p1 = root.getGson().toJsonTree(i1, BooleanIntermediary.class).getAsJsonPrimitive();
+
+            return Collections.singletonList(ENTRY_BUILDER.startStrField(Text.translatable(i18n), p.getAsString()).setDefaultValue(p1::getAsString)
+                    .setErrorSupplier(s -> {
+                        if (map.containsKey(s)) return Optional.empty();
+                        try {
+                            root.getGson().fromJson(new JsonPrimitive(s), BooleanIntermediary.class);
+                        } catch (Exception e1) {
+                            return Optional.of(TextUtil.literal(e1.getLocalizedMessage()));
+                        }
+                        return Optional.empty();
+                    })
+                    .setSaveConsumer((newValue) -> {
+                        var realNewValue = map.get(newValue);
+                        if (realNewValue != null) {
+                            Utils.setUnsafely(field, config, realNewValue);
+                        } else {
+                            Utils.setUnsafely(field, config, root.getGson().fromJson(new JsonPrimitive(newValue), BooleanIntermediary.class));
+                        }
+                    }).build());
+        }, BooleanIntermediary.class);
 
         registry.registerPredicateProvider((i18n, field, config, defaults, guiRegistryAccess) -> {
             List<Identifier> vals = Utils.getUnsafely(field, config);

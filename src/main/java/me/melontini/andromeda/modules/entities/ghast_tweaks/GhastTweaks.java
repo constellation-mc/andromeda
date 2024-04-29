@@ -4,6 +4,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class GhastTweaks extends Module<GhastTweaks.Config> {
     }
 
     public static class Config extends Module.BaseConfig {
-        public boolean explodeOnDeath = false;
+        public BooleanIntermediary explodeOnDeath = BooleanIntermediary.of(false);
         public NumberIntermediary explosionPower = NumberIntermediary.of(4);
     }
 }

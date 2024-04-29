@@ -16,6 +16,9 @@ import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.util.commander.bool.CommanderBooleanIntermediary;
+import me.melontini.andromeda.util.commander.bool.ConstantBooleanIntermediary;
 import me.melontini.andromeda.util.commander.number.CommanderNumberIntermediary;
 import me.melontini.andromeda.util.commander.number.ConstantNumberIntermediary;
 import me.melontini.andromeda.util.commander.number.NumberIntermediary;
@@ -71,8 +74,12 @@ public class Andromeda {
 
     public static void preMain() {
         ConfigGsonEvent.BUS.listen(builder -> {
-            Codec<NumberIntermediary> codec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
-            builder.registerTypeAdapter(NumberIntermediary.class, ConfigHandler.context(codec));
+            Codec<NumberIntermediary> numberIntermediaryCodec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
+            builder.registerTypeAdapter(NumberIntermediary.class, ConfigHandler.context(numberIntermediaryCodec));
+
+            Codec<BooleanIntermediary> booleanIntermediaryCodec = (Codec<BooleanIntermediary>) Support.fallback("commander", () -> CommanderBooleanIntermediary.CODEC, () -> ConstantBooleanIntermediary.CODEC);
+            builder.registerTypeAdapter(BooleanIntermediary.class, ConfigHandler.context(booleanIntermediaryCodec));
+
             builder.registerTypeAdapter(Identifier.class, ConfigHandler.context(Identifier.CODEC));
             builder.registerTypeAdapter(StatusEffect.class, ConfigHandler.context(Registries.STATUS_EFFECT.getCodec()));
             builder.registerTypeAdapter(Item.class, ConfigHandler.context(Registries.ITEM.getCodec()));

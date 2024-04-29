@@ -1,0 +1,27 @@
+package me.melontini.andromeda.util.commander.bool;
+
+import com.mojang.serialization.Codec;
+import lombok.Getter;
+import net.minecraft.loot.context.LootContext;
+
+import java.util.function.Supplier;
+
+public final class CommanderBooleanIntermediary implements BooleanIntermediary {
+
+    public static final Codec<CommanderBooleanIntermediary> CODEC = BooleanExpression.CODEC.xmap(CommanderBooleanIntermediary::new, CommanderBooleanIntermediary::getExpression);
+
+    @Getter
+    private final BooleanExpression expression;
+    private final boolean constant;
+
+
+    public CommanderBooleanIntermediary(BooleanExpression expression) {
+        this.expression = expression;
+        this.constant = expression.toSource().left().isPresent();
+    }
+
+    @Override
+    public boolean asBoolean(Supplier<LootContext> supplier) {
+        return this.expression.applyAsBoolean(constant ? null : supplier.get());
+    }
+}
