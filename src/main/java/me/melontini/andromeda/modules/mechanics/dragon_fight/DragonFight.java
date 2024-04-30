@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.List;
 

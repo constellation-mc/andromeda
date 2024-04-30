@@ -6,7 +6,6 @@ import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.common.util.TranslationKeyProvider;
 import me.melontini.andromeda.util.commander.number.NumberIntermediary;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.List;
 import java.util.Optional;
