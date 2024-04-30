@@ -258,13 +258,7 @@ public class NewAutoConfigScreen {
     }
 
     private static Runnable saver(Module<?> module) {
-        return () -> {
-            try {
-                Andromeda.rootHandler().save(module);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to save '%s' from the config screen!".formatted(module.meta().id()), e);
-            }
-        };
+        return () -> Andromeda.rootHandler().save(module);
     }
 
     private static <T extends AbstractConfigEntry<?>> T wrapSaveCallback(T e, Runnable saveFunc) {
@@ -288,7 +282,7 @@ public class NewAutoConfigScreen {
         }
         AndromedaConfig.save();
         var root = Andromeda.rootHandler();
-        ModuleManager.get().all().forEach(future -> Exceptions.run(() -> root.save(future.get())));
+        ModuleManager.get().all().forEach(future -> root.save(future.get()));
     }
 
     private static void setField(Field field, Object object, Object value) {

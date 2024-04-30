@@ -13,6 +13,7 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -85,7 +86,7 @@ public class ConfigHandler {
         this.configs.forEach((module, eEntry) -> consumer.accept(eEntry, module));
     }
 
-    public void save(Module<?> module) throws IOException {
+    public void save(Module<?> module) {
         if (!this.modules.contains(module)) throw new IllegalStateException(module.meta().id());
         var path = resolve(module);
 
@@ -96,10 +97,8 @@ public class ConfigHandler {
 
             if (path.getParent() != null) Files.createDirectories(path.getParent());
             Files.writeString(path, this.gson.toJson(ext));
-        } catch (IOException e) {
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("C: %s, E: %s".formatted(entry.c, entry.e), e);
+            LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);
         }
     }
 
@@ -128,6 +127,7 @@ public class ConfigHandler {
         try (var reader = Files.newBufferedReader(path)) {
             return parse(MakeSure.isTrue(JsonParser.parseReader(reader), JsonElement::isJsonObject), module);
         } catch (Exception e) {
+            LOGGER.error("Failed to load {}! Returning default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
             return Exceptions.supply(() -> {
                 var ext = BootstrapConfig.class.getConstructor().newInstance();
                 var c = ModuleManager.getConfigClass(module.getClass()).getConstructor().newInstance();
@@ -138,7 +138,7 @@ public class ConfigHandler {
 
     public void saveAll() {
         CompletableFuture.allOf(this.modules.stream().map(module ->
-                        CompletableFuture.runAsync(() -> Exceptions.run(() -> this.save(module))))
+                        CompletableFuture.runAsync(() -> this.save(module)))
                 .toArray(CompletableFuture[]::new)).join();
     }
 

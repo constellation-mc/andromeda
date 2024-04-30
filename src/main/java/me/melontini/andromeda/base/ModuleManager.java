@@ -94,7 +94,7 @@ public class ModuleManager {
             try (var reader = Files.newBufferedReader(path)) {
                 return Objects.requireNonNull(GSON.fromJson(reader, BootstrapConfig.class));
             } catch (Exception e) {
-                LOGGER.error("Failed to load {}! Resetting to default!", FabricLoader.getInstance().getConfigDir().relativize(path));
+                LOGGER.error("Failed to load {}! Resetting to default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
                 return new BootstrapConfig();
             }
         })));
@@ -215,7 +215,7 @@ public class ModuleManager {
             if (path.getParent() != null) Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(anew));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);
         }
     }
 
