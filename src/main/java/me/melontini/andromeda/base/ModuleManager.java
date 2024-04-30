@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.CustomLog;
 import lombok.NonNull;
+import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.Experiments;
@@ -100,6 +101,11 @@ public class ModuleManager {
         })));
         Map<Module<?>, BootstrapConfig> bootstrapConfigs = configs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().join(), (config, config2) -> { throw new IllegalStateException(); }, IdentityHashMap::new));
         this.configGetter = bootstrapConfigs::get;
+        bootstrapConfigs.forEach((module, config) -> {
+            Bus<ConfigEvent> bus = module.getOrCreateBus("bootstrap_config_event", null);
+            if (bus == null) return;
+            bus.invoker().accept(this, config);
+        });
 
         if (Debug.Keys.ENABLE_ALL_MODULES.isPresent()) bootstrapConfigs.values().forEach(c -> c.enabled = true);
         fixScopes(sorted);
