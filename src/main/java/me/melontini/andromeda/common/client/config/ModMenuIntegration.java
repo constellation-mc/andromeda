@@ -22,7 +22,7 @@ import static me.melontini.andromeda.util.CommonValues.MODID;
 @Environment(EnvType.CLIENT)
 public class ModMenuIntegration implements ModMenuApi {
 
-    public static final Function<Screen, Screen> SCREEN_PROVIDER = Support.support("cloth-config", () -> AutoConfigScreen::get, () -> screen -> null);
+    public static final Function<Screen, Screen> SCREEN_PROVIDER = Support.support("cloth-config", () -> NewAutoConfigScreen::get, () -> screen -> null);
 
     public static final Identifier WIKI_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/wiki_button.png");
     public static final Identifier LAB_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/lab_button.png");
