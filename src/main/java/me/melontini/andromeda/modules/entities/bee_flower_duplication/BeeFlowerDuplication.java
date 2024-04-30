@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.bee_flower_duplication;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -10,6 +11,7 @@ public class BeeFlowerDuplication extends Module<BeeFlowerDuplication.Config> {
     BeeFlowerDuplication() {
     }
 
+    @ToString
     public static class Config extends BaseConfig {
         public boolean tallFlowers = true;
     }

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -11,6 +12,7 @@ public class Snowballs extends Module<Snowballs.Config> {
     Snowballs() {
     }
 
+    @ToString
     public static class Config extends BaseConfig {
 
         public boolean freeze = true;

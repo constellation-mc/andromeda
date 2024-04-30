@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.gui.gui_particles;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -15,6 +16,7 @@ public class GuiParticles extends Module<GuiParticles.Config> {
         InitEvent.client(this).listen(() -> List.of(Client.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
 
         public boolean anvilScreenParticles = true;

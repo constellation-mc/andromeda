@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.better_furnace_minecart;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -12,6 +13,7 @@ public class BetterFurnaceMinecart extends Module<BetterFurnaceMinecart.Config> 
     BetterFurnaceMinecart() {
     }
 
+    @ToString
     public static class Config extends BaseConfig {
         public int maxFuel = 45000;
 

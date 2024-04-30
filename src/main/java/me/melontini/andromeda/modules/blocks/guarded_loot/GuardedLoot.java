@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -17,10 +18,10 @@ public class GuardedLoot extends Module<GuardedLoot.Config> {
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
         public NumberIntermediary range = NumberIntermediary.of(4);
         public boolean allowLockPicking = true;
-        @ConfigEntry.Gui.EnumHandler
         public BreakingHandler breakingHandler = BreakingHandler.UNBREAKABLE;
     }
 

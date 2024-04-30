@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.gui.smooth_tooltips;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -7,6 +8,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 @ModuleInfo(name = "smooth_tooltips", category = "gui", environment = Environment.CLIENT)
 public class SmoothTooltips extends Module<SmoothTooltips.Config> {
 
+    @ToString
     public static class Config extends BaseConfig {
         public int clampX = 30;
         public int clampY = 30;

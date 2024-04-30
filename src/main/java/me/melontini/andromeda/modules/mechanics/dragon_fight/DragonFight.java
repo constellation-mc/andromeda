@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.dragon_fight;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -17,18 +18,11 @@ public class DragonFight extends Module<DragonFight.Config> {
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
-
-        @ConfigEntry.Category("mechanics")
         public boolean respawnCrystals = true;
-
-        @ConfigEntry.Category("mechanics")
         public boolean scaleHealthByMaxPlayers = false;
-
-        @ConfigEntry.Category("mechanics")
         public boolean shorterCrystalTrackRange = true;
-
-        @ConfigEntry.Category("mechanics")
         public boolean shorterSpikes = false;
     }
 }

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.world.crop_temperature;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -14,6 +15,7 @@ public class PlantTemperature extends Module<PlantTemperature.Config> {
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
         public boolean affectBoneMeal = true;
     }

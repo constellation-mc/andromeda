@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.infinite_totem;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -15,6 +16,7 @@ public class InfiniteTotem extends Module<InfiniteTotem.Config> {
         InitEvent.client(this).listen(() -> List.of(Client.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
 
         public boolean enableAscension = true;

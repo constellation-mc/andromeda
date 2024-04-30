@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.misc.tiny_storage;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -20,6 +21,7 @@ public class TinyStorage extends Module<TinyStorage.Config> {
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
         public TransferMode transferMode = TransferMode.FOLLOW_GAMERULE;
     }

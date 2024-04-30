@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.tooltips;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -10,8 +11,8 @@ public class Tooltips extends Module<Tooltips.Config> {
     Tooltips() {
     }
 
+    @ToString
     public static class Config extends BaseConfig {
-
         public boolean clock = true;
         public boolean compass = true;
         public boolean recoveryCompass = true;

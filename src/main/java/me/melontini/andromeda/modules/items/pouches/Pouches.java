@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.pouches;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -21,6 +22,7 @@ public class Pouches extends Module<Pouches.Config> {
         InitEvent.server(this).listen(() -> List.of(Merged.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
         @ConfigEntry.Gui.RequiresRestart
         public boolean seedPouch = true;

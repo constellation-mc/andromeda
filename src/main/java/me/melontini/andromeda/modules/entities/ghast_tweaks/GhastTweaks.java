@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.ghast_tweaks;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -16,6 +17,7 @@ public class GhastTweaks extends Module<GhastTweaks.Config> {
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
+    @ToString
     public static class Config extends Module.BaseConfig {
         public BooleanIntermediary explodeOnDeath = BooleanIntermediary.of(false);
         public NumberIntermediary explosionPower = NumberIntermediary.of(4);

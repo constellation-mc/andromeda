@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.world.auto_planting;
 
 import com.google.common.collect.Lists;
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
@@ -16,10 +17,9 @@ public class AutoPlanting extends Module<AutoPlanting.Config> {
     AutoPlanting() {
     }
 
+    @ToString
     public static class Config extends BaseConfig {
-
         public boolean blacklistMode = true;
-
         public List<Item> idList = Lists.newArrayList();
     }
 }

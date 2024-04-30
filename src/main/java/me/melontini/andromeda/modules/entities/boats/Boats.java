@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -20,6 +21,7 @@ public class Boats extends Module<Boats.Config> {
         InitEvent.client(this).listen(() -> List.of(Client.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
 
         @Unscoped

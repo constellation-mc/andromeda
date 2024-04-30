@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -16,14 +17,11 @@ public class AdvancementGeneration extends Module<AdvancementGeneration.Config> 
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
+    @ToString
     public static class Config extends BaseConfig {
-
         public boolean requireAllItems = true;
-
         public boolean ignoreRecipesHiddenInTheRecipeBook = true;
-
         public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");
-
         public List<Identifier> recipeBlacklist = Arrays.asList();
     }
 }

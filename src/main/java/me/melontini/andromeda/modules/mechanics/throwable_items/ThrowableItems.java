@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
@@ -23,6 +24,7 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
         CommanderSupport.require(this);
     }
 
+    @ToString
     public static class Config extends BaseConfig {
         @SpecialEnvironment(Environment.SERVER)
         public boolean canZombiesThrowItems = true;
