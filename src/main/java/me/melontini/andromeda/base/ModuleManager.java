@@ -1,6 +1,5 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -86,18 +85,20 @@ public class ModuleManager {
             }
         }));
 
+        LOGGER.info("Loading bootstrap configs!");
         Map<Module<?>, CompletableFuture<BootstrapConfig>> configs = new IdentityHashMap<>();
         sorted.forEach(m -> configs.put(m, CompletableFuture.supplyAsync(() -> {
             var path = FabricLoader.getInstance().getConfigDir().resolve("andromeda/" + m.meta().id() + ".json");
             if (!Files.exists(path)) return new BootstrapConfig();
 
             try (var reader = Files.newBufferedReader(path)) {
-                return GSON.fromJson(reader, BootstrapConfig.class);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                return Objects.requireNonNull(GSON.fromJson(reader, BootstrapConfig.class));
+            } catch (Exception e) {
+                LOGGER.error("Failed to load {}! Resetting to default!", FabricLoader.getInstance().getConfigDir().relativize(path));
+                return new BootstrapConfig();
             }
         })));
-        var bootstrapConfigs = new IdentityHashMap<>(Maps.transformValues(configs, CompletableFuture::join));
+        Map<Module<?>, BootstrapConfig> bootstrapConfigs = configs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().join(), (config, config2) -> { throw new IllegalStateException(); }, IdentityHashMap::new));
         this.configGetter = bootstrapConfigs::get;
 
         if (Debug.Keys.ENABLE_ALL_MODULES.isPresent()) bootstrapConfigs.values().forEach(c -> c.enabled = true);
@@ -201,8 +202,8 @@ public class ModuleManager {
         if (Files.exists(path)) {
             try (var reader = Files.newBufferedReader(path)) {
                 object = JsonParser.parseReader(reader).getAsJsonObject();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                object = new JsonObject();
             }
         }
 

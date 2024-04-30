@@ -31,6 +31,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -75,14 +76,15 @@ public class Andromeda {
     public static void preMain() {
         ConfigGsonEvent.BUS.listen(builder -> {
             Codec<NumberIntermediary> numberIntermediaryCodec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
-            builder.registerTypeAdapter(NumberIntermediary.class, ConfigHandler.context(numberIntermediaryCodec));
+            builder.registerTypeHierarchyAdapter(NumberIntermediary.class, ConfigHandler.context(numberIntermediaryCodec));
 
             Codec<BooleanIntermediary> booleanIntermediaryCodec = (Codec<BooleanIntermediary>) Support.fallback("commander", () -> CommanderBooleanIntermediary.CODEC, () -> ConstantBooleanIntermediary.CODEC);
-            builder.registerTypeAdapter(BooleanIntermediary.class, ConfigHandler.context(booleanIntermediaryCodec));
+            builder.registerTypeHierarchyAdapter(BooleanIntermediary.class, ConfigHandler.context(booleanIntermediaryCodec));
 
-            builder.registerTypeAdapter(Identifier.class, ConfigHandler.context(Identifier.CODEC));
-            builder.registerTypeAdapter(StatusEffect.class, ConfigHandler.context(Registries.STATUS_EFFECT.getCodec()));
-            builder.registerTypeAdapter(Item.class, ConfigHandler.context(Registries.ITEM.getCodec()));
+            builder.registerTypeHierarchyAdapter(Identifier.class, ConfigHandler.context(Identifier.CODEC));
+            builder.registerTypeHierarchyAdapter(StatusEffect.class, ConfigHandler.context(Registries.STATUS_EFFECT.getCodec()));
+            builder.registerTypeHierarchyAdapter(Item.class, ConfigHandler.context(Registries.ITEM.getCodec()));
+            builder.registerTypeHierarchyAdapter(Block.class, ConfigHandler.context(Registries.BLOCK.getCodec()));
         });
     }
 

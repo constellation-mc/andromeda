@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import lombok.CustomLog;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.dark_matter.api.base.util.Exceptions;
+import me.melontini.dark_matter.api.base.util.MakeSure;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -19,9 +21,11 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
+@CustomLog
 public class ConfigHandler {
 
     private final Map<Module<?>, Entry<?>> configs = new IdentityHashMap<>();
@@ -85,19 +89,26 @@ public class ConfigHandler {
         if (!this.modules.contains(module)) throw new IllegalStateException(module.meta().id());
         var path = resolve(module);
 
-        var ext = this.gson.toJsonTree(get(module).e).getAsJsonObject();
-        this.gson.toJsonTree(get(module).c).getAsJsonObject().asMap().forEach(ext::add);
+        var entry = get(module);
+        try {
+            var ext = this.gson.toJsonTree(entry.e).getAsJsonObject();
+            this.gson.toJsonTree(entry.c).getAsJsonObject().asMap().forEach(ext::add);
 
-        if (path.getParent() != null) Files.createDirectories(path.getParent());
-        Files.writeString(path, this.gson.toJson(ext));
+            if (path.getParent() != null) Files.createDirectories(path.getParent());
+            Files.writeString(path, this.gson.toJson(ext));
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("C: %s, E: %s".formatted(entry.c, entry.e), e);
+        }
     }
 
     public <T extends Module.BaseConfig> Entry<T> parse(JsonElement element, Module<T> module) {
         if (!element.isJsonObject()) throw new IllegalStateException("Not a JsonObject!");
 
         JsonObject object = element.getAsJsonObject();
-        var ext = this.gson.fromJson(object, BootstrapConfig.class);
-        var c = this.gson.fromJson(object, ModuleManager.getConfigClass(module.getClass()));
+        var ext = Objects.requireNonNull(this.gson.fromJson(object, BootstrapConfig.class));
+        var c = Objects.requireNonNull(this.gson.fromJson(object, ModuleManager.getConfigClass(module.getClass())));
         return new Entry<>((T) c, ext);
     }
 
@@ -115,7 +126,13 @@ public class ConfigHandler {
         }
 
         try (var reader = Files.newBufferedReader(path)) {
-            return parse(JsonParser.parseReader(reader), module);
+            return parse(MakeSure.isTrue(JsonParser.parseReader(reader), JsonElement::isJsonObject), module);
+        } catch (Exception e) {
+            return Exceptions.supply(() -> {
+                var ext = BootstrapConfig.class.getConstructor().newInstance();
+                var c = ModuleManager.getConfigClass(module.getClass()).getConstructor().newInstance();
+                return new Entry<>((T) c, ext);
+            });
         }
     }
 
