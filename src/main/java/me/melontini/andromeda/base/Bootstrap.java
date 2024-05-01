@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.base.util.Experiments;
-import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.*;
@@ -109,14 +107,7 @@ public class Bootstrap {
 
         run(Andromeda::preMain, b -> b.literal("Failed to pre-initialize Andromeda!"));
 
-        var manager = ModuleManager.get();
-        ConfigHandler handler = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), manager.all().stream().map(Promise::get).toList());
-        handler.loadAll();
-        manager.configGetter = new CG(handler);
-        Support.share("andromeda:root_handler", handler);
-        handler.saveAll();
-
-        for (Module<?> module : manager.loaded()) {
+        for (Module<?> module : ModuleManager.get().loaded()) {
             runInit("main", module);
         }
 

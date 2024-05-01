@@ -1,6 +1,5 @@
 package me.melontini.andromeda.common;//common between modules, not environments.
 
-import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
@@ -11,6 +10,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
@@ -45,7 +45,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
@@ -56,24 +55,9 @@ public class Andromeda {
 
     public static final Keeper<ItemGroup> GROUP = Keeper.create();
 
-    private static final Supplier<ConfigHandler> ROOT_HANDLER = Suppliers.memoize(() -> (ConfigHandler) FabricLoader.getInstance().getObjectShare().get("andromeda:root_handler"));
+    private static final ConfigHandler ROOT_HANDLER;
 
-    public static ConfigHandler rootHandler() {
-        return ROOT_HANDLER.get();
-    }
-
-    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Class<? extends Module<T>> cls) {
-        return rootHandler().get(cls);
-    }
-
-    public static  <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Module<T> module) {
-        return rootHandler().get(module);
-    }
-
-    @Getter
-    private @Nullable MinecraftServer currentServer;
-
-    public static void preMain() {
+    static {
         ConfigGsonEvent.BUS.listen(builder -> {
             Codec<NumberIntermediary> numberIntermediaryCodec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
             builder.registerTypeHierarchyAdapter(NumberIntermediary.class, ConfigHandler.context(numberIntermediaryCodec));
@@ -86,6 +70,30 @@ public class Andromeda {
             builder.registerTypeHierarchyAdapter(Item.class, ConfigHandler.context(Registries.ITEM.getCodec()));
             builder.registerTypeHierarchyAdapter(Block.class, ConfigHandler.context(Registries.BLOCK.getCodec()));
         });
+
+        ROOT_HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ModuleManager.get().all().stream().map(Promise::get).toList());
+    }
+
+    public static ConfigHandler rootHandler() {
+        return ROOT_HANDLER;
+    }
+
+    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Class<? extends Module<T>> cls) {
+        return ROOT_HANDLER.get(cls);
+    }
+
+    public static  <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Module<T> module) {
+        return ROOT_HANDLER.get(module);
+    }
+
+    @Getter
+    private @Nullable MinecraftServer currentServer;
+
+    public static void preMain() {
+        var manager = ModuleManager.get();
+        ROOT_HANDLER.loadAll();
+        manager.configGetter(module -> ROOT_HANDLER.get(module).e);
+        ROOT_HANDLER.saveAll();
     }
 
     public static void init() {

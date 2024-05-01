@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.CustomLog;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.base.util.BootstrapConfig;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * The ModuleManager is responsible for resolving and storing modules. It is also responsible for loading and fixing configs.
  */
-@CustomLog
+@CustomLog @Accessors(fluent = true)
 public class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
@@ -53,6 +55,7 @@ public class ModuleManager {
     private final Map<Class<?>, Module<?>> modules;
     private final Map<String, Module<?>> moduleNames;
 
+    @Setter
     Function<Module<?>, BootstrapConfig> configGetter;
 
     private final MixinProcessor mixinProcessor;

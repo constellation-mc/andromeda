@@ -12,22 +12,17 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.World;
 
+import java.util.function.Supplier;
+
 @CustomLog
 public class ScopedConfigs {
 
-    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T> get(World world, Module<T> module) {
-        if (world instanceof ServerWorld sw) {
-            return switch (Andromeda.getConfig(module).e.scope) {
-                case GLOBAL -> Andromeda.getConfig(module);
-                case WORLD -> ((AttachmentGetter)sw.getServer()).andromeda$getConfigs().get(module);
-                case DIMENSION -> ((AttachmentGetter)sw).andromeda$getConfigs().get(module);
-            };
-        }
-        LOGGER.error("Scoped configs requested on client! Returning un-scoped!", AndromedaException.builder()
-                .add("module", module.meta().id())
-                .add("world", world.getRegistryKey())
-                .build());
-        return Andromeda.getConfig(module);
+    public static <T extends Module.BaseConfig> Supplier<ConfigHandler.Entry<T>> get(ServerWorld world, Module<T> module) {
+        return switch (Andromeda.getConfig(module).e.scope) {
+            case GLOBAL -> () -> Andromeda.getConfig(module);
+            case WORLD -> () -> ((AttachmentGetter)world.getServer()).andromeda$getConfigs().get(module);
+            case DIMENSION -> () -> ((AttachmentGetter)world).andromeda$getConfigs().get(module);
+        };
     }
 
     public interface WorldExtension {
@@ -40,11 +35,15 @@ public class ScopedConfigs {
         }
 
         default <T extends Module.BaseConfig> ConfigHandler.Entry<T> am$get(Module<T> module) {
-            return ScopedConfigs.get((World) this, module);
+            LOGGER.error("Scoped configs requested on client! Returning un-scoped!", AndromedaException.builder()
+                    .add("module", module.meta().id())
+                    .add("world", ((World)this).getRegistryKey())
+                    .build());
+            return Andromeda.getConfig(module);
         }
 
         default boolean am$isReady() {
-            return this instanceof ServerWorld;
+            return false;
         }
     }
 
