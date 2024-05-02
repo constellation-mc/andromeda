@@ -23,7 +23,7 @@ public class MinecartBlockPicking extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static class Config extends GameConfig {
         public boolean spawnerPicking = false;
     }
 }

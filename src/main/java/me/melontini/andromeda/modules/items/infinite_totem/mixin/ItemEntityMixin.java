@@ -67,8 +67,9 @@ abstract class ItemEntityMixin extends Entity {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
         if (this.world.isClient()) return;
-        if (!world.am$get(InfiniteTotem.CONFIG).enableAscension) return;
         if (!this.dataTracker.get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
+        var c = world.am$get(InfiniteTotem.CONFIG);
+        if (!c.available || !c.enableAscension) return;
 
         if (age % 35 == 0 && andromeda$ascensionTicks == 0) {
             if (!andromeda$beaconCheck()) {

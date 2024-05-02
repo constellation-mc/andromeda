@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.minecart_block_picking.mixin;
 
+import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import me.melontini.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
 import me.melontini.andromeda.modules.items.minecart_block_picking.PlaceBehaviorHandler;
 import net.minecraft.block.AbstractRailBlock;
@@ -56,6 +57,7 @@ abstract class MinecartItemMixin extends Item {
 
             PickUpBehaviorHandler.getPickUpBehavior(state.getBlock()).ifPresent(b -> {
                 if (!world.isClient()) {
+                    if (!world.am$get(MinecartBlockPicking.CONFIG).available) return;
                     ItemStack stack1 = b.pickUp(state, world, pos);
                     if (stack1 == null || stack1.isEmpty()) return;
 

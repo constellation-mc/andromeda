@@ -12,7 +12,8 @@ abstract class AbstractMinecartEntityMixin {
     @ModifyReturnValue(method = "getMaxSpeed", at = @At("RETURN"))
     private double andromeda$getMaxSpeed(double original) {
         if (!((AbstractMinecartEntity) (Object) this).getWorld().isClient()) {
-            return original * ((AbstractMinecartEntity) (Object) this).getWorld().am$get(MinecartSpeedControl.CONFIG).modifier;
+            var c = ((AbstractMinecartEntity) (Object) this).getWorld().am$get(MinecartSpeedControl.CONFIG);
+            return c.available ? original * c.modifier : original;
         }
         return original;
     }

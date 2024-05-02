@@ -4,6 +4,7 @@ import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
@@ -17,6 +18,7 @@ public class DragonFight extends Module {
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     DragonFight() {
+        this.defineConfig(ConfigState.MAIN, CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 

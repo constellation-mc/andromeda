@@ -17,7 +17,7 @@ public class MinecartSpeedControl extends Module {
     }
 
     @ToString
-    public static class Config extends Module.BaseConfig {
+    public static class Config extends Module.GameConfig {
         public double modifier = 1d;
         public double furnaceModifier = 1d;
         public int additionalFurnaceFuel = 0;

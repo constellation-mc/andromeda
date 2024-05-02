@@ -69,7 +69,10 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
     @Override
     public double getMaxSpeed() {
         double d = (this.isTouchingWater() ? 0.08 : 0.1) / 20.0;
-        return optional.map(ms -> d * world.am$get(MinecartSpeedControl.CONFIG).modifier).orElse(d);
+        return optional.map(ms -> {
+            var c = world.am$get(MinecartSpeedControl.CONFIG);
+            return c.available ? d * c.modifier : d;
+        }).orElse(d);
     }
 
     @Override
