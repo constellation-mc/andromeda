@@ -51,10 +51,10 @@ public class NewAutoConfigScreen {
 
     private static final Reference2ReferenceMap<Predicate<Class<?>>, Entry> PROVIDERS = new Reference2ReferenceOpenHashMap<>();
     static final ConfigEntryBuilder ENTRY_BUILDER = ConfigEntryBuilder.create();
+    private static final Consumer<Object> DEFAULT_CONSUMER = object -> {};
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static final Optional<Field> saveCallback;
-    private static final ThreadLocal<Set<Runnable>> saveQueue = ThreadLocal.withInitial(HashSet::new);
 
     static {
         saveCallback = Support.fallback("cloth-config", () -> {
@@ -130,14 +130,18 @@ public class NewAutoConfigScreen {
     private static final Splitter SPLITTER = Splitter.on("-");
 
     public static Screen get(Screen parent) {
+        Set<Runnable> saveQueue = new LinkedHashSet<>();
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
                 .setTitle(TextUtil.translatable("config.andromeda.title", Iterables.get(SPLITTER.split(CommonValues.version()), 0)))
-                .setSavingRunnable(NewAutoConfigScreen::powerSave)
+                .setSavingRunnable(() -> powerSave(saveQueue))
                 .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
 
         Field field = Exceptions.supply(() -> MultiElementListEntry.class.getDeclaredField("entries"));
         field.setAccessible(true);
+
+        var handlers = Map.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER);
+        var defProvider = PROVIDERS.defaultReturnValue().provider();
 
         ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
             var category = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.%s".formatted(module.meta().category())));
@@ -145,74 +149,80 @@ public class NewAutoConfigScreen {
             String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
             var bootstrapConfig = ModuleManager.get().getConfig(module);
 
-            if (Set.of(ConfigState.MAIN, ConfigState.GAME).stream().map(module::getConfigDefinition).allMatch(Objects::isNull)) {
-                var r = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable(moduleText), bootstrapConfig.enabled)
-                        .setDefaultValue(() -> false)
-                        .setSaveConsumer(b -> bootstrapConfig.enabled = b)
-                        .requireRestart().build();
-                category.addEntry(wrapSaveCallback(standardForModule(r, module, "enabled"), () -> ModuleManager.get().saveBootstrap(module)));
-                return;
-            }
-            var subCategory = ENTRY_BUILDER.startSubCategory(TextUtil.translatable(moduleText));
+            var moduleCategory = ENTRY_BUILDER.startSubCategory(TextUtil.translatable(moduleText));
 
-            AbstractConfigListEntry<?> enabled = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable("config.andromeda.option.enabled"), bootstrapConfig.enabled)
-                    .setDefaultValue(() -> false)
-                    .setSaveConsumer(b -> bootstrapConfig.enabled = b)
-                    .requireRestart()
-                    .build();
-            subCategory.add(wrapSaveCallback(standardForModule(enabled, module, "enabled"), () -> ModuleManager.get().saveBootstrap(module)));
-
-            Map.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER).forEach((state, handler) -> {
+            handlers.forEach((state, handler) -> {
                 var definition = module.getConfigDefinition(state);
                 if (definition == null) return;
+
+                var stateKey = "config.andromeda.state.%s".formatted(state.name().toLowerCase(Locale.ROOT));
+                var stateCategory = ENTRY_BUILDER.startSubCategory(TextUtil.translatable(stateKey));
 
                 var config = handler.get(definition);
                 var defaultConfig = handler.getDefault(definition);
 
-                var e = PROVIDERS.defaultReturnValue().provider().getEntry(
-                        config.getClass(),
-                        config, defaultConfig, object -> {
-                        }, moduleText, new Context(false, () -> handler.save(module), null, module));
-                if (e instanceof MultiElementListEntry<?> listEntry) {
-                    List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
-                    subCategory.addAll(entries);
-                } else {
-                    throw new IllegalStateException(config.getClass().getName());
+                if (Experiments.get().scopedConfigs && Module.GameConfig.class.isAssignableFrom(definition.supplier().get())) {
+                    Module.GameConfig cfg = (Module.GameConfig) config;
+                    var availableKey = "config.andromeda.option.available";
+                    AbstractConfigListEntry<?> available = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable(availableKey), cfg.available)
+                            .setTooltip(TextUtil.translatable("%s.@Tooltip".formatted(availableKey)))
+                            .setDefaultValue(() -> true)
+                            .setSaveConsumer(b -> cfg.available = b).build();
+
+                    if (definition.supplier().get() == Module.GameConfig.class) {
+                        moduleCategory.add(wrapSaveCallback(available, () -> saveQueue.add(() -> handler.save(module))));
+                        return;
+                    }
+                    stateCategory.add(wrapSaveCallback(available, () -> saveQueue.add(() -> handler.save(module))));
                 }
+
+                var e = defProvider.getEntry(config.getClass(),
+                        config, defaultConfig, DEFAULT_CONSUMER,
+                        moduleText, new Context(false, () -> saveQueue.add(() -> handler.save(module)), null, module));
+                if (!(e instanceof MultiElementListEntry<?> listEntry))
+                    throw new IllegalStateException(config.getClass().getName());
+                List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
+                stateCategory.addAll(entries);
+                if (!stateCategory.isEmpty()) moduleCategory.add(stateCategory.build());
             });
-            category.addEntry(standardForModule(subCategory.build(), module, null));
+
+            if (moduleCategory.isEmpty()) {
+                var r = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable(moduleText), bootstrapConfig.enabled)
+                        .setDefaultValue(() -> false)
+                        .setSaveConsumer(b -> bootstrapConfig.enabled = b)
+                        .requireRestart().build();
+                category.addEntry(wrapSaveCallback(standardForModule(r, module, "enabled"), () -> saveQueue.add(() -> ModuleManager.get().saveBootstrap(module))));
+                return;
+            }
+
+            AbstractConfigListEntry<?> enabled = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable("config.andromeda.option.enabled"), bootstrapConfig.enabled)
+                    .setDefaultValue(() -> false)
+                    .setSaveConsumer(b -> bootstrapConfig.enabled = b)
+                    .requireRestart().build();
+            moduleCategory.add(0, wrapSaveCallback(enabled, () -> saveQueue.add(() -> ModuleManager.get().saveBootstrap(module))));
+            category.addEntry(standardForModule(moduleCategory.build(), module, null));
         });
 
         ConfigCategory misc = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.misc"));
 
-        var e = PROVIDERS.defaultReturnValue().provider().getEntry(
-                AndromedaConfig.Config.class,
-                AndromedaConfig.get(), AndromedaConfig.getDefault(), object -> {
-                }, "config.andromeda.base",
-                new Context(false, () -> {
-                    try {
-                        AndromedaConfig.save();
-                    } catch (Exception ex) {
-                        throw new RuntimeException("Failed to save mod.json from the config screen!", ex);
-                    }
-                }, null, null));
-        if (e instanceof MultiElementListEntry<?> listEntry) {
-            List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
-            entries.forEach(misc::addEntry);
-        } else {
+        var e = defProvider.getEntry(AndromedaConfig.Config.class,
+                AndromedaConfig.get(), AndromedaConfig.getDefault(), DEFAULT_CONSUMER, "config.andromeda.base",
+                new Context(false, AndromedaConfig::save, null, null));
+        if (!(e instanceof MultiElementListEntry<?> listEntry))
             throw new IllegalStateException(AndromedaConfig.Config.class.getName());
-        }
+        List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
+        entries.forEach(misc::addEntry);
 
         var screen = builder.build();
         ScreenEvents.AFTER_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
-            if (screen == screen1) {
-                var wiki = getWikiButton(client, screen);
-                addDrawableChild(screen, wiki);
+            if (screen != screen1) return;
 
-                var lab = new TexturedButtonWidget(screen.width - 62, 13, 20, 20, 0, 0, 20, LAB_BUTTON_TEXTURE, 32, 64, button -> client.setScreen(getLabScreen(screen1)));
-                lab.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.lab.tooltip")));
-                addDrawableChild(screen, lab);
-            }
+            var wiki = getWikiButton(client, screen);
+            addDrawableChild(screen, wiki);
+
+            var lab = new TexturedButtonWidget(screen.width - 62, 13, 20, 20, 0, 0, 20, LAB_BUTTON_TEXTURE, 32, 64, button -> client.setScreen(getLabScreen(screen1)));
+            lab.setTooltip(Tooltip.of(TextUtil.translatable("config.andromeda.button.lab.tooltip")));
+            addDrawableChild(screen, lab);
         });
         return screen;
     }
@@ -230,21 +240,18 @@ public class NewAutoConfigScreen {
 
         var e = PROVIDERS.defaultReturnValue().provider().getEntry(
                 Experiments.Config.class,
-                Experiments.get(), Experiments.getDefault(), object -> {
-                }, "config.andromeda.lab",
-                new Context(false, () -> {
-                }, null, null));
-        if (e instanceof MultiElementListEntry<?> listEntry) {
-            List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
-            entries.forEach(main::addEntry);
-        } else {
+                Experiments.get(), Experiments.getDefault(), DEFAULT_CONSUMER, "config.andromeda.lab",
+                new Context(false, () -> {}, null, null));
+        if (!(e instanceof MultiElementListEntry<?> listEntry))
             throw new IllegalStateException(AndromedaConfig.Config.class.getName());
-        }
+        List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
+        entries.forEach(main::addEntry);
 
         return builder.build();
     }
 
-    @NotNull private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
+    @NotNull
+    private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
         var wiki = new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
             if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
                 Debug.load();
@@ -275,16 +282,16 @@ public class NewAutoConfigScreen {
         Exceptions.run(() -> saveCallback.get().set(e, (Consumer<Object>) o -> {
             if (e.isEdited()) {
                 original.accept(o);
-                saveQueue.get().add(saveFunc);
+                saveFunc.run();
             }
         }));
         return e;
     }
 
-    private static void powerSave() {
+    private static void powerSave(Set<Runnable> saveQueue) {
         if (saveCallback.isPresent()) {
-            saveQueue.get().forEach(Runnable::run);
-            saveQueue.get().clear();
+            saveQueue.forEach(Runnable::run);
+            saveQueue.clear();
             return;
         }
         AndromedaConfig.save();

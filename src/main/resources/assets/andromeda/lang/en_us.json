@@ -5,7 +5,12 @@
 
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",
+  "config.andromeda.option.available": "Available",
+  "config.andromeda.option.available.@Tooltip": "This option dictates if this feature is active during gameplay.\nParticularly useful when used with scoped and data pack configs.",
   "config.andromeda.button.wiki": "Visit the wiki!",
+
+  "config.andromeda.state.main": "Main",
+  "config.andromeda.state.game": "Game",
 
   "andromeda.disconnected.module_mismatch": "Andromeda module mismatch!\nDisable: %s\n Enable: %s\nTo join this server!",
 

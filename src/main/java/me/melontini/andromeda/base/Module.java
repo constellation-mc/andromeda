@@ -14,6 +14,7 @@ import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,6 +114,7 @@ public abstract class Module {
     public static class BaseConfig { }
 
     public static class GameConfig extends BaseConfig {
+        @ConfigEntry.Gui.Excluded
         public boolean available = true;
     }
 
