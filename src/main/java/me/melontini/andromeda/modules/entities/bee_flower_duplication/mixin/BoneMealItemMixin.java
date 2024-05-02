@@ -18,8 +18,8 @@ abstract class BoneMealItemMixin {
 
     @Inject(at = @At("HEAD"), method = "useOnFertilizable", cancellable = true)
     private static void andromeda$useOnFertilizable(ItemStack stack, World world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        var config = world.am$get(BeeFlowerDuplication.class);
-        if (!config.e.enabled || !config.c.tallFlowers) return;
+        var config = world.am$get(BeeFlowerDuplication.CONFIG);
+        if (!config.available || !config.tallFlowers) return;
 
         BlockState blockState = world.getBlockState(pos);
         if (blockState.getBlock() instanceof TallFlowerBlock) {

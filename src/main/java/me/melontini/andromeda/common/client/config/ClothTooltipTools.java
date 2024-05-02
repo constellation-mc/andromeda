@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class ClothTooltipTools {
 
-    public static boolean checkOptionManager(AbstractConfigListEntry<?> e, Module<?> module, String field) {
+    public static boolean checkOptionManager(AbstractConfigListEntry<?> e, Module module, String field) {
         var opt = FeatureBlockade.get().explain(ModuleManager.get(), module, field);
         if (opt.isEmpty()) return true;
 
@@ -38,7 +38,7 @@ public class ClothTooltipTools {
         return false;
     }
 
-    public static <T extends AbstractConfigListEntry<?>> T appendDeprecationInfo(T e, Module<?> module) {
+    public static <T extends AbstractConfigListEntry<?>> T appendDeprecationInfo(T e, Module module) {
         if (e instanceof TooltipListEntry<?> t) {
             if (!module.getClass().isAnnotationPresent(Deprecated.class)) return e;
             appendText(t, TextUtil.translatable("andromeda.config.tooltip.deprecated").formatted(Formatting.RED));
@@ -46,7 +46,7 @@ public class ClothTooltipTools {
         return e;
     }
 
-    public static <T extends AbstractConfigListEntry<?>> T appendOrigin(T e, Module<?> module) {
+    public static <T extends AbstractConfigListEntry<?>> T appendOrigin(T e, Module module) {
         if (e instanceof TooltipListEntry<?> t) {
             if (!module.getClass().isAnnotationPresent(Origin.class)) return e;
             Origin origin = module.getClass().getAnnotation(Origin.class);
@@ -112,7 +112,7 @@ public class ClothTooltipTools {
         return e;
     }
 
-    public static <T extends AbstractConfigListEntry<?>> T setModuleTooltip(T e, Module<?> module) {
+    public static <T extends AbstractConfigListEntry<?>> T setModuleTooltip(T e, Module module) {
         if (e instanceof TooltipListEntry<?> t) {
             String s = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
             if (!I18n.hasTranslation(s)) return e;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.BlockadesEvent;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
@@ -83,10 +84,15 @@ public class AndromedaClient {
             String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
             if (!I18n.hasTranslation(m)) missing.add(m);
 
-            Arrays.stream(ModuleManager.getConfigClass(module.getClass()).getFields())
-                    .filter(f -> !"enabled".equals(f.getName()) && !f.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
-                    .map(field -> "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName()))
-                    .filter(I18n::hasTranslation).forEach(missing::add);
+            for (ConfigState value : ConfigState.values()) {
+                var def = module.get().getConfigDefinition(value);
+                if (def == null) continue;
+
+                Arrays.stream(def.supplier().get().getFields())
+                        .filter(f -> !f.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
+                        .map(field -> "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName()))
+                        .filter(I18n::hasTranslation).forEach(missing::add);
+            }
         }
         StringBuilder b = new StringBuilder();
         missing.forEach(s -> b.append('\t').append(s).append('\n'));

@@ -2,11 +2,19 @@ package me.melontini.andromeda.modules.gui.smooth_tooltips;
 
 import lombok.ToString;
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "smooth_tooltips", category = "gui", environment = Environment.CLIENT)
-public class SmoothTooltips extends Module<SmoothTooltips.Config> {
+public class SmoothTooltips extends Module {
+
+    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
+
+    SmoothTooltips() {
+        this.defineConfig(ConfigState.MAIN, CONFIG);
+    }
 
     @ToString
     public static class Config extends BaseConfig {

@@ -31,8 +31,8 @@ abstract class BedBlockMixin extends Block {
     public float andromeda$explosionRedirect(float power, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos, @Local(argsOnly = true) BlockState state, @Local(argsOnly = true) PlayerEntity player, @Local(argsOnly = true) Hand hand) {
         if (world.isClient()) return power;
 
-        var config = world.am$get(Power.class);
-        return config.e.enabled ? config.c.power.asFloat(() -> {
+        var config = world.am$get(Power.CONFIG);
+        return config.available ? config.power.asFloat(() -> {
             LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) world)
                     .add(ORIGIN, Vec3d.ofCenter(pos))
                     .add(BLOCK_STATE, state)

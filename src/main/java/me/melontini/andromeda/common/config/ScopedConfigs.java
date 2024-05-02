@@ -3,7 +3,9 @@ package me.melontini.andromeda.common.config;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
@@ -17,29 +19,25 @@ import java.util.function.Supplier;
 @CustomLog
 public class ScopedConfigs {
 
-    public static <T extends Module.BaseConfig> Supplier<ConfigHandler.Entry<T>> get(ServerWorld world, Module<T> module) {
-        return switch (Andromeda.getConfig(module).e.scope) {
-            case GLOBAL -> () -> Andromeda.getConfig(module);
-            case WORLD -> () -> ((AttachmentGetter)world.getServer()).andromeda$getConfigs().get(module);
-            case DIMENSION -> () -> ((AttachmentGetter)world).andromeda$getConfigs().get(module);
+    public static Supplier<Module.BaseConfig> get(ServerWorld world, Module module) {
+        var cd = module.getConfigDefinition(ConfigState.GAME);
+        return switch (ModuleManager.get().getConfig(module).scope) {
+            case GLOBAL -> () -> Andromeda.GAME_HANDLER.get(cd);
+            case WORLD -> () -> ((AttachmentGetter)world.getServer()).andromeda$getConfigs().get(cd);
+            case DIMENSION -> () -> ((AttachmentGetter)world).andromeda$getConfigs().get(cd);
         };
     }
 
     public interface WorldExtension {
-        default <T extends Module.BaseConfig> ConfigHandler.Entry<T> am$get(Class<? extends Module<T>> cls) {
-            return am$get(ModuleManager.quick(cls));
+        default Module.BaseConfig am$get(String module) {
+            return am$get(ModuleManager.get().getModule(module).orElseThrow(() -> new IllegalStateException("Module %s not found".formatted(module))).getConfigDefinition(ConfigState.GAME));
         }
 
-        default ConfigHandler.Entry<?> am$get(String module) {
-            return am$get(ModuleManager.get().getModule(module).orElseThrow(() -> new IllegalStateException("Module %s not found".formatted(module))));
-        }
-
-        default <T extends Module.BaseConfig> ConfigHandler.Entry<T> am$get(Module<T> module) {
+        default <T extends Module.BaseConfig> T am$get(ConfigDefinition<T> definition) {
             LOGGER.error("Scoped configs requested on client! Returning un-scoped!", AndromedaException.builder()
-                    .add("module", module.meta().id())
                     .add("world", ((World)this).getRegistryKey())
                     .build());
-            return Andromeda.getConfig(module);
+            return Andromeda.ROOT_HANDLER.get(definition);
         }
 
         default boolean am$isReady() {
@@ -63,10 +61,10 @@ public class ScopedConfigs {
         //ServerLifecycleEvents.SERVER_STARTING.register(server -> DataConfigs.get(server).apply((AttachmentGetter) server));
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            var list = manager.loaded().stream().filter(module -> Andromeda.getConfig(module).e.scope.isDimension()).toList();
+            var list = manager.loaded().stream().filter(module -> manager.getConfig(module).scope.isDimension()).toList();
             server.getWorlds().forEach(world -> manager.cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda"), list));
             manager.cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"),
-                    manager.loaded().stream().filter(module -> Andromeda.getConfig(module).e.scope.isWorld()).toList());
+                    manager.loaded().stream().filter(module -> manager.getConfig(module).scope.isWorld()).toList());
         });
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {

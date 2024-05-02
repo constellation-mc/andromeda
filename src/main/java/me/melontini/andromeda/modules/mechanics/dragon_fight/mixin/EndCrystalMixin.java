@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.mechanics.dragon_fight.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.EnderDragonManager;
@@ -29,7 +28,7 @@ abstract class EndCrystalMixin extends Entity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/decoration/EndCrystalEntity;remove(Lnet/minecraft/entity/Entity$RemovalReason;)V", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!Andromeda.getConfig(ModuleManager.quick(DragonFight.class)).c.respawnCrystals) return;
+        if (!Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).respawnCrystals) return;
 
         if (world.getRegistryKey() == World.END && !((ServerWorld) world).getAliveEnderDragons().isEmpty() && shouldShowBottom()) {
             if (this.getPos().getY() <= 71) return;

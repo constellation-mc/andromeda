@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import com.google.common.base.Suppliers;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -29,9 +28,9 @@ public class LockpickItem extends Item {
         super(settings);
     }
 
-    public boolean tryUse(Lockpick module, ItemStack stack, LivingEntity user, Hand hand) {
-        if (Andromeda.getConfig(module).e.enabled() && hand == Hand.MAIN_HAND) {
-            var c = Andromeda.getConfig(module).c;
+    public boolean tryUse(ItemStack stack, LivingEntity user, Hand hand) {
+        var c = user.world.am$get(Lockpick.CONFIG);
+        if (c.available && hand == Hand.MAIN_HAND) {
             var supplier = Suppliers.memoize(() -> {
                 LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) user.world)
                         .add(LootContextParameters.ORIGIN, user.getPos())
@@ -44,7 +43,7 @@ public class LockpickItem extends Item {
             int chance = c.chance.asInt(supplier);
 
             if (!(user instanceof PlayerEntity p && p.getAbilities().creativeMode)) {
-                if (Andromeda.getConfig(module).c.breakAfterUse.asBoolean(supplier)) {
+                if (c.breakAfterUse.asBoolean(supplier)) {
                     if (!user.world.isClient())
                         user.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
 
@@ -62,9 +61,8 @@ public class LockpickItem extends Item {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (user.world.isClient()) return ActionResult.SUCCESS;
 
-        Lockpick module = ModuleManager.quick(Lockpick.class);
-        if (entity instanceof MerchantEntity merchant && Andromeda.getConfig(module).c.villagerInventory) {
-            if (tryUse(module, stack, user, hand)) {
+        if (entity instanceof MerchantEntity merchant && Andromeda.ROOT_HANDLER.get(Lockpick.MAIN_CONFIG).villagerInventory) {
+            if (tryUse(stack, user, hand)) {
                 user.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player) -> new MerchantInventoryScreenHandler(syncId, inv, merchant.getInventory()), TextUtil.translatable("gui.andromeda.merchant")));
                 return ActionResult.SUCCESS;
             }

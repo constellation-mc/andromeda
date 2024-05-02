@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
-import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
@@ -35,7 +34,7 @@ public class Client {
         return showTooltip.contains(item);
     }
 
-    Client(ThrowableItems module) {
+    Client(ThrowableItems.MainConfig config) {
         Main.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
@@ -50,7 +49,7 @@ public class Client {
         });
 
         ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
-            if (Andromeda.getConfig(module).c.tooltip && hasTooltip(stack.getItem())) {
+            if (config.tooltip && hasTooltip(stack.getItem())) {
                 lines.add(TextUtil.translatable("tooltip.andromeda.throwable_item").formatted(Formatting.GRAY));
             }
         });

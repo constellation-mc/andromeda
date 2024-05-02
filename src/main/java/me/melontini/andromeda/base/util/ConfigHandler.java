@@ -9,72 +9,65 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 @CustomLog
 public class ConfigHandler {
 
-    private final Map<Module<?>, Entry<?>> configs = new IdentityHashMap<>();
-    private final Map<Module<?>, Entry<?>> defaultConfigs = new IdentityHashMap<>();
+    private final Map<ConfigDefinition<?>, Module.BaseConfig> configs = new IdentityHashMap<>();
+    private final Map<ConfigDefinition<?>, Module.BaseConfig> defaultConfigs = new IdentityHashMap<>();
 
     private final Path path;
-    private final Collection<? extends Module<?>> modules;
+    private final ConfigState state;
+    private final boolean topLevel;
+    private final Collection<? extends Module> modules;
     @Getter
     private final Gson gson;
 
     @Setter
     private ConfigHandler root;
 
-    public ConfigHandler(Path path, Collection<? extends Module<?>> modules) {
+    public ConfigHandler(Path path, boolean topLevel, ConfigState state, Collection<? extends Module> modules) {
         this.path = path;
-        this.modules = modules;
+        this.topLevel = topLevel;
+        this.state = state;
+        this.modules = modules.stream().filter(module -> module.getConfigDefinition(state) != null).toList();
         var builder = new GsonBuilder().setPrettyPrinting();
         ConfigGsonEvent.BUS.invoker().accept(builder);
         this.gson = builder.create();
     }
 
-    public Path resolve(Module<?> module) {
+    public ConfigHandler(Path path, ConfigState state, Collection<? extends Module> modules) {
+        this(path,false, state, modules);
+    }
+
+    public Path resolve(Module module) {
         return this.path.resolve("andromeda/" + module.meta().id() + ".json");
     }
 
-    public <T extends Module.BaseConfig> Entry<T> get(Class<? extends Module<T>> cls) {
-        return get(ModuleManager.quick(cls));
+    public <T extends Module.BaseConfig> T get(ConfigDefinition<T> module) {
+        return (T) this.configs.get(module);
     }
 
-    public <T extends Module.BaseConfig> Entry<T> get(Module<T> module) {
-        return (Entry<T>) this.configs.get(module);
-    }
-
-    public <T extends Module.BaseConfig> Entry<T> getDefault(Class<? extends Module<T>> cls) {
-        return get(ModuleManager.quick(cls));
-    }
-
-    public <T extends Module.BaseConfig> Entry<T> getDefault(Module<T> module) {
-        var entry = (Entry<T>) this.defaultConfigs.get(module);
+    public <T extends Module.BaseConfig> T getDefault(ConfigDefinition<T> module) {
+        var entry = (T) this.defaultConfigs.get(module);
         if (entry == null) {
             if (root != null) return root.getDefault(module);
 
             synchronized (this.defaultConfigs) {
                 entry = Exceptions.supply(() -> {
-                    var ext = BootstrapConfig.class.getConstructor().newInstance();
-                    var c = ModuleManager.getConfigClass(module.getClass()).getConstructor().newInstance();
-
-                    return new Entry<>((T) c, ext);
+                    var c = module.supplier().get().getConstructor().newInstance();
+                    return (T) c;
                 });
                 this.defaultConfigs.put(module, entry);
             }
@@ -82,57 +75,41 @@ public class ConfigHandler {
         return entry;
     }
 
-    public void forEach(BiConsumer<ConfigHandler.Entry<?>, Module<?>> consumer) {
-        this.configs.forEach((module, eEntry) -> consumer.accept(eEntry, module));
+    public void forEach(BiConsumer<Module.BaseConfig, Module> consumer) {
+        this.modules.forEach(module -> consumer.accept(get(module.getConfigDefinition(state)), module));
     }
 
-    public void save(Module<?> module) {
+    public void save(Module module) {
         if (!this.modules.contains(module)) throw new IllegalStateException(module.meta().id());
         var path = resolve(module);
 
-        var entry = get(module);
+        var entry = get(module.getConfigDefinition(state));
         try {
-            var ext = this.gson.toJsonTree(entry.e).getAsJsonObject();
-            this.gson.toJsonTree(entry.c).getAsJsonObject().asMap().forEach(ext::add);
+            JsonObject object;
+            if (!topLevel) {
+                if (Files.exists(path)) {
+                    try (var reader = Files.newBufferedReader(path)) {
+                        object = JsonParser.parseReader(reader).getAsJsonObject();
+                    } catch (Exception e) {
+                        object = new JsonObject();
+                    }
+                } else {
+                    object = new JsonObject();
+                }
+
+                var o = this.gson.toJsonTree(entry).getAsJsonObject();
+                if (!o.asMap().isEmpty()) {
+                    object.add(state.name().toLowerCase(Locale.ROOT), o);
+                    o.keySet().forEach(object::remove);
+                }
+            } else {
+                object = this.gson.toJsonTree(entry).getAsJsonObject();
+            }
 
             if (path.getParent() != null) Files.createDirectories(path.getParent());
-            Files.writeString(path, this.gson.toJson(ext));
+            Files.writeString(path, this.gson.toJson(object));
         } catch (Exception e) {
             LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);
-        }
-    }
-
-    public <T extends Module.BaseConfig> Entry<T> parse(JsonElement element, Module<T> module) {
-        if (!element.isJsonObject()) throw new IllegalStateException("Not a JsonObject!");
-
-        JsonObject object = element.getAsJsonObject();
-        var ext = Objects.requireNonNull(this.gson.fromJson(object, BootstrapConfig.class));
-        var c = Objects.requireNonNull(this.gson.fromJson(object, ModuleManager.getConfigClass(module.getClass())));
-        return new Entry<>((T) c, ext);
-    }
-
-    private <T extends Module.BaseConfig> Entry<T> load(Module<T> module) throws IOException {
-        if (!this.modules.contains(module)) throw new IllegalStateException(module.meta().id());
-        var path = resolve(module);
-        if (!Files.exists(path)) {
-            if (root != null) return root.load(module);
-
-            return Exceptions.supply(() -> {
-                var ext = BootstrapConfig.class.getConstructor().newInstance();
-                var c = ModuleManager.getConfigClass(module.getClass()).getConstructor().newInstance();
-                return new Entry<>((T) c, ext);
-            });
-        }
-
-        try (var reader = Files.newBufferedReader(path)) {
-            return parse(MakeSure.isTrue(JsonParser.parseReader(reader), JsonElement::isJsonObject), module);
-        } catch (Exception e) {
-            LOGGER.error("Failed to load {}! Returning default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
-            return Exceptions.supply(() -> {
-                var ext = BootstrapConfig.class.getConstructor().newInstance();
-                var c = ModuleManager.getConfigClass(module.getClass()).getConstructor().newInstance();
-                return new Entry<>((T) c, ext);
-            });
         }
     }
 
@@ -142,10 +119,37 @@ public class ConfigHandler {
                 .toArray(CompletableFuture[]::new)).join();
     }
 
+    public Module.BaseConfig parse(JsonElement element, Module module) {
+        if (!element.isJsonObject()) throw new IllegalStateException("Not a JsonObject!");
+
+        JsonObject object = element.getAsJsonObject();
+        if (!topLevel) {
+            object = Objects.requireNonNullElse(object.getAsJsonObject(state.name().toLowerCase(Locale.ROOT)), object);
+        }
+        return MakeSure.notNull(this.gson.fromJson(object, module.getConfigDefinition(state).supplier().get()));
+    }
+
+    private Module.BaseConfig load(Module module) {
+        if (!this.modules.contains(module)) throw new IllegalStateException(module.meta().id());
+        var path = resolve(module);
+        if (!Files.exists(path)) {
+            if (root != null) return root.load(module);
+
+            return Exceptions.supply(() -> module.getConfigDefinition(state).supplier().get().getConstructor().newInstance());
+        }
+
+        try (var reader = Files.newBufferedReader(path)) {
+            return parse(MakeSure.isTrue(JsonParser.parseReader(reader), JsonElement::isJsonObject), module);
+        } catch (Exception e) {
+            LOGGER.error("Failed to load {}! Returning default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
+            return Exceptions.supply(() -> module.getConfigDefinition(state).supplier().get().getConstructor().newInstance());
+        }
+    }
+
     public void loadAll() {
-        Map<Module<?>, CompletableFuture<Entry<?>>> configs = new IdentityHashMap<>();
-        for (Module<?> module : this.modules) {
-            configs.put(module, CompletableFuture.supplyAsync(() -> Exceptions.supply(() -> this.load(module))));
+        Map<ConfigDefinition<?>, CompletableFuture<Module.BaseConfig>> configs = new IdentityHashMap<>();
+        for (Module module : this.modules) {
+            configs.put(module.getConfigDefinition(state), CompletableFuture.supplyAsync(() -> this.load(module)));
         }
         this.configs.putAll(Maps.transformValues(configs, CompletableFuture::join));
     }

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.base;
 
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -26,8 +27,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,11 +51,11 @@ public class ModuleManager {
     private final Map<Class<?>, PromiseImpl<?>> discoveredModules;
     private final Map<String, PromiseImpl<?>> discoveredModuleNames;
 
-    private final Map<Class<?>, Module<?>> modules;
-    private final Map<String, Module<?>> moduleNames;
+    private final Map<Class<?>, Module> modules;
+    private final Map<String, Module> moduleNames;
 
     @Setter
-    Function<Module<?>, BootstrapConfig> configGetter;
+    Function<Module, BootstrapConfig> configGetter;
 
     private final MixinProcessor mixinProcessor;
 
@@ -72,7 +71,7 @@ public class ModuleManager {
             return Collections.unmodifiableMap(m);
         });
 
-        List<? extends Module<?>> sorted = zygotes.stream().map(Module.Zygote::supplier).map(s -> {
+        List<? extends Module> sorted = zygotes.stream().map(Module.Zygote::supplier).map(s -> {
             discoveredModules.get(s.get().getClass()).future().complete(Utilities.cast(s.get()));
             return s.get();
         }).toList();
@@ -90,19 +89,23 @@ public class ModuleManager {
         }));
 
         LOGGER.info("Loading bootstrap configs!");
-        Map<Module<?>, CompletableFuture<BootstrapConfig>> configs = new IdentityHashMap<>();
+        Map<Module, CompletableFuture<BootstrapConfig>> configs = new IdentityHashMap<>();
         sorted.forEach(m -> configs.put(m, CompletableFuture.supplyAsync(() -> {
             var path = FabricLoader.getInstance().getConfigDir().resolve("andromeda/" + m.meta().id() + ".json");
             if (!Files.exists(path)) return new BootstrapConfig();
 
             try (var reader = Files.newBufferedReader(path)) {
-                return Objects.requireNonNull(GSON.fromJson(reader, BootstrapConfig.class));
+                JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
+                if (object.has("bootstrap")) {
+                    object = object.getAsJsonObject("bootstrap");
+                }
+                return Objects.requireNonNull(GSON.fromJson(object, BootstrapConfig.class));
             } catch (Exception e) {
                 LOGGER.error("Failed to load {}! Resetting to default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
                 return new BootstrapConfig();
             }
         })));
-        Map<Module<?>, BootstrapConfig> bootstrapConfigs = configs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().join(), (config, config2) -> { throw new IllegalStateException(); }, IdentityHashMap::new));
+        Map<Module, BootstrapConfig> bootstrapConfigs = new IdentityHashMap<>(Maps.transformValues(configs, CompletableFuture::join));
         this.configGetter = bootstrapConfigs::get;
         bootstrapConfigs.forEach((module, config) -> {
             Bus<ConfigEvent> bus = module.getOrCreateBus("bootstrap_config_event", null);
@@ -127,7 +130,7 @@ public class ModuleManager {
         cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
     }
 
-    private void fixScopes(@NonNull Collection<? extends Module<?>> modules) {
+    private void fixScopes(@NonNull Collection<? extends Module> modules) {
         modules.forEach(m -> {
             var config = this.getConfig(m);
             if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) config.scope = BootstrapConfig.Scope.DIMENSION;
@@ -159,24 +162,7 @@ public class ModuleManager {
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
     }
 
-    /**
-     * Parses the config class from modules generic type.
-     *
-     * @param cls the module class.
-     * @return the config class.
-     */
-    public static Class<? extends Module.BaseConfig> getConfigClass(@NonNull Class<?> cls) {
-        if (cls.getGenericSuperclass() instanceof ParameterizedType pt) {
-            for (Type ta : pt.getActualTypeArguments()) {
-                if (ta instanceof Class<?> type && Module.BaseConfig.class.isAssignableFrom(type)) {
-                    return Utilities.cast(type);
-                }
-            }
-        }
-        return !Object.class.equals(cls.getSuperclass()) ? getConfigClass(cls.getSuperclass()) : Module.BaseConfig.class;
-    }
-
-    public void cleanConfigs(Path root, Collection<? extends Module<?>> modules) {
+    public void cleanConfigs(Path root, Collection<? extends Module> modules) {
         if (Files.exists(root)) {
             Set<Path> paths = collectPaths(Objects.requireNonNull(root.getParent(), () -> "Root config folder? %s".formatted(root)), modules);
             Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
@@ -192,7 +178,7 @@ public class ModuleManager {
         }
     }
 
-    private Set<Path> collectPaths(@NonNull Path root, @NonNull Collection<? extends Module<?>> modules) {
+    private Set<Path> collectPaths(@NonNull Path root, @NonNull Collection<? extends Module> modules) {
         Set<Path> paths = new HashSet<>();
 
         paths.add(root.resolve("andromeda/mod.json"));
@@ -204,7 +190,7 @@ public class ModuleManager {
         return Collections.unmodifiableSet(paths);
     }
 
-    public void saveBootstrap(Module<?> module) {
+    public void saveBootstrap(Module module) {
         var path = FabricLoader.getInstance().getConfigDir().resolve("andromeda/" + module.meta().id() + ".json");
 
         JsonObject object = new JsonObject();
@@ -216,19 +202,20 @@ public class ModuleManager {
             }
         }
 
-        JsonObject anew = new JsonObject();
-        GSON.toJsonTree(getConfig(module)).getAsJsonObject().asMap().forEach(anew::add);
-        object.asMap().forEach(anew::add);
+        var cfg = getConfig(module);
+        var o = GSON.toJsonTree(cfg).getAsJsonObject();
+        if (!object.has("bootstrap")) o.asMap().keySet().forEach(object::remove);
+        object.add("bootstrap", o);
 
         try {
             if (path.getParent() != null) Files.createDirectories(path.getParent());
-            Files.writeString(path, GSON.toJson(anew));
+            Files.writeString(path, GSON.toJson(object));
         } catch (IOException e) {
             LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);
         }
     }
 
-    public BootstrapConfig getConfig(Module<?> module) {
+    public BootstrapConfig getConfig(Module module) {
         return this.configGetter.apply(module);
     }
 
@@ -239,7 +226,7 @@ public class ModuleManager {
      * @param <T> the module type.
      * @return if a module is enabled.
      */
-    public <T extends Module<?>> boolean isPresent(Class<T> cls) {
+    public <T extends Module> boolean isPresent(Class<T> cls) {
         return modules.containsKey(cls);
     }
 
@@ -251,7 +238,7 @@ public class ModuleManager {
      * @return The module, if enabled, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
+    public <T extends Module> Optional<T> getModule(Class<T> cls) {
         return (Optional<T>) Optional.ofNullable(modules.get(cls));
     }
 
@@ -263,7 +250,7 @@ public class ModuleManager {
      * @return The module, if enabled, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<T> getModule(String name) {
+    public <T extends Module> Optional<T> getModule(String name) {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name));
     }
 
@@ -277,7 +264,7 @@ public class ModuleManager {
      * @return The module future, if discovered, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<Promise<T>> getDiscovered(Class<T> cls) {
+    public <T extends Module> Optional<Promise<T>> getDiscovered(Class<T> cls) {
         return Optional.ofNullable((Promise<T>) discoveredModules.get(cls));
     }
 
@@ -291,7 +278,7 @@ public class ModuleManager {
      * @return The module future, if discovered, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<Promise<T>> getDiscovered(String name) {
+    public <T extends Module> Optional<Promise<T>> getDiscovered(String name) {
         return Optional.ofNullable((Promise<T>) discoveredModuleNames.get(name));
     }
 
@@ -310,7 +297,7 @@ public class ModuleManager {
      *
      * @return a collection of all loaded modules.
      */
-    public Collection<Module<?>> loaded() {
+    public Collection<Module> loaded() {
         return Collections.unmodifiableCollection(modules.values());
     }
 
@@ -323,7 +310,7 @@ public class ModuleManager {
      * @return the module instance.
      * @throws IllegalStateException if the module is not loaded.
      */
-    public static <T extends Module<?>> T quick(Class<T> cls) {
+    public static <T extends Module> T quick(Class<T> cls) {
         return get().getModule(cls).orElseThrow(() -> new IllegalStateException("Module %s requested quickly, but is not loaded.".formatted(cls)));
     }
 
@@ -337,7 +324,7 @@ public class ModuleManager {
     }
 
     void print() {
-        Map<String, Set<Module<?>>> categories = Utilities.supply(new LinkedHashMap<>(), map -> loaded().forEach(m ->
+        Map<String, Set<Module>> categories = Utilities.supply(new LinkedHashMap<>(), map -> loaded().forEach(m ->
                 map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 
         StringBuilder builder = new StringBuilder();

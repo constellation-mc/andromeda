@@ -35,8 +35,8 @@ abstract class CampfireBlockEntityMixin {
     private static void andromeda$litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
         if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
-                    var config = world.am$get(CampfireEffects.class);
-                    if (!config.e.enabled) return;
+                    var config = world.am$get(CampfireEffects.CONFIG);
+                    if (!config.available) return;
 
                     List<LivingEntity> entities = new ArrayList<>();
                     var supplier = Suppliers.memoize(() -> {
@@ -49,13 +49,13 @@ abstract class CampfireBlockEntityMixin {
 
                         return new LootContext.Builder(set).build(null);
                     });
-                    double rad = config.c.effectsRange.asDouble(supplier);
+                    double rad = config.effectsRange.asDouble(supplier);
                     world.getEntityLookup().forEachIntersects(new Box(pos).expand(rad), entity -> {
-                        if ((entity instanceof PassiveEntity && config.c.affectsPassive) || entity instanceof PlayerEntity) {
+                        if ((entity instanceof PassiveEntity && config.affectsPassive) || entity instanceof PlayerEntity) {
                             entities.add((LivingEntity) entity);
                         }
                     });
-                    List<CampfireEffects.Config.Effect> effects = config.c.effectList;
+                    List<CampfireEffects.Config.Effect> effects = config.effectList;
 
                     for (LivingEntity player : entities) {
                         for (CampfireEffects.Config.Effect effect : effects) {

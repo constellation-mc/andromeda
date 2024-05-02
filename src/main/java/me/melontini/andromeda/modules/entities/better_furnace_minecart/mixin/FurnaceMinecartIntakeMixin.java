@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.better_furnace_minecart.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
@@ -28,7 +27,6 @@ import static me.melontini.dark_matter.api.base.util.Exceptions.supply;
 
 @Mixin(FurnaceMinecartEntity.class)
 abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
-    @Unique private static final BetterFurnaceMinecart am$bfm = ModuleManager.quick(BetterFurnaceMinecart.class);
 
     //stfu IDEA.
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -43,7 +41,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
-        if (!Andromeda.getConfig(am$bfm).c.takeFuelWhenLow) return;
+        if (!Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).takeFuelWhenLow) return;
 
         if (!this.world.isClient() && this.fuel < 100) {
             if (world.getTime() % 20 == 0) {
@@ -59,7 +57,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
                         ItemStack stack = inventory.getStack(i);
                         if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
                             int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
-                            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.getConfig(am$bfm).c.maxFuel) {
+                            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
                                 ItemStack reminder = stack.getRecipeRemainder();
                                 if (!reminder.isEmpty())
                                     ItemStackUtil.spawn(entity.getPos(), stack.getRecipeRemainder(), world);

@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.mechanics.trading_goat_horn.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.modules.mechanics.trading_goat_horn.CustomTraderManager;
-import me.melontini.andromeda.modules.mechanics.trading_goat_horn.GoatHorn;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GoatHornItem;
 import net.minecraft.item.Instrument;
@@ -34,7 +34,7 @@ abstract class GoatHornMixin {
         if (!Objects.equals(identifier, SING_ID)) return;
 
         ServerWorld sw = (ServerWorld) world;
-        if (!sw.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) || !world.am$get(GoatHorn.class).e.enabled) return;
+        if (!sw.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) || !world.am$get(ConfigDefinition.GAME).available) return;
 
         sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).trySpawn((ServerWorld) world, sw.getServer().getSaveProperties().getMainWorldProperties(), user);
     }

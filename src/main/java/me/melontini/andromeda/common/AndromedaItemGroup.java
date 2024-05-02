@@ -28,42 +28,42 @@ public class AndromedaItemGroup {
     }
 
     public interface Acceptor {
-        void stack(Module<?> module, RegistryKey<ItemGroup> main, ItemStack stack);
+        void stack(Module module, RegistryKey<ItemGroup> main, ItemStack stack);
 
-        default void stacks(Module<?> module, RegistryKey<ItemGroup> main, List<ItemStack> stacks) {
+        default void stacks(Module module, RegistryKey<ItemGroup> main, List<ItemStack> stacks) {
             for (ItemStack stack : stacks) {
                 stack(module, main, stack);
             }
         }
 
-        default <T extends ItemConvertible> void items(Module<?> module, RegistryKey<ItemGroup> main, List<T> items) {
+        default <T extends ItemConvertible> void items(Module module, RegistryKey<ItemGroup> main, List<T> items) {
             stacks(module, main, items.stream().map(ItemStack::new).toList());
         }
 
-        default <T extends ItemConvertible> void item(Module<?> module, RegistryKey<ItemGroup> main, T item) {
+        default <T extends ItemConvertible> void item(Module module, RegistryKey<ItemGroup> main, T item) {
             stack(module, main, new ItemStack(item));
         }
 
-        default <T extends ItemConvertible> void keepers(Module<?> module, RegistryKey<ItemGroup> main, List<Keeper<? extends ItemConvertible>> keepers) {
+        default <T extends ItemConvertible> void keepers(Module module, RegistryKey<ItemGroup> main, List<Keeper<? extends ItemConvertible>> keepers) {
             stacks(module, main, keepers.stream().filter(Keeper::isPresent).map(Keeper::orThrow).map(ItemStack::new).toList());
         }
 
-        default <T extends ItemConvertible> void keeper(Module<?> module, RegistryKey<ItemGroup> main, Keeper<T> keeper) {
+        default <T extends ItemConvertible> void keeper(Module module, RegistryKey<ItemGroup> main, Keeper<T> keeper) {
             if (keeper.isPresent()) stack(module, main, new ItemStack(keeper.orThrow()));
         }
     }
 
     public static ItemGroup create() {
         return ItemGroupBuilder.create(id("group")).entries(entries -> {
-            Map<Module<?>, List<ItemStack>> stackMap = new LinkedHashMap<>();
+            Map<Module, List<ItemStack>> stackMap = new LinkedHashMap<>();
             AndromedaItemGroup.Acceptor acceptor = (module, main, stack) -> {
                 if (!stack.isEmpty()) {
                     stackMap.computeIfAbsent(module, module1 -> new ArrayList<>()).add(stack);
                 }
             };
             AndromedaItemGroup.getAcceptors().forEach(consumer -> consumer.accept(acceptor));
-            Map<Module<?>, List<ItemStack>> small = new LinkedHashMap<>();
-            Map<Module<?>, List<ItemStack>> big = new LinkedHashMap<>();
+            Map<Module, List<ItemStack>> small = new LinkedHashMap<>();
+            Map<Module, List<ItemStack>> big = new LinkedHashMap<>();
             if (stackMap.isEmpty()) {
                 entries.add(Items.BARRIER);
                 return;

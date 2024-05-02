@@ -40,7 +40,7 @@ public class Main {
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
             if (player.getAbilities().creativeMode) return true;
 
-            if (blockEntity instanceof LootableContainerBlockEntity && world.am$get(GuardedLoot.class).c.breakingHandler == GuardedLoot.BreakingHandler.UNBREAKABLE) {
+            if (blockEntity instanceof LootableContainerBlockEntity && world.am$get(GuardedLoot.CONFIG).breakingHandler == GuardedLoot.BreakingHandler.UNBREAKABLE) {
                 var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
                 if (monsters.isEmpty() || checkLockPicking(player)) return true;
                 handleLockedContainer(player, monsters);
@@ -52,10 +52,10 @@ public class Main {
 
     //TODO fix igloos. Maybe check reach?
     public static List<LivingEntity> checkMonsterLock(World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
-        var config = world.am$get(GuardedLoot.class);
-        if (!config.e.enabled) return Collections.emptyList();
+        var config = world.am$get(GuardedLoot.CONFIG);
+        if (!config.available) return Collections.emptyList();
 
-        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.c.range.asDouble(() -> {
+        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range.asDouble(() -> {
                     LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) world)
                             .add(ORIGIN, Vec3d.ofCenter(pos))
                             .add(BLOCK_STATE, state)
@@ -71,9 +71,9 @@ public class Main {
 
     public static boolean checkLockPicking(PlayerEntity player) {
         return ModuleManager.get().getModule(Lockpick.class).map(m -> {
-            if (player.world.am$get(GuardedLoot.class).c.allowLockPicking) {
+            if (player.world.am$get(GuardedLoot.CONFIG).allowLockPicking) {
                 if (player.getMainHandStack().isOf(LockpickItem.INSTANCE.orThrow())) {
-                    return LockpickItem.INSTANCE.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
+                    return LockpickItem.INSTANCE.orThrow().tryUse(player.getMainHandStack(), player, Hand.MAIN_HAND);
                 }
             }
             return false;

@@ -41,7 +41,7 @@ abstract class PlayerEntityMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V"), method = "dropInventory")
     private void andromeda$dropAll(CallbackInfo ci) {
-        if (Andromeda.getConfig(TinyStorage.class).c.transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
+        if (Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
 
         for(int i = 0; i < this.playerScreenHandler.getCraftingInput().size(); ++i) {
             ItemStack stack = this.playerScreenHandler.getCraftingInput().removeStack(i);

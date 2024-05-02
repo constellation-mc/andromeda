@@ -38,10 +38,10 @@ abstract class ItemEntityMixin {
         if (world.isClient()) return;
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof PlantBlock) {
             if (entity.age % MathUtil.nextInt(20, 101) != 0) return;
-            var config = world.am$get(module);
-            if (!config.e.enabled) return;
+            var config = world.am$get(AutoPlanting.CONFIG);
+            if (!config.available) return;
             if (!world.getFluidState(pos).isEmpty()) return;
-            if (config.c.blacklistMode == config.c.idList.contains(stack.getItem()))
+            if (config.blacklistMode == config.idList.contains(stack.getItem()))
                 return;
 
             blockItem.place(new ItemPlacementContext(world, null, null, stack,

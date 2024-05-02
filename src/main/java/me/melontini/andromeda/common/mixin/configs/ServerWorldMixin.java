@@ -2,7 +2,9 @@ package me.melontini.andromeda.common.mixin.configs;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.config.ScopedConfigs;
@@ -34,26 +36,31 @@ abstract class ServerWorldMixin extends World implements ScopedConfigs.Attachmen
         super(properties, registryRef, registryManager, dimensionEntry, profiler, isClient, debugWorld, biomeAccess, maxChainedNeighborUpdates);
     }
 
-    @Shadow @NotNull public abstract MinecraftServer getServer();
+    @Shadow
+    @NotNull public abstract MinecraftServer getServer();
 
     @Unique private ConfigHandler andromeda$configs;
-    @Unique private final Map<Module<?>, Supplier<ConfigHandler.Entry<Module.BaseConfig>>> andromeda$getters = new IdentityHashMap<>();
+    @Unique private final Map<ConfigDefinition<?>, Supplier<Module.BaseConfig>> andromeda$getters = new IdentityHashMap<>();
 
     @Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/world/ServerWorld;chunkManager:Lnet/minecraft/server/world/ServerChunkManager;", ordinal = 0, shift = At.Shift.AFTER), method = "<init>")
     private void andromeda$initStates(CallbackInfo ci) {
-        var modules = ModuleManager.get().loaded().stream().filter(m -> Andromeda.getConfig(m).e.scope.isDimension()).toList();
-        this.andromeda$configs = new ConfigHandler(getServer().session.getWorldDirectory(this.getRegistryKey()).resolve("world_config"), modules);
-        this.andromeda$configs.setRoot(Andromeda.rootHandler());
+        var manager = ModuleManager.get();
+        var modules = manager.loaded().stream().filter(m -> manager.getConfig(m).scope.isDimension()).toList();
+        this.andromeda$configs = new ConfigHandler(getServer().session.getWorldDirectory(this.getRegistryKey()).resolve("world_config"), true, ConfigState.GAME, modules);
+        this.andromeda$configs.setRoot(Andromeda.GAME_HANDLER);
 
         DataConfigs.get(this.getServer()).apply(this, this.getRegistryKey().getValue());
-        ModuleManager.get().loaded().forEach(module -> andromeda$getters.put(module, ScopedConfigs.get(((ServerWorld) (Object) this), (Module<Module.BaseConfig>) module)));
+        manager.loaded().stream().filter(m -> m.getConfigDefinition(ConfigState.GAME) != null)
+                .forEach(module -> andromeda$getters.put(
+                        module.getConfigDefinition(ConfigState.GAME),
+                        ScopedConfigs.get(((ServerWorld) (Object) this), module)));
     }
 
     @Override
-    public <T extends Module.BaseConfig> ConfigHandler.Entry<T> am$get(Module<T> module) {
+    public <T extends Module.BaseConfig> T am$get(ConfigDefinition<T> module) {
         var getter = andromeda$getters.get(module);
-        if (getter == null) throw new IllegalStateException(module.meta().id());
-        return (ConfigHandler.Entry<T>) getter.get();
+        if (getter == null) throw new IllegalStateException(String.valueOf(module));
+        return (T) getter.get();
     }
 
     @Override

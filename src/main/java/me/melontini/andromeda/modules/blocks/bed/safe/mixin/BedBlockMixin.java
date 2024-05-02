@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.blocks.bed.safe.mixin;
 
-import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
+import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -30,7 +30,7 @@ abstract class BedBlockMixin extends Block {
     public void andromeda$onUse(BlockState state, @NotNull World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         if (world.isClient()) return;
 
-        if (!isBedWorking(world) && world.am$get(Safe.class).e.enabled) {
+        if (!isBedWorking(world) && world.am$get(ConfigDefinition.GAME).available) {
             player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
             cir.setReturnValue(ActionResult.SUCCESS);
         }

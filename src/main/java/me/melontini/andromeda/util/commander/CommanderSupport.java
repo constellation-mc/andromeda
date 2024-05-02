@@ -10,7 +10,7 @@ public class CommanderSupport {
 
     private static final boolean LOADED = FabricLoader.getInstance().isModLoaded("commander");
 
-    public static void require(Module<?> module) {
+    public static void require(Module module) {
         if (module.meta().environment().isClient()) return;
 
         ConfigEvent.bootstrap(module).listen((moduleManager, config) -> {

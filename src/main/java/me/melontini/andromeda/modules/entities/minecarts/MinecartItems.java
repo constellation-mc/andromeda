@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.entities.minecarts;
 
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
@@ -55,7 +54,7 @@ public class MinecartItems {
 
         ModuleManager.get().getModule(MinecartBlockPicking.class).ifPresent(m -> {
             SPAWNER_MINECART.ifPresent(item -> PickUpBehaviorHandler.registerPickUpBehavior(Blocks.SPAWNER, (state, world, pos) -> {
-                if (Andromeda.getConfig(m).c.spawnerPicking) {
+                if (world.am$get(MinecartBlockPicking.CONFIG).spawnerPicking) {
                     MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
                     ItemStack spawnerMinecart = new ItemStack(item, 1);
                     spawnerMinecart.setNbt(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build());

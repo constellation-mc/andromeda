@@ -22,7 +22,7 @@ abstract class BoneMealItemMixin {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getBlockPos();
 
-        if (!world.isClient() && world.am$get(PlantTemperature.class).c.affectBoneMeal) {
+        if (!world.isClient() && world.am$get(PlantTemperature.CONFIG).affectBoneMeal) {
             Block block = world.getBlockState(pos).getBlock();
             if (!PlantTemperatureData.roll(block, world.getBiome(pos).value().getTemperature(), (ServerWorld) world)) {
                 cir.setReturnValue(ActionResult.FAIL);

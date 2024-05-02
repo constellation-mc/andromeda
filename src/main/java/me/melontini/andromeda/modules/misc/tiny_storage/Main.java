@@ -8,7 +8,7 @@ import net.minecraft.world.GameRules;
 public class Main {
     Main(TinyStorage module) {
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            if (alive || Andromeda.getConfig(module).c.transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER
+            if (alive || Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER
                     || newPlayer.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
                     || oldPlayer.isSpectator()) {
                 copyInputs(oldPlayer, newPlayer);

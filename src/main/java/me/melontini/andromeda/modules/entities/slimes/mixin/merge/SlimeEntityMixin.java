@@ -33,21 +33,21 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "initGoals")
     private void andromeda$newGoal(CallbackInfo ci) {
-        var config = this.world.am$get(am$slimes);
-        if (!config.e.enabled || !config.c.merge) return;
+        var config = this.world.am$get(Slimes.CONFIG);
+        if (!config.available || !config.merge) return;
 
         this.targetSelector.add(2, new ActiveTargetGoal<>((SlimeEntity) (Object) this, SlimeEntity.class, 5, true, false, livingEntity -> {
-            if (!config.e.enabled || !config.c.merge) return false;
+            if (!config.available || !config.merge) return false;
             if (this.andromeda$mergeCD > 0) return false;
             float d = livingEntity.distanceTo((SlimeEntity) (Object) this);
-            return d <= 6 && (getSize() <= config.c.maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
+            return d <= 6 && (getSize() <= config.maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
         }));
     }
 
     @Inject(at = @At("TAIL"), method = "pushAwayFrom")
     private void andromeda$push(Entity entity, CallbackInfo ci) {
-        var config = this.world.am$get(am$slimes);
-        if (!config.e.enabled || !config.c.merge) return;
+        var config = this.world.am$get(Slimes.CONFIG);
+        if (!config.available || !config.merge) return;
 
         if (getTarget() instanceof SlimeEntity slime && slime == entity && this.andromeda$mergeCD == 0) {
             int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);

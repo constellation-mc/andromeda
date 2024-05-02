@@ -9,6 +9,7 @@ import lombok.With;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.Andromeda;
@@ -141,37 +142,44 @@ public class NewAutoConfigScreen {
         ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
             var category = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.%s".formatted(module.meta().category())));
 
-            var config = Andromeda.getConfig(module);
-            var defaultConfig = Andromeda.rootHandler().getDefault(module);
             String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
+            var bootstrapConfig = ModuleManager.get().getConfig(module);
 
-            if (config.c.getClass() == Module.BaseConfig.class) {
-                var r = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable(moduleText), config.e.enabled)
-                        .setDefaultValue(() -> defaultConfig.e.enabled)
-                        .setSaveConsumer(b -> config.e.enabled = b)
+            if (Set.of(ConfigState.MAIN, ConfigState.GAME).stream().map(module::getConfigDefinition).allMatch(Objects::isNull)) {
+                var r = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable(moduleText), bootstrapConfig.enabled)
+                        .setDefaultValue(() -> false)
+                        .setSaveConsumer(b -> bootstrapConfig.enabled = b)
                         .requireRestart().build();
-                category.addEntry(standardForModule(r, module, "enabled"));
+                category.addEntry(wrapSaveCallback(standardForModule(r, module, "enabled"), () -> ModuleManager.get().saveBootstrap(module)));
                 return;
             }
+            var subCategory = ENTRY_BUILDER.startSubCategory(TextUtil.translatable(moduleText));
 
-            AbstractConfigListEntry<?> enabled = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable("config.andromeda.option.enabled"), config.e.enabled)
-                    .setDefaultValue(() -> defaultConfig.e.enabled)
-                    .setSaveConsumer(b -> config.e.enabled = b)
+            AbstractConfigListEntry<?> enabled = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable("config.andromeda.option.enabled"), bootstrapConfig.enabled)
+                    .setDefaultValue(() -> false)
+                    .setSaveConsumer(b -> bootstrapConfig.enabled = b)
                     .requireRestart()
                     .build();
+            subCategory.add(wrapSaveCallback(standardForModule(enabled, module, "enabled"), () -> ModuleManager.get().saveBootstrap(module)));
 
-            var subCategory = ENTRY_BUILDER.startSubCategory(TextUtil.translatable(moduleText));
-            var e = PROVIDERS.defaultReturnValue().provider().getEntry(
-                    config.c.getClass(),
-                    config.c, defaultConfig.c, object -> {
-                    }, moduleText, new Context(false, saver(module), null, module));
-            subCategory.add(enabled);
-            if (e instanceof MultiElementListEntry<?> listEntry) {
-                List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
-                subCategory.addAll(entries);
-            } else {
-                throw new IllegalStateException(config.c.getClass().getName());
-            }
+            Map.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER).forEach((state, handler) -> {
+                var definition = module.getConfigDefinition(state);
+                if (definition == null) return;
+
+                var config = handler.get(definition);
+                var defaultConfig = handler.getDefault(definition);
+
+                var e = PROVIDERS.defaultReturnValue().provider().getEntry(
+                        config.getClass(),
+                        config, defaultConfig, object -> {
+                        }, moduleText, new Context(false, () -> handler.save(module), null, module));
+                if (e instanceof MultiElementListEntry<?> listEntry) {
+                    List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
+                    subCategory.addAll(entries);
+                } else {
+                    throw new IllegalStateException(config.getClass().getName());
+                }
+            });
             category.addEntry(standardForModule(subCategory.build(), module, null));
         });
 
@@ -179,7 +187,8 @@ public class NewAutoConfigScreen {
 
         var e = PROVIDERS.defaultReturnValue().provider().getEntry(
                 AndromedaConfig.Config.class,
-                AndromedaConfig.get(), AndromedaConfig.getDefault(), object -> {}, "config.andromeda.base",
+                AndromedaConfig.get(), AndromedaConfig.getDefault(), object -> {
+                }, "config.andromeda.base",
                 new Context(false, () -> {
                     try {
                         AndromedaConfig.save();
@@ -221,8 +230,10 @@ public class NewAutoConfigScreen {
 
         var e = PROVIDERS.defaultReturnValue().provider().getEntry(
                 Experiments.Config.class,
-                Experiments.get(), Experiments.getDefault(), object -> {}, "config.andromeda.lab",
-                new Context(false, () -> {}, null, null));
+                Experiments.get(), Experiments.getDefault(), object -> {
+                }, "config.andromeda.lab",
+                new Context(false, () -> {
+                }, null, null));
         if (e instanceof MultiElementListEntry<?> listEntry) {
             List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
             entries.forEach(main::addEntry);
@@ -247,18 +258,14 @@ public class NewAutoConfigScreen {
         return wiki;
     }
 
-    private static <T extends AbstractConfigListEntry<?>> T standardForModule(T e, Module<?> module, String field) {
+    private static <T extends AbstractConfigListEntry<?>> T standardForModule(T e, Module module, String field) {
         if (field == null || checkOptionManager(e, module, field)) {
             setModuleTooltip(e, module);
             appendEnvInfo(e, module.meta().environment());
         }
         appendOrigin(e, module);
         appendDeprecationInfo(e, module);
-        return wrapSaveCallback(wrapTooltip(e), saver(module));
-    }
-
-    private static Runnable saver(Module<?> module) {
-        return () -> Andromeda.rootHandler().save(module);
+        return wrapTooltip(e);
     }
 
     private static <T extends AbstractConfigEntry<?>> T wrapSaveCallback(T e, Runnable saveFunc) {
@@ -281,8 +288,8 @@ public class NewAutoConfigScreen {
             return;
         }
         AndromedaConfig.save();
-        var root = Andromeda.rootHandler();
-        ModuleManager.get().all().forEach(future -> root.save(future.get()));
+        Andromeda.ROOT_HANDLER.saveAll();
+        Andromeda.GAME_HANDLER.saveAll();
     }
 
     private static void setField(Field field, Object object, Object value) {
@@ -369,6 +376,6 @@ public class NewAutoConfigScreen {
     }
 
     @With
-    public record Context(boolean generic, Runnable saver, Field field, Module<?> module) {
+    public record Context(boolean generic, Runnable saver, Field field, Module module) {
     }
 }

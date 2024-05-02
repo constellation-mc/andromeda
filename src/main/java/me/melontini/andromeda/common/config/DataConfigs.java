@@ -10,6 +10,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.common.Andromeda;
@@ -24,7 +25,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
@@ -48,19 +52,20 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
         }
     }
 
-    public Map<Identifier, Map<Module<?>, Set<Data>>> configs;
-    public Map<Module<?>, Set<Data>> defaultConfigs;
+    public Map<Identifier, Map<Module, Set<Data>>> configs;
+    public Map<Module, Set<Data>> defaultConfigs;
 
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
         if (!Experiments.get().scopedConfigs) return;
 
-        Map<Identifier, Map<Module<?>, Set<CompletableFuture<Data>>>> configs = new Object2ObjectOpenHashMap<>();
+        Map<Identifier, Map<Module, Set<CompletableFuture<Data>>>> configs = new Object2ObjectOpenHashMap<>();
         Maps.transformValues(data, JsonElement::getAsJsonObject).forEach((id, object) -> {
             var m = ModuleManager.get().getModule(id.getPath()).orElseThrow(() -> new IllegalStateException("Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
-            var cls = ModuleManager.getConfigClass(m.getClass());
+            var cls = m.getConfigDefinition(ConfigState.GAME).supplier().get();
+            var bootstrapConfig = ModuleManager.get().getConfig(m);
 
-            if (Andromeda.getConfig(m).e.scope.isWorld()) {
+            if (bootstrapConfig.scope.isWorld()) {
                 if (!object.has(DEFAULT.toString()) || object.size() > 1)
                     throw new IllegalStateException("'%s' modules only support '%s' as their dimension!".formatted(BootstrapConfig.Scope.WORLD, DEFAULT));
 
@@ -68,7 +73,7 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
                 map.computeIfAbsent(m, module -> new ReferenceLinkedOpenHashSet<>())
                         .add(makeFuture(m, cls, object.get(DEFAULT.toString())));
                 return;
-            } else if (Andromeda.getConfig(m).e.scope.isDimension()) {
+            } else if (bootstrapConfig.scope.isDimension()) {
                 object.entrySet().forEach(entry -> {
                     var map = configs.computeIfAbsent(Identifier.tryParse(entry.getKey()), string -> new Reference2ObjectOpenHashMap<>());
                     map.computeIfAbsent(m, module -> new ReferenceLinkedOpenHashSet<>())
@@ -79,7 +84,7 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
             throw new IllegalStateException("%s has an invalid scope!".formatted(m.meta().id()));
         });
 
-        Map<Identifier, Map<Module<?>, Set<Data>>> parsed = new Object2ObjectOpenHashMap<>();
+        Map<Identifier, Map<Module, Set<Data>>> parsed = new Object2ObjectOpenHashMap<>();
         CompletableFuture.allOf(configs.values().stream().flatMap(map -> map.values().stream())
                 .flatMap(Collection::stream).toArray(CompletableFuture[]::new)).handle((unused, throwable) -> configs).join().forEach((identifier, moduleSetMap) -> {
             var n = parsed.computeIfAbsent(identifier, id -> new Object2ObjectOpenHashMap<>());
@@ -92,27 +97,21 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
         this.configs = parsed;
     }
 
-    private CompletableFuture<Data> makeFuture(Module<?> m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
+    private CompletableFuture<Data> makeFuture(Module m, Class<? extends Module.BaseConfig> cls, JsonElement element) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                var parsed = Andromeda.rootHandler().parse(element, m);
-                var specified = new HashSet<>(element.getAsJsonObject().keySet());
+                var parsed = Andromeda.GAME_HANDLER.parse(element, m);
 
-                ReferenceOpenHashSet<Field> bootstrap = new ReferenceOpenHashSet<>();
                 ReferenceOpenHashSet<Field> config = new ReferenceOpenHashSet<>();
 
-                for (String field : specified) {
+                for (String field : element.getAsJsonObject().keySet()) {
                     try {
-                        bootstrap.add(assertScoped(BootstrapConfig.class.getField(field)));
-                    } catch (NoSuchFieldException e) {
-                        try {
-                            config.add(assertScoped(cls.getField(field)));
-                        } catch (NoSuchFieldException e1) {
-                            throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e1);
-                        }
+                        config.add(assertScoped(cls.getField(field)));
+                    } catch (NoSuchFieldException e1) {
+                        throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e1);
                     }
                 }
-                return new Data(config, bootstrap, parsed);
+                return new Data(config, parsed);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load config data for module '%s'".formatted(m.meta().id()), e);
             }
@@ -125,7 +124,7 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
         return field;
     }
 
-    public record Data(Set<Field> cFields, Set<Field> eFields, ConfigHandler.Entry<?> config) {
+    public record Data(Set<Field> cFields, Module.BaseConfig config) {
     }
 
     public void apply(ScopedConfigs.AttachmentGetter getter, Identifier identifier) {
@@ -138,25 +137,17 @@ public class DataConfigs extends IdentifiedJsonDataLoader {
         attachment.saveAll();
     }
 
-    private void apply(ConfigHandler.Entry<?> config, Data data) {
+    private void apply(Module.BaseConfig config, Data data) {
         data.cFields().forEach((field) -> {
             try {
-                field.set(config.c, field.get(data.config().c));
+                field.set(config, field.get(data.config()));
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to apply config data for module '%s'".formatted(config.c.getClass().getSimpleName()), e);
-            }
-        });
-
-        data.eFields().forEach((field) -> {
-            try {
-                field.set(config.e, field.get(data.config().e));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to apply config data for module '%s'".formatted(config.e.getClass().getSimpleName()), e);
+                throw new RuntimeException("Failed to apply config data for module '%s'".formatted(config.getClass().getSimpleName()), e);
             }
         });
     }
 
-    void applyDataPacks(ConfigHandler.Entry<?> config, Module<?> m, Identifier id) {
+    void applyDataPacks(Module.BaseConfig config, Module m, Identifier id) {
         if (defaultConfigs != null) {
             var forModule = defaultConfigs.get(m);
             if (forModule != null) {

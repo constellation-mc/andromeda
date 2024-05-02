@@ -15,8 +15,8 @@ public class Main {
     Main(GhastTweaks module) {
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
             if (entity instanceof GhastEntity) {
-                var c = entity.world.am$get(module);
-                if (!c.e.enabled) return;
+                var c = entity.world.am$get(GhastTweaks.CONFIG);
+                if (!c.available) return;
 
                 var supplier = Suppliers.memoize(() -> {
                     LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) entity.world)
@@ -27,7 +27,7 @@ public class Main {
                     return new LootContext.Builder(set).build(null);
                 });
 
-                if (c.c.explodeOnDeath.asBoolean(supplier)) entity.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), c.c.explosionPower.asFloat(supplier), World.ExplosionSourceType.MOB);
+                if (c.explodeOnDeath.asBoolean(supplier)) entity.world.createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), c.explosionPower.asFloat(supplier), World.ExplosionSourceType.MOB);
             }
         });
     }

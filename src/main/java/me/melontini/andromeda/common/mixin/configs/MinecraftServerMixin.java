@@ -2,6 +2,7 @@ package me.melontini.andromeda.common.mixin.configs;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.config.ScopedConfigs;
@@ -25,11 +26,13 @@ abstract class MinecraftServerMixin implements ScopedConfigs.AttachmentGetter {
 
     @Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/MinecraftServer;session:Lnet/minecraft/world/level/storage/LevelStorage$Session;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER), method = "<init>")
     private void andromeda$initStates(CallbackInfo ci) {
+        var manager = ModuleManager.get();
         this.andromeda$configs = new ConfigHandler(
-                this.session.getDirectory(WorldSavePath.ROOT).resolve("config"),
-                ModuleManager.get().loaded().stream().filter(m -> Andromeda.getConfig(m).e.scope.isWorld()).toList());
+                this.session.getDirectory(WorldSavePath.ROOT).resolve("config"), true,
+                ConfigState.GAME,
+                manager.loaded().stream().filter(m -> manager.getConfig(m).scope.isWorld()).toList());
+        this.andromeda$configs.setRoot(Andromeda.GAME_HANDLER);
 
-        this.andromeda$configs.setRoot(Andromeda.rootHandler());
         DataConfigs.get((MinecraftServer) (Object) this).apply(this, DataConfigs.DEFAULT);
     }
 

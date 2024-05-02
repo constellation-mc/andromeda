@@ -49,7 +49,7 @@ public class PlaceBehaviorHandler {
         registerPlaceBehavior(Items.FURNACE_MINECART, (stack, world, d, e, f, g, pos) -> {
             FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE);
 
-            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m -> Andromeda.getConfig(m).c.maxFuel).orElse(32000));
+            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m -> Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel).orElse(32000));
             furnaceMinecart.pushX = furnaceMinecart.getX() - pos.getX();
             furnaceMinecart.pushZ = furnaceMinecart.getZ() - pos.getZ();
             if (stack.hasCustomName()) furnaceMinecart.setCustomName(stack.getName());

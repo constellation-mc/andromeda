@@ -3,6 +3,8 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
@@ -15,13 +17,23 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "throwable_items", category = "mechanics")
-public class ThrowableItems extends Module<ThrowableItems.Config> {
+public class ThrowableItems extends Module {
+
+    public static final ConfigDefinition<MainConfig> MAIN_CONFIG = new ConfigDefinition<>(() ->  MainConfig.class);
+    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     ThrowableItems() {
+        this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
+        this.defineConfig(ConfigState.GAME, CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
         InitEvent.client(this).listen(() -> List.of(Client.class));
 
         CommanderSupport.require(this);
+    }
+
+    public static class MainConfig extends BaseConfig {
+        @SpecialEnvironment(Environment.BOTH)
+        public boolean tooltip = true;
     }
 
     @ToString
@@ -30,7 +42,5 @@ public class ThrowableItems extends Module<ThrowableItems.Config> {
         public boolean canZombiesThrowItems = true;
         @SpecialEnvironment(Environment.SERVER)
         public NumberIntermediary zombieThrowInterval = NumberIntermediary.of(40);
-        @SpecialEnvironment(Environment.BOTH)
-        public boolean tooltip = true;
     }
 }

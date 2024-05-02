@@ -38,7 +38,7 @@ public class EarlyLanguage {
         return translated.formatted(args);
     }
 
-    public static String translate(Module<?> module, String key, Object... args) {
+    public static String translate(Module module, String key, Object... args) {
         return translate("andromeda.%s.%s".formatted(module.meta().dotted(), key), args);
     }
 

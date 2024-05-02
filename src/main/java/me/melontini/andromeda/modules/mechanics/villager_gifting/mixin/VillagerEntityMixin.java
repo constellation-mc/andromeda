@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.villager_gifting.mixin;
 
+import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
-import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -37,7 +37,7 @@ abstract class VillagerEntityMixin extends MerchantEntity {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;getOffers()Lnet/minecraft/village/TradeOfferList;", shift = At.Shift.BEFORE), cancellable = true, method = "interactMob")
     private void andromeda$useGifts(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if (hand != Hand.MAIN_HAND || world.isClient()) return;
-        if (!world.am$get(VillagerGifting.class).e.enabled) return;
+        if (!world.am$get(ConfigDefinition.GAME).available) return;
 
         ItemStack stack = player.getStackInHand(hand);
 

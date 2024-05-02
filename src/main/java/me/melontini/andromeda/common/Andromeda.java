@@ -10,6 +10,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
@@ -55,7 +56,8 @@ public class Andromeda {
 
     public static final Keeper<ItemGroup> GROUP = Keeper.create();
 
-    private static final ConfigHandler ROOT_HANDLER;
+    public static final ConfigHandler ROOT_HANDLER;
+    public static final ConfigHandler GAME_HANDLER;
 
     static {
         ConfigGsonEvent.BUS.listen(builder -> {
@@ -71,28 +73,15 @@ public class Andromeda {
             builder.registerTypeHierarchyAdapter(Block.class, ConfigHandler.context(Registries.BLOCK.getCodec()));
         });
 
-        ROOT_HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ModuleManager.get().all().stream().map(Promise::get).toList());
-    }
-
-    public static ConfigHandler rootHandler() {
-        return ROOT_HANDLER;
-    }
-
-    public static <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Class<? extends Module<T>> cls) {
-        return ROOT_HANDLER.get(cls);
-    }
-
-    public static  <T extends Module.BaseConfig> ConfigHandler.Entry<T> getConfig(Module<T> module) {
-        return ROOT_HANDLER.get(module);
+        ROOT_HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ConfigState.MAIN, ModuleManager.get().all().stream().map(Promise::get).toList());
+        GAME_HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ConfigState.GAME, ModuleManager.get().all().stream().map(Promise::get).toList());
     }
 
     @Getter
     private @Nullable MinecraftServer currentServer;
 
     public static void preMain() {
-        var manager = ModuleManager.get();
         ROOT_HANDLER.loadAll();
-        manager.configGetter(module -> ROOT_HANDLER.get(module).e);
         ROOT_HANDLER.saveAll();
     }
 
@@ -101,6 +90,11 @@ public class Andromeda {
         instance.onInitialize(ModuleManager.get());
         Support.share("andromeda:main", instance);
         INSTANCE = instance;
+    }
+
+    public static void onMerged() {
+        GAME_HANDLER.loadAll();
+        GAME_HANDLER.saveAll();
     }
 
     public static Identifier id(String path) {

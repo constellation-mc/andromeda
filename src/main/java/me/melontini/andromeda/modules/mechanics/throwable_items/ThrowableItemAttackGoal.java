@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.common.Andromeda;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
@@ -119,7 +118,7 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     }
 
     public double getInterval() {
-        return Andromeda.getConfig(ThrowableItems.class).c.zombieThrowInterval.asDouble(() -> {
+        return mob.world.am$get(ThrowableItems.CONFIG).zombieThrowInterval.asDouble(() -> {
             LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) this.mob.world)
                     .add(LootContextParameters.ORIGIN, this.mob.getPos())
                     .add(LootContextParameters.THIS_ENTITY, this.mob)

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.vehicle_unentrapment;
 
+import me.melontini.andromeda.base.util.ConfigDefinition;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -18,7 +19,7 @@ public class Main {
     Main() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
             World world = entity.getWorld();
-            if (world.am$get(VehicleUnentrapment.class).e.enabled) {
+            if (world.am$get(ConfigDefinition.GAME).available) {
                 if (source.getAttacker() == null || entity instanceof PlayerEntity) return true;
                 if (!entity.getType().isIn(ESCAPE_VEHICLES_ON_HIT)) return true;
 

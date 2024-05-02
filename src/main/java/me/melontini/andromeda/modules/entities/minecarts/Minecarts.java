@@ -3,6 +3,8 @@ package me.melontini.andromeda.modules.entities.minecarts;
 import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
@@ -14,9 +16,12 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "minecarts", category = "entities")
-public class Minecarts extends Module<Minecarts.Config> {
+public class Minecarts extends Module {
+
+    public static final ConfigDefinition<Config> MAIN_CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     Minecarts() {
+        this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
         InitEvent.client(this).listen(() -> List.of(Client.class));
     }

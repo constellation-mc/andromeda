@@ -29,10 +29,10 @@ abstract class SnowballItemMixin extends Item {
     private void andromeda$useCooldown(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         if (world.isClient()) return;
 
-        var config = world.am$get(Snowballs.class);
-        if (!config.e.enabled || !config.c.enableCooldown) return;
+        var config = world.am$get(Snowballs.CONFIG);
+        if (!config.available || !config.extinguish) return;
 
-        user.getItemCooldownManager().set(this, config.c.cooldown.asInt(() -> {
+        user.getItemCooldownManager().set(this, config.cooldown.asInt(() -> {
             LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) world)
                     .add(LootContextParameters.ORIGIN, user.getPos())
                     .add(LootContextParameters.THIS_ENTITY, user)
