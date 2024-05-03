@@ -26,6 +26,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.api.*;
 import me.shedaniel.clothconfig2.gui.entries.MultiElementListEntry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -147,6 +148,8 @@ public class NewAutoConfigScreen {
         var handlers = Map.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER);
         var defProvider = PROVIDERS.defaultReturnValue().provider();
 
+        boolean commander = FabricLoader.getInstance().isModLoaded("commander");
+
         ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
             var category = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.%s".formatted(module.meta().category())));
 
@@ -165,7 +168,7 @@ public class NewAutoConfigScreen {
                 var config = handler.get(definition);
                 var defaultConfig = handler.getDefault(definition);
 
-                if (Experiments.get().scopedConfigs && Module.GameConfig.class.isAssignableFrom(definition.supplier().get())) {
+                if ((Experiments.get().scopedConfigs || commander) && Module.GameConfig.class.isAssignableFrom(definition.supplier().get())) {
                     var availableKey = "config.andromeda.option.available";
 
                     var available = availableProvider.getEntry(BooleanIntermediary.class,
