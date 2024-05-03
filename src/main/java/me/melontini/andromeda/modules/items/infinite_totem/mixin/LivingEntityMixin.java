@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
@@ -25,6 +26,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
 
@@ -37,7 +40,9 @@ abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean andromeda$infiniteFallback(boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
-        return original || (world.am$get(InfiniteTotem.CONFIG).available && itemStack.isOf(Main.INFINITE_TOTEM.orThrow()));
+        return original || (world.am$get(InfiniteTotem.CONFIG).available.asBoolean(LootContextUtil.entity(world,
+                Objects.requireNonNullElse(source.getPosition(), this.getPos()),
+                this, source, source.getAttacker(), source.getSource())) && itemStack.isOf(Main.INFINITE_TOTEM.orThrow()));
     }
 
     @WrapWithCondition(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))

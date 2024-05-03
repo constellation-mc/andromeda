@@ -8,7 +8,9 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 @ModuleInfo(name = "bed/safe", category = "blocks")
 public class Safe extends Module {
 
+    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+
     Safe() {
-        this.defineConfig(ConfigState.GAME, ConfigDefinition.GAME);
+        this.defineConfig(ConfigState.GAME, CONFIG);
     }
 }

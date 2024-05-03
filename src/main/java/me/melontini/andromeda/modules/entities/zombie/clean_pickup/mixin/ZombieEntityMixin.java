@@ -2,7 +2,8 @@ package me.melontini.andromeda.modules.entities.zombie.clean_pickup.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.modules.entities.zombie.clean_pickup.Pickup;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import net.minecraft.entity.EntityType;
@@ -26,7 +27,7 @@ abstract class ZombieEntityMixin extends HostileEntity {
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/HostileEntity;canPickupItem(Lnet/minecraft/item/ItemStack;)Z"), method = "canPickupItem")
     public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
-        if (world.am$get(ConfigDefinition.GAME).available) {
+        if (world.am$get(Pickup.CONFIG).available.asBoolean(LootContextUtil.command(world, this.getPos(), this))) {
             return original && (stack.isIn(PickupTag.ZOMBIES_PICKUP) || ModuleManager.get().getModule(ThrowableItems.class)
                     .map(m -> handleThrowableItems(m, world, stack))
                     .orElse(false));

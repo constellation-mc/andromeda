@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
 import me.melontini.andromeda.common.util.BlockUtil;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
@@ -52,6 +53,8 @@ abstract class ItemEntityMixin extends Entity {
     @Final
     private static TrackedData<ItemStack> STACK;
 
+    @Shadow public abstract ItemStack getStack();
+
     @Unique private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
     @Unique private static final Tuple<BeaconBlockEntity, Integer> ANDROMEDA$NULL_BEACON = Tuple.of(null, 0);
     @Unique private final List<Block> beaconBlocks = List.of(Blocks.DIAMOND_BLOCK, Blocks.NETHERITE_BLOCK);
@@ -67,9 +70,9 @@ abstract class ItemEntityMixin extends Entity {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
         if (this.world.isClient()) return;
-        if (!this.dataTracker.get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
+        if (!this.getDataTracker().get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
         var c = world.am$get(InfiniteTotem.CONFIG);
-        if (!c.available || !c.enableAscension) return;
+        if (!c.available.asBoolean(LootContextUtil.fishing(world, getPos(), getStack(), this)) || !c.enableAscension) return;
 
         if (age % 35 == 0 && andromeda$ascensionTicks == 0) {
             if (!andromeda$beaconCheck()) {

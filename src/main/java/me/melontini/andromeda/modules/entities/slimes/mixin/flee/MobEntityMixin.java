@@ -1,6 +1,8 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.flee;
 
+import com.google.common.base.Suppliers;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -21,7 +23,8 @@ abstract class MobEntityMixin extends Entity {
     private float andromeda$rotateSlime(float original, Entity targetEntity, float maxYawChange, float maxPitchChange) {
         if ((MobEntity) (Object) this instanceof SlimeEntity slime && !(targetEntity instanceof SlimeEntity)) {
             var config = world.am$get(Slimes.CONFIG);
-            if (config.available && config.flee && slime.isSmall()) {
+            var supplier = Suppliers.memoize(LootContextUtil.command(world, this.getPos(), this));
+            if (config.available.asBoolean(supplier) && config.flee && slime.isSmall()) {
                 return 270;
             }
         }

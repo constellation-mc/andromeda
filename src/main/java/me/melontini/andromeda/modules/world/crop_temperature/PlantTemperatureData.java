@@ -9,6 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -40,7 +41,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
     public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Andromeda.id("crop_temperatures"));
 
     public static boolean roll(Block block, float temp, ServerWorld world) {
-        if (!world.am$get(PlantTemperature.CONFIG).available) return false;
+        if (!world.am$get(PlantTemperature.CONFIG).available.asBoolean(LootContextUtil.empty(world))) return false;
 
         if (isPlant(block)) {
             PlantTemperatureData data = world.getServer().dm$getReloader(RELOADER).get(block);

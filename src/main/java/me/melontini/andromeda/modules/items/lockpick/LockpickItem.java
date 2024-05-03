@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.items.lockpick;
 import com.google.common.base.Suppliers;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.entity.EquipmentSlot;
@@ -11,12 +12,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
@@ -30,16 +26,8 @@ public class LockpickItem extends Item {
 
     public boolean tryUse(ItemStack stack, LivingEntity user, Hand hand) {
         var c = user.world.am$get(Lockpick.CONFIG);
-        if (c.available && hand == Hand.MAIN_HAND) {
-            var supplier = Suppliers.memoize(() -> {
-                LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) user.world)
-                        .add(LootContextParameters.ORIGIN, user.getPos())
-                        .add(LootContextParameters.TOOL, stack)
-                        .add(LootContextParameters.THIS_ENTITY, user)
-                        .build(LootContextTypes.FISHING);
-
-                return new LootContext.Builder(set).build(null);
-            });
+        var supplier = Suppliers.memoize(LootContextUtil.fishing(user.world, user.getPos(), user.getStackInHand(hand), user));
+        if (c.available.asBoolean(supplier) && hand == Hand.MAIN_HAND) {
             int chance = c.chance.asInt(supplier);
 
             if (!(user instanceof PlayerEntity p && p.getAbilities().creativeMode)) {

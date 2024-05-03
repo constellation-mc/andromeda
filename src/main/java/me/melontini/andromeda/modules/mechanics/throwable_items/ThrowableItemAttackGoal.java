@@ -1,15 +1,11 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -118,13 +114,6 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     }
 
     public double getInterval() {
-        return mob.world.am$get(ThrowableItems.CONFIG).zombieThrowInterval.asDouble(() -> {
-            LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) this.mob.world)
-                    .add(LootContextParameters.ORIGIN, this.mob.getPos())
-                    .add(LootContextParameters.THIS_ENTITY, this.mob)
-                    .build(LootContextTypes.COMMAND);
-
-            return new LootContext.Builder(set).build(null);
-        });
+        return mob.world.am$get(ThrowableItems.CONFIG).zombieThrowInterval.asDouble(LootContextUtil.command(mob.world, mob.getPos(), mob));
     }
 }

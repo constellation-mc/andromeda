@@ -1,7 +1,8 @@
 package me.melontini.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
-import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.common.util.BlockUtil;
+import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -19,6 +20,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,7 +45,7 @@ abstract class AbstractBlockMixin {
                     }
                 }
 
-                if (!world.isClient() && world.am$get(ConfigDefinition.GAME).available) {
+                if (!world.isClient() && world.am$get(CactusFiller.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
                     player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 

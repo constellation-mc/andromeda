@@ -9,7 +9,9 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 @ModuleInfo(name = "villagers_follow_emeralds", category = "entities", environment = Environment.SERVER)
 public class VillagersFollowEmeralds extends Module {
 
+    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+
     VillagersFollowEmeralds() {
-        this.defineConfig(ConfigState.GAME, ConfigDefinition.GAME);
+        this.defineConfig(ConfigState.GAME, CONFIG);
     }
 }

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.melt;
 
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
 import net.minecraft.entity.EntityType;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 
 @Mixin(SnowballEntity.class)
 abstract class SnowballEntityMixin extends ThrownItemEntity {
@@ -27,7 +29,7 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
         if (world.isClient() || !this.isOnFire()) return;
 
         var config = world.am$get(Snowballs.CONFIG);
-        if (!config.available || !config.melt) return;
+        if (!config.available.asBoolean(LootContextUtil.command(world, this.getPos(), this)) || !config.melt) return;
 
         ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.4);
         this.discard();

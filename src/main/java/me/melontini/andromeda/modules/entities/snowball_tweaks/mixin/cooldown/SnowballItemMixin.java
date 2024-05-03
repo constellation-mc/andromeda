@@ -1,15 +1,12 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.cooldown;
 
+import com.google.common.base.Suppliers;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SnowballItem;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -30,16 +27,9 @@ abstract class SnowballItemMixin extends Item {
         if (world.isClient()) return;
 
         var config = world.am$get(Snowballs.CONFIG);
-        if (!config.available || !config.extinguish) return;
+        var supplier = Suppliers.memoize(LootContextUtil.fishing(world, user.getPos(), user.getStackInHand(hand), user));
+        if (!config.available.asBoolean(supplier) || !config.extinguish) return;
 
-        user.getItemCooldownManager().set(this, config.cooldown.asInt(() -> {
-            LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) world)
-                    .add(LootContextParameters.ORIGIN, user.getPos())
-                    .add(LootContextParameters.THIS_ENTITY, user)
-                    .add(LootContextParameters.TOOL, user.getStackInHand(hand))
-                    .build(LootContextTypes.FISHING);
-
-            return new LootContext.Builder(set).build(null);
-        }));
+        user.getItemCooldownManager().set(this, config.cooldown.asInt(supplier));
     }
 }

@@ -1,6 +1,8 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.slowness;
 
+import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -33,7 +35,8 @@ abstract class SlimeEntityMixin extends MobEntity {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/SlimeEntity;getSize()I", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$onPlayerCollision(LivingEntity target, CallbackInfo ci) {
         var config = this.world.am$get(Slimes.CONFIG);
-        if (!config.available || !config.slowness) return;
+        var supplier = Suppliers.memoize(LootContextUtil.entity(world, target.getPos(), target, null, this));
+        if (!config.available.asBoolean(supplier) || !config.slowness) return;
 
         StatusEffectInstance effectInstance = new StatusEffectInstance(StatusEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);
         target.addStatusEffect(effectInstance);

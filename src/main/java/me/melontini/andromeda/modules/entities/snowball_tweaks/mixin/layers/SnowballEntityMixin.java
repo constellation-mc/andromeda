@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.layers;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
 import net.minecraft.block.Block;
@@ -38,7 +39,7 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
         if (world.isClient()) return;
 
         var config = world.am$get(Snowballs.CONFIG);
-        if (!config.available || !config.layers) return;
+        if (!config.available.asBoolean(LootContextUtil.command(world, this.getPos(), this)) || !config.layers) return;
 
         Vec3d pos = this.getPos();
         Vec3d vec3d = pos.add(this.getVelocity());

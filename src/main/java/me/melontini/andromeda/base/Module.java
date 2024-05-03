@@ -10,6 +10,7 @@ import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -115,7 +116,7 @@ public abstract class Module {
 
     public static class GameConfig extends BaseConfig {
         @ConfigEntry.Gui.Excluded
-        public boolean available = true;
+        public BooleanIntermediary available = BooleanIntermediary.of(true);
     }
 
     @Value

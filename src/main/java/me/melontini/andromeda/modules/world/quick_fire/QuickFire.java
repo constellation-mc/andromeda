@@ -10,7 +10,9 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 @ModuleInfo(name = "quick_fire", category = "world", environment = Environment.SERVER)
 public class QuickFire extends Module {
 
+    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+
     QuickFire() {
-        this.defineConfig(ConfigState.GAME, ConfigDefinition.GAME);
+        this.defineConfig(ConfigState.GAME, CONFIG);
     }
 }

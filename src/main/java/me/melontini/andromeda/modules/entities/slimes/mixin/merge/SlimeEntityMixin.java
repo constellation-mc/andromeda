@@ -1,6 +1,8 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.merge;
 
+import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
@@ -34,10 +36,12 @@ abstract class SlimeEntityMixin extends MobEntity {
     @Inject(at = @At("TAIL"), method = "initGoals")
     private void andromeda$newGoal(CallbackInfo ci) {
         var config = this.world.am$get(Slimes.CONFIG);
-        if (!config.available || !config.merge) return;
+        var supplier = Suppliers.memoize(LootContextUtil.command(world, this.getPos(), this));
+        if (!config.available.asBoolean(supplier) || !config.merge) return;
 
         this.targetSelector.add(2, new ActiveTargetGoal<>((SlimeEntity) (Object) this, SlimeEntity.class, 5, true, false, livingEntity -> {
-            if (!config.available || !config.merge) return false;
+            var supplier1 = Suppliers.memoize(LootContextUtil.command(world, this.getPos(), this));
+            if (!config.available.asBoolean(supplier1) || !config.merge) return false;
             if (this.andromeda$mergeCD > 0) return false;
             float d = livingEntity.distanceTo((SlimeEntity) (Object) this);
             return d <= 6 && (getSize() <= config.maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
@@ -47,7 +51,8 @@ abstract class SlimeEntityMixin extends MobEntity {
     @Inject(at = @At("TAIL"), method = "pushAwayFrom")
     private void andromeda$push(Entity entity, CallbackInfo ci) {
         var config = this.world.am$get(Slimes.CONFIG);
-        if (!config.available || !config.merge) return;
+        var supplier = Suppliers.memoize(LootContextUtil.command(world, this.getPos(), this));
+        if (!config.available.asBoolean(supplier) || !config.merge) return;
 
         if (getTarget() instanceof SlimeEntity slime && slime == entity && this.andromeda$mergeCD == 0) {
             int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);

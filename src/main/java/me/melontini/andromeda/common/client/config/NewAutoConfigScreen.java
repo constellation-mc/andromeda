@@ -15,6 +15,7 @@ import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -140,6 +141,9 @@ public class NewAutoConfigScreen {
         Field field = Exceptions.supply(() -> MultiElementListEntry.class.getDeclaredField("entries"));
         field.setAccessible(true);
 
+        Field availableField = Exceptions.supply(() -> Module.GameConfig.class.getField("available"));
+        var availableProvider = PROVIDERS.entrySet().stream().filter(e -> e.getKey().test(availableField.getType())).findFirst().orElseThrow().getValue().provider();
+
         var handlers = Map.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER);
         var defProvider = PROVIDERS.defaultReturnValue().provider();
 
@@ -162,18 +166,19 @@ public class NewAutoConfigScreen {
                 var defaultConfig = handler.getDefault(definition);
 
                 if (Experiments.get().scopedConfigs && Module.GameConfig.class.isAssignableFrom(definition.supplier().get())) {
-                    Module.GameConfig cfg = (Module.GameConfig) config;
                     var availableKey = "config.andromeda.option.available";
-                    AbstractConfigListEntry<?> available = ENTRY_BUILDER.startBooleanToggle(TextUtil.translatable(availableKey), cfg.available)
-                            .setTooltip(TextUtil.translatable("%s.@Tooltip".formatted(availableKey)))
-                            .setDefaultValue(() -> true)
-                            .setSaveConsumer(b -> cfg.available = b).build();
+
+                    var available = availableProvider.getEntry(BooleanIntermediary.class,
+                            ((Module.GameConfig) config).available, ((Module.GameConfig) defaultConfig).available,
+                            object -> ((Module.GameConfig) config).available = (BooleanIntermediary) object,
+                            availableKey, new Context(false, () -> saveQueue.add(() -> handler.save(module)), availableField, module)
+                    );
 
                     if (definition.supplier().get() == Module.GameConfig.class) {
-                        moduleCategory.add(wrapSaveCallback(available, () -> saveQueue.add(() -> handler.save(module))));
+                        moduleCategory.add(available);
                         return;
                     }
-                    stateCategory.add(wrapSaveCallback(available, () -> saveQueue.add(() -> handler.save(module))));
+                    stateCategory.add(available);
                 }
 
                 var e = defProvider.getEntry(config.getClass(),
@@ -241,7 +246,8 @@ public class NewAutoConfigScreen {
         var e = PROVIDERS.defaultReturnValue().provider().getEntry(
                 Experiments.Config.class,
                 Experiments.get(), Experiments.getDefault(), DEFAULT_CONSUMER, "config.andromeda.lab",
-                new Context(false, () -> {}, null, null));
+                new Context(false, () -> {
+                }, null, null));
         if (!(e instanceof MultiElementListEntry<?> listEntry))
             throw new IllegalStateException(AndromedaConfig.Config.class.getName());
         List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
@@ -250,8 +256,7 @@ public class NewAutoConfigScreen {
         return builder.build();
     }
 
-    @NotNull
-    private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
+    @NotNull private static TexturedButtonWidget getWikiButton(MinecraftClient client, Screen screen) {
         var wiki = new TexturedButtonWidget(screen.width - 40, 13, 20, 20, 0, 0, 20, WIKI_BUTTON_TEXTURE, 32, 64, button -> {
             if (InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
                 Debug.load();
@@ -328,9 +333,6 @@ public class NewAutoConfigScreen {
 
     private static <T> Provider<T> transform(Provider<T> provider) {
         return (type, value, def, setter, i18n, context) -> {
-            if (context.field() != null && context.field().isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
-                return null;
-
             var r = provider.getEntry(type, value, def, setter, i18n, context);
             if (context.field() != null && context.field().isAnnotationPresent(ConfigEntry.Gui.RequiresRestart.class))
                 r.setRequiresRestart(true);

@@ -12,8 +12,10 @@ import java.util.List;
 @ModuleInfo(name = "trading_goat_horn", category = "mechanics", environment = Environment.SERVER)
 public class GoatHorn extends Module {
 
+    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+
     GoatHorn() {
-        this.defineConfig(ConfigState.GAME, ConfigDefinition.GAME);
+        this.defineConfig(ConfigState.GAME, CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 }

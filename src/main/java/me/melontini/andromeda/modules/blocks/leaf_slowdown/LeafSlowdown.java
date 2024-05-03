@@ -13,8 +13,10 @@ import java.util.List;
 @ModuleInfo(name = "leaf_slowdown", category = "blocks", environment = Environment.SERVER)
 public class LeafSlowdown extends Module {
 
+    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+
     LeafSlowdown() {
-        this.defineConfig(ConfigState.GAME, ConfigDefinition.GAME);
+        this.defineConfig(ConfigState.GAME, CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 }

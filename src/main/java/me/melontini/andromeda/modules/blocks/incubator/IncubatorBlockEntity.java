@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.blocks.incubator;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.event.EventContext;
@@ -25,10 +26,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -86,14 +83,8 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     private int getTime(Arithmetica arithmetica, ItemStack stack) {
         if (arithmetica.toSource().left().isPresent()) return arithmetica.asInt(null);
 
-        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld) world);
-        builder.add(LootContextParameters.BLOCK_STATE, this.getCachedState());
-        builder.add(LootContextParameters.TOOL, stack);
-        builder.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.getPos()));
-        builder.add(LootContextParameters.BLOCK_ENTITY, this);
-
-        LootContext context = new LootContext.Builder(builder.build(LootContextTypes.BLOCK)).build(null);
-        return arithmetica.asInt(context);
+        var supplier = LootContextUtil.block(world, Vec3d.ofCenter(getPos()), getCachedState(), stack, null, this);
+        return arithmetica.asInt(supplier.get());
     }
 
     private void spawnResult(ItemStack stack, ServerWorld world, BlockState state) {
@@ -120,17 +111,8 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     private void executeCommands(EggProcessingData.Entry entry, ServerWorld world, ItemStack stack, Entity entity) {
         if (entry.commands().isEmpty()) return;
 
-        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world);
-        builder.add(LootContextParameters.BLOCK_STATE, this.getCachedState());
-        builder.add(LootContextParameters.TOOL, stack);
-        builder.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.getPos()));
-        builder.add(LootContextParameters.BLOCK_ENTITY, this);
-        builder.add(LootContextParameters.THIS_ENTITY, entity);
-
-        EventContext context = EventContext.builder(EventType.NULL)
-                .addParameter(EventKey.LOOT_CONTEXT, new LootContext.Builder(builder
-                        .build(LootContextTypes.BLOCK))
-                        .build(null)).build();
+        var supplier = LootContextUtil.block(world, Vec3d.ofCenter(getPos()), getCachedState(), stack, entity, this);
+        EventContext context = EventContext.builder(EventType.NULL).addParameter(EventKey.LOOT_CONTEXT, supplier.get()).build();
         for (Command.Conditioned command : entry.commands()) {
             command.execute(context);
         }

@@ -1,6 +1,8 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
+import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.items.lockpick.Lockpick;
 import me.melontini.andromeda.modules.items.lockpick.LockpickItem;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -14,11 +16,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Formatting;
@@ -32,8 +29,6 @@ import net.minecraft.world.event.GameEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static net.minecraft.loot.context.LootContextParameters.*;
 
 public class Main {
     Main() {
@@ -53,19 +48,10 @@ public class Main {
     //TODO fix igloos. Maybe check reach?
     public static List<LivingEntity> checkMonsterLock(World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
         var config = world.am$get(GuardedLoot.CONFIG);
-        if (!config.available) return Collections.emptyList();
+        var supplier = Suppliers.memoize(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, player, be));
+        if (!config.available.asBoolean(supplier)) return Collections.emptyList();
 
-        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range.asDouble(() -> {
-                    LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) world)
-                            .add(ORIGIN, Vec3d.ofCenter(pos))
-                            .add(BLOCK_STATE, state)
-                            .add(BLOCK_ENTITY, be)
-                            .add(THIS_ENTITY, player)
-                            .add(TOOL, ItemStack.EMPTY)
-                            .build(LootContextTypes.BLOCK);
-
-                    return new LootContext.Builder(set).build(null);
-                })), Entity::isAlive).stream()
+        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range.asDouble(supplier)), Entity::isAlive).stream()
                 .filter(Monster.class::isInstance).toList();
     }
 
