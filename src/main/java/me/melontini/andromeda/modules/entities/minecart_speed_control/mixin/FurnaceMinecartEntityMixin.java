@@ -39,7 +39,7 @@ abstract class FurnaceMinecartEntityMixin extends AbstractMinecartEntity {
         if (!((AbstractMinecartEntity) (Object) this).getWorld().isClient()) {
             var c = ((AbstractMinecartEntity) (Object) this).getWorld().am$get(MinecartSpeedControl.CONFIG);
             var supplier = Suppliers.memoize(LootContextUtil.command(world, this.getPos(), this));
-            return c.available.asBoolean(supplier) ? original * c.furnaceModifier.asInt(supplier) : original;
+            return c.available.asBoolean(supplier) ? original * c.furnaceModifier.asDouble(supplier) : original;
         }
         return original;
     }

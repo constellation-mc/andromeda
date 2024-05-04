@@ -21,6 +21,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
@@ -40,11 +41,11 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
 
     public static final ReloaderType<Reloader> RELOADER = ReloaderType.create(Andromeda.id("crop_temperatures"));
 
-    public static boolean roll(Block block, float temp, ServerWorld world) {
-        if (!world.am$get(PlantTemperature.CONFIG).available.asBoolean(LootContextUtil.empty(world))) return false;
+    public static boolean roll(BlockPos pos, BlockState state, float temp, ServerWorld world) {
+        if (!world.am$get(PlantTemperature.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) return false;
 
-        if (isPlant(block)) {
-            PlantTemperatureData data = world.getServer().dm$getReloader(RELOADER).get(block);
+        if (isPlant(state.getBlock())) {
+            PlantTemperatureData data = world.getServer().dm$getReloader(RELOADER).get(state.getBlock());
             if (data != null) {
                 if ((temp > data.max() && temp <= data.aMax()) || (temp < data.min() && temp >= data.aMin())) {
                     return MathUtil.nextInt(0, 1) != 0;

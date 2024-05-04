@@ -31,6 +31,10 @@ public class LootContextUtil {
         return () -> build(setBuilder((ServerWorld) world).add(ORIGIN, origin).addOptional(THIS_ENTITY, entity).build(COMMAND));
     }
 
+    public static Supplier<LootContext> command(World world, Vec3d origin) {
+        return () -> build(setBuilder((ServerWorld) world).add(ORIGIN, origin).build(COMMAND));
+    }
+
     public static Supplier<LootContext> fishing(World world, Vec3d origin, @Nullable ItemStack tool, @Nullable Entity entity) {
         return () -> build(setBuilder((ServerWorld) world).add(ORIGIN, origin)
                 .add(TOOL, Objects.requireNonNullElse(tool, ItemStack.EMPTY))
