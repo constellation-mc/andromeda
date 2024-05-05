@@ -28,13 +28,13 @@ import static me.melontini.dark_matter.api.base.util.MathUtil.threadRandom;
 
 public class Client {
 
-    private static final Set<Item> showTooltip = new HashSet<>();
+    private final Set<Item> showTooltip = new HashSet<>();
 
-    public static boolean hasTooltip(Item item) {
+    public boolean hasTooltip(Item item) {
         return showTooltip.contains(item);
     }
 
-    Client(ThrowableItems.MainConfig config) {
+    Client(ThrowableItems.ClientConfig config) {
         Main.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());

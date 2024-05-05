@@ -9,6 +9,7 @@ import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
+import me.melontini.andromeda.base.events.ConstructorParametersEvent;
 import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
@@ -42,10 +43,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
@@ -81,6 +79,12 @@ public class Andromeda {
     private @Nullable MinecraftServer currentServer;
 
     public static void preMain() {
+        ConstructorParametersEvent.BUS.listen(module -> {
+            var cd = module.getConfigDefinition(ConfigState.MAIN);
+            if (cd != null) return Collections.singletonMap(cd.supplier().get(), Andromeda.ROOT_HANDLER.get(cd));
+            return Collections.emptyMap();
+        });
+
         ROOT_HANDLER.loadAll();
         ROOT_HANDLER.saveAll();
     }

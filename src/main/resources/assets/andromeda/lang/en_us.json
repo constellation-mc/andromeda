@@ -11,6 +11,7 @@
 
   "config.andromeda.state.main": "Main",
   "config.andromeda.state.game": "Game",
+  "config.andromeda.state.client": "Client",
 
   "andromeda.disconnected.module_mismatch": "Andromeda module mismatch!\nDisable: %s\n Enable: %s\nTo join this server!",
 

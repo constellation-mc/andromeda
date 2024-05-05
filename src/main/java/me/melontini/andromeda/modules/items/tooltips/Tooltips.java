@@ -13,7 +13,7 @@ public class Tooltips extends Module {
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     Tooltips() {
-        this.defineConfig(ConfigState.MAIN, CONFIG);
+        this.defineConfig(ConfigState.CLIENT, CONFIG);
     }
 
     @ToString

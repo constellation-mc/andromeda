@@ -7,11 +7,9 @@ import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.annotations.Unscoped;
 
 import java.util.List;
 
-@Unscoped
 @ModuleInfo(name = "minecart_block_picking", category = "items", environment = Environment.SERVER)
 public class MinecartBlockPicking extends Module {
 

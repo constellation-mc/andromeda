@@ -5,42 +5,35 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
-import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
-import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.modules.mechanics.throwable_items.client.Client;
 import me.melontini.andromeda.util.commander.CommanderSupport;
 import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 
 import java.util.List;
 
-@Unscoped
 @ModuleInfo(name = "throwable_items", category = "mechanics")
 public class ThrowableItems extends Module {
 
-    public static final ConfigDefinition<MainConfig> MAIN_CONFIG = new ConfigDefinition<>(() ->  MainConfig.class);
+    public static final ConfigDefinition<ClientConfig> CLIENT_CONFIG = new ConfigDefinition<>(() ->  ClientConfig.class);
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     ThrowableItems() {
-        this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
         this.defineConfig(ConfigState.GAME, CONFIG);
+        this.defineConfig(ConfigState.CLIENT, CLIENT_CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
         InitEvent.client(this).listen(() -> List.of(Client.class));
 
         CommanderSupport.require(this);
     }
 
-    public static class MainConfig extends BaseConfig {
-        @SpecialEnvironment(Environment.BOTH)
+    public static class ClientConfig extends BaseConfig {
         public boolean tooltip = true;
     }
 
     @ToString
     public static class Config extends BaseConfig {
-        @SpecialEnvironment(Environment.SERVER)
         public boolean canZombiesThrowItems = true;
-        @SpecialEnvironment(Environment.SERVER)
         public NumberIntermediary zombieThrowInterval = NumberIntermediary.of(40);
     }
 }

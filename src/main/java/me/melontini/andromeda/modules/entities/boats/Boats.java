@@ -29,22 +29,18 @@ public class Boats extends Module {
     @ToString
     public static class Config extends BaseConfig {
 
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isFurnaceBoatOn = false;
 
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isTNTBoatOn = false;
 
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isJukeboxBoatOn = false;
 
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isHopperBoatOn = false;

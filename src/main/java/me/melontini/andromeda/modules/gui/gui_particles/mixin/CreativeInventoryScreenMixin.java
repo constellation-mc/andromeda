@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.common.client.particles.screen.CustomItemStackParticle;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -26,7 +26,7 @@ abstract class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Crea
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickCreativeStack(Lnet/minecraft/item/ItemStack;I)V", ordinal = 0, shift = At.Shift.BEFORE), method = "onMouseClick")
     private void andromeda$clickDeleteParticles(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci, @Local(ordinal = 2) int index) {
-        var config = Andromeda.ROOT_HANDLER.get(GuiParticles.CONFIG);
+        var config = AndromedaClient.HANDLER.get(GuiParticles.CONFIG);
         if (!config.creativeScreenParticles) return;
 
         if (index >= this.handler.slots.size()) return;

@@ -4,12 +4,12 @@ import com.google.common.base.Suppliers;
 import lombok.*;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
+import me.melontini.andromeda.base.events.ConstructorParametersEvent;
 import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
@@ -82,8 +82,7 @@ public abstract class Module {
                     this.getClass(), this,
                     BootstrapConfig.class, ModuleManager.get().getConfig(this)
             ));
-            var cd = getConfigDefinition(ConfigState.MAIN);
-            if (cd != null) args.put(cd.supplier().get(), Andromeda.ROOT_HANDLER.get(cd));
+            args.putAll(ConstructorParametersEvent.BUS.invoker().getAdditionalParameters(this));
 
             List<Object> passed = new ArrayList<>(ctx.getParameterCount());
             for (Class<?> parameterType : ctx.getParameterTypes()) {

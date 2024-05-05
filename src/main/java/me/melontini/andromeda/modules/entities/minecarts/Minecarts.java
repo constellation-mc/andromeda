@@ -28,23 +28,18 @@ public class Minecarts extends Module {
 
     @ToString
     public static class Config extends BaseConfig {
-
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isAnvilMinecartOn = false;
 
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isNoteBlockMinecartOn = false;
 
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isJukeboxMinecartOn = false;
 
-        @Unscoped
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isSpawnerMinecartOn = false;

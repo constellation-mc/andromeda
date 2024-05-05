@@ -1,6 +1,7 @@
 package me.melontini.andromeda.common.client.config;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
@@ -13,6 +14,7 @@ import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
@@ -145,7 +147,7 @@ public class NewAutoConfigScreen {
         Field availableField = Exceptions.supply(() -> Module.GameConfig.class.getField("available"));
         var availableProvider = PROVIDERS.entrySet().stream().filter(e -> e.getKey().test(availableField.getType())).findFirst().orElseThrow().getValue().provider();
 
-        var handlers = Map.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER);
+        var handlers = ImmutableMap.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER, ConfigState.CLIENT, AndromedaClient.HANDLER);
         var defProvider = PROVIDERS.defaultReturnValue().provider();
 
         boolean commander = FabricLoader.getInstance().isModLoaded("commander");
@@ -177,11 +179,8 @@ public class NewAutoConfigScreen {
                             availableKey, new Context(false, () -> saveQueue.add(() -> handler.save(module)), availableField, module)
                     );
 
-                    if (definition.supplier().get() == Module.GameConfig.class) {
-                        moduleCategory.add(available);
-                        return;
-                    }
                     stateCategory.add(available);
+                    if (definition.supplier().get() == Module.GameConfig.class) return;
                 }
 
                 var e = defProvider.getEntry(config.getClass(),

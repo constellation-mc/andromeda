@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -41,7 +41,7 @@ abstract class DrawContextMixin {
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/tooltip/TooltipPositioner;getPosition(IIIIII)Lorg/joml/Vector2ic;"), method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V")
     private Vector2ic andromeda$smoothTooltip(Vector2ic vic, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Share("popMatrix") LocalBooleanRef popMatrix) {
         if (andromeda$makeSmooth(x, y)) {
-            var c = Andromeda.ROOT_HANDLER.get(SmoothTooltips.CONFIG);
+            var c = AndromedaClient.HANDLER.get(SmoothTooltips.CONFIG);
             if (smoothPos == null) smoothPos = new Vector2d(x, y);
             smoothPos.x = MathHelper.clamp(MathHelper.lerp(c.deltaX * client.getLastFrameDuration(), smoothPos.x, vic.x()), vic.x() - c.clampX, vic.x() + c.clampX);
             smoothPos.y = MathHelper.clamp(MathHelper.lerp(c.deltaY * client.getLastFrameDuration(), smoothPos.y, vic.y()), vic.y() - c.clampY, vic.y() + c.clampY);

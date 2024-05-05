@@ -17,7 +17,7 @@ public class GuiParticles extends Module {
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     GuiParticles() {
-        this.defineConfig(ConfigState.MAIN, CONFIG);
+        this.defineConfig(ConfigState.CLIENT, CONFIG);
         InitEvent.client(this).listen(() -> List.of(Client.class));
     }
 

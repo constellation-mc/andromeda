@@ -13,7 +13,7 @@ public class SmoothTooltips extends Module {
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     SmoothTooltips() {
-        this.defineConfig(ConfigState.MAIN, CONFIG);
+        this.defineConfig(ConfigState.CLIENT, CONFIG);
     }
 
     @ToString

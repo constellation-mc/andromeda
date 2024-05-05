@@ -58,6 +58,8 @@ public class Bootstrap {
 
         onMerged();
 
+        run(AndromedaClient::preClient, b -> b.literal("Failed to initialize AndromedaClient!"));
+
         for (Module module : ModuleManager.get().loaded()) {
             if (module.meta().environment().isServer()) continue;
             runInit("client", module);

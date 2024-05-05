@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import com.google.common.collect.Lists;
-import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -48,7 +48,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendCommand(Ljava/lang/String;)Z", shift = At.Shift.BEFORE), method = "apply(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;)V")
     private static void andromeda$gmSwitchParticles(MinecraftClient client, GameModeSelectionScreen.GameModeSelection gameMode, CallbackInfo ci) {
-        if (!Andromeda.ROOT_HANDLER.get(GuiParticles.CONFIG).gameModeSwitcherParticles) return;
+        if (!AndromedaClient.HANDLER.get(GuiParticles.CONFIG).gameModeSwitcherParticles) return;
 
         if (client.currentScreen instanceof GameModeSelectionScreen gameModeSelectionScreen) {
             List<GameModeSelectionScreen.ButtonWidget> buttonWidgets = new ArrayList<>(gameModeSelectionScreen.gameModeButtons);
