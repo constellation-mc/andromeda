@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.freeze;
 
-import com.google.common.base.Suppliers;
+import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import net.minecraft.entity.Entity;
@@ -27,8 +27,8 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
         if (result.getEntity().world.isClient()) return;
 
         var config = result.getEntity().world.am$get(Snowballs.CONFIG);
-        var supplier = Suppliers.memoize(LootContextUtil.entity(world, result.getEntity().getPos(), result.getEntity(), null, this));
-        if (!config.available.asBoolean(supplier) || !config.freeze) return;
+        if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
+        if (!config.freeze.asBoolean(LootContextUtil.entity(world, result.getEntity().getPos(), result.getEntity(), null, this))) return;
 
         Entity entity = result.getEntity();
         if (entity instanceof LivingEntity livingEntity) {

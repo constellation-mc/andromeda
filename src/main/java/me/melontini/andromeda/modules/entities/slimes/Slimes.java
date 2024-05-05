@@ -6,6 +6,8 @@ import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 
 @ModuleInfo(name = "slimes", category = "entities", environment = Environment.SERVER)
 public class Slimes extends Module {
@@ -19,12 +21,12 @@ public class Slimes extends Module {
     @ToString
     public static class Config extends GameConfig {
 
-        public boolean flee = true;
+        public BooleanIntermediary flee = BooleanIntermediary.of(true);
 
-        public boolean merge = true;
+        public BooleanIntermediary merge = BooleanIntermediary.of(true);
 
-        public int maxMerge = 4;
+        public NumberIntermediary maxMerge = NumberIntermediary.of(4);
 
-        public boolean slowness = false;
+        public BooleanIntermediary slowness = BooleanIntermediary.of(false);
     }
 }

@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.melt;
 
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
 import net.minecraft.entity.EntityType;
@@ -29,7 +29,8 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
         if (world.isClient() || !this.isOnFire()) return;
 
         var config = world.am$get(Snowballs.CONFIG);
-        if (!config.available.asBoolean(LootContextUtil.command(world, this.getPos(), this)) || !config.melt) return;
+        var supplier = ConstantLootContextAccessor.get(this);
+        if (!config.available.asBoolean(supplier) || !config.melt.asBoolean(supplier)) return;
 
         ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.4);
         this.discard();

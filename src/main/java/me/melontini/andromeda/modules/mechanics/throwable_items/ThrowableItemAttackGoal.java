@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import lombok.CustomLog;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
@@ -114,6 +114,6 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     }
 
     public double getInterval() {
-        return mob.world.am$get(ThrowableItems.CONFIG).zombieThrowInterval.asDouble(LootContextUtil.command(mob.world, mob.getPos(), mob));
+        return mob.world.am$get(ThrowableItems.CONFIG).zombieThrowInterval.asDouble(ConstantLootContextAccessor.get(mob));
     }
 }
