@@ -26,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
@@ -40,9 +39,7 @@ abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean andromeda$infiniteFallback(boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
-        return original || (world.am$get(InfiniteTotem.CONFIG).available.asBoolean(LootContextUtil.entity(world,
-                Objects.requireNonNullElse(source.getPosition(), this.getPos()),
-                this, source, source.getAttacker(), source.getSource())) && itemStack.isOf(Main.INFINITE_TOTEM.orThrow()));
+        return original || (world.am$get(InfiniteTotem.CONFIG).available.asBoolean(LootContextUtil.fishing(world, this.getPos(), itemStack)) && itemStack.isOf(Main.INFINITE_TOTEM.orThrow()));
     }
 
     @WrapWithCondition(method = "tryUseTotem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))

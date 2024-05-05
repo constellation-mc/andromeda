@@ -9,6 +9,7 @@ import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.commander.number.NumberIntermediary;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
@@ -26,7 +27,7 @@ public class CampfireEffects extends Module {
 
     @ToString
     public static class Config extends GameConfig {
-        public boolean affectsPassive = true;
+        public BooleanIntermediary affectsPassive = BooleanIntermediary.of(true);
         public NumberIntermediary effectsRange = NumberIntermediary.of(10);
         public List<Effect> effectList = Lists.newArrayList(new Effect());
 

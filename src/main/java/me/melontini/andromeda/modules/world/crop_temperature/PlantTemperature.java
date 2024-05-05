@@ -7,6 +7,7 @@ import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 
 import java.util.List;
 
@@ -22,6 +23,6 @@ public class PlantTemperature extends Module {
 
     @ToString
     public static class Config extends GameConfig {
-        public boolean affectBoneMeal = true;
+        public BooleanIntermediary affectBoneMeal = BooleanIntermediary.of(true);
     }
 }

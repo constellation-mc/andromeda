@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
+import com.google.common.base.Suppliers;
 import me.melontini.andromeda.common.util.BlockUtil;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
@@ -72,7 +73,8 @@ abstract class ItemEntityMixin extends Entity {
         if (this.world.isClient()) return;
         if (!this.getDataTracker().get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
         var c = world.am$get(InfiniteTotem.CONFIG);
-        if (!c.available.asBoolean(LootContextUtil.fishing(world, getPos(), getStack(), this)) || !c.enableAscension) return;
+        var supplier = Suppliers.memoize(LootContextUtil.fishing(world, getPos(), getStack()));
+        if (!c.available.asBoolean(supplier) || !c.enableAscension.asBoolean(supplier)) return;
 
         if (age % 35 == 0 && andromeda$ascensionTicks == 0) {
             if (!andromeda$beaconCheck()) {

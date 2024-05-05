@@ -35,8 +35,9 @@ abstract class CampfireBlockEntityMixin {
 
                     List<LivingEntity> entities = new ArrayList<>();
                     double rad = config.effectsRange.asDouble(supplier);
+                    boolean affectsPassive = config.affectsPassive.asBoolean(supplier);
                     world.getEntityLookup().forEachIntersects(new Box(pos).expand(rad), entity -> {
-                        if ((entity instanceof PassiveEntity && config.affectsPassive) || entity instanceof PlayerEntity) {
+                        if ((entity instanceof PassiveEntity && affectsPassive) || entity instanceof PlayerEntity) {
                             entities.add((LivingEntity) entity);
                         }
                     });
