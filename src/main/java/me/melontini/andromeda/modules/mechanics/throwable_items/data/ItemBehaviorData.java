@@ -73,7 +73,7 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
     public record Subscription(Main.Event event, List<Command.Conditioned> commands) {
         public static final Codec<Subscription> CODEC = RecordCodecBuilder.create(data -> data.group(
                 ExtraCodecs.enumCodec(Main.Event.class).fieldOf("event").forGetter(Subscription::event),
-                ExtraCodecs.list(Command.CODEC).fieldOf("commands").forGetter(Subscription::commands)
+                ExtraCodecs.list(Command.CODEC.codec()).fieldOf("commands").forGetter(Subscription::commands)
         ).apply(data, Subscription::new));
         public static final Codec<List<Subscription>> LIST_CODEC = ExtraCodecs.list(CODEC);
     }

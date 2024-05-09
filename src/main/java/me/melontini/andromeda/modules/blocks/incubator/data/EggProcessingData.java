@@ -40,7 +40,7 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmeti
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(data -> data.group(
                 CommonRegistries.entityTypes().getCodec().fieldOf("entity").forGetter(Entry::type),
                 NbtCompound.CODEC.optionalFieldOf("nbt", new NbtCompound()).forGetter(Entry::nbt),
-                ExtraCodecs.list(Command.CODEC).optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
+                ExtraCodecs.list(Command.CODEC.codec()).optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
         ).apply(data, Entry::new));
     }
 

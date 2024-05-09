@@ -72,7 +72,9 @@ dependencies {
     }
 
     testmodImplementation sourceSets.main.output
-    testmodRemapImplementation libs.handy.tests
+    testmodRemapImplementation(libs.handy.tests) {
+        exclude(group: "net.fabricmc", module: "fabric-loader")
+    }
 }
 
 tasks.register("spotbugs", SpotBugsTask) { task ->

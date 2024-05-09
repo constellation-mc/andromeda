@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.command.CommandType;
@@ -18,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public record ItemPlopEffect(Selector.Conditioned selector) implements Command {
 
-    public static final Codec<ItemPlopEffect> CODEC = Selector.CODEC.fieldOf("selector").xmap(ItemPlopEffect::new, ItemPlopEffect::selector).codec();
+    public static final MapCodec<ItemPlopEffect> CODEC = Selector.CODEC.fieldOf("selector").xmap(ItemPlopEffect::new, ItemPlopEffect::selector);
 
     @Override
     public boolean execute(EventContext context) {

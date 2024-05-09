@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.commander.api.command.Command;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 public record ParticleCommand(Selector.Conditioned selector, boolean item, Optional<Integer> colors) implements Command {
 
-    public static final Codec<ParticleCommand> CODEC = RecordCodecBuilder.create(data -> data.group(
+    public static final MapCodec<ParticleCommand> CODEC = RecordCodecBuilder.mapCodec(data -> data.group(
             Selector.CODEC.fieldOf("selector").forGetter(ParticleCommand::selector),
             ExtraCodecs.optional("item", Codec.BOOL, true).forGetter(ParticleCommand::item),
             ExtraCodecs.optional("colors", ExtraCodecs.COLOR).forGetter(ParticleCommand::colors)
