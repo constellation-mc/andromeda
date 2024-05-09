@@ -1,17 +1,10 @@
 ### What's New:
 
-[`entities/ghast_tweaks`]:
 
-* New Module! Currently, adds an option for ghasts to explode on death.
+[`mechanics/trading_goat_horn`]:
 
-[`entities/slimes`]:
-
-* Fixed hyper-speed magma particles.
+* Fixed client-side crash.
 
 [`general`]:
 
-* Fixed merging of early translations.
-* Fixed Lab and Wiki buttons in the config screen.
-* Added an option to disable Andromeda's item group.
-* Updated Dark Matter.
-* Updated Chinese translation. Courtesy of [Rad586](https://github.com/Rad586).
+* Updated Commander and Fabric Loader.

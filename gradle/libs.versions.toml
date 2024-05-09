@@ -2,7 +2,7 @@
 dark-matter = "4.0.1-1.20.4-build.77"
 
 [libraries]
-fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.15.10" }
+fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.15.11" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.95.4+1.20.4" }
 
 dark-matter-base = { group = "me.melontini", name = "dark-matter-base", version.ref = "dark-matter" }
@@ -14,7 +14,7 @@ dark-matter-mirage = { group = "me.melontini", name = "dark-matter-mirage", vers
 dark-matter-glitter = { group = "me.melontini", name = "dark-matter-glitter", version.ref = "dark-matter" }
 dark-matter-item-group = { group = "me.melontini", name = "dark-matter-item-group", version.ref = "dark-matter" }
 
-commander = { group = "me.melontini", name = "commander", version = "0.3.1-1.20.4-build.4" }
+commander = { group = "me.melontini", name = "commander", version = "0.4.0-1.20.4-build.10" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version = "9.0.0" }
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "13.0.121" }
 
@@ -23,6 +23,6 @@ handy-tests = { group = "me.melontini", name = "handy-tests", version = "0.1.0-1
 [plugins]
 fabric-loom = { id = "fabric-loom", version = "1.6.11" }
 lombok = { id = "io.freefair.lombok", version = "8.6"}
-spotbugs-base = { id = "com.github.spotbugs-base", version = "6.0.12" }
+spotbugs-base = { id = "com.github.spotbugs-base", version = "6.0.14" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "0.5.1" }

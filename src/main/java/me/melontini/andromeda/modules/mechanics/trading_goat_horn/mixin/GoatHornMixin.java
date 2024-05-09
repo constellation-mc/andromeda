@@ -30,6 +30,8 @@ abstract class GoatHornMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V", shift = At.Shift.BEFORE), method = "use")
     private void andromeda$wanderingGoatHorn(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, @Local Optional<? extends RegistryEntry<Instrument>> optional) {
+        if (world.isClient()) return;
+
         Identifier identifier = optional.orElseThrow().getKey().orElseThrow().getValue();
         if (!Objects.equals(identifier, SING_ID)) return;
 
