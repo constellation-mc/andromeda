@@ -180,7 +180,6 @@ public class NewAutoConfigScreen {
                     );
 
                     stateCategory.add(available);
-                    if (definition.supplier().get() == Module.GameConfig.class) return;
                 }
 
                 var e = defProvider.getEntry(config.getClass(),
