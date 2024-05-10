@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.boats;
 
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
@@ -13,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class BoatEntities {
     public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.create();
 
     private static @Nullable <T extends Entity> EntityType<T> boatType(boolean register, Identifier id, EntityType.EntityFactory<T> factory) {
-        return RegistryUtil.register(register, CommonRegistries.entityTypes(), id,
+        return RegistryUtil.register(register, Registries.ENTITY_TYPE, id,
                 () -> FabricEntityTypeBuilder.create(SpawnGroup.MISC, factory)
                         .dimensions(new EntityDimensions(1.375F, 0.5625F, true))
                         .build());

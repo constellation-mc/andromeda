@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.items.pouches;
 
 import me.melontini.andromeda.common.AndromedaItemGroup;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
@@ -25,6 +24,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
@@ -71,19 +71,19 @@ public class Main {
     }
 
     Main(Pouches module, Pouches.Config config) {
-        SEED_POUCH.init(RegistryUtil.register(config.seedPouch, CommonRegistries.items(), id("seed_pouch"),
+        SEED_POUCH.init(RegistryUtil.register(config.seedPouch, Registries.ITEM, id("seed_pouch"),
                         () -> new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().maxCount(16))));
 
-        FLOWER_POUCH.init(RegistryUtil.register(config.flowerPouch, CommonRegistries.items(), id("flower_pouch"),
+        FLOWER_POUCH.init(RegistryUtil.register(config.flowerPouch, Registries.ITEM, id("flower_pouch"),
                         () -> new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().maxCount(16))));
 
-        SAPLING_POUCH.init(RegistryUtil.register(config.saplingPouch, CommonRegistries.items(), id("sapling_pouch"),
+        SAPLING_POUCH.init(RegistryUtil.register(config.saplingPouch, Registries.ITEM, id("sapling_pouch"),
                         () -> new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().maxCount(16))));
 
-        SPECIAL_POUCH.init(RegistryUtil.register(config.specialPouch, CommonRegistries.items(), id("special_pouch"),
+        SPECIAL_POUCH.init(RegistryUtil.register(config.specialPouch, Registries.ITEM, id("special_pouch"),
                         () -> new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().maxCount(16))));
 
-        POUCH.init(RegistryUtil.register(CommonRegistries.entityTypes(), id("pouch"), () -> FabricEntityTypeBuilder.<PouchEntity>create(SpawnGroup.MISC, PouchEntity::new)
+        POUCH.init(RegistryUtil.register(Registries.ENTITY_TYPE, id("pouch"), () -> FabricEntityTypeBuilder.<PouchEntity>create(SpawnGroup.MISC, PouchEntity::new)
                 .dimensions(new EntityDimensions(0.25F, 0.25F, true))
                 .trackRangeChunks(4).trackedUpdateRate(10).build()));
 
@@ -131,16 +131,16 @@ public class Main {
     }
 
     public static void testBlocks(Pouches module) {
-        for (BlockEntityType<?> type : CommonRegistries.blockEntityTypes()) {
+        for (BlockEntityType<?> type : Registries.BLOCK_ENTITY_TYPE) {
             var o = type.blocks.stream().findAny();
             if (o.isPresent()) {
                 try {
                     test(type.instantiate(BlockPos.ORIGIN, o.orElseThrow().getDefaultState()), module);
                 } catch (Exception e) {
-                    module.logger().error("{} failed the ViewerCountManager test. {}: {}", CommonRegistries.blockEntityTypes().getId(type), e.getClass().getSimpleName(), e.getLocalizedMessage());
+                    module.logger().error("{} failed the ViewerCountManager test. {}: {}", Registries.BLOCK_ENTITY_TYPE.getId(type), e.getClass().getSimpleName(), e.getLocalizedMessage());
                 }
             } else {
-                module.logger().warn("{} has no blocks?", CommonRegistries.blockEntityTypes().getId(type));
+                module.logger().warn("{} has no blocks?", Registries.BLOCK_ENTITY_TYPE.getId(type));
             }
         }
     }

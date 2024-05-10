@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.util.Debug;
@@ -17,6 +16,7 @@ import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import net.minecraft.block.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -32,7 +32,7 @@ import java.util.*;
 public record PlantTemperatureData(List<Block> blocks, float min, float max, float aMin, float aMax) {
 
     public static final Codec<PlantTemperatureData> CODEC = RecordCodecBuilder.create(data -> data.group(
-            ExtraCodecs.list(CommonRegistries.blocks().getCodec()).fieldOf("identifier").forGetter(PlantTemperatureData::blocks),
+            ExtraCodecs.list(Registries.BLOCK.getCodec()).fieldOf("identifier").forGetter(PlantTemperatureData::blocks),
             Codec.FLOAT.fieldOf("min").forGetter(PlantTemperatureData::min),
             Codec.FLOAT.fieldOf("max").forGetter(PlantTemperatureData::max),
             Codec.FLOAT.fieldOf("aMin").forGetter(PlantTemperatureData::aMin),
@@ -70,7 +70,7 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
         List<Block> override = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
 
-        CommonRegistries.blocks().forEach(block -> {
+        Registries.BLOCK.forEach(block -> {
             if (isPlant(block) && reloader.get(block) == null) {
                 if (methodInHierarchyUntil(block.getClass(), mapped, PlantBlock.class)) {
                     override.add(block);
@@ -80,8 +80,8 @@ public record PlantTemperatureData(List<Block> blocks, float min, float max, flo
             }
         });
 
-        if (!override.isEmpty()) module.logger().warn("Missing crop temperatures: " + override.stream().map(block -> CommonRegistries.blocks().getId(block)).toList());
-        if (!blocks.isEmpty()) module.logger().warn("Possible missing crop temperatures: " + blocks.stream().map(block -> CommonRegistries.blocks().getId(block)).toList());
+        if (!override.isEmpty()) module.logger().warn("Missing crop temperatures: " + override.stream().map(block -> Registries.BLOCK.getId(block)).toList());
+        if (!blocks.isEmpty()) module.logger().warn("Possible missing crop temperatures: " + blocks.stream().map(block -> Registries.BLOCK.getId(block)).toList());
     }
 
     private static boolean methodInHierarchyUntil(Class<?> cls, String name, Class<?> stopClass) {

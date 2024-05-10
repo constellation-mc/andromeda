@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.blocks.better_fletching_table;
 
 import com.google.common.collect.Sets;
 import me.melontini.andromeda.base.Bootstrap;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.minecraft.item.Item;
@@ -11,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
@@ -23,12 +23,12 @@ public class Main {
     public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.create();
 
     Main(BetterFletchingTable module) {
-        FLETCHING.init(RegistryUtil.register(CommonRegistries.screenHandlers(), id("fletching"), RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
+        FLETCHING.init(RegistryUtil.register(Registries.SCREEN_HANDLER, id("fletching"), RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
 
         Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 
         if (Bootstrap.isModLoaded(module, "additionaladditions")) {
-            CommonRegistries.items().getOrEmpty(Identifier.tryParse("additionaladditions:crossbow_with_spyglass"))
+            Registries.ITEM.getOrEmpty(Identifier.tryParse("additionaladditions:crossbow_with_spyglass"))
                     .ifPresent(item -> {
                         tightable.add(item);
                         FletchingScreenHandler.addRecipe(stack -> {

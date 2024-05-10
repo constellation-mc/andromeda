@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
@@ -17,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -117,7 +117,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
 
     @Override
     public Item asItem() {
-        return CommonRegistries.items().get(BoatItems.boatId(this.getVariant(), "jukebox"));
+        return Registries.ITEM.get(BoatItems.boatId(this.getVariant(), "jukebox"));
     }
 
     @Override

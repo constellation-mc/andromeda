@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.entities.boats.entities;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
@@ -17,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -100,7 +100,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return CommonRegistries.items().get(BoatItems.boatId(this.getVariant(), "furnace"));
+        return Registries.ITEM.get(BoatItems.boatId(this.getVariant(), "furnace"));
     }
 
     public int getFuel() {

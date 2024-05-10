@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -19,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -129,7 +129,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     @Override
     public Item asItem() {
-        return CommonRegistries.items().get(BoatItems.boatId(this.getVariant(), "tnt"));
+        return Registries.ITEM.get(BoatItems.boatId(this.getVariant(), "tnt"));
     }
 
     @Override

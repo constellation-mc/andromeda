@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.items.magnet.items;
 
 import com.google.common.collect.ImmutableSet;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -26,6 +25,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -177,7 +177,7 @@ public class MagnetItem extends Item {
         }
 
         NbtList list = nbt.getList("Items", NbtElement.STRING_TYPE);
-        NbtString id = NbtString.of(CommonRegistries.items().getId(other.getItem()).toString());
+        NbtString id = NbtString.of(Registries.ITEM.getId(other.getItem()).toString());
         if (list.contains(id)) return;
         list.add(0, id);
     }
@@ -200,7 +200,7 @@ public class MagnetItem extends Item {
         } else {
             NbtList nbtList = nbt.getList("Items", NbtElement.STRING_TYPE);
             return nbtList.stream().map(NbtString.class::cast)
-                    .map(s -> CommonRegistries.items().get(new Identifier(s.asString())))
+                    .map(s -> Registries.ITEM.get(new Identifier(s.asString())))
                     .collect(ImmutableSet.toImmutableSet());
         }
     }

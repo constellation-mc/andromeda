@@ -1,23 +1,20 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
 import com.google.common.base.Suppliers;
-import me.melontini.andromeda.common.util.BlockUtil;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.modules.items.infinite_totem.BeaconUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.base.util.tuple.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.data.TrackedData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -28,7 +25,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -36,10 +32,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Mixin(ItemEntity.class)
 abstract class ItemEntityMixin extends Entity {
@@ -50,18 +43,12 @@ abstract class ItemEntityMixin extends Entity {
     @Shadow
     public abstract void setToDefaultPickupDelay();
 
-    @Shadow
-    @Final
-    private static TrackedData<ItemStack> STACK;
-
     @Shadow public abstract ItemStack getStack();
 
-    @Unique private static final Set<ItemEntity> ANDROMEDA$ITEMS = new HashSet<>();
-    @Unique private static final Tuple<BeaconBlockEntity, Integer> ANDROMEDA$NULL_BEACON = Tuple.of(null, 0);
-    @Unique private final List<Block> beaconBlocks = List.of(Blocks.DIAMOND_BLOCK, Blocks.NETHERITE_BLOCK);
+    @Unique private static final Tuple<BeaconBlockEntity, Boolean> ANDROMEDA$NULL_BEACON = Tuple.of(null, false);
     @Unique private int andromeda$ascensionTicks;
     @Unique private ItemEntity andromeda$itemEntity;
-    @Unique private Tuple<BeaconBlockEntity, Integer> andromeda$beacon = ANDROMEDA$NULL_BEACON;
+    @Unique private Tuple<BeaconBlockEntity, Boolean> andromeda$beacon = ANDROMEDA$NULL_BEACON;
 
 
     public ItemEntityMixin(EntityType<?> type, World world) {
@@ -71,7 +58,7 @@ abstract class ItemEntityMixin extends Entity {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.BEFORE), method = "tick")
     private void andromeda$tick(CallbackInfo ci) {
         if (this.world.isClient()) return;
-        if (!this.getDataTracker().get(STACK).isOf(Items.TOTEM_OF_UNDYING)) return;
+        if (!this.getStack().isOf(Items.TOTEM_OF_UNDYING)) return;
         var c = world.am$get(InfiniteTotem.CONFIG);
         var supplier = Suppliers.memoize(LootContextUtil.fishing(world, getPos(), getStack()));
         if (!c.available.asBoolean(supplier) || !c.enableAscension.asBoolean(supplier)) return;
@@ -83,29 +70,25 @@ abstract class ItemEntityMixin extends Entity {
             }
         }
 
-        if (andromeda$beacon.left() != null && andromeda$beacon.right() >= 4) {
+        if (andromeda$beacon.left() != null && andromeda$beacon.right()) {
             if (andromeda$itemEntity == null) {
                 if (andromeda$ascensionTicks > 0) --andromeda$ascensionTicks;
 
                 if (age % 10 == 0) {
-                    Optional<ItemEntity> optional = world.getEntitiesByClass(ItemEntity.class, getBoundingBox().expand(0.5), itemEntity -> itemEntity.getDataTracker().get(STACK).isOf(Items.NETHER_STAR) && !ANDROMEDA$ITEMS.contains(itemEntity)).stream().findAny();
+                    Optional<ItemEntity> optional = world.getEntitiesByClass(ItemEntity.class, getBoundingBox().expand(0.5), itemEntity -> itemEntity.getStack().isOf(Items.NETHER_STAR) && toMixin(itemEntity).andromeda$itemEntity == null).stream().findAny();
 
                     if (optional.isPresent()) {
                         andromeda$itemEntity = optional.get();
+                        toMixin(andromeda$itemEntity).andromeda$itemEntity = (ItemEntity) (Object) this;
 
-                        if (ANDROMEDA$ITEMS.contains(andromeda$itemEntity)) {
-                            andromeda$itemEntity = null;
-                            return;
-                        }
-
-                        ItemStack targetStack = andromeda$itemEntity.getDataTracker().get(STACK);
+                        ItemStack targetStack = andromeda$itemEntity.getStack();
                         int count = targetStack.getCount() - 1;
                         if (count > 0) {
                             ItemStack newStack = targetStack.copy();
                             newStack.setCount(count);
                             targetStack.setCount(1);
 
-                            andromeda$itemEntity.getDataTracker().set(STACK, targetStack);
+                            andromeda$itemEntity.setStack(targetStack);
 
                             ItemEntity entity = new ItemEntity(world, andromeda$itemEntity.getX(), andromeda$itemEntity.getY(), andromeda$itemEntity.getZ(), newStack);
                             world.spawnEntity(entity);
@@ -118,7 +101,6 @@ abstract class ItemEntityMixin extends Entity {
                             }
                         }
 
-                        ANDROMEDA$ITEMS.add(andromeda$itemEntity);
                         andromeda$itemEntity.setPickupDelayInfinite();
                         this.setPickupDelayInfinite();
                     }
@@ -143,6 +125,7 @@ abstract class ItemEntityMixin extends Entity {
                 } else {
                     this.setToDefaultPickupDelay();
                     andromeda$itemEntity.setToDefaultPickupDelay();
+                    toMixin(andromeda$itemEntity).andromeda$itemEntity = null;
 
                     andromeda$itemEntity = null;
                 }
@@ -150,10 +133,14 @@ abstract class ItemEntityMixin extends Entity {
         }
     }
 
+    @Unique private static ItemEntityMixin toMixin(ItemEntity entity) {
+        return ((ItemEntityMixin) (Object) entity);
+    }
+
     @Unique private boolean andromeda$beaconCheck() {
         BlockEntity entity = world.getBlockEntity(new BlockPos((int) getX(), world.getTopY(Heightmap.Type.WORLD_SURFACE, getBlockPos().getX(), getBlockPos().getZ()) - 1, (int) getZ()));
         if (entity instanceof BeaconBlockEntity beaconBlock) {
-            this.andromeda$beacon = Tuple.of(beaconBlock, BlockUtil.getLevelFromBlocks(world, beaconBlock.getPos(), beaconBlocks));
+            this.andromeda$beacon = Tuple.of(beaconBlock, BeaconUtil.matchesPattern(world, beaconBlock.getPos()));
             return true;
         } else {
             this.andromeda$beacon = ANDROMEDA$NULL_BEACON;

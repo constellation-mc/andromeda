@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.pouches;
 
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.util.Debug;
+import net.minecraft.registry.Registries;
 
 public class Merged {
 
@@ -12,7 +12,7 @@ public class Merged {
             StringBuilder b = new StringBuilder();
             b.append("Viewable block entities:");
             Main.VIEWABLE_VIEW.forEach((blockEntityType, field) -> {
-                b.append('\n').append(CommonRegistries.blockEntityTypes().getId(blockEntityType)).append(": ").append(field.getName());
+                b.append('\n').append(Registries.BLOCK_ENTITY_TYPE.getId(blockEntityType)).append(": ").append(field.getName());
             });
             module.logger().info(b);
         }

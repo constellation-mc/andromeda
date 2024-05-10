@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
-import me.melontini.andromeda.common.util.BlockUtil;
+import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.Main;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CactusBlock;
@@ -15,6 +15,6 @@ abstract class CactusBlockMixin {
 
     @Inject(at = @At("TAIL"), method = "appendProperties")
     private void andromeda$appendProperties(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
-        builder.add(BlockUtil.WATER_LEVEL_3);
+        builder.add(Main.WATER_LEVEL_3);
     }
 }

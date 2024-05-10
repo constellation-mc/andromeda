@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
@@ -20,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -80,7 +80,7 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
 
     public record Parameters(List<Item> items, boolean disabled, boolean override_vanilla, boolean complement, Arithmetica cooldown) {
         public static final MapCodec<Parameters> CODEC = RecordCodecBuilder.mapCodec(data -> data.group(
-                ExtraCodecs.list(CommonRegistries.items().getCodec()).fieldOf("items").forGetter(Parameters::items),
+                ExtraCodecs.list(Registries.ITEM.getCodec()).fieldOf("items").forGetter(Parameters::items),
 
                 ExtraCodecs.optional("disabled", Codec.BOOL, false).forGetter(Parameters::disabled),
                 ExtraCodecs.optional("override_vanilla", Codec.BOOL, false).forGetter(Parameters::override_vanilla),

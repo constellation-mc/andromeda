@@ -14,7 +14,6 @@ import me.melontini.andromeda.base.util.ConfigHandler;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.config.ScopedConfigs;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.GsonCodecContext;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.CommonValues;
@@ -109,7 +108,7 @@ public class Andromeda {
     private void onInitialize(ModuleManager manager) {
         ResourceConditions.register(id("items_registered"), object -> JsonHelper.getArray(object, "values")
                 .asList().stream().filter(JsonElement::isJsonPrimitive)
-                .allMatch(e -> CommonRegistries.items().containsId(Identifier.tryParse(e.getAsString()))));
+                .allMatch(e -> Registries.ITEM.containsId(Identifier.tryParse(e.getAsString()))));
 
         AndromedaItemGroup.Acceptor acceptor = (module, main, stack) -> {
             if (!stack.isEmpty()) ItemGroupEvents.modifyEntriesEvent(main).register(entries -> entries.add(stack));

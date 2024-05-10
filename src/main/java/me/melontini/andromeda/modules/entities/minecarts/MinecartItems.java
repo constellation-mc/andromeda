@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.entities.minecarts;
 
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.AndromedaItemGroup;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import me.melontini.andromeda.modules.entities.minecarts.items.AndromedaMinecartItem;
@@ -22,6 +21,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -44,10 +44,10 @@ public class MinecartItems {
     public static final Keeper<JukeboxMinecartItem> JUKEBOX_MINECART = Keeper.create();
 
     public static void init(Minecarts module, Minecarts.Config config) {
-        SPAWNER_MINECART.init(RegistryUtil.register(config.isSpawnerMinecartOn, CommonRegistries.items(), id("spawner_minecart"), () -> new SpawnerMinecartItem(new FabricItemSettings().maxCount(1))));
-        ANVIL_MINECART.init(RegistryUtil.register(config.isAnvilMinecartOn, CommonRegistries.items(), id("anvil_minecart"), () -> new AndromedaMinecartItem<>(MinecartEntities.ANVIL_MINECART_ENTITY, new FabricItemSettings().maxCount(1))));
-        NOTE_BLOCK_MINECART.init(RegistryUtil.register(config.isNoteBlockMinecartOn, CommonRegistries.items(), id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1))));
-        JUKEBOX_MINECART.init(RegistryUtil.register(config.isJukeboxMinecartOn, CommonRegistries.items(), id("jukebox_minecart"), () -> new JukeboxMinecartItem(new FabricItemSettings().maxCount(1))));
+        SPAWNER_MINECART.init(RegistryUtil.register(config.isSpawnerMinecartOn, Registries.ITEM, id("spawner_minecart"), () -> new SpawnerMinecartItem(new FabricItemSettings().maxCount(1))));
+        ANVIL_MINECART.init(RegistryUtil.register(config.isAnvilMinecartOn, Registries.ITEM, id("anvil_minecart"), () -> new AndromedaMinecartItem<>(MinecartEntities.ANVIL_MINECART_ENTITY, new FabricItemSettings().maxCount(1))));
+        NOTE_BLOCK_MINECART.init(RegistryUtil.register(config.isNoteBlockMinecartOn, Registries.ITEM, id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1))));
+        JUKEBOX_MINECART.init(RegistryUtil.register(config.isJukeboxMinecartOn, Registries.ITEM, id("jukebox_minecart"), () -> new JukeboxMinecartItem(new FabricItemSettings().maxCount(1))));
 
         var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
         AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, List.copyOf(l)));
@@ -92,15 +92,15 @@ public class MinecartItems {
 
     @Nullable @Unique private static Identifier andromeda$getEntityId(MobSpawnerBlockEntity mobSpawnerBlockEntity) {
         var entry = mobSpawnerBlockEntity.getLogic().spawnEntry;
-        if (entry == null) return CommonRegistries.entityTypes().getDefaultId();
+        if (entry == null) return Registries.ENTITY_TYPE.getDefaultId();
         String identifier = entry.entity().getString("id");
 
         try {
-            return StringUtils.isEmpty(identifier) ? CommonRegistries.entityTypes().getDefaultId() : new Identifier(identifier);
+            return StringUtils.isEmpty(identifier) ? Registries.ENTITY_TYPE.getDefaultId() : new Identifier(identifier);
         } catch (InvalidIdentifierException e) {
             BlockPos blockPos = mobSpawnerBlockEntity.getPos();
             ModuleManager.quick(Minecarts.class).logger().error(String.format("Invalid entity id '%s' at spawner %s:[%s,%s,%s]", identifier, Objects.requireNonNull(mobSpawnerBlockEntity.getWorld()).getRegistryKey().getValue(), blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-            return CommonRegistries.entityTypes().getDefaultId();
+            return Registries.ENTITY_TYPE.getDefaultId();
         }
     }
 }

@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBehaviors;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
@@ -27,6 +26,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -62,7 +62,7 @@ public class Main implements ServerReloadersEvent {
     public static final Keeper<CommandType> ITEM_PLOP_COMMAND = Keeper.create();
 
     Main() {
-        FLYING_ITEM.init(RegistryUtil.register(CommonRegistries.entityTypes(), id("flying_item"), () -> FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
+        FLYING_ITEM.init(RegistryUtil.register(Registries.ENTITY_TYPE, id("flying_item"), () -> FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
                 .dimensions(new EntityDimensions(0.25F, 0.25F, true))
                 .trackRangeChunks(4).trackedUpdateRate(10).build()));
 
@@ -94,7 +94,7 @@ public class Main implements ServerReloadersEvent {
         var items = manger.itemsWithBehaviors();
         var packet = PacketByteBufs.create().writeVarInt(items.size());
         for (Item item : items) {
-            packet.writeIdentifier(CommonRegistries.items().getId(item));
+            packet.writeIdentifier(Registries.ITEM.getId(item));
         }
         return packet;
     }
