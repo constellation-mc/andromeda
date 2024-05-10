@@ -3,6 +3,7 @@ package me.melontini.andromeda.util.commander.bool;
 import com.mojang.serialization.Codec;
 import lombok.Getter;
 import lombok.ToString;
+import me.melontini.commander.api.expression.BooleanExpression;
 import net.minecraft.loot.context.LootContext;
 
 import java.util.function.Supplier;
@@ -24,6 +25,6 @@ public final class CommanderBooleanIntermediary implements BooleanIntermediary {
 
     @Override
     public boolean asBoolean(Supplier<LootContext> supplier) {
-        return this.expression.applyAsBoolean(constant ? null : supplier.get());
+        return this.expression.asBoolean(constant ? null : supplier.get());
     }
 }
