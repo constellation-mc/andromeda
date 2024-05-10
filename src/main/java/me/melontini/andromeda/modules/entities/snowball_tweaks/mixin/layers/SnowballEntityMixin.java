@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.layers;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
@@ -26,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SnowballEntity.class)
 abstract class SnowballEntityMixin extends ThrownItemEntity {
-    @Unique private static final Snowballs am$snow = ModuleManager.quick(Snowballs.class);
 
     public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);

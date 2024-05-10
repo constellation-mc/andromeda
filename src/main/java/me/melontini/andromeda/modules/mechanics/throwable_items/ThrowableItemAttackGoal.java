@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import lombok.CustomLog;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -15,7 +14,6 @@ import java.util.EnumSet;
 import static java.util.Objects.requireNonNull;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
-@CustomLog
 public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
 
     private final ItemThrowerMob<T> owner;

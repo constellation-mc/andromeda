@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.mechanics.dragon_fight;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -37,7 +36,6 @@ public class EnderDragonManager {
 
     public static final Keeper<AttachmentType<EnderDragonManager>> ATTACHMENT = Keeper.create();
 
-    private final DragonFight module = ModuleManager.quick(DragonFight.class);
     private final List<Crystal> crystals;
     private int maxPlayers;
 

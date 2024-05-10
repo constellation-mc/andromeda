@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
@@ -49,7 +48,6 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
 
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     public int processingTime = -1;
-    private final Incubator module = ModuleManager.quick(Incubator.class);
 
     public IncubatorBlockEntity(BlockPos pos, BlockState state) {
         super(Main.INCUBATOR_BLOCK_ENTITY.get(), pos, state);

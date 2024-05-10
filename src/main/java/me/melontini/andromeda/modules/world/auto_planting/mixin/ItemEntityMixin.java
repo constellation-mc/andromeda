@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.world.auto_planting.mixin;
 
 
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.world.auto_planting.AutoPlanting;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -11,21 +10,18 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
 abstract class ItemEntityMixin {
-    @Unique private static final AutoPlanting module = ModuleManager.quick(AutoPlanting.class);
 
     @Shadow
     public abstract ItemStack getStack();
