@@ -2,19 +2,14 @@ package me.melontini.andromeda.base.util;
 
 import com.google.common.collect.Maps;
 import com.google.gson.*;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import lombok.CustomLog;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -28,19 +23,18 @@ public class ConfigHandler {
     private final Map<ConfigDefinition<?>, Module.BaseConfig> defaultConfigs = new IdentityHashMap<>();
 
     private final Path path;
-    private final ConfigState state;
     private final boolean topLevel;
+    private final ConfigState state;
+    private final ConfigHandler root;
     private final Collection<? extends Module> modules;
     @Getter
     private final Gson gson;
 
-    @Setter
-    private ConfigHandler root;
-
-    public ConfigHandler(Path path, boolean topLevel, ConfigState state, Collection<? extends Module> modules) {
+    public ConfigHandler(Path path, boolean topLevel, ConfigState state, ConfigHandler root, Collection<? extends Module> modules) {
         this.path = path;
         this.topLevel = topLevel;
         this.state = state;
+        this.root = root;
         this.modules = modules.stream().filter(module -> module.getConfigDefinition(state) != null).toList();
         var builder = new GsonBuilder().setPrettyPrinting();
         ConfigGsonEvent.BUS.invoker().accept(builder);
@@ -48,7 +42,7 @@ public class ConfigHandler {
     }
 
     public ConfigHandler(Path path, ConfigState state, Collection<? extends Module> modules) {
-        this(path,false, state, modules);
+        this(path, false, state, null, modules);
     }
 
     public Path resolve(Module module) {
@@ -65,10 +59,7 @@ public class ConfigHandler {
             if (root != null) return root.getDefault(module);
 
             synchronized (this.defaultConfigs) {
-                entry = Exceptions.supply(() -> {
-                    var c = module.supplier().get().getConstructor().newInstance();
-                    return (T) c;
-                });
+                entry = Exceptions.supply(() -> module.supplier().get().getConstructor().newInstance());
                 this.defaultConfigs.put(module, entry);
             }
         }
@@ -152,32 +143,5 @@ public class ConfigHandler {
             configs.put(module.getConfigDefinition(state), CompletableFuture.supplyAsync(() -> this.load(module)));
         }
         this.configs.putAll(Maps.transformValues(configs, CompletableFuture::join));
-    }
-
-    @RequiredArgsConstructor
-    public static final class Entry<C extends Module.BaseConfig> {
-        public final C c;
-        public final BootstrapConfig e;
-    }
-
-    public static <C> GsonContext<C> context(Codec<C> codec) {
-        return new GsonContext<>(codec);
-    }
-
-    public record GsonContext<C>(Codec<C> codec) implements JsonSerializer<C>, JsonDeserializer<C> {
-
-        @Override
-        public C deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            var r = this.codec.parse(JsonOps.INSTANCE, json);
-            if (r.error().isPresent()) throw new JsonParseException(r.error().orElseThrow().message());
-            return r.result().orElseThrow();
-        }
-
-        @Override
-        public JsonElement serialize(C src, Type typeOfSrc, JsonSerializationContext context) {
-            var r = codec.encodeStart(JsonOps.INSTANCE, src);
-            if (r.error().isPresent()) throw new IllegalStateException(r.error().orElseThrow().message());
-            return r.result().orElseThrow();
-        }
     }
 }

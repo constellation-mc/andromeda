@@ -29,9 +29,8 @@ abstract class MinecraftServerMixin implements ScopedConfigs.AttachmentGetter {
         var manager = ModuleManager.get();
         this.andromeda$configs = new ConfigHandler(
                 this.session.getDirectory(WorldSavePath.ROOT).resolve("config"), true,
-                ConfigState.GAME,
+                ConfigState.GAME, Andromeda.GAME_HANDLER,
                 manager.loaded().stream().filter(m -> manager.getConfig(m).scope.isWorld()).toList());
-        this.andromeda$configs.setRoot(Andromeda.GAME_HANDLER);
 
         DataConfigs.get((MinecraftServer) (Object) this).apply(this, DataConfigs.DEFAULT);
     }

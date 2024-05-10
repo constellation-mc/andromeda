@@ -15,6 +15,7 @@ import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.conflicts.CommonRegistries;
+import me.melontini.andromeda.common.util.GsonCodecContext;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
@@ -60,15 +61,15 @@ public class Andromeda {
     static {
         ConfigGsonEvent.BUS.listen(builder -> {
             Codec<NumberIntermediary> numberIntermediaryCodec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
-            builder.registerTypeHierarchyAdapter(NumberIntermediary.class, ConfigHandler.context(numberIntermediaryCodec));
+            builder.registerTypeHierarchyAdapter(NumberIntermediary.class, GsonCodecContext.of(numberIntermediaryCodec));
 
             Codec<BooleanIntermediary> booleanIntermediaryCodec = (Codec<BooleanIntermediary>) Support.fallback("commander", () -> CommanderBooleanIntermediary.CODEC, () -> ConstantBooleanIntermediary.CODEC);
-            builder.registerTypeHierarchyAdapter(BooleanIntermediary.class, ConfigHandler.context(booleanIntermediaryCodec));
+            builder.registerTypeHierarchyAdapter(BooleanIntermediary.class, GsonCodecContext.of(booleanIntermediaryCodec));
 
-            builder.registerTypeHierarchyAdapter(Identifier.class, ConfigHandler.context(Identifier.CODEC));
-            builder.registerTypeHierarchyAdapter(StatusEffect.class, ConfigHandler.context(Registries.STATUS_EFFECT.getCodec()));
-            builder.registerTypeHierarchyAdapter(Item.class, ConfigHandler.context(Registries.ITEM.getCodec()));
-            builder.registerTypeHierarchyAdapter(Block.class, ConfigHandler.context(Registries.BLOCK.getCodec()));
+            builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
+            builder.registerTypeHierarchyAdapter(StatusEffect.class, GsonCodecContext.of(Registries.STATUS_EFFECT.getCodec()));
+            builder.registerTypeHierarchyAdapter(Item.class, GsonCodecContext.of(Registries.ITEM.getCodec()));
+            builder.registerTypeHierarchyAdapter(Block.class, GsonCodecContext.of(Registries.BLOCK.getCodec()));
         });
 
         ROOT_HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ConfigState.MAIN, ModuleManager.get().all().stream().map(Promise::get).toList());

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common.mixin.configs;
 
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.ConfigDefinition;
@@ -25,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -40,14 +40,15 @@ abstract class ServerWorldMixin extends World implements ScopedConfigs.Attachmen
     @NotNull public abstract MinecraftServer getServer();
 
     @Unique private ConfigHandler andromeda$configs;
-    @Unique private final Map<ConfigDefinition<?>, Supplier<Module.BaseConfig>> andromeda$getters = new IdentityHashMap<>();
+    @Unique private final Map<ConfigDefinition<?>, Supplier<Module.BaseConfig>> andromeda$getters = new Reference2ReferenceOpenHashMap<>();
 
     @Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/world/ServerWorld;chunkManager:Lnet/minecraft/server/world/ServerChunkManager;", ordinal = 0, shift = At.Shift.AFTER), method = "<init>")
     private void andromeda$initStates(CallbackInfo ci) {
         var manager = ModuleManager.get();
-        var modules = manager.loaded().stream().filter(m -> manager.getConfig(m).scope.isDimension()).toList();
-        this.andromeda$configs = new ConfigHandler(getServer().session.getWorldDirectory(this.getRegistryKey()).resolve("world_config"), true, ConfigState.GAME, modules);
-        this.andromeda$configs.setRoot(Andromeda.GAME_HANDLER);
+        this.andromeda$configs = new ConfigHandler(
+                getServer().session.getWorldDirectory(this.getRegistryKey()).resolve("world_config"), true,
+                ConfigState.GAME, Andromeda.GAME_HANDLER,
+                manager.loaded().stream().filter(m -> manager.getConfig(m).scope.isDimension()).toList());
 
         DataConfigs.get(this.getServer()).apply(this, this.getRegistryKey().getValue());
         manager.loaded().stream().filter(m -> m.getConfigDefinition(ConfigState.GAME) != null)
