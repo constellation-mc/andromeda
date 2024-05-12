@@ -43,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -57,21 +58,17 @@ public class NewAutoConfigScreen {
     static final ConfigEntryBuilder ENTRY_BUILDER = ConfigEntryBuilder.create();
     private static final Consumer<Object> DEFAULT_CONSUMER = object -> {};
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static final Optional<Field> saveCallback;
+    private static final Field saveCallback;
 
     static {
         saveCallback = Support.fallback("cloth-config", () -> {
             LOGGER.info("Loading ClothConfig support!");
-            return Reflect.findField(AbstractConfigEntry.class, "saveCallback").or(() -> {
-                LOGGER.error("AutoConfigScreen#saveCallback field is was not found! Selective config saves will not be available!");
-                return Optional.empty();
-            });
+            return Reflect.findField(AbstractConfigEntry.class, "saveCallback").orElseThrow();
         }, () -> {
             LOGGER.error("AutoConfigScreen class loaded without Cloth Config!");
-            return Optional.empty();
+            return null;
         });
-        saveCallback.ifPresent(field -> field.setAccessible(true));
+        saveCallback.setAccessible(true);
 
         handleUnknownObject();
 
@@ -134,7 +131,9 @@ public class NewAutoConfigScreen {
     private static final Splitter SPLITTER = Splitter.on("-");
 
     public static Screen get(Screen parent) {
-        Set<Runnable> saveQueue = new LinkedHashSet<>();
+        Map<Object, Set<SaveRunnable>> saveQueue = new LinkedHashMap<>();
+        BiConsumer<Object, SaveRunnable> acceptor = (o, r) -> saveQueue.computeIfAbsent(o, object -> new LinkedHashSet<>()).add(r);
+
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
                 .setTitle(TextUtil.translatable("config.andromeda.title", Iterables.get(SPLITTER.split(CommonValues.version()), 0)))
@@ -176,7 +175,7 @@ public class NewAutoConfigScreen {
                     var available = availableProvider.getEntry(BooleanIntermediary.class,
                             ((Module.GameConfig) config).available, ((Module.GameConfig) defaultConfig).available,
                             object -> ((Module.GameConfig) config).available = (BooleanIntermediary) object,
-                            availableKey, new Context(false, () -> saveQueue.add(() -> handler.save(module)), availableField, module)
+                            availableKey, new Context(false, () -> acceptor.accept(module, new SaveRunnable(definition, () -> handler.save(module))), availableField, module)
                     );
 
                     stateCategory.add(available);
@@ -184,7 +183,7 @@ public class NewAutoConfigScreen {
 
                 var e = defProvider.getEntry(config.getClass(),
                         config, defaultConfig, DEFAULT_CONSUMER,
-                        moduleText, new Context(false, () -> saveQueue.add(() -> handler.save(module)), null, module));
+                        moduleText, new Context(false, () -> acceptor.accept(module, new SaveRunnable(definition, () -> handler.save(module))), null, module));
                 if (!(e instanceof MultiElementListEntry<?> listEntry))
                     throw new IllegalStateException(config.getClass().getName());
                 List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
@@ -197,7 +196,7 @@ public class NewAutoConfigScreen {
                         .setDefaultValue(() -> false)
                         .setSaveConsumer(b -> bootstrapConfig.enabled = b)
                         .requireRestart().build();
-                category.addEntry(wrapSaveCallback(standardForModule(r, module, "enabled"), () -> saveQueue.add(() -> ModuleManager.get().saveBootstrap(module))));
+                category.addEntry(wrapSaveCallback(standardForModule(r, module, "enabled"), () -> acceptor.accept(module, new SaveRunnable(ModuleManager.get(), () -> ModuleManager.get().saveBootstrap(module)))));
                 return;
             }
 
@@ -205,7 +204,7 @@ public class NewAutoConfigScreen {
                     .setDefaultValue(() -> false)
                     .setSaveConsumer(b -> bootstrapConfig.enabled = b)
                     .requireRestart().build();
-            moduleCategory.add(0, wrapSaveCallback(enabled, () -> saveQueue.add(() -> ModuleManager.get().saveBootstrap(module))));
+            moduleCategory.add(0, wrapSaveCallback(enabled, () -> acceptor.accept(module, new SaveRunnable(ModuleManager.get(), () -> ModuleManager.get().saveBootstrap(module)))));
             category.addEntry(standardForModule(moduleCategory.build(), module, null));
         });
 
@@ -213,7 +212,7 @@ public class NewAutoConfigScreen {
 
         var e = defProvider.getEntry(AndromedaConfig.Config.class,
                 AndromedaConfig.get(), AndromedaConfig.getDefault(), DEFAULT_CONSUMER, "config.andromeda.base",
-                new Context(false, AndromedaConfig::save, null, null));
+                new Context(false, () -> acceptor.accept(AndromedaConfig.class, new SaveRunnable(null, AndromedaConfig::save)), null, null));
         if (!(e instanceof MultiElementListEntry<?> listEntry))
             throw new IllegalStateException(AndromedaConfig.Config.class.getName());
         List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
@@ -282,10 +281,9 @@ public class NewAutoConfigScreen {
     }
 
     private static <T extends AbstractConfigEntry<?>> T wrapSaveCallback(T e, Runnable saveFunc) {
-        if (saveCallback.isEmpty()) return e;
-        Consumer<Object> original = (Consumer<Object>) Exceptions.supply(() -> saveCallback.get().get(e));
+        Consumer<Object> original = (Consumer<Object>) Exceptions.supply(() -> saveCallback.get(e));
         if (original == null) return e;
-        Exceptions.run(() -> saveCallback.get().set(e, (Consumer<Object>) o -> {
+        Exceptions.run(() -> saveCallback.set(e, (Consumer<Object>) o -> {
             if (e.isEdited()) {
                 original.accept(o);
                 saveFunc.run();
@@ -294,15 +292,9 @@ public class NewAutoConfigScreen {
         return e;
     }
 
-    private static void powerSave(Set<Runnable> saveQueue) {
-        if (saveCallback.isPresent()) {
-            saveQueue.forEach(Runnable::run);
-            saveQueue.clear();
-            return;
-        }
-        AndromedaConfig.save();
-        Andromeda.ROOT_HANDLER.saveAll();
-        Andromeda.GAME_HANDLER.saveAll();
+    private static void powerSave(Map<Object, Set<SaveRunnable>> saveQueue) {
+        saveQueue.values().forEach(set -> CompletableFuture.runAsync(() -> set.forEach(r -> r.function().run())));
+        saveQueue.clear();
     }
 
     private static void setField(Field field, Object object, Object value) {
@@ -387,5 +379,21 @@ public class NewAutoConfigScreen {
 
     @With
     public record Context(boolean generic, Runnable saver, Field field, Module module) {
+    }
+
+    private record SaveRunnable(Object tag, Runnable function) {
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (object == null || getClass() != object.getClass()) return false;
+            SaveRunnable that = (SaveRunnable) object;
+            return Objects.equals(tag, that.tag);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(tag);
+        }
     }
 }
