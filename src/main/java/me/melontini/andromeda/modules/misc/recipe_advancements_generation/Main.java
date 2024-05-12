@@ -27,12 +27,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-public class Main {
+public final class Main {
     private static final Keeper<AdvancementGeneration> MODULE = Keeper.create();
     private static final Map<RecipeType<?>, Function<Context, Return>> RECIPE_TYPE_HANDLERS = new HashMap<>();
 
-    public static Function<Context, Return> basicConsumer(String typeName) {
-        return context -> new Return(idFromRecipe(context.id(), typeName), createAdvBuilder(context.id(), context.recipe().getIngredients().get(0)));
+    public Function<Context, Return> basicConsumer(String typeName, AdvancementGeneration.Config config) {
+        return context -> new Return(idFromRecipe(context.id(), typeName), createAdvBuilder(config, context.id(), context.recipe().getIngredients().get(0)));
     }
 
     private static Identifier idFromRecipe(Identifier recipe, String typeName) {
@@ -43,7 +43,7 @@ public class Main {
         RECIPE_TYPE_HANDLERS.putIfAbsent(type, consumer);
     }
 
-    public static void generateRecipeAdvancements(MinecraftServer server) {
+    public void generateRecipeAdvancements(MinecraftServer server, AdvancementGeneration.Config config) {
         AdvancementGeneration module = MODULE.orThrow();
         Map<Identifier, Advancement.Builder> advancementBuilders = new ConcurrentHashMap<>();
         AtomicInteger count = new AtomicInteger();
@@ -53,11 +53,11 @@ public class Main {
         for (List<RecipeEntry<?>> list : lists) {
             futures.add(CompletableFuture.runAsync(() -> {
                 for (RecipeEntry<?> recipe : list) {
-                    if (module.config().namespaceBlacklist.contains(recipe.id().getNamespace()))
+                    if (config.namespaceBlacklist.contains(recipe.id().getNamespace()))
                         continue;
-                    if (module.config().recipeBlacklist.contains(recipe.id().toString()))
+                    if (config.recipeBlacklist.contains(recipe.id()))
                         continue;
-                    if (recipe.value().isIgnoredInRecipeBook() && module.config().ignoreRecipesHiddenInTheRecipeBook)
+                    if (recipe.value().isIgnoredInRecipeBook() && config.ignoreRecipesHiddenInTheRecipeBook)
                         continue;
 
                     var handler = RECIPE_TYPE_HANDLERS.get(recipe.value().getType());
@@ -68,7 +68,7 @@ public class Main {
                     } else {
                         if (!recipe.value().getIngredients().isEmpty()) {
                             count.getAndIncrement();
-                            advancementBuilders.put(new Identifier(recipe.id().getNamespace(), "recipes/gen/generic/" + recipe.id().toString().replace(":", "_")), createAdvBuilder(recipe.id(), recipe.value().getIngredients().toArray(Ingredient[]::new)));
+                            advancementBuilders.put(new Identifier(recipe.id().getNamespace(), "recipes/gen/generic/" + recipe.id().toString().replace(":", "_")), createAdvBuilder(config, recipe.id(), recipe.value().getIngredients().toArray(Ingredient[]::new)));
                         }
                     }
                 }
@@ -91,7 +91,7 @@ public class Main {
         advancementBuilders.clear();
     }
 
-    public static @NotNull Advancement.Builder createAdvBuilder(Identifier id, Ingredient... ingredients) {
+    public @NotNull Advancement.Builder createAdvBuilder(AdvancementGeneration.Config config, Identifier id, Ingredient... ingredients) {
         MakeSure.notEmpty(ingredients);// shouldn't really happen
         var builder = Advancement.Builder.createUntelemetered();
         builder.parent(Identifier.tryParse("minecraft:recipes/root"));
@@ -116,7 +116,7 @@ public class Main {
         builder.criterion("has_recipe", RecipeUnlockedCriterion.create(id));
 
         String[][] reqs;
-        if (MODULE.orThrow().config().requireAllItems) {
+        if (config.requireAllItems) {
             reqs = new String[names.size()][2];
             for (int i = 0; i < names.size(); i++) {
                 String s = names.get(i);
@@ -137,20 +137,21 @@ public class Main {
         return builder;
     }
 
-    Main(AdvancementGeneration module) {
+    Main(AdvancementGeneration module, AdvancementGeneration.Config config) {
         Main.MODULE.init(module);
 
-        ServerLifecycleEvents.SERVER_STARTING.register(Main::generateRecipeAdvancements);
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.generateRecipeAdvancements(server, config));
+        BeforeDataPackSyncEvent.EVENT.register(server -> this.generateRecipeAdvancements(server, config));
 
-        addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting"));
-        addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking"));
-        addRecipeTypeHandler(RecipeType.SMELTING, basicConsumer("smelting"));
-        addRecipeTypeHandler(RecipeType.CAMPFIRE_COOKING, basicConsumer("campfire_cooking"));
-        addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting"));
+        addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting", config));
+        addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking", config));
+        addRecipeTypeHandler(RecipeType.SMELTING, basicConsumer("smelting", config));
+        addRecipeTypeHandler(RecipeType.CAMPFIRE_COOKING, basicConsumer("campfire_cooking", config));
+        addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting", config));
         addRecipeTypeHandler(RecipeType.CRAFTING, (context) -> {
             if (!(context.recipe() instanceof SpecialCraftingRecipe)) {
                 if (!context.recipe().getIngredients().isEmpty()) {
-                    return new Return(idFromRecipe(context.id(), "crafting"), createAdvBuilder(context.id(), context.recipe().getIngredients().toArray(Ingredient[]::new)));
+                    return new Return(idFromRecipe(context.id(), "crafting"), createAdvBuilder(config, context.id(), context.recipe().getIngredients().toArray(Ingredient[]::new)));
                 }
             }
             return null;

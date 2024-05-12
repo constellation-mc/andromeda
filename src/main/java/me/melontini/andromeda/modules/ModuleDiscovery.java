@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @CustomLog
-public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
+public final class ModuleDiscovery implements ModuleManager.ModuleSupplier {
     @Override
     public List<Module.Zygote> get() {
         Bootstrap.getModuleClassPath().addUrl(ModuleDiscovery.class.getProtectionDomain().getCodeSource().getLocation());
@@ -39,7 +39,7 @@ public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
                 }).thenApplyAsync(name -> {
                     if (name == null) return null;
                     var c = Exceptions.supply(() -> Class.forName(name.replace('/', '.')));
-                    return Module.Zygote.spawn(c, () -> Exceptions.supply(() -> (Module<?>) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
+                    return Module.Zygote.spawn(c, () -> Exceptions.supply(() -> (Module) Reflect.setAccessible(Reflect.findConstructor(c).orElseThrow(() -> new IllegalStateException("Module has no no-args ctx!")))
                             .newInstance()));
                 })));
 

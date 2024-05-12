@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class MixinVerifyError extends Error {
+public final class MixinVerifyError extends Error {
 
     private final Set<Complaint> complaints;
     private final String cls;

@@ -1,13 +1,14 @@
 package me.melontini.andromeda.modules.misc.tiny_storage;
 
+import me.melontini.andromeda.common.Andromeda;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameRules;
 
-public class Main {
+public final class Main {
     Main(TinyStorage module) {
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            if (alive || module.config().transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER
+            if (alive || Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER
                     || newPlayer.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
                     || oldPlayer.isSpectator()) {
                 copyInputs(oldPlayer, newPlayer);

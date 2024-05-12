@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @CustomLog
-public class AndromedaException extends RuntimeException {
+public final class AndromedaException extends RuntimeException {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -121,7 +121,7 @@ public class AndromedaException extends RuntimeException {
             return this;
         }
 
-        public Builder translatable(Module<?> module, String key, Object... args) {
+        public Builder translatable(Module module, String key, Object... args) {
             this.message.add(EarlyLanguage.translate("andromeda.%s.exception.%s".formatted(module.meta().dotted(), key), args));
             return this;
         }
@@ -158,10 +158,19 @@ public class AndromedaException extends RuntimeException {
             return this;
         }
 
+        public Builder add(String key, Object[] objArray) {
+            JsonArray array = new JsonArray();
+            for (Object object : objArray) {
+                array.add(String.valueOf(object));
+            }
+            statuses.add(key, array);
+            return this;
+        }
+
         public Builder add(String key, Collection<?> collection) {
             JsonArray array = new JsonArray();
             for (Object object : collection) {
-                array.add(GSON.toJsonTree(object));
+                array.add(String.valueOf(object));
             }
             statuses.add(key, array);
             return this;

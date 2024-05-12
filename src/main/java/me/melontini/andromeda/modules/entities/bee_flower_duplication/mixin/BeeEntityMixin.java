@@ -1,6 +1,8 @@
 package me.melontini.andromeda.modules.entities.bee_flower_duplication.mixin;
 
+import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import me.melontini.andromeda.modules.misc.unknown.Main;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
@@ -55,8 +57,9 @@ abstract class BeeEntityMixin extends AnimalEntity {
     @Unique private void andromeda$growFlower() {
         if (this.flowerPos != null) {
             BlockState flowerState = world.getBlockState(flowerPos);
-            BeeFlowerDuplication.Config config = world.am$get(BeeFlowerDuplication.class);
-            if (!config.enabled) return;
+            var config = world.am$get(BeeFlowerDuplication.CONFIG);
+            var supplier = Suppliers.memoize(LootContextUtil.block(world, this.getPos(), flowerState));
+            if (!config.available.asBoolean(supplier)) return;
 
             if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
                 andromeda$plantingCoolDown = world.random.nextBetween(3600, 6490);
@@ -76,7 +79,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
                         }
                     }
                 }
-            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && config.tallFlowers) {
+            } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock && config.tallFlowers.asBoolean(supplier)) {
                 andromeda$plantingCoolDown = world.random.nextBetween(3600, 8000);
                 for (int i = -1; i <= 1; i++) {
                     for (int b = -2; b <= 2; b++) {

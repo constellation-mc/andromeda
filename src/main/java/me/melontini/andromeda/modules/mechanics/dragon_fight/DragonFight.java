@@ -1,34 +1,32 @@
 package me.melontini.andromeda.modules.mechanics.dragon_fight;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "dragon_fight", category = "mechanics", environment = Environment.SERVER)
-public class DragonFight extends Module<DragonFight.Config> {
+public final class DragonFight extends Module {
+
+    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     DragonFight() {
+        this.defineConfig(ConfigState.MAIN, CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
     }
 
-    public static class Config extends BaseConfig {
-
-        @ConfigEntry.Category("mechanics")
+    @ToString
+    public static final class Config extends BaseConfig {
         public boolean respawnCrystals = true;
-
-        @ConfigEntry.Category("mechanics")
         public boolean scaleHealthByMaxPlayers = false;
-
-        @ConfigEntry.Category("mechanics")
         public boolean shorterCrystalTrackRange = true;
-
-        @ConfigEntry.Category("mechanics")
         public boolean shorterSpikes = false;
     }
 }

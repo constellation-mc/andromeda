@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
@@ -18,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -26,15 +26,15 @@ import java.util.Set;
 
 import static me.melontini.dark_matter.api.base.util.MathUtil.threadRandom;
 
-public class Client {
+public final class Client {
 
-    private static final Set<Item> showTooltip = new HashSet<>();
+    private final Set<Item> showTooltip = new HashSet<>();
 
-    public static boolean hasTooltip(Item item) {
+    public boolean hasTooltip(Item item) {
         return showTooltip.contains(item);
     }
 
-    Client(ThrowableItems module) {
+    Client(ThrowableItems.ClientConfig config) {
         Main.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
@@ -44,12 +44,12 @@ public class Client {
             for (int i = 0; i < length; i++) ids.add(buf.readIdentifier());
             client.execute(() -> {
                 showTooltip.clear();
-                for (Identifier id : ids) showTooltip.add(CommonRegistries.items().get(id));
+                for (Identifier id : ids) showTooltip.add(Registries.ITEM.get(id));
             });
         });
 
         ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
-            if (module.config().tooltip && hasTooltip(stack.getItem())) {
+            if (config.tooltip && hasTooltip(stack.getItem())) {
                 lines.add(TextUtil.translatable("tooltip.andromeda.throwable_item").formatted(Formatting.GRAY));
             }
         });

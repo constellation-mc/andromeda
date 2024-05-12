@@ -5,6 +5,6 @@ import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "better_names", category = "items", environment = Environment.CLIENT)
-public class BetterNames extends Module<Module.BaseConfig> {
+public final class BetterNames extends Module {
 
 }

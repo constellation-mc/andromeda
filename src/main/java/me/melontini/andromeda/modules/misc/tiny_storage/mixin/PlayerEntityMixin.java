@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.misc.tiny_storage.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.misc.tiny_storage.TinyStorage;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -41,7 +41,7 @@ abstract class PlayerEntityMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V"), method = "dropInventory")
     private void andromeda$dropAll(CallbackInfo ci) {
-        if (ModuleManager.quick(TinyStorage.class).config().transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
+        if (Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
 
         for(int i = 0; i < this.playerScreenHandler.getCraftingInput().size(); ++i) {
             ItemStack stack = this.playerScreenHandler.getCraftingInput().removeStack(i);

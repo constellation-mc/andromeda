@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
     Main() {
         CustomTraderManager.ATTACHMENT.init(AttachmentRegistry.<CustomTraderManager>builder()
                 .initializer(() -> new CustomTraderManager(0))

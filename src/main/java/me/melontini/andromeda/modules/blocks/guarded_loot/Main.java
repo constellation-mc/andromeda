@@ -1,10 +1,14 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
+import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.items.lockpick.Lockpick;
 import me.melontini.andromeda.modules.items.lockpick.LockpickItem;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -18,6 +22,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -25,13 +30,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class Main {
+public final class Main {
     Main() {
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
             if (player.getAbilities().creativeMode) return true;
 
-            if (blockEntity instanceof LootableContainerBlockEntity && world.am$get(GuardedLoot.class).breakingHandler == GuardedLoot.BreakingHandler.UNBREAKABLE) {
-                var monsters = checkMonsterLock(world, pos);
+            if (blockEntity instanceof LootableContainerBlockEntity && world.am$get(GuardedLoot.CONFIG).breakingHandler == GuardedLoot.BreakingHandler.UNBREAKABLE) {
+                var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
                 if (monsters.isEmpty() || checkLockPicking(player)) return true;
                 handleLockedContainer(player, monsters);
                 return false;
@@ -41,19 +46,20 @@ public class Main {
     }
 
     //TODO fix igloos. Maybe check reach?
-    public static List<LivingEntity> checkMonsterLock(World world, BlockPos pos) {
-        var config = world.am$get(GuardedLoot.class);
-        if (!config.enabled) return Collections.emptyList();
+    public static List<LivingEntity> checkMonsterLock(World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
+        var config = world.am$get(GuardedLoot.CONFIG);
+        var supplier = Suppliers.memoize(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, player, be));
+        if (!config.available.asBoolean(supplier)) return Collections.emptyList();
 
-        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range), Entity::isAlive).stream()
+        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range.asDouble(supplier)), Entity::isAlive).stream()
                 .filter(Monster.class::isInstance).toList();
     }
 
     public static boolean checkLockPicking(PlayerEntity player) {
         return ModuleManager.get().getModule(Lockpick.class).map(m -> {
-            if (player.world.am$get(GuardedLoot.class).allowLockPicking) {
+            if (player.world.am$get(GuardedLoot.CONFIG).allowLockPicking) {
                 if (player.getMainHandStack().isOf(LockpickItem.INSTANCE.orThrow())) {
-                    return LockpickItem.INSTANCE.orThrow().tryUse(m, player.getMainHandStack(), player, Hand.MAIN_HAND);
+                    return LockpickItem.INSTANCE.orThrow().tryUse(player.getMainHandStack(), player, Hand.MAIN_HAND);
                 }
             }
             return false;

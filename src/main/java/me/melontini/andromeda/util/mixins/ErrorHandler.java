@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinErrorHandler;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 @CustomLog
-public class ErrorHandler implements IMixinErrorHandler {
+public final class ErrorHandler implements IMixinErrorHandler {
 
     @Override
     public ErrorAction onPrepareError(IMixinConfig config, Throwable th, IMixinInfo mixin, ErrorAction action) {
@@ -24,9 +24,10 @@ public class ErrorHandler implements IMixinErrorHandler {
         if (Debug.Keys.SKIP_MIXIN_ERROR_HANDLER.isPresent()) return action;
 
         if (action == ErrorAction.ERROR) {
-            ModuleManager.get().getMixinProcessor().fromConfig(mixin.getConfig().getName()).ifPresent(module -> {
-                module.config().enabled = false;
-                module.save();
+            var manager = ModuleManager.get();
+            manager.getMixinProcessor().fromConfig(mixin.getConfig().getName()).ifPresent(module -> {
+                manager.getConfig(module).enabled = false;
+                manager.saveBootstrap(module);
                 LOGGER.info("Disabling module '%s'!".formatted(module.meta().id()));
             });
             return action;

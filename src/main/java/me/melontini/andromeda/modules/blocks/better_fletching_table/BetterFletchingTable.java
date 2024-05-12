@@ -10,7 +10,7 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "better_fletching_table", category = "blocks")
-public class BetterFletchingTable extends Module<Module.BaseConfig> {
+public final class BetterFletchingTable extends Module {
 
     BetterFletchingTable() {
         InitEvent.main(this).listen(() -> List.of(Main.class));

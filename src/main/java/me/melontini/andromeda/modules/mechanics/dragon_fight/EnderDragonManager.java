@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.mechanics.dragon_fight;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
@@ -36,7 +36,6 @@ public class EnderDragonManager {
 
     public static final Keeper<AttachmentType<EnderDragonManager>> ATTACHMENT = Keeper.create();
 
-    private final DragonFight module = ModuleManager.quick(DragonFight.class);
     private final List<Crystal> crystals;
     private int maxPlayers;
 
@@ -75,7 +74,7 @@ public class EnderDragonManager {
         }
         crystals.removeAll(removal);
 
-        if (!module.config().scaleHealthByMaxPlayers) return;
+        if (!Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).scaleHealthByMaxPlayers) return;
         for (EnderDragonEntity dragon : dragons) {
             EntityAttributeInstance inst = dragon.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
             MakeSure.notNull(inst, "Ender Dragon has no attributes?").setBaseValue(Math.floor(Math.sqrt(500 * maxPlayers) * 10));

@@ -1,6 +1,7 @@
 package me.melontini.andromeda.util;
 
 import com.google.common.base.Suppliers;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import net.fabricmc.api.EnvType;
@@ -18,7 +19,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-@Log4j2
+@Log4j2 @UtilityClass
 public class CommonValues {
 
     public static final String MODID = "andromeda";

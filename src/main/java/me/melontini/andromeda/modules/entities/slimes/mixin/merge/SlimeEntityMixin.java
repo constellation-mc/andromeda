@@ -1,6 +1,8 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.merge;
 
-import me.melontini.andromeda.base.ModuleManager;
+import com.google.common.base.Suppliers;
+import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
@@ -20,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SlimeEntity.class)
 abstract class SlimeEntityMixin extends MobEntity {
-    @Unique private static final Slimes am$slimes = ModuleManager.quick(Slimes.class);
 
     @Shadow public abstract int getSize();
     @Shadow public abstract void setSize(int size, boolean heal);
@@ -33,21 +34,25 @@ abstract class SlimeEntityMixin extends MobEntity {
 
     @Inject(at = @At("TAIL"), method = "initGoals")
     private void andromeda$newGoal(CallbackInfo ci) {
-        Slimes.Config config = this.world.am$get(am$slimes);
-        if (!config.enabled || !config.merge) return;
-
+        var config = this.world.am$get(Slimes.CONFIG);
+        var supplier = ConstantLootContextAccessor.get(this);
         this.targetSelector.add(2, new ActiveTargetGoal<>((SlimeEntity) (Object) this, SlimeEntity.class, 5, true, false, livingEntity -> {
-            if (!config.enabled || !config.merge) return false;
+            if (!config.available.asBoolean(supplier)) return false;
+            var supplier1 = Suppliers.memoize(LootContextUtil.entity(world, livingEntity.getPos(), livingEntity, null, this));
+            if (!config.merge.asBoolean(supplier1)) return false;
             if (this.andromeda$mergeCD > 0) return false;
-            float d = livingEntity.distanceTo((SlimeEntity) (Object) this);
-            return d <= 6 && (getSize() <= config.maxMerge && ((SlimeEntity) livingEntity).getSize() < getSize());
+            float d = livingEntity.distanceTo(this);
+            return d <= 6 && (getSize() <= config.maxMerge.asInt(supplier1) && ((SlimeEntity) livingEntity).getSize() < getSize());
         }));
     }
 
     @Inject(at = @At("TAIL"), method = "pushAwayFrom")
     private void andromeda$push(Entity entity, CallbackInfo ci) {
-        Slimes.Config config = this.world.am$get(am$slimes);
-        if (!config.enabled || !config.merge) return;
+        var config = this.world.am$get(Slimes.CONFIG);
+        var supplier = ConstantLootContextAccessor.get(this);
+        if (!config.available.asBoolean(supplier)) return;
+
+        if (!config.merge.asBoolean(LootContextUtil.entity(world, entity.getPos(), entity, null, this))) return;
 
         if (getTarget() instanceof SlimeEntity slime && slime == entity && this.andromeda$mergeCD == 0) {
             int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);

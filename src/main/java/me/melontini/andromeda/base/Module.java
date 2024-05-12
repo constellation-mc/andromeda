@@ -4,16 +4,18 @@ import com.google.common.base.Suppliers;
 import lombok.*;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
+import me.melontini.andromeda.base.events.ConstructorParametersEvent;
+import me.melontini.andromeda.base.util.BootstrapConfig;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
-import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,41 +27,33 @@ import java.util.function.Supplier;
  * <p> Modules are singletons, and are created by {@link ModuleManager}* during {@link Bootstrap.Status#SETUP}.
  * <p> A module class must not contain any game classes or references in its fields, the constructor and config class, as they are loaded before the game.</p>
  * <p>The only functional part of a module is its constructor.</p>
- *
- * @param <T> the config type for this module.
  */
 @CustomLog @Accessors(fluent = true)
-public abstract class Module<T extends Module.BaseConfig> {
+public abstract class Module {
 
     private final Metadata info;
     @Getter
     private final PrependingLogger logger;
 
-    @Getter
-    volatile ConfigManager<T> manager;
-    @Getter
-    volatile T config;
-    @Getter
-    volatile T defaultConfig;
-
     private final Map<String, Bus<?>> busMap = new HashMap<>();
     private final IdentityHashMap<Class<?>, Object> objectMap = new IdentityHashMap<>();
+    private final EnumMap<ConfigState, ConfigDefinition<?>> configs = new EnumMap<>(ConfigState.class);
 
     protected Module() {
         this.info = Metadata.fromAnnotation(this.getClass().getAnnotation(ModuleInfo.class));
         this.logger = PrependingLogger.get("Andromeda/" + meta().id(), PrependingLogger.LOGGER_NAME);
     }
 
+    protected void defineConfig(ConfigState state, ConfigDefinition<?> supplier) {
+        this.configs.put(state, supplier);
+    }
+
+    public ConfigDefinition<?> getConfigDefinition(ConfigState state) {
+        return this.configs.get(state);
+    }
+
     public final Metadata meta() {
         return info;
-    }
-
-    public final void save() {
-        manager().save(FabricLoader.getInstance().getConfigDir(), config(), Context.of());
-    }
-
-    public final boolean enabled() {
-        return config().enabled;
     }
 
     @Override
@@ -84,17 +78,21 @@ public abstract class Module<T extends Module.BaseConfig> {
         if (ctx.getParameterCount() == 0) {
             AndromedaException.run(() -> this.objectMap.put(cls, ctx.newInstance()), b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
         } else {
-            Map<Class<?>, Object> args = Map.of(
+            Map<Class<?>, Object> args = new HashMap<>(Map.of(
                     this.getClass(), this,
-                    ModuleManager.getConfigClass(this.getClass()), this.config()
-            );
+                    BootstrapConfig.class, ModuleManager.get().getConfig(this)
+            ));
+            args.putAll(ConstructorParametersEvent.BUS.invoker().getAdditionalParameters(this));
 
             List<Object> passed = new ArrayList<>(ctx.getParameterCount());
             for (Class<?> parameterType : ctx.getParameterTypes()) {
-                var value = MakeSure.notNull(args.get(parameterType));
+                var value = Objects.requireNonNull(args.get(parameterType), cls.getName());
                 passed.add(value);
             }
-            AndromedaException.run(() -> this.objectMap.put(cls, ctx.newInstance(passed.toArray(Object[]::new))), b -> b.literal("Failed to construct module class!").add("class", cls.getName()));
+            AndromedaException.run(() -> this.objectMap.put(cls, ctx.newInstance(passed.toArray(Object[]::new))), b -> b.literal("Failed to construct module class!")
+                    .add("parameters", ctx.getParameterTypes())
+                    .add("args", passed)
+                    .add("class", cls.getName()));
         }
     }
 
@@ -113,31 +111,11 @@ public abstract class Module<T extends Module.BaseConfig> {
         }
     }
 
-    @Getter
-    @Setter
-    public static class BaseConfig {
+    public static class BaseConfig { }
 
-        @ConfigEntry.Gui.RequiresRestart
-        public boolean enabled = false;
-
+    public static class GameConfig extends BaseConfig {
         @ConfigEntry.Gui.Excluded
-        public Scope scope = Scope.GLOBAL;
-
-        public enum Scope {
-            GLOBAL, WORLD, DIMENSION;
-
-            public boolean isWorld() {
-                return this == WORLD;
-            }
-
-            public boolean isGlobal() {
-                return this == GLOBAL;
-            }
-
-            public boolean isDimension() {
-                return this == DIMENSION;
-            }
-        }
+        public BooleanIntermediary available = BooleanIntermediary.of(true);
     }
 
     @Value
@@ -146,9 +124,9 @@ public abstract class Module<T extends Module.BaseConfig> {
     public static class Zygote {
         Class<?> type;
         Metadata meta;
-        Supplier<? extends Module<?>> supplier;
+        Supplier<? extends Module> supplier;
 
-        public static Zygote spawn(Class<?> type, Supplier<? extends Module<?>> supplier) {
+        public static Zygote spawn(Class<?> type, Supplier<? extends Module> supplier) {
             ModuleInfo info = type.getAnnotation(ModuleInfo.class);
             if (info == null) throw new IllegalStateException("Module has no info!");
 

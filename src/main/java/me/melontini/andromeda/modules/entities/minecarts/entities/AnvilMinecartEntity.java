@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.entities.minecarts.entities;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
@@ -69,7 +70,11 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
     @Override
     public double getMaxSpeed() {
         double d = (this.isTouchingWater() ? 0.08 : 0.1) / 20.0;
-        return optional.map(ms -> d * world.am$get(ms).modifier).orElse(d);
+        return optional.map(ms -> {
+            var c = world.am$get(MinecartSpeedControl.CONFIG);
+            var supplier = ConstantLootContextAccessor.get(this);
+            return c.available.asBoolean(supplier) ? d * c.modifier.asDouble(supplier) : d;
+        }).orElse(d);
     }
 
     @Override

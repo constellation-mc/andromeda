@@ -1,8 +1,14 @@
 package me.melontini.andromeda.base;
 
+import com.google.common.collect.Maps;
+import com.google.gson.*;
 import lombok.CustomLog;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
+import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.base.util.annotations.Unscoped;
@@ -10,8 +16,6 @@ import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.EarlyLanguage;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.base.config.ConfigManager;
-import me.melontini.dark_matter.api.base.util.Context;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
@@ -20,8 +24,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,18 +37,22 @@ import java.util.stream.Collectors;
 /**
  * The ModuleManager is responsible for resolving and storing modules. It is also responsible for loading and fixing configs.
  */
-@CustomLog
-public class ModuleManager {
+@CustomLog @Accessors(fluent = true)
+public final class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Nullable static ModuleManager INSTANCE;
 
     private final Map<Class<?>, PromiseImpl<?>> discoveredModules;
     private final Map<String, PromiseImpl<?>> discoveredModuleNames;
 
-    private final Map<Class<?>, Module<?>> modules;
-    private final Map<String, Module<?>> moduleNames;
+    private final Map<Class<?>, Module> modules;
+    private final Map<String, Module> moduleNames;
+
+    @Setter
+    Function<Module, BootstrapConfig> configGetter;
 
     private final MixinProcessor mixinProcessor;
 
@@ -62,116 +68,98 @@ public class ModuleManager {
             return Collections.unmodifiableMap(m);
         });
 
-        List<? extends Module<?>> sorted = zygotes.stream().map(Module.Zygote::supplier).map(s -> {
+        List<? extends Module> sorted = zygotes.stream().map(Module.Zygote::supplier).map(s -> {
             discoveredModules.get(s.get().getClass()).future().complete(Utilities.cast(s.get()));
             return s.get();
         }).toList();
 
-        this.setUpConfigs(sorted);
+        sorted.forEach(module -> ConfigEvent.bootstrap(module).listen((manager, config) -> {
+            if (AndromedaConfig.get().sideOnlyMode) {
+                var env = module.meta().environment();
+                if (CommonValues.environment() == EnvType.CLIENT) {
+                    if (env.isServer()) config.enabled = false;
+                } else {
+                    if (env.isClient()) config.enabled = false;
+                }
+                if (env.isBoth()) config.enabled = false;
+            }
+        }));
 
-        CompletableFuture.allOf(sorted.stream().map(m -> CompletableFuture.runAsync(() -> {
-            m.config = Utilities.cast(m.manager().load(FabricLoader.getInstance().getConfigDir(), Context.of()));
-            m.defaultConfig = Utilities.cast(m.manager().createDefault());
-        })).toArray(CompletableFuture[]::new)).join();
+        LOGGER.info("Loading bootstrap configs!");
+        Map<Module, CompletableFuture<BootstrapConfig>> configs = new IdentityHashMap<>();
+        sorted.forEach(m -> configs.put(m, CompletableFuture.supplyAsync(() -> {
+            var path = FabricLoader.getInstance().getConfigDir().resolve("andromeda/" + m.meta().id() + ".json");
+            if (!Files.exists(path)) return new BootstrapConfig();
 
-        if (Debug.Keys.ENABLE_ALL_MODULES.isPresent())
-            sorted.forEach(module -> module.config().enabled = true);
+            try (var reader = Files.newBufferedReader(path)) {
+                JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
+                if (object.has("bootstrap")) {
+                    object = object.getAsJsonObject("bootstrap");
+                }
+                return Objects.requireNonNull(GSON.fromJson(object, BootstrapConfig.class));
+            } catch (Exception e) {
+                LOGGER.error("Failed to load {}! Resetting to default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
+                return new BootstrapConfig();
+            }
+        })));
+        Map<Module, BootstrapConfig> bootstrapConfigs = new IdentityHashMap<>(Maps.transformValues(configs, CompletableFuture::join));
+        this.configGetter = bootstrapConfigs::get;
+        bootstrapConfigs.forEach((module, config) -> {
+            Bus<ConfigEvent> bus = module.getOrCreateBus("bootstrap_config_event", null);
+            if (bus == null) return;
+            bus.invoker().accept(this, config);
+        });
+
+        if (Debug.Keys.ENABLE_ALL_MODULES.isPresent()) bootstrapConfigs.values().forEach(c -> c.enabled = true);
         fixScopes(sorted);
 
-        sorted.forEach(Module::save);
+        sorted.forEach(this::saveBootstrap);
 
         this.modules = Utilities.supply(() -> {
-            var m = sorted.stream().filter(Module::enabled).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
+            var m = sorted.stream().filter(module -> getConfig(module).enabled()).collect(Collectors.toMap(Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
             return Collections.unmodifiableMap(m);
         });
         this.moduleNames = Utilities.supply(() -> {
-            var m = sorted.stream().filter(Module::enabled).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
+            var m = sorted.stream().filter(module -> getConfig(module).enabled()).collect(Collectors.toMap(module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
             return Collections.unmodifiableMap(m);
         });
 
         cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
     }
 
-    private void fixScopes(Collection<? extends Module<?>> modules) {
+    private void fixScopes(Collection<? extends Module> modules) {
         modules.forEach(m -> {
-            if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) m.config().scope = Module.BaseConfig.Scope.DIMENSION;
+            var config = this.getConfig(m);
+            if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) config.scope = BootstrapConfig.Scope.DIMENSION;
 
-            if (!Experiments.get().scopedConfigs && !m.config().scope.isGlobal()) {
+            if (!Experiments.get().scopedConfigs && !config.scope.isGlobal()) {
                 throw AndromedaException.builder().report(false)
-                        .translatable("module_manager.scoped_configs_disabled", m.meta().id(), m.config().scope)
+                        .translatable("module_manager.scoped_configs_disabled", m.meta().id(), config.scope)
                         .build();
             }
 
-            if (m.meta().environment().isClient() && !m.config().scope.isGlobal()) {
+            if (m.meta().environment().isClient() && !config.scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
-                    LOGGER.error(EarlyLanguage.translate("andromeda.module_manager.invalid_scope", m.meta().environment(), m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL));
-                m.config().scope = Module.BaseConfig.Scope.GLOBAL;
+                    LOGGER.error(EarlyLanguage.translate("andromeda.module_manager.invalid_scope", m.meta().environment(), m.meta().id(), config.scope, BootstrapConfig.Scope.GLOBAL));
+                config.scope = BootstrapConfig.Scope.GLOBAL;
                 return;
             }
 
-            if (m.getClass().isAnnotationPresent(Unscoped.class) && !m.config().scope.isGlobal()) {
+            if (m.getClass().isAnnotationPresent(Unscoped.class) && !config.scope.isGlobal()) {
                 if (!Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent())
-                    LOGGER.error(EarlyLanguage.translate("andromeda.module_manager.invalid_scope", "Unscoped", m.meta().id(), m.config().scope, Module.BaseConfig.Scope.GLOBAL));
-                m.config().scope = Module.BaseConfig.Scope.GLOBAL;
+                    LOGGER.error(EarlyLanguage.translate("andromeda.module_manager.invalid_scope", "Unscoped", m.meta().id(), config.scope, BootstrapConfig.Scope.GLOBAL));
+                config.scope = BootstrapConfig.Scope.GLOBAL;
             }
         });
     }
 
-    static void validateZygote(Module.Zygote module) {
+    static void validateZygote(@NonNull Module.Zygote module) {
         MakeSure.notEmpty(module.meta().category(), "Module category can't be null or empty! Module: " + module.getClass());
         MakeSure.isTrue(!module.meta().category().contains("/"), "Module category can't contain '/'! Module: " + module.getClass());
         MakeSure.notEmpty(module.meta().name(), "Module name can't be null or empty! Module: " + module.getClass());
     }
 
-    private void setUpConfigs(Collection<? extends Module<?>> modules) {
-        modules.forEach(m -> {
-            var manager = makeManager(m);
-            manager.onLoad((config, path) -> {
-                if (AndromedaConfig.get().sideOnlyMode) {
-                    var env = m.meta().environment();
-                    if (CommonValues.environment() == EnvType.CLIENT) {
-                        if (env.isServer()) config.enabled = false;
-                    } else {
-                        if (env.isClient()) config.enabled = false;
-                    }
-                    if (env.isBoth()) config.enabled = false;
-                }
-            });
-            manager.exceptionHandler((e, stage, path) -> LOGGER.error("Failed to %s config for module: %s".formatted(stage.toString().toLowerCase(Locale.ROOT), m.meta().id()), e));
-
-            Bus<ConfigEvent<?>> e = m.getOrCreateBus("config_event", null);
-            if (e != null) e.invoker().accept(this, Utilities.cast(manager));
-
-            m.manager = Utilities.cast(manager);
-        });
-    }
-
-    private ConfigManager<? extends Module.BaseConfig> makeManager(Module<?> m) {
-        Class<? extends Module.BaseConfig> cls = getConfigClass(m.getClass());
-
-        return cls == Module.BaseConfig.class ?
-                ConfigManager.of(Module.BaseConfig.class, "andromeda/" + m.meta().id(), Module.BaseConfig::new) :
-                ConfigManager.of(cls, "andromeda/" + m.meta().id());
-    }
-
-    /**
-     * Parses the config class from modules generic type.
-     *
-     * @param m the module class.
-     * @return the config class.
-     */
-    public static Class<? extends Module.BaseConfig> getConfigClass(Class<?> m) {
-        if (m.getGenericSuperclass() instanceof ParameterizedType pt) {
-            for (Type ta : pt.getActualTypeArguments()) {
-                if (ta instanceof Class<?> cls && Module.BaseConfig.class.isAssignableFrom(cls)) {
-                    return Utilities.cast(cls);
-                }
-            }
-        }
-        return !Object.class.equals(m.getSuperclass()) ? getConfigClass(m.getSuperclass()) : Module.BaseConfig.class;
-    }
-
-    public void cleanConfigs(Path root, Collection<? extends Module<?>> modules) {
+    public void cleanConfigs(Path root, Collection<? extends Module> modules) {
         if (Files.exists(root)) {
             Set<Path> paths = collectPaths(Objects.requireNonNull(root.getParent(), () -> "Root config folder? %s".formatted(root)), modules);
             Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
@@ -187,16 +175,46 @@ public class ModuleManager {
         }
     }
 
-    private Set<Path> collectPaths(Path root, Collection<? extends Module<?>> modules) {
+    private Set<Path> collectPaths(@NonNull Path root, @NonNull Collection<? extends Module> modules) {
         Set<Path> paths = new HashSet<>();
 
         paths.add(root.resolve("andromeda/mod.json"));
         paths.add(root.resolve("andromeda/debug.json"));
         paths.add(root.resolve("andromeda/experiments.json"));
 
-        modules.forEach(module -> paths.add(module.manager().resolve(root)));
+        modules.forEach(module -> paths.add(root.resolve("andromeda/" + module.meta().id() + ".json")));
 
-        return paths;
+        return Collections.unmodifiableSet(paths);
+    }
+
+    public void saveBootstrap(Module module) {
+        var path = FabricLoader.getInstance().getConfigDir().resolve("andromeda/" + module.meta().id() + ".json");
+
+        JsonObject object = new JsonObject();
+        if (Files.exists(path)) {
+            try (var reader = Files.newBufferedReader(path)) {
+                object = JsonParser.parseReader(reader).getAsJsonObject();
+            } catch (IOException | JsonParseException e) {
+                object = new JsonObject();
+            }
+        }
+
+        var cfg = getConfig(module);
+        var o = GSON.toJsonTree(cfg).getAsJsonObject();
+        if (!object.has("bootstrap")) o.asMap().keySet().forEach(object::remove);
+        object.add("bootstrap", o);
+
+        try {
+            var parent = path.getParent();
+            if (parent != null) Files.createDirectories(parent);
+            Files.writeString(path, GSON.toJson(object));
+        } catch (IOException e) {
+            LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);
+        }
+    }
+
+    public BootstrapConfig getConfig(Module module) {
+        return this.configGetter.apply(module);
     }
 
     /**
@@ -206,8 +224,8 @@ public class ModuleManager {
      * @param <T> the module type.
      * @return if a module is enabled.
      */
-    public <T extends Module<?>> boolean isPresent(Class<T> cls) {
-        return getModule(cls).isPresent();
+    public <T extends Module> boolean isPresent(Class<T> cls) {
+        return modules.containsKey(cls);
     }
 
     /**
@@ -218,7 +236,7 @@ public class ModuleManager {
      * @return The module, if enabled, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<T> getModule(Class<T> cls) {
+    public <T extends Module> Optional<T> getModule(Class<T> cls) {
         return (Optional<T>) Optional.ofNullable(modules.get(cls));
     }
 
@@ -230,7 +248,7 @@ public class ModuleManager {
      * @return The module, if enabled, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<T> getModule(String name) {
+    public <T extends Module> Optional<T> getModule(String name) {
         return (Optional<T>) Optional.ofNullable(moduleNames.get(name));
     }
 
@@ -244,7 +262,7 @@ public class ModuleManager {
      * @return The module future, if discovered, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<Promise<T>> getDiscovered(Class<T> cls) {
+    public <T extends Module> Optional<Promise<T>> getDiscovered(Class<T> cls) {
         return Optional.ofNullable((Promise<T>) discoveredModules.get(cls));
     }
 
@@ -258,7 +276,7 @@ public class ModuleManager {
      * @return The module future, if discovered, or empty if not.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Module<?>> Optional<Promise<T>> getDiscovered(String name) {
+    public <T extends Module> Optional<Promise<T>> getDiscovered(String name) {
         return Optional.ofNullable((Promise<T>) discoveredModuleNames.get(name));
     }
 
@@ -277,7 +295,7 @@ public class ModuleManager {
      *
      * @return a collection of all loaded modules.
      */
-    public Collection<Module<?>> loaded() {
+    public Collection<Module> loaded() {
         return Collections.unmodifiableCollection(modules.values());
     }
 
@@ -290,7 +308,7 @@ public class ModuleManager {
      * @return the module instance.
      * @throws IllegalStateException if the module is not loaded.
      */
-    public static <T extends Module<?>> T quick(Class<T> cls) {
+    public static <T extends Module> T quick(Class<T> cls) {
         return get().getModule(cls).orElseThrow(() -> new IllegalStateException("Module %s requested quickly, but is not loaded.".formatted(cls)));
     }
 
@@ -304,7 +322,7 @@ public class ModuleManager {
     }
 
     void print() {
-        Map<String, Set<Module<?>>> categories = Utilities.supply(new LinkedHashMap<>(), map -> loaded().forEach(m ->
+        Map<String, Set<Module>> categories = Utilities.supply(new LinkedHashMap<>(), map -> loaded().forEach(m ->
                 map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
 
         StringBuilder builder = new StringBuilder();

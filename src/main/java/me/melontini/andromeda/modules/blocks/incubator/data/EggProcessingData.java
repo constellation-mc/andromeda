@@ -6,7 +6,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.common.conflicts.CommonRegistries;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.expression.Arithmetica;
@@ -17,6 +16,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.WeightedList;
@@ -31,14 +31,14 @@ import java.util.Map;
 public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmetica time) {
 
     public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
-            CommonRegistries.items().getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
+            Registries.ITEM.getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
             ExtraCodecs.weightedList(Entry.CODEC).fieldOf("entries").forGetter(EggProcessingData::entity),
             Arithmetica.CODEC.fieldOf("time").forGetter(EggProcessingData::time)
     ).apply(data, EggProcessingData::new));
 
     public record Entry(EntityType<?> type, NbtCompound nbt, List<Command.Conditioned> commands) {
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(data -> data.group(
-                CommonRegistries.entityTypes().getCodec().fieldOf("entity").forGetter(Entry::type),
+                Registries.ENTITY_TYPE.getCodec().fieldOf("entity").forGetter(Entry::type),
                 NbtCompound.CODEC.optionalFieldOf("nbt", new NbtCompound()).forGetter(Entry::nbt),
                 ExtraCodecs.list(Command.CODEC.codec()).optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
         ).apply(data, Entry::new));
@@ -66,7 +66,7 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmeti
         protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
             IdentityHashMap<Item, EggProcessingData> result = new IdentityHashMap<>();
 
-            for (Item item : CommonRegistries.items()) {
+            for (Item item : Registries.ITEM) {
                 if (item instanceof SpawnEggItem egg) {
                     WeightedList<Entry> list =  new WeightedList<>();
                     list.add(new Entry(egg.getEntityType(new NbtCompound()), new NbtCompound(), Collections.emptyList()), 1);

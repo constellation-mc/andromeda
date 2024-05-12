@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @ModuleInfo(name = "translations", category = "misc", environment = Environment.CLIENT)
-public class Translations extends Module<Module.BaseConfig> {
+public final class Translations extends Module {
 
     public static final Path TRANSLATION_PACK = CommonValues.hiddenPath().resolve("andromeda_translations");
     public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");

@@ -44,7 +44,7 @@ import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
 @CustomLog
 public class Bootstrap {
 
-    private static void runInit(String init, Module<?> module) {
+    private static void runInit(String init, Module module) {
         run(() -> {
             Bus<InitEvent> event = module.getOrCreateBus(init + "_init_event", null);
             if (event == null) return;
@@ -58,7 +58,9 @@ public class Bootstrap {
 
         onMerged();
 
-        for (Module<?> module : ModuleManager.get().loaded()) {
+        run(AndromedaClient::preClient, b -> b.literal("Failed to initialize AndromedaClient!"));
+
+        for (Module module : ModuleManager.get().loaded()) {
             if (module.meta().environment().isServer()) continue;
             runInit("client", module);
         }
@@ -71,14 +73,16 @@ public class Bootstrap {
 
         onMerged();
 
-        for (Module<?> module : ModuleManager.get().loaded()) {
+        for (Module module : ModuleManager.get().loaded()) {
             if (module.meta().environment().isClient()) continue;
             runInit("server", module);
         }
     }
 
     private static void onMerged() {
-        for (Module<?> module : ModuleManager.get().loaded()) {
+        run(Andromeda::onMerged, b -> b.literal("Failed to initialize Andromeda!"));
+
+        for (Module module : ModuleManager.get().loaded()) {
             runInit("merged", module);
         }
     }
@@ -105,7 +109,9 @@ public class Bootstrap {
             }
         }
 
-        for (Module<?> module : ModuleManager.get().loaded()) {
+        run(Andromeda::preMain, b -> b.literal("Failed to pre-initialize Andromeda!"));
+
+        for (Module module : ModuleManager.get().loaded()) {
             runInit("main", module);
         }
 
@@ -204,7 +210,7 @@ public class Bootstrap {
         return AndromedaMixins.CLASS_PATH;
     }
 
-    public static boolean testModVersion(Module<?> m, String modId, String predicate) {
+    public static boolean testModVersion(Module m, String modId, String predicate) {
         Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
         if (mod.isPresent() && !Debug.skipIntegration(m.meta().id(), modId)) {
             try {
@@ -217,7 +223,7 @@ public class Bootstrap {
         return false;
     }
 
-    public static boolean isModLoaded(Module<?> module, String mod) {
+    public static boolean isModLoaded(Module module, String mod) {
         return !Debug.skipIntegration(module.meta().id(), mod) && FabricLoader.getInstance().isModLoaded(mod);
     }
 

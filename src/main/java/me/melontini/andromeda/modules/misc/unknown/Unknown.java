@@ -10,7 +10,7 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "unknown", category = "misc")
-public class Unknown extends Module<Module.BaseConfig> {
+public final class Unknown extends Module {
 
     Unknown() {
         InitEvent.main(this).listen(() -> List.of(Main.class));

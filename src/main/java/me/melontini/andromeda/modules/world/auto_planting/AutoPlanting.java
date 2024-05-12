@@ -1,24 +1,30 @@
 package me.melontini.andromeda.modules.world.auto_planting;
 
 import com.google.common.collect.Lists;
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.base.util.annotations.Origin;
+import net.minecraft.item.Item;
 
 import java.util.List;
 
 @Origin(mod = "TinyTweaks", author = "HephaestusDev")
 @ModuleInfo(name = "auto_planting", category = "world", environment = Environment.SERVER)
-public class AutoPlanting extends Module<AutoPlanting.Config> {
+public final class AutoPlanting extends Module {
+
+    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     AutoPlanting() {
+        this.defineConfig(ConfigState.GAME, CONFIG);
     }
 
-    public static class Config extends BaseConfig {
-
+    @ToString
+    public static class Config extends GameConfig {
         public boolean blacklistMode = true;
-
-        public List<String> idList = Lists.newArrayList();
+        public List<Item> idList = Lists.newArrayList();
     }
 }

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.function.Function;
 
-public class Bus<T> {
+public final class Bus<T> {
 
     private final Queue<T> listeners = new ArrayDeque<>();
     private final T invoker;

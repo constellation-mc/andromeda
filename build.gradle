@@ -106,6 +106,7 @@ spotless {
         removeUnusedImports()
         trimTrailingWhitespace()
         formatAnnotations()
+        importOrder('', 'java|javax', '\\#')
     }
 }
 

@@ -28,7 +28,7 @@ public class AndromedaConfig {
         MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG, Context.of());
     }
 
-    public static class Config {
+    public static final class Config {
         @ConfigEntry.Gui.RequiresRestart
         public boolean sideOnlyMode = false;
         @ConfigEntry.Gui.RequiresRestart

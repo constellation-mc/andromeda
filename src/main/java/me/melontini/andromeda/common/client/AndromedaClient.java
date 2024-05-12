@@ -6,6 +6,9 @@ import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.BlockadesEvent;
+import me.melontini.andromeda.base.events.ConstructorParametersEvent;
+import me.melontini.andromeda.base.util.ConfigHandler;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
@@ -26,10 +29,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.Andromeda.id;
@@ -37,10 +37,23 @@ import static me.melontini.andromeda.common.Andromeda.id;
 @CustomLog
 @Getter
 @Environment(EnvType.CLIENT)
-public class AndromedaClient {
+public final class AndromedaClient {
+
+    public static final ConfigHandler HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ConfigState.CLIENT, ModuleManager.get().all().stream().map(Promise::get).toList());
 
     private static AndromedaClient INSTANCE;
     private boolean animate = true;
+
+    public static void preClient() {
+        ConstructorParametersEvent.BUS.listen(module -> {
+            var ccd = module.getConfigDefinition(ConfigState.CLIENT);
+            if (ccd != null) return Collections.singletonMap(ccd.supplier().get(), AndromedaClient.HANDLER.get(ccd));
+            return Collections.emptyMap();
+        });
+
+        HANDLER.loadAll();
+        HANDLER.saveAll();
+    }
 
     public static void init() {
         INSTANCE = new AndromedaClient();
@@ -83,10 +96,15 @@ public class AndromedaClient {
             String m = "config.andromeda.%s.@Tooltip".formatted(module.meta().dotted());
             if (!I18n.hasTranslation(m)) missing.add(m);
 
-            Arrays.stream(ModuleManager.getConfigClass(module.getClass()).getFields())
-                    .filter(f -> !"enabled".equals(f.getName()) && !f.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
-                    .map(field -> "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName()))
-                    .filter(I18n::hasTranslation).forEach(missing::add);
+            for (ConfigState value : ConfigState.values()) {
+                var def = module.get().getConfigDefinition(value);
+                if (def == null) continue;
+
+                Arrays.stream(def.supplier().get().getFields())
+                        .filter(f -> !f.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
+                        .map(field -> "config.andromeda.%s.option.%s.@Tooltip".formatted(module.meta().dotted(), field.getName()))
+                        .filter(I18n::hasTranslation).forEach(missing::add);
+            }
         }
         StringBuilder b = new StringBuilder();
         missing.forEach(s -> b.append('\t').append(s).append('\n'));

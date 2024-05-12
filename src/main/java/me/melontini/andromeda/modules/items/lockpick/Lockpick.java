@@ -1,33 +1,40 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.annotations.Unscoped;
 import me.melontini.andromeda.modules.items.lockpick.client.Client;
-import me.melontini.dark_matter.api.base.util.MathUtil;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 import java.util.List;
 
-@Unscoped
 @ModuleInfo(name = "lockpick", category = "items")
-public class Lockpick extends Module<Lockpick.Config> {
+public final class Lockpick extends Module {
+
+    public static final ConfigDefinition<MainConfig> MAIN_CONFIG = new ConfigDefinition<>(() -> MainConfig.class);
+    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     Lockpick() {
+        this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
+        this.defineConfig(ConfigState.GAME, CONFIG);
         InitEvent.main(this).listen(() -> List.of(Main.class));
         InitEvent.client(this).listen(() -> List.of(Client.class));
     }
 
-    public boolean rollLockpick() {
-        return this.config().chance - 1 == 0 || MathUtil.threadRandom().nextInt(this.config().chance - 1) == 0;
+    @ToString
+    public static class MainConfig extends BaseConfig {
+        public boolean villagerInventory = true;
     }
 
-    public static class Config extends BaseConfig {
+    @ToString
+    public static class Config extends GameConfig {
 
-        public int chance = 3;
+        public LongIntermediary chance = LongIntermediary.of(3);
 
-        public boolean breakAfterUse = true;
-
-        public boolean villagerInventory = true;
+        public BooleanIntermediary breakAfterUse = BooleanIntermediary.of(true);
     }
 }

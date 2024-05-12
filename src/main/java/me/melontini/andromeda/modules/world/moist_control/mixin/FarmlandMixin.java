@@ -3,10 +3,12 @@ package me.melontini.andromeda.modules.world.moist_control.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.world.moist_control.MoistControl;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +21,7 @@ abstract class FarmlandMixin {
     @Inject(at = @At("HEAD"), method = "isWaterNearby")
     private static void andromeda$prepareRule(WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir, @Share("value") LocalIntRef ref) {
         if (world instanceof ServerWorld sw) {
-            ref.set(sw.am$get(MoistControl.class).customMoisture);
+            ref.set(sw.am$get(MoistControl.CONFIG).customMoisture.asInt(LootContextUtil.command(sw, Vec3d.ofCenter(pos))));
         }
     }
 

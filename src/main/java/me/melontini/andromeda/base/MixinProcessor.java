@@ -27,14 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p> This must be done during {@code 'preLaunch'} as no classes should be transformed at this point.
  */
 @CustomLog
-public class MixinProcessor {
+public final class MixinProcessor {
 
     public static final String NOTICE = "mixin_processor.config_notice";
     public static final String JAVA_VERSION = "JAVA_17";
     public static final String MIXIN_VERSION = "0.8.5";
 
     private final ModuleManager manager;
-    private final Map<String, Module<?>> mixinConfigs = new HashMap<>();
+    private final Map<String, Module> mixinConfigs = new HashMap<>();
     private final Map<String, List<String>> mixinClasses = new ConcurrentHashMap<>();
 
     public MixinProcessor(ModuleManager manager) {
@@ -42,7 +42,7 @@ public class MixinProcessor {
     }
 
     @ApiStatus.Internal
-    public Optional<Module<?>> fromConfig(String name) {
+    public Optional<Module> fromConfig(String name) {
         return Optional.ofNullable(mixinConfigs.get(name));
     }
 
@@ -80,7 +80,7 @@ public class MixinProcessor {
         });
     }
 
-    public JsonObject createConfig(Module<?> module) {
+    public JsonObject createConfig(Module module) {
         JsonObject object = new JsonObject();
         object.addProperty("required", true);
         object.addProperty("minVersion", MIXIN_VERSION);

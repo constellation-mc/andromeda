@@ -1,33 +1,43 @@
 package me.melontini.andromeda.modules.blocks.campfire_effects;
 
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
+import me.melontini.andromeda.util.commander.number.LongIntermediary;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffects;
 
-import java.util.Arrays;
 import java.util.List;
 
 @ModuleInfo(name = "campfire_effects", category = "blocks", environment = Environment.SERVER)
-public class CampfireEffects extends Module<CampfireEffects.Config> {
+public final class CampfireEffects extends Module {
 
-    public static class Config extends BaseConfig {
+    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
-        public boolean affectsPassive = true;
+    CampfireEffects() {
+        this.defineConfig(ConfigState.GAME, CONFIG);
+    }
 
-        @ConfigEntry.Category("blocks")
-        public int effectsRange = 10;
+    @ToString
+    public static final class Config extends GameConfig {
+        public BooleanIntermediary affectsPassive = BooleanIntermediary.of(true);
+        public DoubleIntermediary effectsRange = DoubleIntermediary.of(10);
+        public List<Effect> effectList = Lists.newArrayList(new Effect());
 
-        @ConfigEntry.Category("blocks")
-        public List<Effect> effectList = Arrays.asList(new Effect("minecraft:regeneration", 0));
-
+        @ToString
         @AllArgsConstructor
         @NoArgsConstructor
-        public static class Effect {
-            public String identifier = "minecraft:regeneration";
-            public int amplifier = 0;
+        public static final class Effect {
+            public StatusEffect identifier = StatusEffects.REGENERATION;
+            public LongIntermediary amplifier = LongIntermediary.of(0);
         }
     }
 }

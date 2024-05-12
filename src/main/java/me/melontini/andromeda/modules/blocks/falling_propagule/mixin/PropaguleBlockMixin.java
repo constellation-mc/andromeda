@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.blocks.falling_propagule.mixin;
 
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.blocks.falling_propagule.FallingPropagule;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -8,6 +9,7 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,7 +26,7 @@ abstract class PropaguleBlockMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/PropaguleBlock;isFullyGrown(Lnet/minecraft/block/BlockState;)Z", shift = At.Shift.BEFORE), method = "randomTick")
     private void andromeda$randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
-        if (isFullyGrown(state) && random.nextInt(40) == 0 && world.am$get(FallingPropagule.class).enabled) {
+        if (isFullyGrown(state) && random.nextInt(40) == 0 && world.am$get(FallingPropagule.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) {
             FallingBlockEntity fallingBlock = new FallingBlockEntity(
                     world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
                     state.contains(Properties.WATERLOGGED) ? state.with(Properties.WATERLOGGED, Boolean.FALSE) : state);

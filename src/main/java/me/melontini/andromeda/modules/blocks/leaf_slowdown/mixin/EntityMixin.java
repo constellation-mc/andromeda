@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.blocks.leaf_slowdown.mixin;
 
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.Main;
 import net.minecraft.block.Blocks;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+
 @Mixin(LivingEntity.class)
 abstract class EntityMixin extends Entity {
 
@@ -31,7 +33,8 @@ abstract class EntityMixin extends Entity {
 
     @Inject(at = @At("HEAD"), method = "baseTick")
     public void andromeda$tick(CallbackInfo ci) {
-        if (!this.world.isClient && this.world.am$get(LeafSlowdown.class).enabled) {
+        if (!this.world.isClient && this.world.am$get(LeafSlowdown.CONFIG).available.
+                asBoolean(LootContextUtil.command(world, this.getPos(), this))) {
             EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
             if (this.world.getBlockState(getBlockPos().down()).isIn(BlockTags.LEAVES)
                     || (this.world.getBlockState(new BlockPos(getBlockPos().down(2))).isIn(BlockTags.LEAVES) && this.world.getBlockState(new BlockPos(getBlockPos().down())).isOf(Blocks.AIR))) {

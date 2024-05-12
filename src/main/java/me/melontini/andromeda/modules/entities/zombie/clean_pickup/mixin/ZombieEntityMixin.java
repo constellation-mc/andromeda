@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.entities.zombie.clean_pickup.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.Pickup;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
@@ -26,7 +27,7 @@ abstract class ZombieEntityMixin extends HostileEntity {
 
     @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/HostileEntity;canPickupItem(Lnet/minecraft/item/ItemStack;)Z"), method = "canPickupItem")
     public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
-        if (world.am$get(Pickup.class).enabled) {
+        if (world.am$get(Pickup.CONFIG).available.asBoolean(ConstantLootContextAccessor.get(this))) {
             return original && (stack.isIn(PickupTag.ZOMBIES_PICKUP) || ModuleManager.get().getModule(ThrowableItems.class)
                     .map(m -> handleThrowableItems(m, world, stack))
                     .orElse(false));
@@ -35,6 +36,6 @@ abstract class ZombieEntityMixin extends HostileEntity {
     }
 
     @Unique private boolean handleThrowableItems(ThrowableItems m, World world, ItemStack stack) {
-        return m.config().canZombiesThrowItems && requireNonNull(world.getServer()).dm$getReloader(RELOADER).hasBehaviors(stack.getItem());
+        return world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems && requireNonNull(world.getServer()).dm$getReloader(RELOADER).hasBehaviors(stack.getItem());
     }
 }

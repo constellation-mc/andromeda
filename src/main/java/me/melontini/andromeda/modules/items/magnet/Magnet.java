@@ -9,7 +9,7 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "magnet", category = "items")
-public class Magnet extends Module<Module.BaseConfig> {
+public final class Magnet extends Module {
 
     Magnet() {
         InitEvent.main(this).listen(() -> List.of(Main.class));

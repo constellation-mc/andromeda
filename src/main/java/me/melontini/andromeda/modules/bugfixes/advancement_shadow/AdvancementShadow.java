@@ -5,6 +5,6 @@ import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "advancement_shadow", category = "bugfixes", environment = Environment.CLIENT)
-public class AdvancementShadow extends Module<Module.BaseConfig> {
+public final class AdvancementShadow extends Module {
 
 }

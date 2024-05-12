@@ -6,6 +6,6 @@ import me.melontini.andromeda.base.util.annotations.Unscoped;
 
 @Unscoped
 @ModuleInfo(name = "balanced_mending", category = "items")
-public class BalancedMending extends Module<Module.BaseConfig> {
+public final class BalancedMending extends Module {
 
 }

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
+import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
@@ -20,28 +21,20 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
     @Nullable private LivingEntity target;
 
     private final double mobSpeed;
-    private final int minInterval;
-    private final int maxInterval;
     private final float minRange;
     private final float range;
 
     private int seenTargetTicks;
     private int updateCountdownTicks;
 
-    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int intervalTicks, float range) {
-        this(mob, mobSpeed, intervalTicks, intervalTicks, 0, range);
+    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, float range) {
+        this(mob, mobSpeed, 0, range);
     }
 
-    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int intervalTicks, float minRange, float range) {
-        this(mob, mobSpeed, intervalTicks, intervalTicks, minRange, range);
-    }
-
-    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, int minInterval, int maxInterval, float minRange, float range) {
+    public ThrowableItemAttackGoal(ItemThrowerMob<T> mob, double mobSpeed, float minRange, float range) {
         this.owner = mob;
         this.mob = (MobEntity) mob;
         this.mobSpeed = mobSpeed;
-        this.minInterval = minInterval;
-        this.maxInterval = maxInterval;
         this.minRange = minRange;
         this.range = range;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
@@ -112,12 +105,13 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
             float f = (float) Math.sqrt(d) / this.range;
             float g = MathHelper.clamp(f, 0.1F, 1.0F);
             this.owner.am$throwItem(requireNonNull(this.target), g);
-            this.updateCountdownTicks = MathHelper.floor(f * (this.maxInterval - this.minInterval) + this.minInterval);
+            this.updateCountdownTicks = MathHelper.floor(f * getInterval());
         } else if (this.updateCountdownTicks < 0) {
-            this.updateCountdownTicks = MathHelper.floor(
-                    MathHelper.lerp(Math.sqrt(d) / this.range, this.minInterval, this.maxInterval)
-            );
+            this.updateCountdownTicks = MathHelper.floor(getInterval());
         }
     }
 
+    public double getInterval() {
+        return mob.world.am$get(ThrowableItems.CONFIG).zombieThrowInterval.asDouble(ConstantLootContextAccessor.get(mob));
+    }
 }

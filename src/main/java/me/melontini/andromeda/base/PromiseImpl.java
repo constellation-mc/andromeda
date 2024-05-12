@@ -6,7 +6,7 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-record PromiseImpl<T extends Module<?>>(CompletableFuture<T> future, Module.Zygote zygote) implements Promise<T> {
+record PromiseImpl<T extends Module>(CompletableFuture<T> future, Module.Zygote zygote) implements Promise<T> {
 
     PromiseImpl(Module.Zygote zygote) {
         this(new CompletableFuture<>(), zygote);

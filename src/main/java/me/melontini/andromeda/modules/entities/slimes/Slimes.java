@@ -1,23 +1,32 @@
 package me.melontini.andromeda.modules.entities.slimes;
 
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.util.ConfigDefinition;
+import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "slimes", category = "entities", environment = Environment.SERVER)
-public class Slimes extends Module<Slimes.Config> {
+public final class Slimes extends Module {
+
+    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
     Slimes() {
+        this.defineConfig(ConfigState.GAME, CONFIG);
     }
 
-    public static class Config extends BaseConfig {
+    @ToString
+    public static final class Config extends GameConfig {
 
-        public boolean flee = true;
+        public BooleanIntermediary flee = BooleanIntermediary.of(true);
 
-        public boolean merge = true;
+        public BooleanIntermediary merge = BooleanIntermediary.of(true);
 
-        public int maxMerge = 4;
+        public LongIntermediary maxMerge = LongIntermediary.of(4);
 
-        public boolean slowness = false;
+        public BooleanIntermediary slowness = BooleanIntermediary.of(false);
     }
 }

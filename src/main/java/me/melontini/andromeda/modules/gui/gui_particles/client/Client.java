@@ -9,9 +9,9 @@ import net.minecraft.particle.ParticleTypes;
 
 public class Client {
 
-    Client(GuiParticles module) {
+    Client(GuiParticles.Config config) {
         ScreenEvents.BEFORE_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
-            if (screen1 instanceof AbstractFurnaceScreen<?> abstractFurnaceScreen && module.config().furnaceScreenParticles) {
+            if (screen1 instanceof AbstractFurnaceScreen<?> abstractFurnaceScreen && config.furnaceScreenParticles) {
                 ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
                     AbstractFurnaceScreen<?> furnaceScreen = (AbstractFurnaceScreen<?>) screen;
                     if (furnaceScreen.getScreenHandler().isBurning() && MathUtil.threadRandom().nextInt(10) == 0) {

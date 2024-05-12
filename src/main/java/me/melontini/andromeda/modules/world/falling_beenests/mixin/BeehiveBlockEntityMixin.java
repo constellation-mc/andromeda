@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
+import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import net.minecraft.block.BlockState;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +36,7 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
     private static void andromeda$fallingHive(@NotNull World world, BlockPos pos, BlockState state, BeehiveBlockEntity beehiveBlockEntity, CallbackInfo ci) {
         if (state.getBlock() != Blocks.BEE_NEST) return;
 
-        if (world.am$get(CanBeeNestsFall.class).enabled && world.random.nextInt(32000) == 0) {
+        if (world.am$get(CanBeeNestsFall.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, null, beehiveBlockEntity)) && world.random.nextInt(32000) == 0) {
             if (!world.getBlockState(pos.offset(Direction.DOWN)).isAir()) return;
 
             BlockState up = world.getBlockState(pos.offset(Direction.UP));
