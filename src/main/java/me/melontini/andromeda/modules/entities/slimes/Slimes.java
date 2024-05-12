@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.util.commander.number.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "slimes", category = "entities", environment = Environment.SERVER)
 public class Slimes extends Module {
@@ -25,7 +25,7 @@ public class Slimes extends Module {
 
         public BooleanIntermediary merge = BooleanIntermediary.of(true);
 
-        public NumberIntermediary maxMerge = NumberIntermediary.of(4);
+        public LongIntermediary maxMerge = LongIntermediary.of(4);
 
         public BooleanIntermediary slowness = BooleanIntermediary.of(false);
     }

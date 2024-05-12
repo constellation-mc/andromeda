@@ -6,7 +6,7 @@ import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.util.commander.number.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "moist_control", category = "world", environment = Environment.SERVER)
 public class MoistControl extends Module {
@@ -19,6 +19,6 @@ public class MoistControl extends Module {
 
     @ToString
     public static class Config extends BaseConfig {
-        public NumberIntermediary customMoisture = NumberIntermediary.of(4);
+        public LongIntermediary customMoisture = LongIntermediary.of(4);
     }
 }

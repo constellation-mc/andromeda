@@ -4,7 +4,8 @@ import com.google.gson.JsonPrimitive;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.TranslationKeyProvider;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.util.commander.number.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
+import me.melontini.andromeda.util.commander.number.LongIntermediary;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -22,6 +23,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -139,11 +141,18 @@ public class NewProviders {
     }
 
     private static void constantIntermediaries() {
-        builder(NumberIntermediary.class, (type, value, def, setter, i18n, context) ->
+        builder(DoubleIntermediary.class, (type, value, def, setter, i18n, context) ->
                 ENTRY_BUILDER.startDoubleField(i18n(i18n, context), value.asDouble(null))
                         .setDefaultValue((def == null || context.generic()) ? null : () -> def.asDouble(null))
-                        .setSaveConsumer((newValue) -> setter.accept(NumberIntermediary.of(newValue))).build(), (c) -> NumberIntermediary.of(0))
-                .converter(NumberIntermediary::of, i -> Andromeda.GAME_HANDLER.getGson().toJsonTree(i, NumberIntermediary.class).getAsJsonPrimitive().getAsDouble())
+                        .setSaveConsumer((newValue) -> setter.accept(DoubleIntermediary.of(newValue))).build(), (c) -> DoubleIntermediary.of(0))
+                .converter(DoubleIntermediary::of, i -> Andromeda.GAME_HANDLER.getGson().toJsonTree(i, DoubleIntermediary.class).getAsJsonPrimitive().getAsDouble())
+                .build();
+
+        builder(LongIntermediary.class, (type, value, def, setter, i18n, context) ->
+                ENTRY_BUILDER.startLongField(i18n(i18n, context), value.asLong(null))
+                        .setDefaultValue((def == null || context.generic()) ? null : () -> def.asLong(null))
+                        .setSaveConsumer((newValue) -> setter.accept(LongIntermediary.of(newValue))).build(), (c) -> LongIntermediary.of(0))
+                .converter(LongIntermediary::of, i -> Andromeda.GAME_HANDLER.getGson().toJsonTree(i, LongIntermediary.class).getAsJsonPrimitive().getAsLong())
                 .build();
 
         builder(BooleanIntermediary.class, (type, value, def, setter, i18n, context) ->
@@ -155,24 +164,48 @@ public class NewProviders {
     }
 
     private static void commanderIntermediaries() {
-        Function<String, NumberIntermediary> toNumber = (String str) -> {
+        Function<String, DoubleIntermediary> toNumber = (String str) -> {
             try {
-                return NumberIntermediary.of(Double.parseDouble(str));
+                return DoubleIntermediary.of(new BigDecimal(str).doubleValue());
             } catch (Exception e) {
-                return Andromeda.GAME_HANDLER.getGson().fromJson(new JsonPrimitive(str), NumberIntermediary.class);
+                return Andromeda.GAME_HANDLER.getGson().fromJson(new JsonPrimitive(str), DoubleIntermediary.class);
             }
         };
-        builder(NumberIntermediary.class, (type, value, def, setter, i18n, context) -> {
-            var p = Andromeda.GAME_HANDLER.getGson().toJsonTree(value, NumberIntermediary.class).getAsJsonPrimitive();
-            var p1 = (def == null || context.generic()) ? null : Andromeda.GAME_HANDLER.getGson().toJsonTree(def, NumberIntermediary.class).getAsJsonPrimitive();
+        builder(DoubleIntermediary.class, (type, value, def, setter, i18n, context) -> {
+            var p = Andromeda.GAME_HANDLER.getGson().toJsonTree(value, DoubleIntermediary.class).getAsJsonPrimitive();
+            var p1 = (def == null || context.generic()) ? null : Andromeda.GAME_HANDLER.getGson().toJsonTree(def, DoubleIntermediary.class).getAsJsonPrimitive();
 
             return ENTRY_BUILDER.startStrField(i18n(i18n, context), p.getAsString()).setDefaultValue(p1 == null ? null : p1::getAsString)
                     .setSaveConsumer((newValue) -> setter.accept(toNumber.apply(newValue))).build();
-        }, (c) -> NumberIntermediary.of(0))
-                .converter(toNumber, i -> Andromeda.GAME_HANDLER.getGson().toJsonTree(i, NumberIntermediary.class).getAsJsonPrimitive().getAsString())
+        }, (c) -> DoubleIntermediary.of(0))
+                .converter(toNumber, i -> Andromeda.GAME_HANDLER.getGson().toJsonTree(i, DoubleIntermediary.class).getAsJsonPrimitive().getAsString())
                 .errorSupplier((String s) -> {
                     try {
                         toNumber.apply(s);
+                        return Optional.empty();
+                    } catch (Exception e) {
+                        return Optional.of(TextUtil.literal(e.getLocalizedMessage()));
+                    }
+                }).build();
+
+        Function<String, LongIntermediary> toLong = (String str) -> {
+            try {
+                return LongIntermediary.of(new BigDecimal(str).longValue());
+            } catch (Exception e) {
+                return Andromeda.GAME_HANDLER.getGson().fromJson(new JsonPrimitive(str), LongIntermediary.class);
+            }
+        };
+        builder(LongIntermediary.class, (type, value, def, setter, i18n, context) -> {
+            var p = Andromeda.GAME_HANDLER.getGson().toJsonTree(value, LongIntermediary.class).getAsJsonPrimitive();
+            var p1 = (def == null || context.generic()) ? null : Andromeda.GAME_HANDLER.getGson().toJsonTree(def, LongIntermediary.class).getAsJsonPrimitive();
+
+            return ENTRY_BUILDER.startStrField(i18n(i18n, context), p.getAsString()).setDefaultValue(p1 == null ? null : p1::getAsString)
+                    .setSaveConsumer((newValue) -> setter.accept(toLong.apply(newValue))).build();
+        }, (c) -> LongIntermediary.of(0))
+                .converter(toLong, i -> Andromeda.GAME_HANDLER.getGson().toJsonTree(i, LongIntermediary.class).getAsJsonPrimitive().getAsString())
+                .errorSupplier((String s) -> {
+                    try {
+                        toLong.apply(s);
                         return Optional.empty();
                     } catch (Exception e) {
                         return Optional.of(TextUtil.literal(e.getLocalizedMessage()));

@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.util.ConfigDefinition;
 import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.common.util.TranslationKeyProvider;
-import me.melontini.andromeda.util.commander.number.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class GuardedLoot extends Module {
 
     @ToString
     public static class Config extends GameConfig {
-        public NumberIntermediary range = NumberIntermediary.of(4);
+        public DoubleIntermediary range = DoubleIntermediary.of(4);
         public boolean allowLockPicking = true;
         public BreakingHandler breakingHandler = BreakingHandler.UNBREAKABLE;
     }

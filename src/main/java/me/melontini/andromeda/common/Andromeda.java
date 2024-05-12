@@ -21,9 +21,12 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.commander.bool.CommanderBooleanIntermediary;
 import me.melontini.andromeda.util.commander.bool.ConstantBooleanIntermediary;
-import me.melontini.andromeda.util.commander.number.CommanderNumberIntermediary;
-import me.melontini.andromeda.util.commander.number.ConstantNumberIntermediary;
-import me.melontini.andromeda.util.commander.number.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
+import me.melontini.andromeda.util.commander.number.LongIntermediary;
+import me.melontini.andromeda.util.commander.number.constant.ConstantDoubleIntermediary;
+import me.melontini.andromeda.util.commander.number.constant.ConstantLongIntermediary;
+import me.melontini.andromeda.util.commander.number.expression.CommanderDoubleIntermediary;
+import me.melontini.andromeda.util.commander.number.expression.CommanderLongIntermediary;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -59,8 +62,11 @@ public class Andromeda {
 
     static {
         ConfigGsonEvent.BUS.listen(builder -> {
-            Codec<NumberIntermediary> numberIntermediaryCodec = (Codec<NumberIntermediary>) Support.fallback("commander", () -> CommanderNumberIntermediary.CODEC, () -> ConstantNumberIntermediary.CODEC);
-            builder.registerTypeHierarchyAdapter(NumberIntermediary.class, GsonCodecContext.of(numberIntermediaryCodec));
+            Codec<DoubleIntermediary> doubleCodec = (Codec<DoubleIntermediary>) Support.fallback("commander", () -> CommanderDoubleIntermediary.CODEC, () -> ConstantDoubleIntermediary.CODEC);
+            builder.registerTypeHierarchyAdapter(DoubleIntermediary.class, GsonCodecContext.of(doubleCodec));
+
+            Codec<LongIntermediary> longCodec = (Codec<LongIntermediary>) Support.fallback("commander", () -> CommanderLongIntermediary.CODEC, () -> ConstantLongIntermediary.CODEC);
+            builder.registerTypeHierarchyAdapter(LongIntermediary.class, GsonCodecContext.of(longCodec));
 
             Codec<BooleanIntermediary> booleanIntermediaryCodec = (Codec<BooleanIntermediary>) Support.fallback("commander", () -> CommanderBooleanIntermediary.CODEC, () -> ConstantBooleanIntermediary.CODEC);
             builder.registerTypeHierarchyAdapter(BooleanIntermediary.class, GsonCodecContext.of(booleanIntermediaryCodec));

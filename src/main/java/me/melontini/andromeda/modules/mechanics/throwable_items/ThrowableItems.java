@@ -8,7 +8,7 @@ import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.modules.mechanics.throwable_items.client.Client;
 import me.melontini.andromeda.util.commander.CommanderSupport;
-import me.melontini.andromeda.util.commander.number.NumberIntermediary;
+import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
 
 import java.util.List;
 
@@ -34,6 +34,6 @@ public class ThrowableItems extends Module {
     @ToString
     public static class Config extends BaseConfig {
         public boolean canZombiesThrowItems = true;
-        public NumberIntermediary zombieThrowInterval = NumberIntermediary.of(40);
+        public DoubleIntermediary zombieThrowInterval = DoubleIntermediary.of(40);
     }
 }
