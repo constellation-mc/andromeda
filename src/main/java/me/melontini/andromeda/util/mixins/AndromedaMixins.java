@@ -3,6 +3,7 @@ package me.melontini.andromeda.util.mixins;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.CustomLog;
+import lombok.experimental.UtilityClass;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.util.ClassPath;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-@CustomLog
+@CustomLog @UtilityClass
 public class AndromedaMixins {
 
     public static final ClassPath CLASS_PATH = Exceptions.supply(ClassPath::from);

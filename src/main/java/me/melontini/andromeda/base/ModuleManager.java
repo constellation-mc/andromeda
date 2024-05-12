@@ -1,10 +1,7 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import lombok.CustomLog;
 import lombok.NonNull;
 import lombok.Setter;
@@ -41,7 +38,7 @@ import java.util.stream.Collectors;
  * The ModuleManager is responsible for resolving and storing modules. It is also responsible for loading and fixing configs.
  */
 @CustomLog @Accessors(fluent = true)
-public class ModuleManager {
+public final class ModuleManager {
 
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -59,7 +56,7 @@ public class ModuleManager {
 
     private final MixinProcessor mixinProcessor;
 
-    ModuleManager(@NonNull List<Module.Zygote> zygotes) {
+    ModuleManager(List<Module.Zygote> zygotes) {
         this.mixinProcessor = new MixinProcessor(this);
 
         this.discoveredModules = Utilities.supply(() -> {
@@ -130,7 +127,7 @@ public class ModuleManager {
         cleanConfigs(FabricLoader.getInstance().getConfigDir().resolve("andromeda"), sorted);
     }
 
-    private void fixScopes(@NonNull Collection<? extends Module> modules) {
+    private void fixScopes(Collection<? extends Module> modules) {
         modules.forEach(m -> {
             var config = this.getConfig(m);
             if (Debug.Keys.FORCE_DIMENSION_SCOPE.isPresent()) config.scope = BootstrapConfig.Scope.DIMENSION;
@@ -197,7 +194,7 @@ public class ModuleManager {
         if (Files.exists(path)) {
             try (var reader = Files.newBufferedReader(path)) {
                 object = JsonParser.parseReader(reader).getAsJsonObject();
-            } catch (Exception e) {
+            } catch (IOException | JsonParseException e) {
                 object = new JsonObject();
             }
         }
@@ -208,7 +205,8 @@ public class ModuleManager {
         object.add("bootstrap", o);
 
         try {
-            if (path.getParent() != null) Files.createDirectories(path.getParent());
+            var parent = path.getParent();
+            if (parent != null) Files.createDirectories(parent);
             Files.writeString(path, GSON.toJson(object));
         } catch (IOException e) {
             LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);

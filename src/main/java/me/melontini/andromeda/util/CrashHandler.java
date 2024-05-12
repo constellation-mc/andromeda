@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
+import lombok.experimental.UtilityClass;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.Context;
@@ -21,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-@CustomLog
+@CustomLog @UtilityClass
 public class CrashHandler {
 
     public static final Context.Key<Boolean> SKIP_SERVICE = Context.key("andromeda:skip_service");

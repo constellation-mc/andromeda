@@ -15,7 +15,7 @@ import net.minecraft.util.Rarity;
 import static me.melontini.andromeda.common.Andromeda.id;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class Main {
+public final class Main {
 
     public static final Keeper<Item> INFINITE_TOTEM = Keeper.create();
     public static final Keeper<DefaultParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.create();

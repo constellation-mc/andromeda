@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-public class Main {
+public final class Main {
     private static final Keeper<AdvancementGeneration> MODULE = Keeper.create();
     private static final Map<RecipeType<?>, Function<Context, Return>> RECIPE_TYPE_HANDLERS = new HashMap<>();
 

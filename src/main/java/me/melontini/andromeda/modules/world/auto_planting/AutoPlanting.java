@@ -14,7 +14,7 @@ import java.util.List;
 
 @Origin(mod = "TinyTweaks", author = "HephaestusDev")
 @ModuleInfo(name = "auto_planting", category = "world", environment = Environment.SERVER)
-public class AutoPlanting extends Module {
+public final class AutoPlanting extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

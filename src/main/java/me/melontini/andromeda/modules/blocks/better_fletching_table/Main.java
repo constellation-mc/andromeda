@@ -18,7 +18,7 @@ import java.util.Set;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
 
     public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.create();
 

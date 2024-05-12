@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
 
     public static final TagKey<EntityType<?>> ESCAPE_VEHICLES_ON_HIT = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escape_vehicles_on_hit"));
     public static final TagKey<EntityType<?>> ESCAPABLE_VEHICLES = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escapable_vehicles"));

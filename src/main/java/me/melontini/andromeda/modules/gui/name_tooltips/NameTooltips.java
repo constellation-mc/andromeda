@@ -11,7 +11,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
 @ModuleInfo(name = "name_tooltips", category = "gui", environment = Environment.CLIENT)
-public class NameTooltips extends Module {
+public final class NameTooltips extends Module {
 
     NameTooltips() {
         ToBooleanFunction<ModuleManager> iceberg = (manager) -> testModVersion(this, "minecraft", ">=1.20") && testModVersion(this, "iceberg", "<1.1.13");

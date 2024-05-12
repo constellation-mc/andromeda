@@ -10,7 +10,7 @@ import net.minecraft.loot.context.LootContext;
 import java.util.function.Supplier;
 
 @ToString
-public class CommanderDoubleIntermediary implements DoubleIntermediary {
+public final class CommanderDoubleIntermediary implements DoubleIntermediary {
 
     public static final Codec<CommanderDoubleIntermediary> CODEC = Arithmetica.CODEC.xmap(CommanderDoubleIntermediary::new, CommanderDoubleIntermediary::getArithmetica);
 

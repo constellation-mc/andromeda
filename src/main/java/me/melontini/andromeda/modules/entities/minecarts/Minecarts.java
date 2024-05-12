@@ -16,7 +16,7 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "minecarts", category = "entities")
-public class Minecarts extends Module {
+public final class Minecarts extends Module {
 
     public static final ConfigDefinition<Config> MAIN_CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -27,7 +27,7 @@ public class Minecarts extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)
         public boolean isAnvilMinecartOn = false;

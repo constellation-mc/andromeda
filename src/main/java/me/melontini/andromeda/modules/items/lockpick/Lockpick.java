@@ -13,7 +13,7 @@ import me.melontini.andromeda.util.commander.number.LongIntermediary;
 import java.util.List;
 
 @ModuleInfo(name = "lockpick", category = "items")
-public class Lockpick extends Module {
+public final class Lockpick extends Module {
 
     public static final ConfigDefinition<MainConfig> MAIN_CONFIG = new ConfigDefinition<>(() -> MainConfig.class);
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);

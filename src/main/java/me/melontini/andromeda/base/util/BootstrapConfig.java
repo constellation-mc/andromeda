@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data @Accessors(fluent = true)
-public class BootstrapConfig {
+public final class BootstrapConfig {
     public boolean enabled = false;
     public Scope scope = Scope.GLOBAL;
 

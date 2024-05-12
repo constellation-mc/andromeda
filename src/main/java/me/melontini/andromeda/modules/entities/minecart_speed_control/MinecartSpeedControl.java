@@ -10,7 +10,7 @@ import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
 import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "minecart_speed_control", category = "entities", environment = Environment.SERVER)
-public class MinecartSpeedControl extends Module {
+public final class MinecartSpeedControl extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

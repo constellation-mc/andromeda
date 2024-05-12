@@ -3,6 +3,7 @@ package me.melontini.andromeda.util;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import lombok.experimental.UtilityClass;
 import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.util.mixins.ErrorHandler;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
@@ -11,7 +12,7 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.*;
 
-@CustomLog
+@CustomLog @UtilityClass
 public class Debug {
 
     private static final Map<String, Key> registry = new HashMap<>();
@@ -32,7 +33,7 @@ public class Debug {
     }
 
     @Getter
-    public static class Key {
+    public static final class Key {
         @Accessors(fluent = true)
         private boolean isPresent = false;
         private final String key;
@@ -42,7 +43,7 @@ public class Debug {
         }
     }
 
-    private static class Holder {
+    private final static class Holder {
         Set<String> keys = new LinkedHashSet<>();
         Map<String, Set<String>> skipModIntegration = new HashMap<>();
 

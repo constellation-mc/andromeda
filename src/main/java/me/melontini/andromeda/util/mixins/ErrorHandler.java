@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinErrorHandler;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 @CustomLog
-public class ErrorHandler implements IMixinErrorHandler {
+public final class ErrorHandler implements IMixinErrorHandler {
 
     @Override
     public ErrorAction onPrepareError(IMixinConfig config, Throwable th, IMixinInfo mixin, ErrorAction action) {

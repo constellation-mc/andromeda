@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @ModuleInfo(name = "recipe_advancements_generation", category = "misc", environment = Environment.SERVER)
-public class AdvancementGeneration extends Module {
+public final class AdvancementGeneration extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -24,7 +24,7 @@ public class AdvancementGeneration extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
         public boolean requireAllItems = true;
         public boolean ignoreRecipesHiddenInTheRecipeBook = true;
         public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");

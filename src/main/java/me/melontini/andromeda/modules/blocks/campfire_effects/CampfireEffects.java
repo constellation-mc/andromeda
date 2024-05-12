@@ -18,7 +18,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import java.util.List;
 
 @ModuleInfo(name = "campfire_effects", category = "blocks", environment = Environment.SERVER)
-public class CampfireEffects extends Module {
+public final class CampfireEffects extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -27,7 +27,7 @@ public class CampfireEffects extends Module {
     }
 
     @ToString
-    public static class Config extends GameConfig {
+    public static final class Config extends GameConfig {
         public BooleanIntermediary affectsPassive = BooleanIntermediary.of(true);
         public DoubleIntermediary effectsRange = DoubleIntermediary.of(10);
         public List<Effect> effectList = Lists.newArrayList(new Effect());
@@ -35,7 +35,7 @@ public class CampfireEffects extends Module {
         @ToString
         @AllArgsConstructor
         @NoArgsConstructor
-        public static class Effect {
+        public static final class Effect {
             public StatusEffect identifier = StatusEffects.REGENERATION;
             public LongIntermediary amplifier = LongIntermediary.of(0);
         }

@@ -26,7 +26,7 @@ import java.util.Set;
 
 import static me.melontini.dark_matter.api.base.util.MathUtil.threadRandom;
 
-public class Client {
+public final class Client {
 
     private final Set<Item> showTooltip = new HashSet<>();
 

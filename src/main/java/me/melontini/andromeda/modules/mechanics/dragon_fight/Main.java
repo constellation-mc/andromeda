@@ -9,7 +9,7 @@ import java.util.Collections;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
     Main() {
         EnderDragonManager.ATTACHMENT.init(AttachmentRegistry.<EnderDragonManager>builder()
                 .initializer(() -> new EnderDragonManager(1, Collections.emptyList()))

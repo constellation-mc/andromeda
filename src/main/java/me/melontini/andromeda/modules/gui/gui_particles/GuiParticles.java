@@ -12,7 +12,7 @@ import me.melontini.andromeda.modules.gui.gui_particles.client.Client;
 import java.util.List;
 
 @ModuleInfo(name = "gui_particles", category = "gui", environment = Environment.CLIENT)
-public class GuiParticles extends Module {
+public final class GuiParticles extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -22,7 +22,7 @@ public class GuiParticles extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
 
         public boolean anvilScreenParticles = true;
 

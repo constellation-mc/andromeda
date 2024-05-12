@@ -37,7 +37,7 @@ import static me.melontini.andromeda.common.Andromeda.id;
 @CustomLog
 @Getter
 @Environment(EnvType.CLIENT)
-public class AndromedaClient {
+public final class AndromedaClient {
 
     public static final ConfigHandler HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ConfigState.CLIENT, ModuleManager.get().all().stream().map(Promise::get).toList());
 

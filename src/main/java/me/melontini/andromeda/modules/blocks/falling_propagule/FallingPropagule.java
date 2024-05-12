@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "falling_propagule", category = "blocks", environment = Environment.SERVER)
-public class FallingPropagule extends Module {
+public final class FallingPropagule extends Module {
 
     public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
 

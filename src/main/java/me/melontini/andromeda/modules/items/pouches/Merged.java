@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.items.pouches;
 import me.melontini.andromeda.util.Debug;
 import net.minecraft.registry.Registries;
 
-public class Merged {
+public final class Merged {
 
     Merged(Pouches module) {
         Main.testBlocks(module);

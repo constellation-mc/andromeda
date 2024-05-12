@@ -36,7 +36,7 @@ import java.util.*;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
 
     public static final Keeper<PouchItem> SEED_POUCH = Keeper.create();
     public static final Keeper<PouchItem> FLOWER_POUCH = Keeper.create();

@@ -10,7 +10,7 @@ import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "slimes", category = "entities", environment = Environment.SERVER)
-public class Slimes extends Module {
+public final class Slimes extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -19,7 +19,7 @@ public class Slimes extends Module {
     }
 
     @ToString
-    public static class Config extends GameConfig {
+    public static final class Config extends GameConfig {
 
         public BooleanIntermediary flee = BooleanIntermediary.of(true);
 

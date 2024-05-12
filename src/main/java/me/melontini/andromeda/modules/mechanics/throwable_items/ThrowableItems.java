@@ -13,7 +13,7 @@ import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
 import java.util.List;
 
 @ModuleInfo(name = "throwable_items", category = "mechanics")
-public class ThrowableItems extends Module {
+public final class ThrowableItems extends Module {
 
     public static final ConfigDefinition<ClientConfig> CLIENT_CONFIG = new ConfigDefinition<>(() ->  ClientConfig.class);
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);

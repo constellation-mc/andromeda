@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class Keeper<T> {
+public final class Keeper<T> {
 
     private volatile boolean initialized;
 

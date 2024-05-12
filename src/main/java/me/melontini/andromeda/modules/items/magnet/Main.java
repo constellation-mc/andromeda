@@ -10,7 +10,7 @@ import net.minecraft.registry.Registries;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
 
     public static final Keeper<MagnetItem> MAGNET = Keeper.create();
 

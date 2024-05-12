@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.CustomLog;
+import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
-@CustomLog
+@CustomLog @UtilityClass
 public class GitTracker {
 
     public static final String OWNER = "melontini";

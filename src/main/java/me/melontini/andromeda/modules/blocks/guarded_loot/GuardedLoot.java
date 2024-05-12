@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ModuleInfo(name = "guarded_loot", category = "blocks")
-public class GuardedLoot extends Module {
+public final class GuardedLoot extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

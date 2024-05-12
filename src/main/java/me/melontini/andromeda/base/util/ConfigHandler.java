@@ -10,6 +10,7 @@ import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -17,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 @CustomLog
-public class ConfigHandler {
+public final class ConfigHandler {
 
     private final Map<ConfigDefinition<?>, Module.BaseConfig> configs = new IdentityHashMap<>();
     private final Map<ConfigDefinition<?>, Module.BaseConfig> defaultConfigs = new IdentityHashMap<>();
@@ -81,7 +82,7 @@ public class ConfigHandler {
                 if (Files.exists(path)) {
                     try (var reader = Files.newBufferedReader(path)) {
                         object = JsonParser.parseReader(reader).getAsJsonObject();
-                    } catch (Exception e) {
+                    } catch (IOException | JsonParseException e) {
                         object = new JsonObject();
                     }
                 } else {
@@ -97,7 +98,8 @@ public class ConfigHandler {
                 object = this.gson.toJsonTree(entry).getAsJsonObject();
             }
 
-            if (path.getParent() != null) Files.createDirectories(path.getParent());
+            var parent = path.getParent();
+            if (parent != null) Files.createDirectories(parent);
             Files.writeString(path, this.gson.toJson(object));
         } catch (Exception e) {
             LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);

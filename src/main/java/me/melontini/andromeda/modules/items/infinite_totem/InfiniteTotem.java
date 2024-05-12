@@ -12,7 +12,7 @@ import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import java.util.List;
 
 @ModuleInfo(name = "infinite_totem", category = "items")
-public class InfiniteTotem extends Module {
+public final class InfiniteTotem extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -23,7 +23,7 @@ public class InfiniteTotem extends Module {
     }
 
     @ToString
-    public static class Config extends GameConfig {
+    public static final class Config extends GameConfig {
         public BooleanIntermediary enableAscension = BooleanIntermediary.of(true);
     }
 }

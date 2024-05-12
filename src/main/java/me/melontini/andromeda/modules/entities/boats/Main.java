@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.boats;
 
 
-public class Main {
+public final class Main {
 
     Main(Boats module, Boats.Config config) {
         BoatItems.init(module, config);

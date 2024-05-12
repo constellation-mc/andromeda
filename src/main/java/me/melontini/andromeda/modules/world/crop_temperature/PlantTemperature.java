@@ -12,7 +12,7 @@ import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import java.util.List;
 
 @ModuleInfo(name = "crop_temperature", category = "world", environment = Environment.SERVER)
-public class PlantTemperature extends Module {
+public final class PlantTemperature extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

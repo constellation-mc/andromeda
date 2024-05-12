@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @CustomLog
-public class ModuleDiscovery implements ModuleManager.ModuleSupplier {
+public final class ModuleDiscovery implements ModuleManager.ModuleSupplier {
     @Override
     public List<Module.Zygote> get() {
         Bootstrap.getModuleClassPath().addUrl(ModuleDiscovery.class.getProtectionDomain().getCodeSource().getLocation());

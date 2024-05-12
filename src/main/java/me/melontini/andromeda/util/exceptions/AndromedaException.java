@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @CustomLog
-public class AndromedaException extends RuntimeException {
+public final class AndromedaException extends RuntimeException {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

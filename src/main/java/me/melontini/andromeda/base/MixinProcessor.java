@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p> This must be done during {@code 'preLaunch'} as no classes should be transformed at this point.
  */
 @CustomLog
-public class MixinProcessor {
+public final class MixinProcessor {
 
     public static final String NOTICE = "mixin_processor.config_notice";
     public static final String JAVA_VERSION = "JAVA_17";

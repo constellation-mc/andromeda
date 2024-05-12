@@ -8,7 +8,7 @@ import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "tooltips", category = "items", environment = Environment.CLIENT)
-public class Tooltips extends Module {
+public final class Tooltips extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -17,7 +17,7 @@ public class Tooltips extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
         public boolean clock = true;
         public boolean compass = true;
         public boolean recoveryCompass = true;

@@ -38,7 +38,7 @@ import static me.melontini.andromeda.common.Andromeda.id;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class Main implements ServerReloadersEvent {
+public final class Main implements ServerReloadersEvent {
 
     public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
 

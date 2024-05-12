@@ -11,7 +11,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import java.util.List;
 
 @ModuleInfo(name = "minecart_block_picking", category = "items", environment = Environment.SERVER)
-public class MinecartBlockPicking extends Module {
+public final class MinecartBlockPicking extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -21,7 +21,7 @@ public class MinecartBlockPicking extends Module {
     }
 
     @ToString
-    public static class Config extends GameConfig {
+    public static final class Config extends GameConfig {
         public boolean spawnerPicking = false;
     }
 }

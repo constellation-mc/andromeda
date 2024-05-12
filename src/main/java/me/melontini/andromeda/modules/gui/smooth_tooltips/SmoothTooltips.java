@@ -8,7 +8,7 @@ import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "smooth_tooltips", category = "gui", environment = Environment.CLIENT)
-public class SmoothTooltips extends Module {
+public final class SmoothTooltips extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -17,7 +17,7 @@ public class SmoothTooltips extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
         public int clampX = 30;
         public int clampY = 30;
         public double deltaX = 0.3;

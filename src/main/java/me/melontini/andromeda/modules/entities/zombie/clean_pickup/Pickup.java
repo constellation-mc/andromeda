@@ -7,7 +7,7 @@ import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "zombie/clean_pickup", category = "entities", environment = Environment.SERVER)
-public class Pickup extends Module {
+public final class Pickup extends Module {
 
     public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
 

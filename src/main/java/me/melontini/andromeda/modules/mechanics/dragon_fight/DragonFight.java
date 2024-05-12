@@ -13,7 +13,7 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "dragon_fight", category = "mechanics", environment = Environment.SERVER)
-public class DragonFight extends Module {
+public final class DragonFight extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -23,7 +23,7 @@ public class DragonFight extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
         public boolean respawnCrystals = true;
         public boolean scaleHealthByMaxPlayers = false;
         public boolean shorterCrystalTrackRange = true;

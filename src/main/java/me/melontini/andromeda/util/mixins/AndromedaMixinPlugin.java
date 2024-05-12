@@ -9,7 +9,7 @@ import java.util.List;
 
 @SuppressWarnings("UnstableApiUsage")
 @CustomLog
-public class AndromedaMixinPlugin extends ExtendablePlugin {
+public final class AndromedaMixinPlugin extends ExtendablePlugin {
 
     private String mixinPackage;
 

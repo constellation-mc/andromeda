@@ -16,7 +16,7 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "boats", category = "entities")
-public class Boats extends Module {
+public final class Boats extends Module {
 
     public static final ConfigDefinition<Config> MAIN_CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -27,7 +27,7 @@ public class Boats extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
 
         @ConfigEntry.Gui.RequiresRestart
         @SpecialEnvironment(Environment.BOTH)

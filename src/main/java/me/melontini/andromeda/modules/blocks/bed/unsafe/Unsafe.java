@@ -9,7 +9,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 
 @ModuleInfo(name = "bed/unsafe", category = "blocks", environment = Environment.SERVER)
-public class Unsafe extends Module {
+public final class Unsafe extends Module {
 
     public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
 

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.modules.misc.translations.Translations;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
+@UtilityClass
 public class EarlyLanguage {
 
     private static final String DEFAULT = "en_us";

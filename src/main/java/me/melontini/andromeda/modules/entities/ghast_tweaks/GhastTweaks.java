@@ -13,7 +13,7 @@ import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
 import java.util.List;
 
 @ModuleInfo(name = "ghast_tweaks", category = "entities", environment = Environment.SERVER)
-public class GhastTweaks extends Module {
+public final class GhastTweaks extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

@@ -16,7 +16,7 @@ import java.util.Set;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
 
     public static final Keeper<IncubatorBlock> INCUBATOR_BLOCK = Keeper.create();
     public static final Keeper<BlockItem> INCUBATOR = Keeper.create();

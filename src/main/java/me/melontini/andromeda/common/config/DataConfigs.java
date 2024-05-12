@@ -33,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class DataConfigs extends IdentifiedJsonDataLoader {
+public final class DataConfigs extends IdentifiedJsonDataLoader {
 
     public static final Identifier DEFAULT = new Identifier(MODID, "default");
     public static final ReloaderType<DataConfigs> RELOADER = ReloaderType.create(Andromeda.id("scoped_config"));

@@ -10,7 +10,7 @@ import me.melontini.andromeda.base.util.annotations.Unscoped;
 
 @Unscoped
 @ModuleInfo(name = "better_furnace_minecart", category = "entities", environment = Environment.SERVER)
-public class BetterFurnaceMinecart extends Module {
+public final class BetterFurnaceMinecart extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -19,7 +19,7 @@ public class BetterFurnaceMinecart extends Module {
     }
 
     @ToString
-    public static class Config extends BaseConfig {
+    public static final class Config extends BaseConfig {
         public int maxFuel = 45000;
         public boolean takeFuelWhenLow = true;
     }

@@ -50,7 +50,7 @@ import java.util.*;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
-public class Andromeda {
+public final class Andromeda {
 
     public static final Identifier VERIFY_MODULES = new Identifier(MODID, "verify_modules");
     @Nullable private static Andromeda INSTANCE;

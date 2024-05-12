@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.world.World;
 
-public class Main {
+public final class Main {
 
     Main() {
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {

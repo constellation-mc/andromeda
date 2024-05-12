@@ -10,7 +10,7 @@ import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "snowball_tweaks", category = "entities", environment = Environment.SERVER)
-public class Snowballs extends Module {
+public final class Snowballs extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
@@ -19,7 +19,7 @@ public class Snowballs extends Module {
     }
 
     @ToString
-    public static class Config extends GameConfig {
+    public static final class Config extends GameConfig {
 
         public BooleanIntermediary freeze = BooleanIntermediary.of(true);
 

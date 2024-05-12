@@ -14,7 +14,7 @@ import java.util.List;
 
 @Unscoped
 @ModuleInfo(name = "pouches", category = "items")
-public class Pouches extends Module {
+public final class Pouches extends Module {
 
     public static final ConfigDefinition<Config> MAIN_CONFIG = new ConfigDefinition<>(() -> Config.class);
 

@@ -14,7 +14,7 @@ import me.melontini.andromeda.util.commander.CommanderSupport;
 import java.util.List;
 
 @ModuleInfo(name = "incubator", category = "blocks")
-public class Incubator extends Module {
+public final class Incubator extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

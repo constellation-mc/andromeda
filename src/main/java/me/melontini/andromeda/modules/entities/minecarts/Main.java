@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.minecarts;
 
 
-public class Main {
+public final class Main {
 
     Main(Minecarts module, Minecarts.Config config) {
         MinecartItems.init(module, config);

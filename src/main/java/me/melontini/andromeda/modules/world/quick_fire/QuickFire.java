@@ -8,7 +8,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @Deprecated
 @ModuleInfo(name = "quick_fire", category = "world", environment = Environment.SERVER)
-public class QuickFire extends Module {
+public final class QuickFire extends Module {
 
     public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
 

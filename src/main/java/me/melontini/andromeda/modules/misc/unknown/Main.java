@@ -12,7 +12,7 @@ import net.minecraft.util.Rarity;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
 
     public static final Keeper<FlowerBlock> ROSE_OF_THE_VALLEY_BLOCK = Keeper.create();
     public static final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.create();

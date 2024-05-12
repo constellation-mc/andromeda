@@ -10,7 +10,7 @@ import net.minecraft.loot.context.LootContext;
 import java.util.function.Supplier;
 
 @ToString
-public class CommanderLongIntermediary implements LongIntermediary {
+public final class CommanderLongIntermediary implements LongIntermediary {
 
     public static final Codec<CommanderLongIntermediary> CODEC = LongExpression.CODEC.xmap(CommanderLongIntermediary::new, CommanderLongIntermediary::getArithmetica);
 

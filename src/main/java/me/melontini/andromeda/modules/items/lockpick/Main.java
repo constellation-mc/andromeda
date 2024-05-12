@@ -8,7 +8,7 @@ import net.minecraft.registry.Registries;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-public class Main {
+public final class Main {
 
     Main(Lockpick module, Lockpick.MainConfig config) {
         LockpickItem.INSTANCE.init(RegistryUtil.register(Registries.ITEM, id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16))));

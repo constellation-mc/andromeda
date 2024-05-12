@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 
 import java.util.*;
 
-public class FeatureBlockade {
+public final class FeatureBlockade {
 
     private static final FeatureBlockade INSTANCE = new FeatureBlockade();
 

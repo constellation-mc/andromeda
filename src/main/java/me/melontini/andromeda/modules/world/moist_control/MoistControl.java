@@ -9,7 +9,7 @@ import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "moist_control", category = "world", environment = Environment.SERVER)
-public class MoistControl extends Module {
+public final class MoistControl extends Module {
 
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ModuleInfo(name = "tiny_storage", category = "misc", environment = Environment.SERVER)
-public class TinyStorage extends Module {
+public final class TinyStorage extends Module {
 
     public static final ThreadLocal<Boolean> LOADING = ThreadLocal.withInitial(() -> false);
     public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);

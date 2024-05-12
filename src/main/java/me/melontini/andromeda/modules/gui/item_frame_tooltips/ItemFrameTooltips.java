@@ -15,7 +15,7 @@ import java.util.List;
 import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
 @ModuleInfo(name = "item_frame_tooltips", category = "gui", environment = Environment.CLIENT)
-public class ItemFrameTooltips extends Module {
+public final class ItemFrameTooltips extends Module {
 
     ItemFrameTooltips() {
         InitEvent.client(this).listen(() -> List.of(Client.class));
