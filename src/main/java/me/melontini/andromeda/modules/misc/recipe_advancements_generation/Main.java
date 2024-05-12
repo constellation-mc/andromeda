@@ -2,9 +2,6 @@ package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.mojang.serialization.JsonOps;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -97,14 +94,12 @@ public final class Main {
         builder.parent(Identifier.tryParse("minecraft:recipes/root"));
 
         List<String> names = new ArrayList<>();
-        Set<JsonElement> elements = new HashSet<>();
+        Set<Ingredient> elements = new HashSet<>();
         for (int i = 0; i < ingredients.length; i++) {
             var ingredient = ingredients[i];
 
             if (ingredient.isEmpty()) continue;
-            if (!elements.add(Ingredient.ALLOW_EMPTY_CODEC.encodeStart(JsonOps.INSTANCE, ingredient).getOrThrow(false, string -> {
-                throw new JsonParseException(string);
-            }))) continue;
+            if (!elements.add(ingredient)) continue;
 
             var name = String.valueOf(i);
             names.add(name);
