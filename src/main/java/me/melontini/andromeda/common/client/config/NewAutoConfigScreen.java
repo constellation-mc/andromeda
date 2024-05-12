@@ -143,8 +143,7 @@ public class NewAutoConfigScreen {
         Field field = Exceptions.supply(() -> MultiElementListEntry.class.getDeclaredField("entries"));
         field.setAccessible(true);
 
-        Field availableField = Exceptions.supply(() -> Module.GameConfig.class.getField("available"));
-        var availableProvider = PROVIDERS.entrySet().stream().filter(e -> e.getKey().test(availableField.getType())).findFirst().orElseThrow().getValue().provider();
+        var avProvider = PROVIDERS.entrySet().stream().filter(e -> e.getKey().test(BooleanIntermediary.class)).findFirst().orElseThrow().getValue();
 
         var handlers = ImmutableMap.of(ConfigState.MAIN, Andromeda.ROOT_HANDLER, ConfigState.GAME, Andromeda.GAME_HANDLER, ConfigState.CLIENT, AndromedaClient.HANDLER);
         var defProvider = PROVIDERS.defaultReturnValue().provider();
@@ -169,21 +168,23 @@ public class NewAutoConfigScreen {
                 var config = handler.get(definition);
                 var defaultConfig = handler.getDefault(definition);
 
+                Context context = new Context(false, () -> acceptor.accept(module, new SaveRunnable(definition, () -> handler.save(module))), null, module);
                 if ((Experiments.get().scopedConfigs || commander) && Module.GameConfig.class.isAssignableFrom(definition.supplier().get())) {
                     var availableKey = "config.andromeda.option.available";
 
-                    var available = availableProvider.getEntry(BooleanIntermediary.class,
+                    var available = avProvider.provider().getEntry(BooleanIntermediary.class,
                             ((Module.GameConfig) config).available, ((Module.GameConfig) defaultConfig).available,
                             object -> ((Module.GameConfig) config).available = (BooleanIntermediary) object,
-                            availableKey, new Context(false, () -> acceptor.accept(module, new SaveRunnable(definition, () -> handler.save(module))), availableField, module)
+                            availableKey, context
                     );
+                    available.setErrorSupplier(() -> avProvider.errorSupplier().apply(available.getValue()));
 
                     stateCategory.add(available);
                 }
 
                 var e = defProvider.getEntry(config.getClass(),
                         config, defaultConfig, DEFAULT_CONSUMER,
-                        moduleText, new Context(false, () -> acceptor.accept(module, new SaveRunnable(definition, () -> handler.save(module))), null, module));
+                        moduleText, context);
                 if (!(e instanceof MultiElementListEntry<?> listEntry))
                     throw new IllegalStateException(config.getClass().getName());
                 List<AbstractConfigListEntry<?>> entries = getField(field, listEntry);
