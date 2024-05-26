@@ -6,7 +6,12 @@
     "config.andromeda.title": "群星（%s）",
     "config.andromeda.option.enabled": "启用",
     "config.andromeda.button.wiki": "访问维基！",
+    "config.andromeda.option.available": "特性开关",
+    "config.andromeda.option.available.@Tooltip": "这个选项决定是否对应特性在游戏中被启用。\n在使用分化配置和数据包配置时比较有用。\n如果安装了命令官模组，这一字段将变成表达式。",
 
+    "config.andromeda.state.main": "主状态",
+    "config.andromeda.state.game": "游戏中状态",
+    "config.andromeda.state.client": "客户端状态",
     "andromeda.disconnected.module_mismatch": "群星模组配置不同步！\n请禁用%s\n启用%s\n以加入此服务器！",
 
     "andromeda.config.option_manager.reason.andromeda.module_conflict": "启用了冲突的特性！",
