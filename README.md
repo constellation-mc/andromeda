@@ -2,7 +2,6 @@
 
 [![Modrinth](https://img.shields.io/modrinth/dt/TseYlb0f?logo=modrinth&color=mint)](https://modrinth.com/mod/andromeda)
 [![CodeFactor](https://www.codefactor.io/repository/github/constellation-mc/andromeda/badge)](https://www.codefactor.io/repository/github/constellation-mc/andromeda)
-![GitHub](https://img.shields.io/github/license/constellation-mc/andromeda)
 
 ### A galaxy is a collection of things and systems. So is this mod.
 
@@ -12,12 +11,11 @@
 
 <img alt="Mod Menu icon" src="https://cdn.modrinth.com/data/mOgUt4GM/icon.png" width="40" height="40"></img> [Mod Menu](https://modrinth.com/mod/modmenu) and <img alt="TooltipFix icon" src="https://cdn.modrinth.com/data/2RKFTmiB/e2ebd2a3e0b5f30ed8d1084b79c568895a12f656.png" width="40" height="40"> [ToolTipFix](https://modrinth.com/mod/modmenu) are highly recommended!
 
-## Current Tweaks
+### Current Tweaks
 
 https://andromeda-wiki.pages.dev/
 
 ***
-
 ### Other cool things/products this project uses:
 
 #### The mod itself:<br/>
@@ -29,5 +27,11 @@ https://andromeda-wiki.pages.dev/
 - [Cloudflare Pages](https://pages.cloudflare.com/)
 
 ***
+### License
 
+All versions before and including 1.12.0 are available under the MIT License.
+
+New versions are multi-licensed. Please consult LICENSE.md for more info.
+
+***
 ### ❤️

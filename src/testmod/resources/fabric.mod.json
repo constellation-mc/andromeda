@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "andromeda-testmod",
   "version": "1.0.0",
-  "license": "MIT",
+  "license": "ARR",
   "environment": "*",
   "mixins": [
     "andromeda-testmod.mixins.json"

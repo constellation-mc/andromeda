@@ -15,7 +15,7 @@
     "issues": "https://github.com/constellation-mc/andromeda/issues",
     "homepage": "https://andromeda-wiki.pages.dev/"
   },
-  "license": "MIT",
+  "license": "ARR",
   "icon": "assets/andromeda/icon.png",
   "environment": "*",
   "accessWidener" : "andromeda.accesswidener",
