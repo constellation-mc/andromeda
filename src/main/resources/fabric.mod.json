@@ -54,6 +54,11 @@
     "modmenu": ">=${modmenu_version}",
     "commander": ">=${commander_version}"
   },
+  "breaks": {
+    "cloth-config": "<${cloth_version}",
+    "modmenu": "<${modmenu_version}",
+    "commander": "<${commander_version}"
+  },
   "custom": {
     "lithium:options": {
       "mixin.world.block_entity_ticking.sleeping.campfire": false

@@ -33,11 +33,12 @@ abstract class ItemStackMixin {
     @Inject(at = @At("HEAD"), method = "use", cancellable = true)
     private void andromeda$throwableBehavior(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         if (world.isClient()) return;
+        ItemStack stack = (ItemStack) (Object) this;
 
         var manager = world.getServer().dm$getReloader(RELOADER);
-        if (manager.hasBehaviors(getItem()) && manager.overridesVanilla(getItem())) {
+        if (manager.hasBehaviors(stack) && manager.overridesVanilla(getItem())) {
             if (andromeda$runBehaviors(world, manager, user)) {
-                cir.setReturnValue(TypedActionResult.success((ItemStack) (Object) this));
+                cir.setReturnValue(TypedActionResult.success(stack));
             }
         }
     }
@@ -45,11 +46,12 @@ abstract class ItemStackMixin {
     @ModifyReturnValue(at = @At("RETURN"), method = "use")
     private TypedActionResult<ItemStack> andromeda$throwableBehavior(TypedActionResult<ItemStack> original, World world, PlayerEntity user, Hand hand) {
         if (world.isClient()) return original;
+        ItemStack stack = (ItemStack) (Object) this;
 
         var manager = world.getServer().dm$getReloader(RELOADER);
-        if (original.getResult() == ActionResult.PASS && manager.hasBehaviors(getItem()) && !manager.overridesVanilla(getItem())) {
+        if (original.getResult() == ActionResult.PASS && manager.hasBehaviors(stack) && !manager.overridesVanilla(getItem())) {
             if (andromeda$runBehaviors(world, manager, user)) {
-                return TypedActionResult.success((ItemStack) (Object) this);
+                return TypedActionResult.success(stack);
             }
         }
         return original;

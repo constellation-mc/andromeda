@@ -21,7 +21,7 @@ abstract class DispenserBlockMixin {
     @Inject(at = @At("TAIL"), method = "method_10008")
     private static void andromeda$throwItem(Object2ObjectOpenHashMap<Item, DispenserBehavior> map, CallbackInfo ci) {
         var b = map.defaultReturnValue();
-        map.defaultReturnValue((pointer, stack) -> pointer.world().getServer().dm$getReloader(RELOADER).hasBehaviors(stack.getItem()) ?
+        map.defaultReturnValue((pointer, stack) -> pointer.world().getServer().dm$getReloader(RELOADER).hasBehaviors(stack) ?
                 Main.BEHAVIOR.dispense(pointer, stack) : b.dispense(pointer, stack));
     }
 
@@ -31,7 +31,7 @@ abstract class DispenserBlockMixin {
         if (server == null) return;
 
         var manager = server.dm$getReloader(RELOADER);
-        if (manager.hasBehaviors(stack.getItem()) && manager.overridesVanilla(stack.getItem())) {
+        if (manager.hasBehaviors(stack) && manager.overridesVanilla(stack.getItem())) {
             cir.setReturnValue(Main.BEHAVIOR);
         }
     }

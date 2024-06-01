@@ -5,12 +5,16 @@ import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
+import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
@@ -77,8 +81,11 @@ public class ItemBehaviorManager extends IdentifiedJsonDataLoader {
         itemBehaviors.remove(item);
     }
 
+    public boolean hasBehaviors(ItemStack item) {
+        return item != null && !item.isEmpty() && itemBehaviors.containsKey(item.getItem());
+    }
     public boolean hasBehaviors(Item item) {
-        return itemBehaviors.containsKey(item);
+        return item != null && item != Items.AIR && itemBehaviors.containsKey(item);
     }
 
     public void clear() {
@@ -113,11 +120,16 @@ public class ItemBehaviorManager extends IdentifiedJsonDataLoader {
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
         this.clear();
         itemBehaviors.putAll(STATIC);
+        this.disable(Items.AIR);
 
         Maps.transformValues(data, input -> ItemBehaviorData.create(input.getAsJsonObject())).forEach((id, behaviorData) -> {
             if (behaviorData.parameters().items().isEmpty()) return;
 
             for (Item item : behaviorData.parameters().items()) {
+                if (item == null || item == Items.AIR) {
+                    ModuleManager.quick(ThrowableItems.class).logger().error("{} contains invalid item IDs!", id);
+                    continue;
+                }
                 if (behaviorData.parameters().disabled()) {
                     this.disable(item);
                     continue;

@@ -42,7 +42,7 @@ public class ThrowableItemAttackGoal<T extends MobEntity> extends Goal {
 
     @Override
     public boolean canStart() {
-        if (requireNonNull(mob.world.getServer()).dm$getReloader(RELOADER).hasBehaviors(this.mob.getMainHandStack().getItem())) {
+        if (requireNonNull(mob.world.getServer()).dm$getReloader(RELOADER).hasBehaviors(this.mob.getMainHandStack())) {
             LivingEntity livingEntity = this.mob.getTarget();
             if (livingEntity != null && livingEntity.isAlive() && this.owner.am$cooldown() <= 0) {
                 double d = this.mob.distanceTo(livingEntity);

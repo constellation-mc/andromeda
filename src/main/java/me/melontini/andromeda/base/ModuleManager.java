@@ -1,7 +1,10 @@
 package me.melontini.andromeda.base;
 
 import com.google.common.collect.Maps;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.CustomLog;
 import lombok.NonNull;
 import lombok.Setter;
@@ -93,9 +96,7 @@ public final class ModuleManager {
 
             try (var reader = Files.newBufferedReader(path)) {
                 JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
-                if (object.has("bootstrap")) {
-                    object = object.getAsJsonObject("bootstrap");
-                }
+                if (object.has("bootstrap")) object = object.getAsJsonObject("bootstrap");
                 return Objects.requireNonNull(GSON.fromJson(object, BootstrapConfig.class));
             } catch (Exception e) {
                 LOGGER.error("Failed to load {}! Resetting to default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
@@ -194,7 +195,7 @@ public final class ModuleManager {
         if (Files.exists(path)) {
             try (var reader = Files.newBufferedReader(path)) {
                 object = JsonParser.parseReader(reader).getAsJsonObject();
-            } catch (IOException | JsonParseException e) {
+            } catch (IOException | RuntimeException e) {
                 object = new JsonObject();
             }
         }

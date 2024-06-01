@@ -36,6 +36,6 @@ abstract class ZombieEntityMixin extends HostileEntity {
     }
 
     @Unique private boolean handleThrowableItems(ThrowableItems m, World world, ItemStack stack) {
-        return world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems && requireNonNull(world.getServer()).dm$getReloader(RELOADER).hasBehaviors(stack.getItem());
+        return world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems && requireNonNull(world.getServer()).dm$getReloader(RELOADER).hasBehaviors(stack);
     }
 }
