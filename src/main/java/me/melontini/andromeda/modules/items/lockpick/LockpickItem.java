@@ -2,19 +2,26 @@ package me.melontini.andromeda.modules.items.lockpick;
 
 import com.google.common.base.Suppliers;
 import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.dark_matter.api.base.util.MathUtil;
+import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+
+import static me.melontini.andromeda.common.Andromeda.id;
 
 public class LockpickItem extends Item {
 
@@ -56,5 +63,13 @@ public class LockpickItem extends Item {
             }
         }
         return ActionResult.CONSUME;
+    }
+
+    static void init(Lockpick module, Lockpick.MainConfig config) {
+        LockpickItem.INSTANCE.init(RegistryUtil.register(Registries.ITEM, id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16))));
+        MerchantInventoryScreenHandler.INSTANCE.init(RegistryUtil.register(config.villagerInventory, Registries.SCREEN_HANDLER,
+                id("merchant_inventory"), RegistryUtil.screenHandlerType(MerchantInventoryScreenHandler::new)));
+
+        AndromedaItemGroup.accept(acceptor -> acceptor.keeper(module, ItemGroups.TOOLS, LockpickItem.INSTANCE));
     }
 }

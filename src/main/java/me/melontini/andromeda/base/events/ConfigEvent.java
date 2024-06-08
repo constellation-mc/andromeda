@@ -2,7 +2,7 @@ package me.melontini.andromeda.base.events;
 
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.BootstrapConfig;
+import me.melontini.andromeda.base.util.config.BootstrapConfig;
 
 public interface ConfigEvent {
 

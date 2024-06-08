@@ -7,11 +7,11 @@ import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
+import me.melontini.andromeda.modules.ModuleDiscovery;
 import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixins.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.Context;
-import me.melontini.dark_matter.api.base.util.EntrypointRunner;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.base.util.functions.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
@@ -48,7 +48,7 @@ public class Bootstrap {
         run(() -> {
             Bus<InitEvent> event = module.getOrCreateBus(init + "_init_event", null);
             if (event == null) return;
-            event.invoker().collect().forEach(module::initClass);
+            event.invoker().collectInits().run();
         }, (b) -> b.literal("Failed to execute %s!".formatted(init)).add("module", module.meta().id()));
     }
 
@@ -58,7 +58,10 @@ public class Bootstrap {
 
         onMerged();
 
-        run(AndromedaClient::preClient, b -> b.literal("Failed to initialize AndromedaClient!"));
+        run(() -> {
+            AndromedaClient.HANDLER.loadAll();
+            AndromedaClient.HANDLER.saveAll();
+        }, b -> b.literal("Failed to initialize AndromedaClient!"));
 
         for (Module module : ModuleManager.get().loaded()) {
             if (module.meta().environment().isServer()) continue;
@@ -80,7 +83,10 @@ public class Bootstrap {
     }
 
     private static void onMerged() {
-        run(Andromeda::onMerged, b -> b.literal("Failed to initialize Andromeda!"));
+        run(() -> {
+            Andromeda.GAME_HANDLER.loadAll();
+            Andromeda.GAME_HANDLER.saveAll();
+        }, b -> b.literal("Failed to initialize Andromeda!"));
 
         for (Module module : ModuleManager.get().loaded()) {
             runInit("merged", module);
@@ -109,7 +115,10 @@ public class Bootstrap {
             }
         }
 
-        run(Andromeda::preMain, b -> b.literal("Failed to pre-initialize Andromeda!"));
+        run(() -> {
+            Andromeda.ROOT_HANDLER.loadAll();
+            Andromeda.ROOT_HANDLER.saveAll();
+        }, b -> b.literal("Failed to initialize Andromeda!"));
 
         for (Module module : ModuleManager.get().loaded()) {
             runInit("main", module);
@@ -130,16 +139,8 @@ public class Bootstrap {
 
             Status.update();
 
-            List<Module.Zygote> list = new ArrayList<>(40);
-            run(() -> {
-                //This should probably be removed.
-                ServiceLoader.load(Module.class).stream().map(p -> Module.Zygote.spawn(p.type(), p::get)).forEach(list::add);
-                EntrypointRunner.run("andromeda:modules", ModuleManager.ModuleSupplier.class, s -> list.addAll(s.get()));
-            }, (b) -> b.literal("Failed during module discovery!"));
-
-            if (list.isEmpty()) {
-                LOGGER.error(EarlyLanguage.translate("andromeda.bootstrap.no_modules"));
-            }
+            List<Module.Zygote> list = ModuleDiscovery.get();
+            if (list.isEmpty()) LOGGER.error(EarlyLanguage.translate("andromeda.bootstrap.no_modules"));
 
             list.removeIf(m -> CommonValues.environment() == EnvType.SERVER && !m.meta().environment().allows(EnvType.SERVER));
 

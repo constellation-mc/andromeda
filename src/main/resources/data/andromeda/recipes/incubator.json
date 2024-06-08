@@ -1,9 +1,9 @@
 {
   "fabric:load_conditions": [
     {
-      "condition": "andromeda:items_registered",
+      "condition": "andromeda:modules_loaded",
       "values": [
-        "andromeda:incubator"
+        "blocks/incubator"
       ]
     }
   ],

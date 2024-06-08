@@ -28,7 +28,7 @@ public final class Main {
     private static final Keeper<AdvancementGeneration> MODULE = Keeper.create();
     private static final Map<RecipeType<?>, Function<Context, Return>> RECIPE_TYPE_HANDLERS = new HashMap<>();
 
-    public Function<Context, Return> basicConsumer(String typeName, AdvancementGeneration.Config config) {
+    public static Function<Context, Return> basicConsumer(String typeName, AdvancementGeneration.Config config) {
         return context -> new Return(idFromRecipe(context.id(), typeName), createAdvBuilder(config, context.id(), context.recipe().getIngredients().get(0)));
     }
 
@@ -40,7 +40,7 @@ public final class Main {
         RECIPE_TYPE_HANDLERS.putIfAbsent(type, consumer);
     }
 
-    public void generateRecipeAdvancements(MinecraftServer server, AdvancementGeneration.Config config) {
+    public static void generateRecipeAdvancements(MinecraftServer server, AdvancementGeneration.Config config) {
         AdvancementGeneration module = MODULE.orThrow();
         Map<Identifier, Advancement.Builder> advancementBuilders = new ConcurrentHashMap<>();
         AtomicInteger count = new AtomicInteger();
@@ -88,10 +88,10 @@ public final class Main {
         advancementBuilders.clear();
     }
 
-    public @NotNull Advancement.Builder createAdvBuilder(AdvancementGeneration.Config config, Identifier id, Ingredient... ingredients) {
+    public static @NotNull Advancement.Builder createAdvBuilder(AdvancementGeneration.Config config, Identifier id, Ingredient... ingredients) {
         MakeSure.notEmpty(ingredients);// shouldn't really happen
         var builder = Advancement.Builder.createUntelemetered();
-        builder.parent(Identifier.tryParse("minecraft:recipes/root"));
+        builder.parent(Identifier.of("minecraft", "recipes/root"));
 
         List<String> names = new ArrayList<>();
         Set<Ingredient> elements = new HashSet<>();
@@ -132,11 +132,11 @@ public final class Main {
         return builder;
     }
 
-    Main(AdvancementGeneration module, AdvancementGeneration.Config config) {
+    static void init(AdvancementGeneration module, AdvancementGeneration.Config config) {
         Main.MODULE.init(module);
 
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.generateRecipeAdvancements(server, config));
-        BeforeDataPackSyncEvent.EVENT.register(server -> this.generateRecipeAdvancements(server, config));
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> generateRecipeAdvancements(server, config));
+        BeforeDataPackSyncEvent.EVENT.register(server -> generateRecipeAdvancements(server, config));
 
         addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting", config));
         addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking", config));

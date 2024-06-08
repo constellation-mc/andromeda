@@ -18,7 +18,7 @@ public final class Main {
     public static final TagKey<EntityType<?>> ESCAPE_VEHICLES_ON_HIT = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escape_vehicles_on_hit"));
     public static final TagKey<EntityType<?>> ESCAPABLE_VEHICLES = TagKey.of(RegistryKeys.ENTITY_TYPE, id("escapable_vehicles"));
 
-    Main() {
+    static void init() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
             World world = entity.getWorld();
             if (world.am$get(VehicleUnentrapment.CONFIG).available.asBoolean(LootContextUtil.entity(world,

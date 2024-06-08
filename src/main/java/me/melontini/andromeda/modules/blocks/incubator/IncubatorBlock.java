@@ -2,10 +2,15 @@ package me.melontini.andromeda.modules.blocks.incubator;
 
 import com.mojang.serialization.MapCodec;
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.common.AndromedaItemGroup;
+import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -14,8 +19,12 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SidedInventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.Text;
@@ -31,13 +40,18 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
+import static me.melontini.andromeda.common.Andromeda.id;
 
 @SuppressWarnings("deprecation")
 public class IncubatorBlock extends BlockWithEntity implements InventoryProvider {
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+    public static final Keeper<IncubatorBlock> INCUBATOR_BLOCK = Keeper.create();
+    public static final Keeper<BlockItem> INCUBATOR = Keeper.create();
+    public static final Keeper<BlockEntityType<IncubatorBlockEntity>> INCUBATOR_BLOCK_ENTITY = Keeper.create();
     private final VoxelShape BASE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
     private final VoxelShape GLASS_SHAPE = Block.createCuboidShape(3.0, 11.0, 3.0, 13.0, 18.0, 13.0);
     public static final MapCodec<IncubatorBlock> CODEC = createCodec(IncubatorBlock::new);
@@ -54,7 +68,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, Main.INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
+        return validateTicker(type, INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
     }
 
     @Override
@@ -136,5 +150,15 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
         if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity) return incubatorBlockEntity;
         throw AndromedaException.builder().literal("Invalid block entity type! Must be an instance of %s".formatted(IncubatorBlockEntity.class.getName()))
                 .add("block_entity", blockEntity).build();
+    }
+
+    public static void init(Incubator module) {
+        IncubatorBlock.INCUBATOR_BLOCK.init(RegistryUtil.register(Registries.BLOCK, id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))));
+        IncubatorBlock.INCUBATOR.init(RegistryUtil.register(Registries.ITEM, id("incubator"), () -> new BlockItem(IncubatorBlock.INCUBATOR_BLOCK.orThrow(), new FabricItemSettings())));
+        IncubatorBlock.INCUBATOR_BLOCK_ENTITY.init(RegistryUtil.register(Registries.BLOCK_ENTITY_TYPE, id("incubator"), () -> new BlockEntityType<>(IncubatorBlockEntity::new, Set.of(IncubatorBlock.INCUBATOR_BLOCK.orThrow()), null)));
+
+        AndromedaItemGroup.accept(acceptor -> acceptor.keeper(module, ItemGroups.FUNCTIONAL, IncubatorBlock.INCUBATOR));
+
+        EggProcessingData.init();
     }
 }

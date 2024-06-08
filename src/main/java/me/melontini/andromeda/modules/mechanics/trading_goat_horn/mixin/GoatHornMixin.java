@@ -16,7 +16,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -27,19 +26,17 @@ import java.util.Optional;
 @Mixin(GoatHornItem.class)
 abstract class GoatHornMixin {
 
-    @Unique private static final Identifier SING_ID = new Identifier("minecraft:sing_goat_horn");
-
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V", shift = At.Shift.BEFORE), method = "use")
     private void andromeda$wanderingGoatHorn(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, @Local Optional<? extends RegistryEntry<Instrument>> optional) {
         if (world.isClient()) return;
 
         Identifier identifier = optional.orElseThrow().getKey().orElseThrow().getValue();
-        if (!Objects.equals(identifier, SING_ID)) return;
+        if (!Objects.equals(identifier, world.am$get(GoatHorn.CONFIG).instrumentId)) return;
 
         ServerWorld sw = (ServerWorld) world;
         if (!sw.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) || !world.am$get(GoatHorn.CONFIG).available.asBoolean(
                 LootContextUtil.fishing(user.world, user.getPos(), user.getStackInHand(hand), user))) return;
 
-        sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).trySpawn((ServerWorld) world, sw.getServer().getSaveProperties().getMainWorldProperties(), user);
+        sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).trySpawn((ServerWorld) world, sw.getServer().getSaveProperties().getMainWorldProperties(), user.getStackInHand(hand), user);
     }
 }

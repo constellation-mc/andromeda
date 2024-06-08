@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
@@ -15,11 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @CustomLog
-public final class ModuleDiscovery implements ModuleManager.ModuleSupplier {
-    @Override
-    public List<Module.Zygote> get() {
+public final class ModuleDiscovery {
+
+    public static List<Module.Zygote> get() {
         Bootstrap.getModuleClassPath().addUrl(ModuleDiscovery.class.getProtectionDomain().getCodeSource().getLocation());
 
         List<CompletableFuture<Module.Zygote>> futures = new ArrayList<>();
@@ -45,6 +45,6 @@ public final class ModuleDiscovery implements ModuleManager.ModuleSupplier {
 
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
                 .handle((unused, throwable) -> futures).join().stream()
-                .map(CompletableFuture::join).filter(Objects::nonNull).toList();
+                .map(CompletableFuture::join).filter(Objects::nonNull).collect(Collectors.toCollection(ArrayList::new));
     }
 }

@@ -9,10 +9,9 @@ import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
-import me.melontini.andromeda.base.events.ConstructorParametersEvent;
-import me.melontini.andromeda.base.util.ConfigHandler;
-import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.base.util.config.ConfigHandler;
+import me.melontini.andromeda.base.util.config.ConfigState;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.util.GsonCodecContext;
 import me.melontini.andromeda.common.util.Keeper;
@@ -41,18 +40,23 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public final class Andromeda {
 
-    public static final Identifier VERIFY_MODULES = new Identifier(MODID, "verify_modules");
+    public static final Identifier VERIFY_MODULES = Andromeda.id("verify_modules");
     @Nullable private static Andromeda INSTANCE;
 
     public static final Keeper<ItemGroup> GROUP = Keeper.create();
@@ -84,17 +88,6 @@ public final class Andromeda {
     @Getter
     private @Nullable MinecraftServer currentServer;
 
-    public static void preMain() {
-        ConstructorParametersEvent.BUS.listen(module -> {
-            var cd = module.getConfigDefinition(ConfigState.MAIN);
-            if (cd != null) return Collections.singletonMap(cd.supplier().get(), Andromeda.ROOT_HANDLER.get(cd));
-            return Collections.emptyMap();
-        });
-
-        ROOT_HANDLER.loadAll();
-        ROOT_HANDLER.saveAll();
-    }
-
     public static void init() {
         var instance = new Andromeda();
         instance.onInitialize(ModuleManager.get());
@@ -102,19 +95,22 @@ public final class Andromeda {
         INSTANCE = instance;
     }
 
-    public static void onMerged() {
-        GAME_HANDLER.loadAll();
-        GAME_HANDLER.saveAll();
-    }
-
     public static Identifier id(String path) {
         return new Identifier(MODID, path);
+    }
+
+    public static <T> RegistryKey<T> key(RegistryKey<? extends Registry<T>> registry, String path) {
+        return RegistryKey.of(registry, id(path));
     }
 
     private void onInitialize(ModuleManager manager) {
         ResourceConditions.register(id("items_registered"), object -> JsonHelper.getArray(object, "values")
                 .asList().stream().filter(JsonElement::isJsonPrimitive)
-                .allMatch(e -> Registries.ITEM.containsId(Identifier.tryParse(e.getAsString()))));
+                .allMatch(e -> Registries.ITEM.containsId(new Identifier(e.getAsString()))));
+
+        ResourceConditions.register(id("modules_loaded"), object -> JsonHelper.getArray(object, "values")
+                .asList().stream().filter(JsonElement::isJsonPrimitive)
+                .allMatch(e -> ModuleManager.get().getModule(e.getAsString()).isPresent()));
 
         AndromedaItemGroup.Acceptor acceptor = (module, main, stack) -> {
             if (!stack.isEmpty()) ItemGroupEvents.modifyEntriesEvent(main).register(entries -> entries.add(stack));
@@ -137,7 +133,8 @@ public final class Andromeda {
                 if (!understood) {
                     if (!modules.isEmpty())
                         handler.disconnect(TextUtil.translatable("andromeda.disconnected.module_mismatch",
-                                Arrays.toString(new String[0]), Arrays.toString(modules.toArray())));
+                                Arrays.toString(new String[0]), Arrays.toString(modules.toArray()))
+                                .append(TextUtil.literal("\nOr install Andromeda if you haven't already!")));
                     return;
                 }
 
@@ -153,7 +150,8 @@ public final class Andromeda {
 
                     if (!disable.isEmpty() || !enable.isEmpty()) {
                         handler.disconnect(TextUtil.translatable("andromeda.disconnected.module_mismatch",
-                                Arrays.toString(disable.toArray()), Arrays.toString(enable.toArray())));
+                                Arrays.toString(disable.toArray()), Arrays.toString(enable.toArray()))
+                                .append(TextUtil.literal("\nOr install Andromeda if you haven't already!")));
                     }
                 }));
             });

@@ -3,10 +3,12 @@ package me.melontini.andromeda.base.util;
 import lombok.CustomLog;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.Context;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 
 @CustomLog
 public class Experiments {
@@ -28,8 +30,8 @@ public class Experiments {
     }
 
     public static final class Config {
-
-        @ConfigEntry.Gui.RequiresRestart
-        public boolean scopedConfigs = false;
+        public List<String> persistentScopedConfigs = new ArrayList<>();
+        public boolean showAvailableOption = false;
+        public boolean hideSidedModulesInSideOnly = ThreadLocalRandom.current().nextBoolean();
     }
 }

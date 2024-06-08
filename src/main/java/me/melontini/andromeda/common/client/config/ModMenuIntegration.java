@@ -3,6 +3,7 @@ package me.melontini.andromeda.common.client.config;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import lombok.CustomLog;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,7 +17,6 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.Function;
 
-import static me.melontini.andromeda.util.CommonValues.MODID;
 
 @CustomLog
 @Environment(EnvType.CLIENT)
@@ -24,8 +24,8 @@ public class ModMenuIntegration implements ModMenuApi {
 
     public static final Function<Screen, Screen> SCREEN_PROVIDER = Support.support("cloth-config", () -> NewAutoConfigScreen::get, () -> screen -> null);
 
-    public static final Identifier WIKI_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/wiki_button.png");
-    public static final Identifier LAB_BUTTON_TEXTURE = new Identifier(MODID, "textures/gui/lab_button.png");
+    public static final Identifier WIKI_BUTTON_TEXTURE = Andromeda.id("textures/gui/wiki_button.png");
+    public static final Identifier LAB_BUTTON_TEXTURE = Andromeda.id("textures/gui/lab_button.png");
     public static final Style WIKI_LINK = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
 
     @Override

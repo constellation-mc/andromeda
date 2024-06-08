@@ -26,7 +26,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) if (nbt.getString("Entity") != null) {
-            tooltip.add(TextUtil.translatable("tooltip.andromeda.spawner_minecart.filled", Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("Entity"))).getName()).formatted(Formatting.GRAY));
+            tooltip.add(TextUtil.translatable("tooltip.andromeda.spawner_minecart.filled", Registries.ENTITY_TYPE.get(new Identifier(nbt.getString("Entity"))).getName()).formatted(Formatting.GRAY));
         }
     }
 
@@ -34,7 +34,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
     protected void onCreate(ItemStack stack, SpawnerMinecartEntity entity) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) if (nbt.getString("Entity") != null) {
-            entity.getLogic().setEntityId(Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("Entity"))), entity.world, entity.world.random, entity.getBlockPos());
+            entity.getLogic().setEntityId(Registries.ENTITY_TYPE.get(new Identifier(nbt.getString("Entity"))), entity.world, entity.world.random, entity.getBlockPos());
         }
     }
 }

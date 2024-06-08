@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.misc.translations.mixin;
 
 import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.modules.misc.translations.Client;
 import me.melontini.andromeda.modules.misc.translations.Translations;
-import me.melontini.andromeda.modules.misc.translations.client.Client;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import org.spongepowered.asm.mixin.Final;

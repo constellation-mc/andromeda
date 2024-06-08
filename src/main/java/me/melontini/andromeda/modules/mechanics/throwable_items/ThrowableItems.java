@@ -3,14 +3,14 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.ConfigDefinition;
-import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.config.ConfigDefinition;
+import me.melontini.andromeda.base.util.config.ConfigState;
+import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.modules.mechanics.throwable_items.client.Client;
 import me.melontini.andromeda.util.commander.CommanderSupport;
 import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
 
-import java.util.List;
 
 @ModuleInfo(name = "throwable_items", category = "mechanics")
 public final class ThrowableItems extends Module {
@@ -21,8 +21,8 @@ public final class ThrowableItems extends Module {
     ThrowableItems() {
         this.defineConfig(ConfigState.GAME, CONFIG);
         this.defineConfig(ConfigState.CLIENT, CLIENT_CONFIG);
-        InitEvent.main(this).listen(() -> List.of(Main.class));
-        InitEvent.client(this).listen(() -> List.of(Client.class));
+        InitEvent.main(this).listen(() -> Main::init);
+        InitEvent.client(this).listen(() -> () -> Client.init(AndromedaClient.HANDLER.get(CLIENT_CONFIG)));
 
         CommanderSupport.require(this);
     }

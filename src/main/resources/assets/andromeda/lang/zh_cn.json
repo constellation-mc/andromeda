@@ -6,12 +6,13 @@
     "config.andromeda.title": "群星（%s）",
     "config.andromeda.option.enabled": "启用",
     "config.andromeda.button.wiki": "访问维基！",
-    "config.andromeda.option.available": "特性开关",
-    "config.andromeda.option.available.@Tooltip": "这个选项决定是否对应特性在游戏中被启用。\n在使用分化配置和数据包配置时比较有用。\n如果安装了命令官模组，这一字段将变成表达式。",
+    "config.andromeda.option.available": "可用",
+    "config.andromeda.option.available.@Tooltip": "这一选项显示了对应特性的游戏内激活状态。\n在使用分化配置和数据包配置时比较有用。\n如果安装了命令官模组，这一字段将变成表达式。",
 
-    "config.andromeda.state.main": "主状态",
-    "config.andromeda.state.game": "游戏中状态",
-    "config.andromeda.state.client": "客户端状态",
+    "config.andromeda.state.main": "主体",
+    "config.andromeda.state.game": "游戏内",
+    "config.andromeda.state.client": "客户端",
+
     "andromeda.disconnected.module_mismatch": "群星模组配置不同步！\n请禁用%s\n启用%s\n以加入此服务器！",
 
     "andromeda.config.option_manager.reason.andromeda.module_conflict": "启用了冲突的特性！",
@@ -49,6 +50,9 @@
     "config.andromeda.world.moist_control.@Tooltip": "一些与耕地湿润机制有关的选项",
     "config.andromeda.world.moist_control.option.customMoisture": "湿润范围",
 
+    "config.andromeda.world.loot_barrels": "意外之喜",
+    "config.andromeda.world.loot_barrels.@Tooltip": "洞穴内将生成奖励随机的木桶！",
+
     "config.andromeda.category.blocks": "方块",
 
     "config.andromeda.blocks.guarded_loot": "宝藏守卫",
@@ -78,6 +82,7 @@
 
     "config.andromeda.blocks.better_fletching_table": "实用的制箭台",
     "config.andromeda.blocks.better_fletching_table.@Tooltip": "赋予制箭台功能界面，使你能够通过强化弓弦提高射击准度",
+    "config.andromeda.blocks.better_fletching_table.option.divergenceModifier": "射击偏差",
     "gui.andromeda.fletching": "弓弦强化",
     "tooltip.andromeda.bow.tight": "强化弓弦剩余次数：%s",
 
@@ -278,6 +283,8 @@
 
     "config.andromeda.items.magnet": "磁铁",
     "config.andromeda.items.magnet.@Tooltip": "能够吸引指定物品的神奇磁铁。\n可消耗海洋之心来升级。",
+    "config.andromeda.items.magnet.option.rangeMultiplier": "距离倍率",
+    "config.andromeda.items.magnet.option.rangeMultiplier.@Tooltip": "最大吸引距离=等级x此值。",
     "item.andromeda.magnet": "磁铁",
     "tooltip.andromeda.magnet.level": "等级 %s/5",
 
@@ -309,6 +316,9 @@
     "item.andromeda.flower_pouch": "花朵袋",
     "item.andromeda.sapling_pouch": "树苗袋",
     "item.andromeda.special_pouch": "神秘袋",
+
+    "config.andromeda.items.lava_disintegrator": "滚烫岩浆",
+    "config.andromeda.items.lava_disintegrator.@Tooltip": "使你能够通过岩浆桶烧掉不防火的物品。",
   
     "config.andromeda.category.bugfixes": "Bug修复",
 
@@ -319,7 +329,6 @@
     "config.andromeda.bugfixes.aligned_alternatives.@Tooltip": "在组内配方繁多时，配方组别不会再看上去那么小块了",
   
     "config.andromeda.category.mechanics": "机制",
-
     "config.andromeda.mechanics.villager_gifting": "友好送礼",
     "config.andromeda.mechanics.villager_gifting.@Tooltip": "使玩家能够通过给村民送礼来恢复一定的声望值！",
 
@@ -346,6 +355,9 @@
 
     "config.andromeda.mechanics.trading_goat_horn": "流浪商人号角",
     "config.andromeda.mechanics.trading_goat_horn.@Tooltip": "每两天，你都能使用“歌颂”号角来召唤一位流浪商人。\n值得注意的是，流浪商人仍然会自然生成。\n你可以通过禁用\"doTraderSpawning\"的游戏规则来禁用流浪商人自然生成。",
+    "config.andromeda.mechanics.trading_goat_horn.option.cooldown": "冷却时间",
+    "config.andromeda.mechanics.trading_goat_horn.option.cooldown.@Tooltip": "单位：刻",
+    "config.andromeda.mechanics.trading_goat_horn.option.instrumentId": "音效ID",
   
     "config.andromeda.category.gui": "GUI",
 
@@ -368,12 +380,12 @@
     "config.andromeda.gui.item_frame_tooltips.@Tooltip": "在游戏内为物品展示框添加物品提示",
     "tooltip.andromeda.frameitem": "展示框中的物品",
 
-    "config.andromeda.gui.smooth_tooltips": "[实验性] 工具提示缓入",
-    "config.andromeda.gui.smooth_tooltips.@Tooltip": "工具提示将以缓入的形式进场，向光标靠拢。\n可能在兼容性上存在疏漏，暂时标记为实验性。",
-    "config.andromeda.gui.smooth_tooltips.option.clampX": "水平移速系数",
+    "config.andromeda.gui.smooth_tooltips": "[实验性] 平滑工具提示",
+    "config.andromeda.gui.smooth_tooltips.@Tooltip": "工具提示将缓入进场，并丝滑地跟随光标。\n可能在兼容性上存在疏漏，暂时标记为实验性。",
+    "config.andromeda.gui.smooth_tooltips.option.clampX": "水平限位系数",
     "config.andromeda.gui.smooth_tooltips.option.clampY": "垂直限位系数",
     "config.andromeda.gui.smooth_tooltips.option.deltaX": "水平移速系数",
-    "config.andromeda.gui.smooth_tooltips.option.deltaY": "垂直限位系数",
+    "config.andromeda.gui.smooth_tooltips.option.deltaY": "垂直移速系数",
     
     "config.andromeda.category.misc": "杂项",
     "config.andromeda.misc.damage_backport": "/damage指令复刻",
@@ -423,6 +435,12 @@
     "config.andromeda.base.option.itemGroup.@Tooltip": "群星的物品将被单独放到一个组别里。\n即使禁用，你也可以在原版的物品组别里找到这些物品。",
     "config.andromeda.lab.option.scopedConfigs": "分化配置",
     "config.andromeda.lab.option.scopedConfigs.@Tooltip": "使你能够逐世界、逐维度应用配置。\n这些配置可以通过数据包覆盖，也可以用KubeJS更改。\n欲知更多内容，请查阅维基！",
+    "config.andromeda.lab.option.persistentScopedConfigs": "持久型分化配置",
+    "config.andromeda.lab.option.persistentScopedConfigs.@Tooltip": "将分化配置保存到维度的目录中。\n维度的配置不受主配置影响。",
+    "config.andromeda.lab.option.showAvailableOption": "显示“可用”选项",
+    "config.andromeda.lab.option.showAvailableOption.@Tooltip": "一同展示“可用”选项与“游戏内”配置。\n若安装了命令官模组，该选项将保持可见状态！",
+    "config.andromeda.lab.option.hideSidedModulesInSideOnly": "在仅客户端模式隐藏服务端特性",
+    "config.andromeda.lab.option.hideSidedModulesInSideOnly.@Tooltip": "若启用了仅客户端模式，隐藏所有需要服务端的特性。",
 
     "commands.andromeda.damage.invulnerable": "目标免疫所给予的伤害类型",
     "commands.andromeda.damage.success": "已将%s伤害施加于%s",
@@ -435,8 +453,8 @@
     "andromeda.module_manager.loading_modules": "载入 %s 特性中：",
     "andromeda.module_manager.custom_modules": "群星模组不支持自定义特性或类别。",
     "andromeda.module_manager.no_modules": "未载入特性！",
-  
-    "andromeda.exception.scoped_configs.no_reloader": "没有找到分化配置重载器！你是否按要求重启了游戏？",
+
+    "andromeda.exception.scoped_configs.no_reloader": "无法获取分化配置重载器！你确定已经重启了游戏？",
   
     "andromeda.exception.mixin_processor.config_notice": "## Mixin 配置不同于用户配置，是模组的一部分！ ##",
     "andromeda.exception.mixin_processor.handler_failed": "群星模组发现了一处 mixin 冲突！无法确定是否是群星模组的问题。",

@@ -31,7 +31,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Main {
-    Main() {
+
+    static void init() {
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
             if (player.getAbilities().creativeMode) return true;
 

@@ -2,10 +2,10 @@ package me.melontini.andromeda.modules.world.moist_control;
 
 import lombok.ToString;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.util.ConfigDefinition;
-import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+import me.melontini.andromeda.base.util.config.ConfigDefinition;
+import me.melontini.andromeda.base.util.config.ConfigState;
 import me.melontini.andromeda.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "moist_control", category = "world", environment = Environment.SERVER)

@@ -6,7 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameRules;
 
 public final class Main {
-    Main(TinyStorage module) {
+    static void init() {
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
             if (alive || Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER
                     || newPlayer.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)

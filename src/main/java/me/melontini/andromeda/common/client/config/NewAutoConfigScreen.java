@@ -10,9 +10,9 @@ import lombok.With;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Experiments;
 import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.base.util.config.ConfigState;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.common.client.UvTexturedButtonWidget;
@@ -138,7 +138,7 @@ public class NewAutoConfigScreen {
                 .setParentScreen(parent)
                 .setTitle(TextUtil.translatable("config.andromeda.title", Iterables.get(SPLITTER.split(CommonValues.version()), 0)))
                 .setSavingRunnable(() -> powerSave(saveQueue))
-                .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
+                .setDefaultBackgroundTexture(Identifier.of("minecraft", "textures/block/amethyst_block.png"));
 
         Field field = Exceptions.supply(() -> MultiElementListEntry.class.getDeclaredField("entries"));
         field.setAccessible(true);
@@ -151,6 +151,8 @@ public class NewAutoConfigScreen {
         boolean commander = FabricLoader.getInstance().isModLoaded("commander");
 
         ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
+            if (AndromedaConfig.get().sideOnlyMode && Experiments.get().hideSidedModulesInSideOnly && (module.meta().environment().isServer() || module.meta().environment().isBoth())) return;
+
             var category = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.%s".formatted(module.meta().category())));
 
             String moduleText = "config.andromeda.%s".formatted(module.meta().dotted());
@@ -169,7 +171,7 @@ public class NewAutoConfigScreen {
                 var defaultConfig = handler.getDefault(definition);
 
                 Context context = new Context(false, () -> acceptor.accept(module, new SaveRunnable(definition, () -> handler.save(module))), null, module);
-                if ((Experiments.get().scopedConfigs || commander) && Module.GameConfig.class.isAssignableFrom(definition.supplier().get())) {
+                if ((Experiments.get().showAvailableOption || commander) && Module.GameConfig.class.isAssignableFrom(definition.supplier().get())) {
                     var availableKey = "config.andromeda.option.available";
 
                     var available = avProvider.provider().getEntry(BooleanIntermediary.class,
@@ -238,7 +240,7 @@ public class NewAutoConfigScreen {
                 .setParentScreen(parent)
                 .setTitle(TextUtil.translatable("config.andromeda.lab.title"))
                 .setSavingRunnable(Experiments::save)
-                .setDefaultBackgroundTexture(Identifier.tryParse("minecraft:textures/block/amethyst_block.png"));
+                .setDefaultBackgroundTexture(Identifier.of("minecraft", "textures/block/amethyst_block.png"));
 
         ConfigCategory main = builder.getOrCreateCategory(TextUtil.translatable("config.andromeda.category.main"));
         Field field = Exceptions.supply(() -> MultiElementListEntry.class.getDeclaredField("entries"));
@@ -276,7 +278,6 @@ public class NewAutoConfigScreen {
             setModuleTooltip(e, module);
             appendEnvInfo(e, module.meta().environment());
         }
-        appendOrigin(e, module);
         appendDeprecationInfo(e, module);
         return wrapTooltip(e);
     }

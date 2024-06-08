@@ -4,7 +4,6 @@ import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
-import me.melontini.andromeda.base.util.BootstrapConfig;
 import me.melontini.andromeda.util.mixins.ErrorHandler;
 import me.melontini.dark_matter.api.base.config.ConfigManager;
 import me.melontini.dark_matter.api.base.util.Context;
@@ -82,10 +81,6 @@ public class Debug {
          * Force enables all modules.
          */
         public static final Key ENABLE_ALL_MODULES = make("enableAllModules");
-        /**
-         * Forces all configs to be in {@link BootstrapConfig.Scope#DIMENSION}.
-         */
-        public static final Key FORCE_DIMENSION_SCOPE = make("forceDimensionScope");
         /**
          * Prints missing data for blocks, items, etc. When there should be some. Case in point: {@code world/crop_temperature}
          */

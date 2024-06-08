@@ -28,13 +28,9 @@ import static me.melontini.dark_matter.api.base.util.MathUtil.threadRandom;
 
 public final class Client {
 
-    private final Set<Item> showTooltip = new HashSet<>();
+    private static final Set<Item> showTooltip = new HashSet<>();
 
-    public boolean hasTooltip(Item item) {
-        return showTooltip.contains(item);
-    }
-
-    Client(ThrowableItems.ClientConfig config) {
+    public static void init(ThrowableItems.ClientConfig config) {
         Main.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
@@ -49,7 +45,7 @@ public final class Client {
         });
 
         ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
-            if (config.tooltip && hasTooltip(stack.getItem())) {
+            if (config.tooltip && showTooltip.contains(stack.getItem())) {
                 lines.add(TextUtil.translatable("tooltip.andromeda.throwable_item").formatted(Formatting.GRAY));
             }
         });

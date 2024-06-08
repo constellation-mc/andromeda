@@ -3,9 +3,10 @@ package me.melontini.andromeda.common.config;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.ConfigDefinition;
-import me.melontini.andromeda.base.util.ConfigHandler;
-import me.melontini.andromeda.base.util.ConfigState;
+import me.melontini.andromeda.base.util.Experiments;
+import me.melontini.andromeda.base.util.config.ConfigDefinition;
+import me.melontini.andromeda.base.util.config.ConfigHandler;
+import me.melontini.andromeda.base.util.config.ConfigState;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
@@ -14,19 +15,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.World;
 
-import java.util.function.Supplier;
+import java.util.Collections;
 
 @CustomLog
 public class ScopedConfigs {
-
-    public static Supplier<Module.BaseConfig> get(ServerWorld world, Module module) {
-        var cd = module.getConfigDefinition(ConfigState.GAME);
-        return switch (ModuleManager.get().getConfig(module).scope) {
-            case GLOBAL -> () -> Andromeda.GAME_HANDLER.get(cd);
-            case WORLD -> () -> ((AttachmentGetter)world.getServer()).andromeda$getConfigs().get(cd);
-            case DIMENSION -> () -> ((AttachmentGetter)world).andromeda$getConfigs().get(cd);
-        };
-    }
 
     public interface WorldExtension {
         default Module.BaseConfig am$get(String module) {
@@ -45,10 +37,6 @@ public class ScopedConfigs {
         }
     }
 
-    public static ConfigHandler getConfigs(ServerWorld world) {
-        return ((AttachmentGetter)world).andromeda$getConfigs();
-    }
-
     public interface AttachmentGetter {
         ConfigHandler andromeda$getConfigs();
     }
@@ -58,26 +46,29 @@ public class ScopedConfigs {
 
         ServerReloadersEvent.EVENT.register(context -> context.register(new DataConfigs()));
 
-        //ServerLifecycleEvents.SERVER_STARTING.register(server -> DataConfigs.get(server).apply((AttachmentGetter) server));
-
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            var list = manager.loaded().stream().filter(module -> manager.getConfig(module).scope.isDimension()).toList();
-            server.getWorlds().forEach(world -> manager.cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda"), list));
-            manager.cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"),
-                    manager.loaded().stream().filter(module -> manager.getConfig(module).scope.isWorld()).toList());
+            var keep = Experiments.get().persistentScopedConfigs.stream().map(s -> ModuleManager.get().getModule(s).orElseThrow()).toList();
+            server.getWorlds().forEach(world -> manager.cleanConfigs(server.session.getWorldDirectory(world.getRegistryKey()).resolve("world_config/andromeda"), keep));
+
+            manager.cleanConfigs(server.session.getDirectory(WorldSavePath.ROOT).resolve("config/andromeda"), Collections.emptyList());
         });
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-            if (success) {
-                var dc = DataConfigs.get(server);
-                for (ServerWorld world : server.getWorlds()) dc.apply((AttachmentGetter) world, world.getRegistryKey().getValue());
-                dc.apply((AttachmentGetter) server, DataConfigs.DEFAULT);
-            }
+            if (!success) return;
+
+            var dc = DataConfigs.get(server);
+            for (ServerWorld world : server.getWorlds()) dc.apply((AttachmentGetter) world, world.getRegistryKey().getValue());
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            for (ServerWorld world : server.getWorlds()) ((ScopedConfigs.AttachmentGetter)world).andromeda$getConfigs().saveAll();
-            ((ScopedConfigs.AttachmentGetter)server).andromeda$getConfigs().saveAll();
+            if (Experiments.get().persistentScopedConfigs.isEmpty()) return;
+
+            for (ServerWorld world : server.getWorlds()) {
+                var attachment = ((ScopedConfigs.AttachmentGetter) world).andromeda$getConfigs();
+                for (String id : Experiments.get().persistentScopedConfigs) {
+                    attachment.save(manager.getModule(id).orElseThrow(() -> new RuntimeException("No such module %s!".formatted(id))));
+                }
+            }
         });
     }
 }

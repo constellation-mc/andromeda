@@ -6,10 +6,9 @@ import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.BlockadesEvent;
-import me.melontini.andromeda.base.events.ConstructorParametersEvent;
-import me.melontini.andromeda.base.util.ConfigHandler;
-import me.melontini.andromeda.base.util.ConfigState;
 import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.base.util.config.ConfigHandler;
+import me.melontini.andromeda.base.util.config.ConfigState;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.config.FeatureBlockade;
 import me.melontini.andromeda.util.CommonValues;
@@ -29,7 +28,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static me.melontini.andromeda.common.Andromeda.id;
@@ -40,20 +42,11 @@ import static me.melontini.andromeda.common.Andromeda.id;
 public final class AndromedaClient {
 
     public static final ConfigHandler HANDLER = new ConfigHandler(FabricLoader.getInstance().getConfigDir(), ConfigState.CLIENT, ModuleManager.get().all().stream().map(Promise::get).toList());
+    private static final Identifier BACKGROUND_TEXTURE = Andromeda.id("textures/gui/background.png");
+    private static final Identifier GALAXY_TEXTURE = Andromeda.id("textures/gui/galaxy.png");
 
     private static AndromedaClient INSTANCE;
     private boolean animate = true;
-
-    public static void preClient() {
-        ConstructorParametersEvent.BUS.listen(module -> {
-            var ccd = module.getConfigDefinition(ConfigState.CLIENT);
-            if (ccd != null) return Collections.singletonMap(ccd.supplier().get(), AndromedaClient.HANDLER.get(ccd));
-            return Collections.emptyMap();
-        });
-
-        HANDLER.loadAll();
-        HANDLER.saveAll();
-    }
 
     public static void init() {
         INSTANCE = new AndromedaClient();
@@ -81,9 +74,9 @@ public final class AndromedaClient {
             try {
                 if (!animate) return;
                 drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> {
-                }, new Identifier("andromeda:textures/gui/background.png"));
+                }, BACKGROUND_TEXTURE);
                 drawTexture(context.getMatrices(), itemX + 8, itemY + 8, stack -> stack.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(Util.getMeasuringTimeMs() * 0.05f)),
-                        new Identifier("andromeda:textures/gui/galaxy.png"));
+                        GALAXY_TEXTURE);
             } catch (Throwable t) {
                 animate = false;
             }

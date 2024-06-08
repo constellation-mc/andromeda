@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.client;
 
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.sound.MovingSoundInstance;
@@ -17,12 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class ClientSoundHolder {
 
-    public static final Identifier JUKEBOX_START_PLAYING = new Identifier(MODID, "jukebox_start_playing");
-    public static final Identifier JUKEBOX_STOP_PLAYING = new Identifier(MODID, "jukebox_stop_playing");
+    public static final Identifier JUKEBOX_START_PLAYING = Andromeda.id("jukebox_start_playing");
+    public static final Identifier JUKEBOX_STOP_PLAYING = Andromeda.id("jukebox_stop_playing");
 
     private static volatile boolean done = false;
     private static final Map<UUID, PersistentMovingSoundInstance> soundInstanceMap = new HashMap<>();

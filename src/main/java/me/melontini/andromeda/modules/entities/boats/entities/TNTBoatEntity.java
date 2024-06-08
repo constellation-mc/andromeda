@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -29,10 +30,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class TNTBoatEntity extends BoatEntityWithBlock {
-    public static final Identifier EXPLODE_BOAT_ON_SERVER = new Identifier(MODID, "explode_boat_on_server");
+    public static final Identifier EXPLODE_BOAT_ON_SERVER = Andromeda.id("explode_boat_on_server");
     public int fuseTicks = -1;
 
     public TNTBoatEntity(EntityType<? extends BoatEntity> entityType, World world) {

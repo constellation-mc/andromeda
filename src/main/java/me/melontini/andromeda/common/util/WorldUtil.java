@@ -1,6 +1,7 @@
 package me.melontini.andromeda.common.util;
 
 import lombok.NonNull;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -27,10 +28,9 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Optional;
 
-import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class WorldUtil {
-    public static final Identifier BEE_LOOT_ID = new Identifier(MODID, "bee_nest/bee_nest_broken");
+    public static final Identifier BEE_LOOT_ID = Andromeda.id("bee_nest/bee_nest_broken");
 
     public static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 

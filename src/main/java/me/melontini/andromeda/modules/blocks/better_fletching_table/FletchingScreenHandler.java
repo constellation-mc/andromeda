@@ -1,31 +1,43 @@
 package me.melontini.andromeda.modules.blocks.better_fletching_table;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
+import me.melontini.andromeda.base.Bootstrap;
+import me.melontini.andromeda.common.util.Keeper;
+import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.Identifier;
 
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
+import static me.melontini.andromeda.common.Andromeda.id;
+
 public class FletchingScreenHandler extends ForgingScreenHandler {
+
+    public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.create();
 
     public FletchingScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
     public FletchingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(Main.FLETCHING.orThrow(), syncId, playerInventory, context);
+        super(FLETCHING.orThrow(), syncId, playerInventory, context);
     }
 
     @Override
@@ -91,5 +103,34 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
     @Override
     public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
         return slot.inventory != this.output && super.canInsertIntoSlot(stack, slot);
+    }
+
+    static void init(BetterFletchingTable module) {
+        FletchingScreenHandler.FLETCHING.init(RegistryUtil.register(Registries.SCREEN_HANDLER, id("fletching"), RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
+
+        Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
+
+        if (Bootstrap.isModLoaded(module, "additionaladditions")) {
+            Registries.ITEM.getOrEmpty(Identifier.of("additionaladditions", "crossbow_with_spyglass"))
+                    .ifPresent(item -> {
+                        tightable.add(item);
+                        FletchingScreenHandler.addRecipe(stack -> {
+                                    var result = new ItemStack(item, 1);
+                                    if (stack.getNbt() != null) result.setNbt(stack.getNbt());
+                                    return result;
+                                },
+                                Ingredient.ofItems(Items.SPYGLASS), Ingredient.ofItems(Items.CROSSBOW));
+                    });
+        }
+
+        FletchingScreenHandler.addRecipe(stack -> {
+            NbtCompound nbt = stack.getOrCreateNbt();
+            int i = nbt.getInt("AM-Tightened");
+            if (i >= 32) return ItemStack.EMPTY;
+
+            ItemStack newStack = stack.copy();
+            newStack.getOrCreateNbt().putInt("AM-Tightened", Math.min(i + 2, 32));
+            return newStack;
+        }, Ingredient.ofItems(Items.STRING), Ingredient.ofItems(tightable.toArray(ItemConvertible[]::new)));
     }
 }

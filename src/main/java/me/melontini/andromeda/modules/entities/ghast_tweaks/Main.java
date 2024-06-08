@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 public final class Main {
 
-    Main() {
+    static void init() {
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
             if (entity instanceof GhastEntity) {
                 var c = entity.world.am$get(GhastTweaks.CONFIG);

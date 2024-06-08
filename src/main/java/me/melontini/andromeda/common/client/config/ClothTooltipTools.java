@@ -3,7 +3,6 @@ package me.melontini.andromeda.common.client.config;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.Origin;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import me.melontini.andromeda.common.client.OrderedTextUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -42,15 +41,6 @@ public class ClothTooltipTools {
         if (e instanceof TooltipListEntry<?> t) {
             if (!module.getClass().isAnnotationPresent(Deprecated.class)) return e;
             appendText(t, TextUtil.translatable("andromeda.config.tooltip.deprecated").formatted(Formatting.RED));
-        }
-        return e;
-    }
-
-    public static <T extends AbstractConfigListEntry<?>> T appendOrigin(T e, Module module) {
-        if (e instanceof TooltipListEntry<?> t) {
-            if (!module.getClass().isAnnotationPresent(Origin.class)) return e;
-            Origin origin = module.getClass().getAnnotation(Origin.class);
-            appendText(t, TextUtil.translatable("andromeda.config.tooltip.origin", origin.mod(), origin.author()).formatted(Formatting.DARK_AQUA));
         }
         return e;
     }

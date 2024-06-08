@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class Client {
 
-    Client() {
+    public static void init() {
         ClientPlayNetworking.registerGlobalReceiver(Main.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
             UUID id = buf.readUuid();
             ItemStack stack = buf.readItemStack();

@@ -2,8 +2,6 @@ package me.melontini.andromeda.base;
 
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
-import me.melontini.andromeda.base.events.Bus;
-import me.melontini.andromeda.base.events.MixinConfigEvent;
 import me.melontini.andromeda.base.util.ModulePlugin;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
@@ -92,9 +90,6 @@ public final class MixinProcessor {
         injectors.addProperty("defaultRequire", 1);
         injectors.addProperty("maxShiftBy", 3);
         object.add("injectors", injectors);
-
-        Bus<MixinConfigEvent> bus = module.getOrCreateBus("mixin_config_event", null);
-        if (bus != null) bus.invoker().accept(this.manager, object);
 
         return object;
     }

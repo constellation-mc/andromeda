@@ -6,7 +6,10 @@ import lombok.Getter;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MakeSure;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -18,12 +21,12 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableInt;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static me.melontini.andromeda.common.Andromeda.id;
 
 @SuppressWarnings("UnstableApiUsage")
 @Getter
@@ -91,5 +94,21 @@ public class EnderDragonManager {
                 Codec.INT.fieldOf("timer").xmap(MutableInt::new, MutableInt::getValue).forGetter(Crystal::timer),
                 Vec3d.CODEC.fieldOf("pos").forGetter(Crystal::pos)
         ).apply(data, Crystal::new));
+    }
+
+    static void init() {
+        EnderDragonManager.ATTACHMENT.init(AttachmentRegistry.<EnderDragonManager>builder()
+                .initializer(() -> new EnderDragonManager(1, Collections.emptyList()))
+                .persistent(EnderDragonManager.CODEC)
+                .buildAndRegister(id("ender_dragon_data")));
+
+        ServerWorldEvents.LOAD.register((server, world) -> {
+            if (world.getRegistryKey() == World.END) world.getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get());
+        });
+
+        ServerTickEvents.END_WORLD_TICK.register(world -> {
+            if (world.getRegistryKey() == World.END)
+                world.getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get()).tick(world);
+        });
     }
 }

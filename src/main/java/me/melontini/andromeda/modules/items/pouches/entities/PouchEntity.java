@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.items.pouches.entities;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.pouches.Main;
@@ -36,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-import static me.melontini.andromeda.util.CommonValues.MODID;
 
 public class PouchEntity extends ThrownItemEntity {
 
@@ -149,9 +149,9 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     public enum Type {
-        SEED(0, new Identifier(MODID, "pouches/seeds"), Main.SEED_POUCH),
-        SAPLING(1, new Identifier(MODID, "pouches/saplings"), Main.SAPLING_POUCH),
-        FLOWER(2, new Identifier(MODID, "pouches/flowers"), Main.FLOWER_POUCH),
+        SEED(0, Andromeda.id("pouches/seeds"), Main.SEED_POUCH),
+        SAPLING(1, Andromeda.id("pouches/saplings"), Main.SAPLING_POUCH),
+        FLOWER(2, Andromeda.id("pouches/flowers"), Main.FLOWER_POUCH),
         CUSTOM(3, null, Main.SPECIAL_POUCH) {
             @Override
             public @NotNull Identifier getLootId(ItemStack stack) {
@@ -159,7 +159,7 @@ public class PouchEntity extends ThrownItemEntity {
                 if (nbt != null && nbt.contains("CustomLootId")) {
                     return new Identifier(nbt.getString("CustomLootId"));
                 }
-                return new Identifier(MODID, "pouches/seeds");
+                return SEED.getLootId(stack);
             }
         };
 

@@ -12,14 +12,6 @@ public class MiscUtil {
         return Math.sqrt(d * d + f * f);
     }
 
-    public static String blockPosAsString(BlockPos pos) {
-        return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
-    }
-
-    public static String vec3dAsString(Vec3d vec3d) {
-        return vec3d.getX() + ", " + vec3d.getY() + ", " + vec3d.getZ();
-    }
-
     public static BlockPos vec3dAsBlockPos(Vec3d vec3d) {
         return new BlockPos(MathHelper.floor(vec3d.x), MathHelper.floor(vec3d.y), MathHelper.floor(vec3d.z));
     }
