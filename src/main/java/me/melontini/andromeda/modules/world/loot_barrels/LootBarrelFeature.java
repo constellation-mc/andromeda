@@ -8,7 +8,7 @@ import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.inventory.LootableInventory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -43,7 +43,7 @@ public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfi
         world.setBlockState(context.getOrigin(),
                 Blocks.BARREL.getDefaultState().with(BarrelBlock.FACING, Util.getRandom(HORIZONTAL, context.getRandom())),
                 Block.NOTIFY_LISTENERS);
-        LootableContainerBlockEntity.setLootTable(world, context.getRandom(), context.getOrigin(), context.getConfig().loot());
+        LootableInventory.setLootTable(world, context.getRandom(), context.getOrigin(), context.getConfig().loot());
 
         if (world.getBlockState(context.getOrigin().up()).isAir() && context.getConfig().decorations().stream().findAny().isPresent()) {
             world.setBlockState(context.getOrigin().up(),
