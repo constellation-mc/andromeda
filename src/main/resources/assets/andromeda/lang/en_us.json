@@ -275,7 +275,7 @@
   "config.andromeda.items.lockpick.option.chance": "Success Chance",
   "config.andromeda.items.lockpick.option.chance.@Tooltip": "e.g. 1 in 3",
   "config.andromeda.items.lockpick.option.breakAfterUse": "Break After Use",
-  "config.andromeda.items.lockpick.option.breakAfterUse.@Tooltip": "Break the lockpick after a successful break-in.",
+  "config.andromeda.items.lockpick.option.breakAfterUse.@Tooltip": "Break the lockpick after use.",
   "config.andromeda.items.lockpick.option.villagerInventory": "Villager Inventories",
   "config.andromeda.items.lockpick.option.villagerInventory.@Tooltip": "Open villager inventories.",
   "item.andromeda.lockpick": "Lockpick",

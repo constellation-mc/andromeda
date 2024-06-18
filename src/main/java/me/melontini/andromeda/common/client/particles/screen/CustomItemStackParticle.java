@@ -14,13 +14,13 @@ public class CustomItemStackParticle extends ItemStackParticle {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        float x = (float) MathHelper.lerp(delta, prevX, this.x);
-        float y = (float) MathHelper.lerp(delta, prevY, this.y);
+        double x = MathHelper.lerp(delta, prevX, this.x);
+        double y = MathHelper.lerp(delta, prevY, this.y);
         MatrixStack matrixStack = context.getMatrices();
         matrixStack.push();
         matrixStack.translate(x, y, 500);
-        float angle = (float) Math.toDegrees(Math.atan2(velY, velX) * 0.5);
-        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle));
+        double angle = Math.toDegrees(Math.atan2(velY, velX) * 0.5);
+        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float) angle));
         context.drawItem(this.stack, -8, -8);
         context.drawItemInSlot(client.textRenderer, this.stack, -8, -8);
         matrixStack.pop();

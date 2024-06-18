@@ -41,7 +41,7 @@ public abstract class Module {
     }
 
     protected void defineConfig(ConfigState state, ConfigDefinition<?> supplier) {
-        this.configs.put(state, supplier);
+        if (state.isAllowed()) this.configs.put(state, supplier);
     }
 
     public ConfigDefinition<?> getConfigDefinition(ConfigState state) {
