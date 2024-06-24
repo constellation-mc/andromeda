@@ -79,6 +79,14 @@ public final class AndromedaException extends RuntimeException {
         }
     }
 
+    public static void consume(ThrowingRunnable<Throwable> runnable, Consumer<Throwable> msg) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            msg.accept(t);
+        }
+    }
+
     public static String toString(JsonObject object) {
         return GSON.toJson(object);
     }
