@@ -58,6 +58,24 @@ public final class ClassPath {
         return Collections.unmodifiableSet(set);
     }
 
+    public void addPaths(Collection<Path> paths) {
+        if (paths == null || paths.isEmpty()) return;
+
+        for (Path path : paths) {
+            if (this.scanned.contains(path)) return;
+
+            if (Files.isDirectory(path)) {
+                scan(path);
+            } else {
+                scanJar(path);
+            }
+
+            synchronized (this.scanned) {
+                this.scanned.add(path);
+            }
+        }
+    }
+
     public void addUrl(URL url) {
         if (url == null) return;
 

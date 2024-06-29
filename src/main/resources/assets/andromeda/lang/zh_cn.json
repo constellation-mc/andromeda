@@ -44,7 +44,7 @@
     "config.andromeda.world.crop_temperature.option.affectBoneMeal": "影响骨粉",
 
     "config.andromeda.world.quick_fire": "凶猛火势",
-    "config.andromeda.world.quick_fire.@Tooltip": "使火势蔓延得更快更广"。,
+    "config.andromeda.world.quick_fire.@Tooltip": "使火势蔓延得更快更广。",
 
     "config.andromeda.world.moist_control": "湿润机制调整",
     "config.andromeda.world.moist_control.@Tooltip": "一些与耕地湿润机制有关的选项。",

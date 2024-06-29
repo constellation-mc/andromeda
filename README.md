@@ -1,8 +1,8 @@
 ## <img src="https://github.com/constellation-mc/andromeda/assets/104443436/f8724c6c-f15b-49ca-9f42-b7ae01d1e64a" width="75" height="75"> Andromeda
 
-[![Modrinth](https://img.shields.io/modrinth/dt/TseYlb0f?logo=modrinth&color=mint)](https://modrinth.com/mod/andromeda)
-[![CodeFactor](https://www.codefactor.io/repository/github/constellation-mc/andromeda/badge)](https://www.codefactor.io/repository/github/constellation-mc/andromeda)
-![GitHub](https://img.shields.io/github/license/constellation-mc/andromeda)
+[![Available on Modrinth](https://raw.githubusercontent.com/melontini/mini-badges/main/minecraft/modrinth.svg)](https://modrinth.com/mod/andromeda)
+[![Available on CurseForge](https://raw.githubusercontent.com/melontini/mini-badges/main/minecraft/curseforge.svg)](https://www.curseforge.com/minecraft/mc-mods/andromeda)
+![License MIT](https://raw.githubusercontent.com/melontini/mini-badges/main/licenses/MIT.svg)
 
 ### A galaxy is a collection of things and systems. So is this mod.
 

@@ -1,4 +1,7 @@
 {
+  "modmenu.nameTranslation.andromeda": "Andromeda",
+  "modmenu.descriptionTranslation.andromeda": "A galaxy is a collection of things and systems. So is this mod.",
+
   "itemGroup.andromeda.items": "Andromeda",
 
   "andromeda.game_rule.category": " (Andromeda)",

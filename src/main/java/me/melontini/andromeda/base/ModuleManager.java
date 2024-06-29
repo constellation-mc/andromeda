@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.base.util.Promise;
+import me.melontini.andromeda.base.util.annotations.EnabledByDefault;
 import me.melontini.andromeda.base.util.config.BootstrapConfig;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
@@ -89,7 +90,7 @@ public final class ModuleManager {
         Map<Module, CompletableFuture<BootstrapConfig>> configs = new IdentityHashMap<>();
         sorted.forEach(m -> configs.put(m, CompletableFuture.supplyAsync(() -> {
             var path = FabricLoader.getInstance().getConfigDir().resolve("andromeda/" + m.meta().id() + ".json");
-            if (!Files.exists(path)) return new BootstrapConfig();
+            if (!Files.exists(path)) return BootstrapConfig.create(m.getClass().isAnnotationPresent(EnabledByDefault.class));
 
             try (var reader = Files.newBufferedReader(path)) {
                 JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
@@ -97,7 +98,7 @@ public final class ModuleManager {
                 return Objects.requireNonNull(GSON.fromJson(object, BootstrapConfig.class));
             } catch (Exception e) {
                 LOGGER.error("Failed to load {}! Resetting to default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
-                return new BootstrapConfig();
+                return BootstrapConfig.create(m.getClass().isAnnotationPresent(EnabledByDefault.class));
             }
         })));
         Map<Module, BootstrapConfig> bootstrapConfigs = new IdentityHashMap<>(Maps.transformValues(configs, CompletableFuture::join));

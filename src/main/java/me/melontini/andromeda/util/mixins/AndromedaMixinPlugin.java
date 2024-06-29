@@ -1,6 +1,7 @@
 package me.melontini.andromeda.util.mixins;
 
 import lombok.CustomLog;
+import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.mixin.ExtendablePlugin;
 import org.spongepowered.asm.mixin.Mixins;
@@ -19,7 +20,7 @@ public final class AndromedaMixinPlugin extends ExtendablePlugin {
 
         Debug.load();
 
-        AndromedaMixins.CLASS_PATH.addUrl(this.getClass().getProtectionDomain().getCodeSource().getLocation());
+        AndromedaMixins.CLASS_PATH.addPaths(CommonValues.mod().getRootPaths());
 
         Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
     }

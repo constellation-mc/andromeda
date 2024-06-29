@@ -16,6 +16,7 @@ abstract class CrashReportMixin {
         CrashHandler.traverse(cause).ifPresent(statuses -> {
             var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
             sec.trimStackTraceEnd(sec.getStackTrace().length);
+            sec.add("state", "\n" + AndromedaException.toString(CrashHandler.dumpState()));
             sec.add("statuses", "\n" + AndromedaException.toString(statuses));
         });
 

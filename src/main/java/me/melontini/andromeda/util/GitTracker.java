@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
 import java.util.Set;
 
 @CustomLog @UtilityClass
@@ -71,9 +70,8 @@ public class GitTracker {
     }
 
     private static void tryUpdateGitInfo(Path lastResponse) {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder().GET()
                 .uri(URI.create(API_URL + "/repos/" + OWNER + "/" + REPO))
-                .GET()
                 .header("Accept", "application/vnd.github+json")
                 .build();
 
@@ -84,9 +82,7 @@ public class GitTracker {
 
             JsonObject jsonResponse = (JsonObject) JsonParser.parseString(response.body());
 
-            for (String s : new HashSet<>(jsonResponse.keySet())) {
-                if (!PRESERVE_KEYS.contains(s)) jsonResponse.remove(s);
-            }
+            Set.copyOf(jsonResponse.keySet()).stream().filter(s -> !PRESERVE_KEYS.contains(s)).forEach(jsonResponse::remove);
 
             var parent = lastResponse.getParent();
             if (parent != null && !Files.exists(parent)) Files.createDirectories(parent);

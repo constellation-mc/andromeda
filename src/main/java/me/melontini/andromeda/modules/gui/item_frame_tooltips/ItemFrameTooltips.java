@@ -6,8 +6,9 @@ import me.melontini.andromeda.base.events.BlockadesEvent;
 import me.melontini.andromeda.base.events.ConfigEvent;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.ToBooleanFunction;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
+
+import java.util.function.Predicate;
 
 import static me.melontini.andromeda.base.Bootstrap.testModVersion;
 
@@ -16,10 +17,10 @@ public final class ItemFrameTooltips extends Module {
 
     ItemFrameTooltips() {
         InitEvent.client(this).listen(() -> Client::new);
-        ToBooleanFunction<ModuleManager> iceberg = (manager) -> testModVersion(this, "minecraft", ">=1.20") && testModVersion(this, "iceberg", "<1.1.13");
+        Predicate<ModuleManager> iceberg = (manager) -> testModVersion(this, "minecraft", ">=1.20") && testModVersion(this, "iceberg", "<1.1.13");
 
         ConfigEvent.bootstrap(this).listen((moduleManager, config) -> {
-            if (iceberg.getAsBoolean(moduleManager)) config.enabled = false;
+            if (iceberg.test(moduleManager)) config.enabled = false;
         });
 
         BlockadesEvent.BUS.listen((manager, blockade) -> {

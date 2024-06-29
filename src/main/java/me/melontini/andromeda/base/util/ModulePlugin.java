@@ -52,12 +52,13 @@ public class ModulePlugin extends ExtendablePlugin {
 
         for (MethodNode method : targetClass.methods) {
             AnnotationNode unique = Annotations.getVisible(method, Unique.class);
+            if (unique != null) continue;
             AnnotationNode mixinMerged = Annotations.getVisible(method, MixinMerged.class);
-            if (unique == null && mixinMerged != null) {
-                String mixin = Annotations.getValue(mixinMerged, "mixin");
-                if (mixin.startsWith(this.mixinPackage)) {
-                    wrapNodeWithErrorHandling(method, processor.fromConfig(mixinInfo.getConfig().getName()).orElseThrow().meta().id());
-                }
+            if (mixinMerged == null) continue;
+
+            String mixin = Annotations.getValue(mixinMerged, "mixin");
+            if (mixin.startsWith(this.mixinPackage)) {
+                wrapNodeWithErrorHandling(method, processor.fromConfig(mixinInfo.getConfig().getName()).orElseThrow().meta().id());
             }
         }
     }

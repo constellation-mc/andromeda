@@ -162,8 +162,6 @@ public class Bootstrap {
                         .build();
             }
             m.print();
-            //Scan for mixins.
-            m.loaded().forEach(module -> getModuleClassPath().addUrl(module.getClass().getProtectionDomain().getCodeSource().getLocation()));
             run(() -> m.getMixinProcessor().addMixins(), (b) -> b.literal("Failed to inject dynamic mixin configs!").translatable(MixinProcessor.NOTICE));
             Support.share("andromeda:module_manager", m);
 
@@ -172,7 +170,10 @@ public class Bootstrap {
         } catch (Throwable t) {
             var e = AndromedaException.builder().cause(t).literal("Failed to bootstrap Andromeda!").build();
             CrashHandler.handleCrash(e, Context.of());
-            e.setAppender(b -> b.append("Statuses: ").append(AndromedaException.GSON.toJson(e.getStatuses())));
+            e.setAppender(b -> {
+                b.append("State: ").append(AndromedaException.toString(CrashHandler.dumpState())).append('\n');
+                b.append("Statuses: ").append(AndromedaException.toString(e.getStatuses()));
+            });
             throw e;
         }
     }

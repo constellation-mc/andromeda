@@ -6,13 +6,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
-import me.melontini.andromeda.base.Bootstrap;
 import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.EarlyLanguage;
 import me.melontini.dark_matter.api.base.util.functions.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Prop;
-import me.melontini.dark_matter.api.crash_handler.Props;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,16 +19,11 @@ import java.util.function.Consumer;
 @CustomLog
 public final class AndromedaException extends RuntimeException {
 
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final boolean report;
     private final JsonObject statuses;
     private Consumer<StringBuilder> appender;
-
-    @SuppressWarnings("unused")
-    private AndromedaException() {
-        this(false, "Empty ctx called! This must never happen!!!", null, new JsonObject());
-    }
 
     private AndromedaException(boolean report, String message, @Nullable Throwable cause, JsonObject statuses) {
         super(message, cause);
@@ -95,24 +87,7 @@ public final class AndromedaException extends RuntimeException {
         return new Builder();
     }
 
-    public static JsonObject defaultStatuses() {
-        return new Builder().statuses;
-    }
-
     public static class Builder {
-
-        private static final Map<String, Consumer<Builder>> DEFAULT_KEYS = Map.of(
-                "bootstrap_status", b -> b.add("bootstrap_status", Bootstrap.Status.get()),
-                "platform", b -> b.add("platform", CommonValues.platform()),
-                prop(Props.ENVIRONMENT), b -> b.add(Props.ENVIRONMENT),
-                prop(Props.OS), b -> b.add(Props.OS),
-                prop(Props.JAVA_VERSION), b -> b.add(Props.JAVA_VERSION),
-                prop(Props.JAVA_VENDOR), b -> b.add(Props.JAVA_VENDOR)
-        );
-
-        private static String prop(Prop prop) {
-            return prop.name().toLowerCase(Locale.ROOT);
-        }
 
         private final List<String> message = new ArrayList<>();
         @Nullable private Throwable cause;
@@ -121,17 +96,14 @@ public final class AndromedaException extends RuntimeException {
         private final JsonObject statuses = new JsonObject();
 
         private Builder() {
-            DEFAULT_KEYS.values().forEach(c -> c.accept(this));
         }
 
         public Builder translatable(String key, Object... args) {
-            this.message.add(EarlyLanguage.translate("andromeda.exception." + key, args));
-            return this;
+            return this.literal(EarlyLanguage.translate("andromeda.exception." + key, args));
         }
 
         public Builder translatable(Module module, String key, Object... args) {
-            this.message.add(EarlyLanguage.translate("andromeda.%s.exception.%s".formatted(module.meta().dotted(), key), args));
-            return this;
+            return this.literal(EarlyLanguage.translate("andromeda.%s.exception.%s".formatted(module.meta().dotted(), key), args));
         }
 
         public Builder literal(String message) {
@@ -150,15 +122,12 @@ public final class AndromedaException extends RuntimeException {
         }
 
         public Builder add(Prop... props) {
-            for (Prop prop : props) {
-                statuses.addProperty(prop.name().toLowerCase(Locale.ROOT), prop.get());
-            }
+            Arrays.stream(props).forEach(prop -> this.add(prop.name().toLowerCase(Locale.ROOT), prop.get()));
             return this;
         }
 
         public Builder add(String key, Object value) {
-            statuses.addProperty(key, String.valueOf(value));
-            return this;
+            return this.add(key, String.valueOf(value));
         }
 
         public Builder add(String key, String value) {
@@ -167,36 +136,17 @@ public final class AndromedaException extends RuntimeException {
         }
 
         public Builder add(String key, Object[] objArray) {
-            JsonArray array = new JsonArray();
-            for (Object object : objArray) {
-                array.add(String.valueOf(object));
-            }
-            statuses.add(key, array);
-            return this;
+            return this.add(key, Arrays.asList(objArray));
         }
 
         public Builder add(String key, Collection<?> collection) {
             JsonArray array = new JsonArray();
-            for (Object object : collection) {
-                array.add(String.valueOf(object));
-            }
+            collection.stream().map(String::valueOf).forEach(array::add);
             statuses.add(key, array);
             return this;
         }
 
-        private void disableInHierarchy(@Nullable Throwable cause) {
-            if (cause == null) return;
-            if (cause instanceof AndromedaException e) {
-                for (String defaultKey : DEFAULT_KEYS.keySet()) {
-                    e.statuses.remove(defaultKey);
-                }
-            }
-            disableInHierarchy(cause.getCause());
-        }
-
         public AndromedaException build() {
-            disableInHierarchy(cause);
-
             return new AndromedaException(report,
                     message.isEmpty() ? "Something went very wrong!" : StringUtils.join(message.toArray(), '\n'),
                     cause, statuses);

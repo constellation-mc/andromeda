@@ -5,15 +5,24 @@ import net.fabricmc.api.EnvType;
 public enum Environment {
     CLIENT,
     SERVER,
-    BOTH,
-    ANY;
+    BOTH {
+        @Override
+        public boolean allows(Environment environment) {
+            return true;
+        }
+    },
+    ANY {
+        @Override
+        public boolean allows(Environment environment) {
+            return true;
+        }
+    };
 
     public boolean allows(EnvType envType) {
         return allows(envType == EnvType.CLIENT ? CLIENT : SERVER);
     }
 
     public boolean allows(Environment environment) {
-        if (this == ANY || this == BOTH) return true;
         return this == environment;
     }
 

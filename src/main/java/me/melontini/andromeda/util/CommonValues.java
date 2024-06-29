@@ -113,11 +113,10 @@ public class CommonValues {
         FABRIC("fabricloader"),
         CONNECTOR("connectormod"),
         QUILT("quilt_loader"),
-        FORGE("forge"),
-        NEOFORGE("neoforge") {
+        UNKNOWN("") {
             @Override
             public String version() {
-                return modVersion(this).orElse(modVersion(FORGE).orElse("0.0.0"));
+                return "0.0.0";
             }
         };
 

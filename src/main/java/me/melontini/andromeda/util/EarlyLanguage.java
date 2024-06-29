@@ -65,7 +65,8 @@ public class EarlyLanguage {
                 @Cleanup var reader = Files.newBufferedReader(path);
                 map.putAll(JsonParser.parseReader(reader).getAsJsonObject().asMap());
             }, e -> {
-                var relative = FabricLoader.getInstance().getGameDir().relativize(path);
+                var gd = FabricLoader.getInstance().getGameDir();
+                var relative = gd.getFileSystem().equals(path.getFileSystem()) ? gd.relativize(path) : path;
                 LOGGER.error("Failed to load {}! Deleting...", relative, e);
                 consume(() -> Files.deleteIfExists(path), io -> LOGGER.error("Failed to delete {}!", relative, io));
             });

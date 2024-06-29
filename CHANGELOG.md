@@ -1,6 +1,10 @@
 ### What's New:
 
+[`misc/translations`]:
+
+* Now enabled by default!
+
 [`general`]:
 
-* Patched a crash related to invalid/empty downloaded language files.
-* Optimized PNG assets.
+* Fixed invalid zh_cn.json file.
+* (Hopefully) fixed a crash introduced by a fix to a crash.

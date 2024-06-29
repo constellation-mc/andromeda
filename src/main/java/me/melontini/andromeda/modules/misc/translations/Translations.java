@@ -3,12 +3,14 @@ package me.melontini.andromeda.modules.misc.translations;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.InitEvent;
 import me.melontini.andromeda.base.util.Environment;
+import me.melontini.andromeda.base.util.annotations.EnabledByDefault;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 import me.melontini.andromeda.util.CommonValues;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Path;
 
+@EnabledByDefault
 @ModuleInfo(name = "translations", category = "misc", environment = Environment.CLIENT)
 public final class Translations extends Module {
 

@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 public final class ModuleDiscovery {
 
     public static List<Module.Zygote> get() {
-        Bootstrap.getModuleClassPath().addUrl(ModuleDiscovery.class.getProtectionDomain().getCodeSource().getLocation());
-
         List<CompletableFuture<Module.Zygote>> futures = new ArrayList<>();
         Bootstrap.getModuleClassPath().getTopLevelRecursive("me.melontini.andromeda.modules")
                 .stream().filter(ci -> !ci.packageName().endsWith("mixin") && !ci.packageName().endsWith("client"))
