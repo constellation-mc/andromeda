@@ -25,4 +25,4 @@ fabric-loom = { id = "fabric-loom", version = "1.7.2" }
 lombok = { id = "io.freefair.lombok", version = "8.6"}
 spotbugs-base = { id = "com.github.spotbugs-base", version = "6.0.19" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
-modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "0.6.1" }
+modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "0.6.2" }
