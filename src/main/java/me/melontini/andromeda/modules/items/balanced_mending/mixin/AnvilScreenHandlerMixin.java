@@ -1,8 +1,7 @@
 package me.melontini.andromeda.modules.items.balanced_mending.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
+import me.melontini.andromeda.modules.items.balanced_mending.Utils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Items;
 import net.minecraft.screen.AnvilScreenHandler;
@@ -22,7 +21,7 @@ abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
     @ModifyExpressionValue(method = "updateResult", at = @At(value = "CONSTANT", args = "intValue=40"))
     private int andromeda$setRepairLimit(int constant) {
             if (!this.getSlot(1).getStack().isOf(Items.ENCHANTED_BOOK))
-                if (EnchantmentHelper.get(this.getSlot(0).getStack()).containsKey(Enchantments.MENDING)) {
+                if (Utils.hasMending(this.getSlot(0).getStack())) {
                     return Integer.MAX_VALUE;
                 }
         return constant;

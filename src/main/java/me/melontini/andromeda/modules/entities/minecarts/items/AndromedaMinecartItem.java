@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
@@ -56,8 +57,9 @@ public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Ite
 
                 onCreate(itemStack, minecart);
 
-                if (itemStack.hasCustomName()) {
-                    minecart.setCustomName(itemStack.getName());
+                var customName = itemStack.get(DataComponentTypes.CUSTOM_NAME);
+                if (customName != null) {
+                    minecart.setCustomName(customName);
                 }
 
                 world.spawnEntity(minecart);
@@ -106,8 +108,9 @@ public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Ite
 
             onCreate(stack, minecart);
 
-            if (stack.hasCustomName()) {
-                minecart.setCustomName(stack.getName());
+            var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
+            if (customName != null) {
+                minecart.setCustomName(customName);
             }
 
             world.spawnEntity(minecart);

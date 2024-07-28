@@ -2,10 +2,10 @@ package me.melontini.andromeda.modules.items.better_names.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
@@ -22,19 +22,19 @@ import java.util.List;
 abstract class ItemStackMixin {
 
     @Shadow public abstract int getMaxDamage();
-    @Shadow public abstract Item getItem();
     @Shadow public abstract int getCount();
     @Shadow public abstract int getDamage();
     @Shadow public abstract Rarity getRarity();
+    @Shadow public abstract boolean isDamageable();
 
     @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip")
-    private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, @Local MutableText mutableText) {
-        if (!this.getItem().isDamageable()) {
+    private void andromeda$getTooltip(Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> cir, @Local MutableText mutableText) {
+        if (!this.isDamageable()) {
             if (this.getCount() > 1)
-                mutableText.append(TextUtil.literal(" x" + this.getCount()).formatted(getRarity().formatting));
+                mutableText.append(TextUtil.literal(" x" + this.getCount()).formatted(getRarity().getFormatting()));
         } else {
             if (this.getDamage() > 0)
-                mutableText.append(TextUtil.literal(" " + ((this.getMaxDamage() - this.getDamage()) * 100 / this.getMaxDamage()) + "%").formatted(getRarity().formatting));
+                mutableText.append(TextUtil.literal(" " + ((this.getMaxDamage() - this.getDamage()) * 100 / this.getMaxDamage()) + "%").formatted(getRarity().getFormatting()));
         }
     }
 }

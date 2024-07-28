@@ -6,7 +6,7 @@ import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -133,10 +133,10 @@ public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
         BlockPos blockPos = new BlockPos(MathHelper.floor(pos.getX()), MathHelper.floor(pos.getY()), MathHelper.floor(pos.getZ()));
         //BlockState state = world.getBlockState(blockPos);
 
-        Instrument instrument = world.getBlockState(blockPos.up()).getInstrument();
+        NoteBlockInstrument instrument = world.getBlockState(blockPos.up()).getInstrument();
         if (!instrument.isNotBaseBlock()) {
-            Instrument instrument2 = world.getBlockState(blockPos.down()).getInstrument();
-            instrument = instrument2.isNotBaseBlock() ? Instrument.HARP : instrument2;
+            var instrument2 = world.getBlockState(blockPos.down()).getInstrument();
+            instrument = instrument2.isNotBaseBlock() ? NoteBlockInstrument.HARP : instrument2;
         }
 
         int i = this.note;

@@ -8,7 +8,6 @@ import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -40,7 +39,7 @@ public class LockpickItem extends Item {
             if (!(user instanceof PlayerEntity p && p.getAbilities().creativeMode)) {
                 if (c.breakAfterUse.asBoolean(supplier)) {
                     if (!user.world.isClient())
-                        user.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+                        user.sendEquipmentBreakStatus(INSTANCE.get(), EquipmentSlot.MAINHAND);
 
                     stack.decrement(1);
                 }
@@ -66,7 +65,7 @@ public class LockpickItem extends Item {
     }
 
     static void init(Lockpick module, Lockpick.MainConfig config) {
-        LockpickItem.INSTANCE.init(RegistryUtil.register(Registries.ITEM, id("lockpick"), () -> new LockpickItem(new FabricItemSettings().maxCount(16))));
+        LockpickItem.INSTANCE.init(RegistryUtil.register(Registries.ITEM, id("lockpick"), () -> new LockpickItem(new Item.Settings().maxCount(16))));
         MerchantInventoryScreenHandler.INSTANCE.init(RegistryUtil.register(config.villagerInventory, Registries.SCREEN_HANDLER,
                 id("merchant_inventory"), RegistryUtil.screenHandlerType(MerchantInventoryScreenHandler::new)));
 

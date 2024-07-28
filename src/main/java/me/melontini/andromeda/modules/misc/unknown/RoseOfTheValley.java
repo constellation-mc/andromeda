@@ -7,25 +7,23 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Rarity;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class RoseOfTheValley extends BlockItem {
 
     static void init() {
         RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.init(RegistryUtil.register(Registries.BLOCK, id("rose_of_the_valley"), () -> new FlowerBlock(StatusEffects.REGENERATION, 12, AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY))));
-        RoseOfTheValley.ROSE_OF_THE_VALLEY.init(RegistryUtil.register(Registries.ITEM, id("rose_of_the_valley"), () -> new RoseOfTheValley(RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow(), new FabricItemSettings().rarity(Rarity.UNCOMMON))));
+        RoseOfTheValley.ROSE_OF_THE_VALLEY.init(RegistryUtil.register(Registries.ITEM, id("rose_of_the_valley"), () -> new RoseOfTheValley(RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow(), new Item.Settings().rarity(Rarity.UNCOMMON))));
     }
 
     @Environment(EnvType.CLIENT)
@@ -51,7 +49,7 @@ public class RoseOfTheValley extends BlockItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(TextUtil.translatable("tooltip.andromeda.rose_of_the_valley").formatted(Formatting.GRAY));
     }
 

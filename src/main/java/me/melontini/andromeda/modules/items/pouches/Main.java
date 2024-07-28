@@ -8,7 +8,6 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -23,6 +22,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -73,19 +73,19 @@ public final class Main {
 
     static void init(Pouches module, Pouches.Config config) {
         SEED_POUCH.init(RegistryUtil.register(config.seedPouch, Registries.ITEM, id("seed_pouch"),
-                        () -> new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().maxCount(16))));
+                        () -> new PouchItem(PouchEntity.Type.SEED, new Item.Settings().maxCount(16))));
 
         FLOWER_POUCH.init(RegistryUtil.register(config.flowerPouch, Registries.ITEM, id("flower_pouch"),
-                        () -> new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().maxCount(16))));
+                        () -> new PouchItem(PouchEntity.Type.FLOWER, new Item.Settings().maxCount(16))));
 
         SAPLING_POUCH.init(RegistryUtil.register(config.saplingPouch, Registries.ITEM, id("sapling_pouch"),
-                        () -> new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().maxCount(16))));
+                        () -> new PouchItem(PouchEntity.Type.SAPLING, new Item.Settings().maxCount(16))));
 
         SPECIAL_POUCH.init(RegistryUtil.register(config.specialPouch, Registries.ITEM, id("special_pouch"),
-                        () -> new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().maxCount(16))));
+                        () -> new PouchItem(PouchEntity.Type.CUSTOM, new Item.Settings().maxCount(16))));
 
         POUCH.init(RegistryUtil.register(Registries.ENTITY_TYPE, id("pouch"), () -> FabricEntityTypeBuilder.<PouchEntity>create(SpawnGroup.MISC, PouchEntity::new)
-                .dimensions(new EntityDimensions(0.25F, 0.25F, true))
+                .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
                 .trackRangeChunks(4).trackedUpdateRate(10).build()));
 
         Trades.register();

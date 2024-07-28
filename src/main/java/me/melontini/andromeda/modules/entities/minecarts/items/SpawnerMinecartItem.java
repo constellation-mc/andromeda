@@ -2,17 +2,15 @@ package me.melontini.andromeda.modules.entities.minecarts.items;
 
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) if (nbt.getString("Entity") != null) {
             tooltip.add(TextUtil.translatable("tooltip.andromeda.spawner_minecart.filled", Registries.ENTITY_TYPE.get(new Identifier(nbt.getString("Entity"))).getName()).formatted(Formatting.GRAY));

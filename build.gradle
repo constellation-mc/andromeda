@@ -65,7 +65,9 @@ dependencies {
         include it
     }
 
-    modApi libs.commander
+    modApi(libs.commander) {
+        exclude(group: "me.melontini", module: "evalex")
+    }
     modApi libs.modmenu
     modApi(libs.cloth.config) {
         exclude(group: "net.fabricmc.fabric-api")

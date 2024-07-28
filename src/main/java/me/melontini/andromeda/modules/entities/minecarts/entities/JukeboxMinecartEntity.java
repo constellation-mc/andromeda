@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -15,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.MusicDiscItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -108,7 +108,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
                         -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
                 this.stopPlaying();
                 this.clear();
-            } else if (stackInHand.getItem() instanceof MusicDiscItem) {
+            } else if (stackInHand.contains(DataComponentTypes.JUKEBOX_PLAYABLE)) {
                 this.record = stackInHand.copy();
                 this.startPlaying();
                 stackInHand.decrement(1);
@@ -140,7 +140,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("Items", 10)) {
-            this.record = ItemStack.fromNbt(nbt.getCompound("Items"));
+            this.record = ItemStack.fromNbtOrEmpty(this.getRegistryManager(), nbt.getCompound("Items"));
         }
     }
 
@@ -148,7 +148,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         if (!this.record.isEmpty())
-            nbt.put("Items", this.record.writeNbt(new NbtCompound()));
+            nbt.put("Items", this.record.encode(this.getRegistryManager()));
     }
 
     @Override

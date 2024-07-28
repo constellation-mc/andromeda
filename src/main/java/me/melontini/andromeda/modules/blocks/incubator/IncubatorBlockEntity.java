@@ -31,7 +31,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -151,7 +151,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
         return nbt;
     }
 
-    public ActionResult insertEgg(ItemStack stack) {
+    public ItemActionResult insertEgg(ItemStack stack) {
         try (Transaction transaction = Transaction.openOuter()) {
             var storage = InventoryStorage.of(this, null);
             long i = StorageUtil.tryInsertStacking(storage, ItemVariant.of(stack), stack.getCount(), transaction);
@@ -159,13 +159,13 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
                 transaction.commit();
                 this.markDirty();
                 stack.setCount((int) (stack.getCount() - i));
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
-            return ActionResult.CONSUME;
+            return ItemActionResult.CONSUME;
         }
     }
 
-    public ActionResult extractEgg(PlayerEntity player) {
+    public ItemActionResult extractEgg(PlayerEntity player) {
         try (Transaction transaction = Transaction.openOuter()) {
             var storage = InventoryStorage.of(this, null);
             var ra = StorageUtil.extractAny(storage, Long.MAX_VALUE, transaction);
@@ -173,9 +173,9 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
                 transaction.commit();
                 this.markDirty();
                 player.getInventory().offerOrDrop(ra.resource().toStack((int) ra.amount()));
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
-            return ActionResult.CONSUME;
+            return ItemActionResult.CONSUME;
         }
     }
 

@@ -5,9 +5,9 @@ import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.BeaconUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
+import me.melontini.andromeda.modules.items.infinite_totem.packets.NotifyClientPayload;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.melontini.dark_matter.api.base.util.tuple.Tuple;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -18,7 +18,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -93,11 +92,9 @@ abstract class ItemEntityMixin extends Entity {
                             ItemEntity entity = new ItemEntity(world, andromeda$itemEntity.getX(), andromeda$itemEntity.getY(), andromeda$itemEntity.getZ(), newStack);
                             world.spawnEntity(entity);
 
-                            PacketByteBuf buf = PacketByteBufs.create()
-                                    .writeVarInt(andromeda$itemEntity.getId())
-                                    .writeItemStack(targetStack);
+                            var payload = new NotifyClientPayload(andromeda$itemEntity.getId(), targetStack);
                             for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
-                                ServerPlayNetworking.send(serverPlayerEntity, Main.NOTIFY_CLIENT, buf);
+                                ServerPlayNetworking.send(serverPlayerEntity, payload);
                             }
                         }
 

@@ -7,7 +7,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 public class KnockoffTotemParticle extends AnimatedParticle {
 
@@ -29,10 +29,10 @@ public class KnockoffTotemParticle extends AnimatedParticle {
     }
 
     @Environment(EnvType.CLIENT)
-    public record Factory(SpriteProvider spriteProvider) implements ParticleFactory<DefaultParticleType> {
+    public record Factory(SpriteProvider spriteProvider) implements ParticleFactory<SimpleParticleType> {
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        public Particle createParticle(SimpleParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             return new KnockoffTotemParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
         }
     }

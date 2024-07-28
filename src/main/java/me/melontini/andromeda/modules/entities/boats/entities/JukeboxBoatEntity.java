@@ -6,6 +6,7 @@ import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -13,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.MusicDiscItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
@@ -85,7 +85,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
                 this.stopPlaying();
                 this.clear();
                 return ActionResult.SUCCESS;
-            } else if (stackInHand.getItem() instanceof MusicDiscItem && record.isEmpty()) {
+            } else if (stackInHand.contains(DataComponentTypes.JUKEBOX_PLAYABLE) && record.isEmpty()) {
                 this.record = stackInHand.copy();
                 this.startPlaying();
                 stackInHand.decrement(1);

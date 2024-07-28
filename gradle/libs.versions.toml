@@ -1,9 +1,9 @@
 [versions]
-dark-matter = "4.1.0-1.20.4-build.87"
+dark-matter = "4.1.0-1.21-build.89"
 
 [libraries]
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.16.0" }
-fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.95.4+1.20.4" }
+fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.100.7+1.21" }
 
 dark-matter-base = { group = "me.melontini", name = "dark-matter-base", version.ref = "dark-matter" }
 dark-matter-mixin = { group = "me.melontini", name = "dark-matter-mixin", version.ref = "dark-matter" }
@@ -14,11 +14,11 @@ dark-matter-mirage = { group = "me.melontini", name = "dark-matter-mirage", vers
 dark-matter-glitter = { group = "me.melontini", name = "dark-matter-glitter", version.ref = "dark-matter" }
 dark-matter-item-group = { group = "me.melontini", name = "dark-matter-item-group", version.ref = "dark-matter" }
 
-commander = { group = "me.melontini", name = "commander", version = "0.4.0-1.20.4-build.10" }
-modmenu = { group = "com.terraformersmc", name = "modmenu", version = "9.0.0" }
-cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "13.0.121" }
+commander = { group = "me.melontini", name = "commander", version = "0.8.0-1.21-build.22" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version = "11.0.1" }
+cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "15.0.128" }
 
-handy-tests = { group = "me.melontini", name = "handy-tests", version = "0.2.0-1.20.4-build.12" }
+handy-tests = { group = "me.melontini", name = "handy-tests", version = "0.3.0-1.21-build.19" }
 
 [plugins]
 fabric-loom = { id = "fabric-loom", version = "1.7.2" }

@@ -7,17 +7,18 @@ import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CactusBlock;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -30,10 +31,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractBlock.class)
 abstract class AbstractBlockMixin {
 
-    @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+    @Inject(at = @At("HEAD"), method = "onUseWithItem", cancellable = true)
+    private void andromeda$onUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ItemActionResult> cir) {
         if (state.getBlock() instanceof CactusBlock) {
-            ItemStack stack = player.getStackInHand(hand);
             if (stack.isOf(Items.GLASS_BOTTLE)) {
                 BlockPos pos1 = pos;
                 while (true) {
@@ -46,7 +46,9 @@ abstract class AbstractBlockMixin {
                 }
 
                 if (!world.isClient() && world.am$get(CactusFiller.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                    var potion = new ItemStack(Items.POTION);
+                    potion.set(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Potions.WATER));
+                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, potion));
                     player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 
                     if (state.get(Main.WATER_LEVEL_3) == 3) {
@@ -60,7 +62,7 @@ abstract class AbstractBlockMixin {
                     ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.6, 0.5, 0.6, 0.5);
                 }
 
-                cir.setReturnValue(ActionResult.SUCCESS);
+                cir.setReturnValue(ItemActionResult.SUCCESS);
             }
         }
     }

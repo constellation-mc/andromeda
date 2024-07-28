@@ -13,11 +13,11 @@ import me.melontini.andromeda.modules.items.minecart_block_picking.PickUpBehavio
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -44,10 +44,10 @@ public class MinecartItems {
     public static final Keeper<JukeboxMinecartItem> JUKEBOX_MINECART = Keeper.create();
 
     public static void init(Minecarts module, Minecarts.Config config) {
-        SPAWNER_MINECART.init(RegistryUtil.register(config.isSpawnerMinecartOn, Registries.ITEM, id("spawner_minecart"), () -> new SpawnerMinecartItem(new FabricItemSettings().maxCount(1))));
-        ANVIL_MINECART.init(RegistryUtil.register(config.isAnvilMinecartOn, Registries.ITEM, id("anvil_minecart"), () -> new AndromedaMinecartItem<>(MinecartEntities.ANVIL_MINECART_ENTITY, new FabricItemSettings().maxCount(1))));
-        NOTE_BLOCK_MINECART.init(RegistryUtil.register(config.isNoteBlockMinecartOn, Registries.ITEM, id("note_block_minecart"), () -> new NoteBlockMinecartItem(new FabricItemSettings().maxCount(1))));
-        JUKEBOX_MINECART.init(RegistryUtil.register(config.isJukeboxMinecartOn, Registries.ITEM, id("jukebox_minecart"), () -> new JukeboxMinecartItem(new FabricItemSettings().maxCount(1))));
+        SPAWNER_MINECART.init(RegistryUtil.register(config.isSpawnerMinecartOn, Registries.ITEM, id("spawner_minecart"), () -> new SpawnerMinecartItem(new Item.Settings().maxCount(1))));
+        ANVIL_MINECART.init(RegistryUtil.register(config.isAnvilMinecartOn, Registries.ITEM, id("anvil_minecart"), () -> new AndromedaMinecartItem<>(MinecartEntities.ANVIL_MINECART_ENTITY, new Item.Settings().maxCount(1))));
+        NOTE_BLOCK_MINECART.init(RegistryUtil.register(config.isNoteBlockMinecartOn, Registries.ITEM, id("note_block_minecart"), () -> new NoteBlockMinecartItem(new Item.Settings().maxCount(1))));
+        JUKEBOX_MINECART.init(RegistryUtil.register(config.isJukeboxMinecartOn, Registries.ITEM, id("jukebox_minecart"), () -> new JukeboxMinecartItem(new Item.Settings().maxCount(1))));
 
         var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
         AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, List.copyOf(l)));

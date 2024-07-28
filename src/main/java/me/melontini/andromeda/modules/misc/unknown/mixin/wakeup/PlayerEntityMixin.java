@@ -1,7 +1,8 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.wakeup;
 
 import me.melontini.andromeda.common.util.WorldUtil;
-import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +23,7 @@ import java.util.Optional;
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin {
 
-    @Shadow public abstract void playSound(SoundEvent event, SoundCategory category, float volume, float pitch);
+    @Shadow public abstract void playSoundToPlayer(SoundEvent sound, SoundCategory category, float volume, float pitch);
 
     @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
     private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
@@ -35,11 +36,11 @@ abstract class PlayerEntityMixin {
                 ArmorStandEntity stand = new ArmorStandEntity(player.world, pos.getX(), pos.getY(), pos.getZ());
                 ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-                stack.setNbt(NbtBuilder.create().putString("SkullOwner", player.getDisplayName().getString()).build());
+                stack.set(DataComponentTypes.PROFILE, new ProfileComponent(player.getGameProfile()));
 
                 stand.equipStack(EquipmentSlot.HEAD, stack);
                 player.world.spawnEntity(stand);
-                playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
+                playSoundToPlayer(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
             }
         }
     }

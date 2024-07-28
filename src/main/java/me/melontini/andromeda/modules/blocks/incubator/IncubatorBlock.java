@@ -9,20 +9,16 @@ import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
@@ -72,19 +68,18 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack stack = player.getStackInHand(hand);
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
-        if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ActionResult.success(true);
+        if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ItemActionResult.success(true);
 
         if (requireNonNull(world.getServer()).dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null) return entity.insertEgg(stack);
         if (stack.isEmpty()) return entity.extractEgg(player);
 
-        return ActionResult.success(false);
+        return ItemActionResult.success(false);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
         if (ModuleManager.get().getModule(Unknown.class).isPresent())
             tooltip.add(TextUtil.translatable("tooltip.andromeda.incubator[1]").formatted(Formatting.GRAY));
     }
@@ -140,7 +135,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
     }
 
@@ -154,7 +149,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
 
     public static void init(Incubator module) {
         IncubatorBlock.INCUBATOR_BLOCK.init(RegistryUtil.register(Registries.BLOCK, id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))));
-        IncubatorBlock.INCUBATOR.init(RegistryUtil.register(Registries.ITEM, id("incubator"), () -> new BlockItem(IncubatorBlock.INCUBATOR_BLOCK.orThrow(), new FabricItemSettings())));
+        IncubatorBlock.INCUBATOR.init(RegistryUtil.register(Registries.ITEM, id("incubator"), () -> new BlockItem(IncubatorBlock.INCUBATOR_BLOCK.orThrow(), new Item.Settings())));
         IncubatorBlock.INCUBATOR_BLOCK_ENTITY.init(RegistryUtil.register(Registries.BLOCK_ENTITY_TYPE, id("incubator"), () -> new BlockEntityType<>(IncubatorBlockEntity::new, Set.of(IncubatorBlock.INCUBATOR_BLOCK.orThrow()), null)));
 
         AndromedaItemGroup.accept(acceptor -> acceptor.keeper(module, ItemGroups.FUNCTIONAL, IncubatorBlock.INCUBATOR));

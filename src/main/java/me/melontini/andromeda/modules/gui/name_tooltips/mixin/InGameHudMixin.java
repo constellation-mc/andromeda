@@ -29,7 +29,6 @@ abstract class InGameHudMixin {
     @Shadow @Final private MinecraftClient client;
     @Shadow private int heldItemTooltipFade;
     @Shadow private ItemStack currentStack;
-    @Shadow private int scaledHeight;
 
     @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
     private void andromeda$renderTooltip(DrawContext context, CallbackInfo ci) {
@@ -42,7 +41,7 @@ abstract class InGameHudMixin {
             }
 
             if (l > 0) {
-                int k = this.scaledHeight - 59;
+                int k = context.getScaledWindowHeight() - 59;
                 if (!MakeSure.notNull(this.client.interactionManager).hasStatusBars()) {
                     k += 14;
                 }
