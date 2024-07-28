@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
