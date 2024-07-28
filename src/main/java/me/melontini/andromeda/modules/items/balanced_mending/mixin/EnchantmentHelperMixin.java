@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(EnchantmentHelper.class)
-public class EnchantmentHelperMixin {
+abstract class EnchantmentHelperMixin {
 
     @ModifyExpressionValue(method = "chooseEquipmentWith", at = @At(value = "INVOKE", target = "Lnet/minecraft/component/ComponentMap;contains(Lnet/minecraft/component/ComponentType;)Z"))
     private static boolean andIsNotMending(boolean original, @Local RegistryEntry<Enchantment> entry) {

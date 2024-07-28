@@ -29,7 +29,8 @@ abstract class SlimeEntityMixin extends MobEntity {
         super(entityType, world);
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/SlimeEntity;getSize()I", shift = At.Shift.BEFORE), method = "damage")
+    //TODO check what was the original injection point.
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSources;mobAttack(Lnet/minecraft/entity/LivingEntity;)Lnet/minecraft/entity/damage/DamageSource;", shift = At.Shift.BEFORE), method = "damage")
     private void andromeda$onPlayerCollision(LivingEntity target, CallbackInfo ci) {
         var config = this.world.am$get(Slimes.CONFIG);
         if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;

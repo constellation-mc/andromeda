@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.blocks.bed.safe.mixin;
 
 import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.UseWithItemHack;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BedBlock;
@@ -29,10 +30,10 @@ abstract class BedBlockMixin extends Block {
     }
 
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    public void andromeda$onUse(BlockState state, @NotNull World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+    public void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         if (world.isClient()) return;
 
-        if (!isBedWorking(world) && world.am$get(Safe.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
+        if (!isBedWorking(world) && world.am$get(Safe.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, UseWithItemHack.getContext().stack(), player))) {
             player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
             cir.setReturnValue(ActionResult.SUCCESS);
         }

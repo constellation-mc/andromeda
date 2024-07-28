@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -52,12 +53,12 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
     }
 
     @Inject(at = @At("TAIL"), method = "readNbt")
-    private void andromeda$readNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
+    private void andromeda$readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
         if (nbt.contains("AM-FromFallenBlock")) this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
     }
 
     @Inject(at = @At("TAIL"), method = "writeNbt")
-    private void andromeda$writeNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
+    private void andromeda$writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
         if (this.andromeda$FromFallen) nbt.putBoolean("AM-FromFallenBlock", true);
     }
 }

@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.blocks.bed.power.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.UseWithItemHack;
 import me.melontini.andromeda.modules.blocks.bed.power.Power;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.block.BedBlock;
@@ -24,9 +25,9 @@ abstract class BedBlockMixin extends Block {
     }
 
     @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=5.0F"), method = "onUse")
-    public float andromeda$explosionRedirect(float power, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos, @Local(argsOnly = true) BlockState state, @Local(argsOnly = true) PlayerEntity player, @Local(argsOnly = true) Hand hand) {
+    public float andromeda$explosionRedirect(float power, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos, @Local(argsOnly = true) BlockState state, @Local(argsOnly = true) PlayerEntity player) {
         if (world.isClient()) return power;
-        var supplier = Memoize.supplier(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player));
+        var supplier = Memoize.supplier(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, UseWithItemHack.getContext().stack(), player));
         var config = world.am$get(Power.CONFIG);
         return config.available.asBoolean(supplier) ? config.power.asFloat(supplier) : power;
     }

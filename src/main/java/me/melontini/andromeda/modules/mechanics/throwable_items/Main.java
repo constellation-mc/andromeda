@@ -7,11 +7,14 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBeha
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemPlopEffect;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ParticleCommand;
+import me.melontini.andromeda.modules.mechanics.throwable_items.packets.ColoredStackLandedPayload;
+import me.melontini.andromeda.modules.mechanics.throwable_items.packets.FlyingStackLandedPayload;
 import me.melontini.andromeda.modules.mechanics.throwable_items.packets.ItemBehaviorsPayload;
 import me.melontini.commander.api.command.CommandType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -92,6 +95,10 @@ public final class Main {
                 .allow(LootContextParameters.BLOCK_ENTITY)));
         PARTICLE_COMMAND.init(CommandType.register(id("particles"), ParticleCommand.CODEC));
         ITEM_PLOP_COMMAND.init(CommandType.register(id("item_plop"), ItemPlopEffect.CODEC));
+
+        PayloadTypeRegistry.playS2C().register(ItemBehaviorsPayload.ID, ItemBehaviorsPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(ColoredStackLandedPayload.ID, ColoredStackLandedPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(FlyingStackLandedPayload.ID, FlyingStackLandedPayload.CODEC);
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             sender.sendPacket(new ItemBehaviorsPayload(ImmutableList.copyOf(server.dm$getReloader(RELOADER).itemsWithBehaviors())));
