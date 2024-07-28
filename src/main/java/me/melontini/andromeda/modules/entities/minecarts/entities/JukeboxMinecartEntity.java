@@ -1,10 +1,10 @@
 package me.melontini.andromeda.modules.entities.minecarts.entities;
 
-import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
+import me.melontini.andromeda.modules.entities.boats.packets.StartPayload;
+import me.melontini.andromeda.modules.entities.boats.packets.StopPayload;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,7 +17,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -118,21 +117,16 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
     }
 
     public void stopPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create()
-                .writeUuid(this.getUuid());
-
+        var payload = new StopPayload(this.getUuid());
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
         }
     }
 
     public void startPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create()
-                .writeUuid(this.uuid)
-                .writeItemStack(this.record);
-
+        var payload = new StartPayload(this.getUuid(), this.record);
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
         }
     }
 

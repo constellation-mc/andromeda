@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
@@ -46,8 +45,8 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
         if (list.isEmpty()) return;
 
         LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world);
-        builder.add(LootContextParameters.DIRECT_KILLER_ENTITY, fie);
-        builder.addOptional(LootContextParameters.KILLER_ENTITY, user);
+        builder.add(LootContextParameters.DIRECT_ATTACKING_ENTITY, fie);
+        builder.addOptional(LootContextParameters.ATTACKING_ENTITY, user);
         builder.add(LootContextParameters.TOOL, stack);
         switch (hitResult.getType()) {
             case BLOCK -> {
@@ -122,8 +121,6 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
     }.codec();
 
     public static ItemBehaviorData create(JsonObject object) {
-        return CODEC.parse(JsonOps.INSTANCE, object).getOrThrow(false, string -> {
-            throw new JsonParseException(string);
-        });
+        return CODEC.parse(JsonOps.INSTANCE, object).getOrThrow();
     }
 }

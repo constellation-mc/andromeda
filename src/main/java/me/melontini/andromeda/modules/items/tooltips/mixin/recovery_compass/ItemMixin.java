@@ -27,6 +27,7 @@ abstract class ItemMixin {
     @Inject(at = @At("HEAD"), method = "appendTooltip")
     public void andromeda$tooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, CallbackInfo ci) {
         if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).recoveryCompass) return;
+        var world = MinecraftClient.getInstance().world;
 
         if (world != null) if (world.isClient) {
             var player = MinecraftClient.getInstance().player;
@@ -36,8 +37,8 @@ abstract class ItemMixin {
                     GlobalPos globalPos = optional.get();
 
                     double dist;
-                    if (world.getRegistryKey() == globalPos.getDimension()) {
-                        Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
+                    if (world.getRegistryKey() == globalPos.dimension()) {
+                        Vec3d compassPos = new Vec3d(globalPos.pos().getX() + 0.5, globalPos.pos().getY() + 0.5, globalPos.pos().getZ() + 0.5);
                         dist = MiscUtil.horizontalDistanceTo(player.getPos(), compassPos);
                     } else {
                         dist = MathUtil.threadRandom().nextGaussian() * 0.1;

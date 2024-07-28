@@ -130,13 +130,12 @@ public final class AndromedaClient {
         transform.accept(matrices);
 
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
-        bufferBuilder.vertex(matrix4f, -8, 8, 0).texture(0, 1).next();
-        bufferBuilder.vertex(matrix4f, 8, 8, 0).texture(1, 1).next();
-        bufferBuilder.vertex(matrix4f, 8, -8, 0).texture(1, 0).next();
-        bufferBuilder.vertex(matrix4f, -8, -8, 0).texture(0, 0).next();
+        bufferBuilder.vertex(matrix4f, -8, 8, 0).texture(0, 1);
+        bufferBuilder.vertex(matrix4f, 8, 8, 0).texture(1, 1);
+        bufferBuilder.vertex(matrix4f, 8, -8, 0).texture(1, 0);
+        bufferBuilder.vertex(matrix4f, -8, -8, 0).texture(0, 0);
 
         //RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();

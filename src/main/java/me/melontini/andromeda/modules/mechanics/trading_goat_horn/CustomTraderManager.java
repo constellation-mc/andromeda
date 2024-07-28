@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnLocation;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.passive.TraderLlamaEntity;
@@ -90,13 +91,14 @@ public class CustomTraderManager {
 
     @Nullable private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
         BlockPos blockPos = null;
+        SpawnLocation spawnLocation = SpawnRestriction.getLocation(EntityType.WANDERING_TRADER);
 
         for (int i = 0; i < 10; ++i) {
             int x = pos.getX() + MathUtil.threadRandom().nextInt(range * 2) - range;
             int z = pos.getZ() + MathUtil.threadRandom().nextInt(range * 2) - range;
             int y = world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z);
             BlockPos blockPos2 = new BlockPos(x, y, z);
-            if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) {
+            if (spawnLocation.isSpawnPositionOk(world, blockPos2, EntityType.WANDERING_TRADER)) {
                 blockPos = blockPos2;
                 break;
             }

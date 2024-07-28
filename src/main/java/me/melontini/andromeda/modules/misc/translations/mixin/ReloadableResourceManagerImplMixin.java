@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.melontini.andromeda.modules.misc.translations.Translations;
 import net.minecraft.resource.*;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(ReloadableResourceManagerImpl.class)
 abstract class ReloadableResourceManagerImplMixin {
@@ -26,7 +28,7 @@ abstract class ReloadableResourceManagerImplMixin {
         if (this.type != ResourceType.CLIENT_RESOURCES) return;
 
         packs.set(new ArrayList<>(packs.get()));
-        packs.get().add(new DirectoryResourcePack("Andromeda Translations", Translations.TRANSLATION_PACK, true) {
+        packs.get().add(new DirectoryResourcePack(new ResourcePackInfo("Andromeda Translations", Text.literal("Andromeda Translations"), ResourcePackSource.NONE, Optional.empty()), Translations.TRANSLATION_PACK) {
             @Nullable @Override
             public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
                 return null;

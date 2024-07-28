@@ -4,21 +4,21 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
+import me.melontini.andromeda.modules.mechanics.throwable_items.packets.FlyingStackLandedPayload;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.command.CommandType;
 import me.melontini.commander.api.command.Selector;
 import me.melontini.commander.api.event.EventContext;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3f;
 
 import java.util.Optional;
 
@@ -45,14 +45,11 @@ public record ParticleCommand(Selector.Conditioned selector, boolean item, Optio
     }
 
     public void sendParticlePacket(ServerWorld world, Vec3d pos, ItemStack stack) {
-        PacketByteBuf byteBuf = PacketByteBufs.create();
-        byteBuf.writeDouble(pos.getX()).writeDouble(pos.getY()).writeDouble(pos.getZ());
-        byteBuf.writeBoolean(item);
-        byteBuf.writeItemStack(stack);
-        byteBuf.writeBoolean(colors.isPresent());
-        byteBuf.writeVarInt(colors.orElse(-1));
+        var payload = new FlyingStackLandedPayload(
+                new Vector3f((float) pos.x, (float) pos.y, (float) pos.z),
+                Optional.of(stack).filter(unused -> item), colors);
         for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
-            ServerPlayNetworking.send(serverPlayerEntity, Main.FLYING_STACK_LANDED, byteBuf);
+            ServerPlayNetworking.send(serverPlayerEntity, payload);
         }
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -50,10 +51,9 @@ public class WorldUtil {
     }
 
     public static List<ItemStack> prepareLoot(@NonNull World world, @NonNull Identifier lootId) {
-        return ((ServerWorld) world).getServer()
-                .getLootManager()
-                .getLootTable(lootId)
-                .generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world)).build(LootContextTypes.EMPTY));
+        var table = ((ServerWorld) world).getServer().getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(lootId);
+        if (table == null) throw new IllegalStateException("No '%s' in loot registry".formatted(lootId));
+        return table.generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world)).build(LootContextTypes.EMPTY));
     }
 
     public static void trySpawnFallingBeeNest(@NonNull World world, @NonNull BlockPos pos, @NonNull BlockState state, @NonNull BeehiveBlockEntity beehiveBlockEntity) {

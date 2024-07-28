@@ -9,11 +9,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.LootableInventory;
+import net.minecraft.loot.LootTable;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.math.Direction;
@@ -53,10 +53,10 @@ public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfi
         return true;
     }
 
-    public record LootBarrelConfiguration(Identifier loot, WeightedList<BlockState> decorations) implements FeatureConfig {
+    public record LootBarrelConfiguration(RegistryKey<LootTable> loot, WeightedList<BlockState> decorations) implements FeatureConfig {
 
         public static final Codec<LootBarrelConfiguration> CODEC = RecordCodecBuilder.create(data -> data.group(
-                Identifier.CODEC.fieldOf("loot").forGetter(LootBarrelConfiguration::loot),
+                RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).fieldOf("loot").forGetter(LootBarrelConfiguration::loot),
                 WeightedList.createCodec(BlockState.CODEC).fieldOf("decorations").forGetter(LootBarrelConfiguration::decorations)
         ).apply(data, LootBarrelConfiguration::new));
     }

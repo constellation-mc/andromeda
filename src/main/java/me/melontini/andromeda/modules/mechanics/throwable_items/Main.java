@@ -1,16 +1,17 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
+import com.google.common.collect.ImmutableList;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBehaviors;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemPlopEffect;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ParticleCommand;
+import me.melontini.andromeda.modules.mechanics.throwable_items.packets.ItemBehaviorsPayload;
 import me.melontini.commander.api.command.CommandType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -21,12 +22,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -63,40 +62,30 @@ public final class Main {
 
     static void init() {
         FLYING_ITEM.init(RegistryUtil.register(Registries.ENTITY_TYPE, id("flying_item"), () -> FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
-                .dimensions(new EntityDimensions(0.25F, 0.25F, true))
+                .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
                 .trackRangeChunks(4).trackedUpdateRate(10).build()));
 
         CONTEXT_TYPE.init(LootContextTypes.register("andromeda:throwable_items", builder -> builder
-                .require(LootContextParameters.ORIGIN).require(LootContextParameters.DIRECT_KILLER_ENTITY)
-                .require(LootContextParameters.TOOL).allow(LootContextParameters.KILLER_ENTITY)
+                .require(LootContextParameters.ORIGIN).require(LootContextParameters.DIRECT_ATTACKING_ENTITY)
+                .require(LootContextParameters.TOOL).allow(LootContextParameters.ATTACKING_ENTITY)
                 .allow(LootContextParameters.THIS_ENTITY).allow(LootContextParameters.BLOCK_STATE)
                 .allow(LootContextParameters.BLOCK_ENTITY)));
         PARTICLE_COMMAND.init(CommandType.register(id("particles"), ParticleCommand.CODEC));
         ITEM_PLOP_COMMAND.init(CommandType.register(id("item_plop"), ItemPlopEffect.CODEC));
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
-            sender.sendPacket(ITEMS_WITH_BEHAVIORS, packet);
+            sender.sendPacket(new ItemBehaviorsPayload(ImmutableList.copyOf(server.dm$getReloader(RELOADER).itemsWithBehaviors())));
         });
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-            var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
+            var packet = new ItemBehaviorsPayload(ImmutableList.copyOf(server.dm$getReloader(RELOADER).itemsWithBehaviors()));
             for (ServerPlayerEntity player : PlayerLookup.all(server)) {
-                ServerPlayNetworking.send(player, ITEMS_WITH_BEHAVIORS, packet);
+                ServerPlayNetworking.send(player, packet);
             }
         });
 
         ServerReloadersEvent.EVENT.register(context -> context.register(new ItemBehaviorManager()));
 
         DefaultBehaviors.init();
-    }
-
-    private static PacketByteBuf sendItemsS2CPacket(ItemBehaviorManager manger) {
-        var items = manger.itemsWithBehaviors();
-        var packet = PacketByteBufs.create().writeVarInt(items.size());
-        for (Item item : items) {
-            packet.writeIdentifier(Registries.ITEM.getId(item));
-        }
-        return packet;
     }
 
     public enum Event {

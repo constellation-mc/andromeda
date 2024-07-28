@@ -70,6 +70,11 @@ public class HopperBoatEntity extends ChestBoatEntity implements Hopper {
     }
 
     @Override
+    public boolean canBlockFromAbove() {
+        return false;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (!this.world.isClient && this.isAlive()) {

@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.misc.tiny_storage.mixin;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.misc.tiny_storage.TinyStorage;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,14 +27,14 @@ abstract class PlayerEntityMixin {
 
     @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
     private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
-        NbtUtil.writeInventoryToNbt("AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput());
+        NbtUtil.writeInventoryToNbt("AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput(), ((PlayerEntity) (Object) this).getRegistryManager());
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
     private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
         try {
             TinyStorage.LOADING.set(true);//We have to skip sending handler updates.
-            NbtUtil.readInventoryFromNbt("AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput());
+            NbtUtil.readInventoryFromNbt("AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput(), ((PlayerEntity) (Object) this).getRegistryManager());
         } finally {
             TinyStorage.LOADING.remove();
         }
@@ -45,7 +46,7 @@ abstract class PlayerEntityMixin {
 
         for(int i = 0; i < this.playerScreenHandler.getCraftingInput().size(); ++i) {
             ItemStack stack = this.playerScreenHandler.getCraftingInput().removeStack(i);
-            if (!stack.isEmpty() && EnchantmentHelper.hasVanishingCurse(stack)) continue;
+            if (!stack.isEmpty() && EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) continue;
             this.dropItem(stack, true, false);
         }
     }

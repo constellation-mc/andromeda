@@ -2,9 +2,9 @@ package me.melontini.andromeda.modules.entities.boats.entities;
 
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
-import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
+import me.melontini.andromeda.modules.entities.boats.packets.StartPayload;
+import me.melontini.andromeda.modules.entities.boats.packets.StopPayload;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -15,7 +15,6 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
@@ -97,21 +96,16 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
     }
 
     public void stopPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create()
-                .writeUuid(this.getUuid());
-
+        var payload = new StopPayload(this.getUuid());
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
         }
     }
 
     public void startPlaying() {
-        PacketByteBuf buf = PacketByteBufs.create()
-                .writeUuid(this.uuid)
-                .writeItemStack(this.record);
-
+        var payload = new StartPayload(this.getUuid(), this.record);
         for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
         }
     }
 
@@ -124,7 +118,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("Items", 10)) {
-            this.record = ItemStack.fromNbt(nbt.getCompound("Items"));
+            this.record = ItemStack.fromNbtOrEmpty(this.getRegistryManager(), nbt.getCompound("Items"));
         }
     }
 
@@ -132,7 +126,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         if (!this.record.isEmpty())
-            nbt.put("Items", this.record.writeNbt(new NbtCompound()));
+            nbt.put("Items", this.record.encode(this.getRegistryManager()));
     }
 
     @Override

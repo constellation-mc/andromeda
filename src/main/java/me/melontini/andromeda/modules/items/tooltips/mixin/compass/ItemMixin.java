@@ -6,6 +6,7 @@ import me.melontini.andromeda.modules.items.tooltips.Tooltips;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,12 +34,12 @@ abstract class ItemMixin {
         if (world != null) if (world.isClient) {
             var player = MinecraftClient.getInstance().player;
             if (stack.getItem() == Items.COMPASS && player != null) {
-                boolean lodestone = stack.hasNbt() && CompassItem.hasLodestone(stack);
-                GlobalPos globalPos = lodestone ? CompassItem.createLodestonePos(stack.getNbt()) : CompassItem.createSpawnPos(world);
+                boolean lodestone = stack.contains(DataComponentTypes.LODESTONE_TRACKER);
+                GlobalPos globalPos = lodestone ? stack.get(DataComponentTypes.LODESTONE_TRACKER).target().orElse(null) : CompassItem.createSpawnPos(world);
 
                 double dist;
-                if (globalPos != null && world.getRegistryKey() == globalPos.getDimension()) {
-                    Vec3d compassPos = new Vec3d(globalPos.getPos().getX() + 0.5, globalPos.getPos().getY() + 0.5, globalPos.getPos().getZ() + 0.5);
+                if (globalPos != null && world.getRegistryKey() == globalPos.dimension()) {
+                    Vec3d compassPos = new Vec3d(globalPos.pos().getX() + 0.5, globalPos.pos().getY() + 0.5, globalPos.pos().getZ() + 0.5);
                     dist = MiscUtil.horizontalDistanceTo(player.getPos(), compassPos);
                 } else {
                     dist = MathUtil.threadRandom().nextGaussian() * 0.1;

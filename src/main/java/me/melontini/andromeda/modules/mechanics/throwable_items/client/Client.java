@@ -2,6 +2,9 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
+import me.melontini.andromeda.modules.mechanics.throwable_items.packets.ColoredStackLandedPayload;
+import me.melontini.andromeda.modules.mechanics.throwable_items.packets.FlyingStackLandedPayload;
+import me.melontini.andromeda.modules.mechanics.throwable_items.packets.ItemBehaviorsPayload;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -14,12 +17,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,37 +34,24 @@ public final class Client {
         Main.FLYING_ITEM.ifPresent(e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
-        ClientPlayNetworking.registerGlobalReceiver(Main.ITEMS_WITH_BEHAVIORS, (client, handler, buf, responseSender) -> {
-            Set<Identifier> ids = new HashSet<>();
-            int length = buf.readVarInt();
-            for (int i = 0; i < length; i++) ids.add(buf.readIdentifier());
-            client.execute(() -> {
-                showTooltip.clear();
-                for (Identifier id : ids) showTooltip.add(Registries.ITEM.get(id));
-            });
-        });
+        ClientPlayNetworking.registerGlobalReceiver(ItemBehaviorsPayload.ID, (payload, context) -> context.client().execute(() -> {
+            showTooltip.clear();
+            showTooltip.addAll(payload.items());
+        }));
 
-        ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
+        ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             if (config.tooltip && showTooltip.contains(stack.getItem())) {
                 lines.add(TextUtil.translatable("tooltip.andromeda.throwable_item").formatted(Formatting.GRAY));
             }
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(Main.FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
-            double x = buf.readDouble(), y = buf.readDouble(), z = buf.readDouble();
-            boolean spawnItem = buf.readBoolean();
-            ItemStack stack = buf.readItemStack();
-            boolean spawnColor = buf.readBoolean();
+        ClientPlayNetworking.registerGlobalReceiver(FlyingStackLandedPayload.ID, (payload, context) -> context.client().execute(() -> {
+            ParticlesMode particlesMode = MinecraftClient.getInstance().options.getParticles().getValue();
+            if (particlesMode == ParticlesMode.MINIMAL) return;
+            float x = payload.pos().x(), y = payload.pos().y(), z = payload.pos().z();
 
-            int color = 0;
-            if (spawnColor) color = buf.readVarInt();
-
-            float r = ColorUtil.getRedF(color), g = ColorUtil.getGreenF(color), b = ColorUtil.getBlueF(color);
-            client.execute(() -> {
-                ParticlesMode particlesMode = MinecraftClient.getInstance().options.getParticles().getValue();
-                if (particlesMode == ParticlesMode.MINIMAL) return;
-
-                if (spawnItem) for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 8 : 4); ++i) {
+            payload.stack().ifPresent(stack -> {
+                for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 8 : 4); ++i) {
                     MinecraftClient.getInstance().particleManager.addParticle(
                             new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
                             x, y, z,
@@ -73,21 +60,22 @@ public final class Client {
                             threadRandom().nextGaussian() * 0.15
                     );
                 }
+            });
 
-                if (spawnColor) for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 15 : 7); i++) {
+            payload.color().ifPresent(color -> {
+                float r = ColorUtil.getRedF(color), g = ColorUtil.getGreenF(color), b = ColorUtil.getBlueF(color);
+
+                for (int i = 0; i < (particlesMode != ParticlesMode.DECREASED ? 15 : 7); i++) {
                     Particle particle = MinecraftClient.getInstance().particleManager.addParticle(ParticleTypes.EFFECT, x, y, z,
                             threadRandom().nextGaussian() * 0.15, 0.5, threadRandom().nextGaussian() * 0.15);
                     if (particle != null) particle.setColor(r, g, b);
                 }
             });
-        });
+        }));
 
-        ClientPlayNetworking.registerGlobalReceiver(Main.COLORED_FLYING_STACK_LANDED, (client, handler, buf, responseSender) -> {
-            ItemStack dye = buf.readItemStack();
-            client.execute(() -> {
-                int a = client.getWindow().getScaledWidth();
-                ScreenParticleHelper.addParticle(new DyeParticle(MathUtil.nextDouble(a / 2d - (a / 3d), a / 2d + a / 3d), client.getWindow().getScaledHeight() / 2d, 0, 0, dye));
-            });
-        });
+        ClientPlayNetworking.registerGlobalReceiver(ColoredStackLandedPayload.ID, (payload, context) -> context.client().execute(() -> {
+            int a = context.client().getWindow().getScaledWidth();
+            ScreenParticleHelper.addParticle(new DyeParticle(MathUtil.nextDouble(a / 2d - (a / 3d), a / 2d + a / 3d), context.client().getWindow().getScaledHeight() / 2d, 0, 0, payload.dye()));
+        }));
     }
 }

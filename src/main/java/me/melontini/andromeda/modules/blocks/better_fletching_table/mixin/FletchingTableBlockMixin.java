@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,7 +26,7 @@ abstract class FletchingTableBlockMixin extends CraftingTableBlock {
     }
 
     @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+    private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         if (state.isOf(Blocks.FLETCHING_TABLE)) {
             if (player.world.isClient) {
                 cir.setReturnValue(ActionResult.SUCCESS);

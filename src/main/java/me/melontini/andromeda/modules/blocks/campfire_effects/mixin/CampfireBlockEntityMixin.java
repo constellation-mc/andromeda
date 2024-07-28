@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -45,7 +46,7 @@ abstract class CampfireBlockEntityMixin {
 
                     for (LivingEntity player : entities) {
                         for (CampfireEffects.Config.Effect effect : effects) {
-                            StatusEffectInstance effectInstance = new StatusEffectInstance(effect.identifier,
+                            StatusEffectInstance effectInstance = new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(effect.identifier),//TODO
                                     200, effect.amplifier.asInt(supplier), true, false, true);
                             player.addStatusEffect(effectInstance);
                         }

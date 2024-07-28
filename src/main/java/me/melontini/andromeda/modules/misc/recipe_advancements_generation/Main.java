@@ -32,7 +32,7 @@ public final class Main {
     }
 
     private static Identifier idFromRecipe(Identifier recipe, String typeName) {
-        return new Identifier(recipe.getNamespace(), "recipes/gen/" + typeName + "/" + recipe.toString().replace(":", "_"));
+        return Identifier.of(recipe.getNamespace(), "recipes/gen/" + typeName + "/" + recipe.toString().replace(":", "_"));
     }
 
     public static void addRecipeTypeHandler(RecipeType<?> type, Function<Context, Return> consumer) {

@@ -2,7 +2,6 @@ package me.melontini.andromeda.common;//common between modules, not environments
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import lombok.Getter;
 import me.melontini.andromeda.base.AndromedaConfig;
@@ -15,6 +14,8 @@ import me.melontini.andromeda.base.util.config.ConfigState;
 import me.melontini.andromeda.common.config.ScopedConfigs;
 import me.melontini.andromeda.common.util.GsonCodecContext;
 import me.melontini.andromeda.common.util.Keeper;
+import me.melontini.andromeda.common.util.condition.ItemsRegisteredCondition;
+import me.melontini.andromeda.common.util.condition.ModulesLoadedCondition;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
@@ -44,7 +45,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -107,13 +107,8 @@ public final class Andromeda {
     }
 
     private void onInitialize(ModuleManager manager) {
-        ResourceConditions.register(id("items_registered"), object -> JsonHelper.getArray(object, "values")
-                .asList().stream().filter(JsonElement::isJsonPrimitive)
-                .allMatch(e -> Registries.ITEM.containsId(Identifier.of(e.getAsString()))));
-
-        ResourceConditions.register(id("modules_loaded"), object -> JsonHelper.getArray(object, "values")
-                .asList().stream().filter(JsonElement::isJsonPrimitive)
-                .allMatch(e -> ModuleManager.get().getModule(e.getAsString()).isPresent()));
+        ResourceConditions.register(ItemsRegisteredCondition.TYPE);
+        ResourceConditions.register(ModulesLoadedCondition.TYPE);
 
         AndromedaItemGroup.Acceptor acceptor = (module, main, stack) -> {
             if (!stack.isEmpty()) ItemGroupEvents.modifyEntriesEvent(main).register(entries -> entries.add(stack));

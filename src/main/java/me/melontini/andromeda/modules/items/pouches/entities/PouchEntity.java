@@ -118,9 +118,9 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(POUCH_TYPE, Type.SEED.syncId);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(POUCH_TYPE, Type.SEED.syncId);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class PouchEntity extends ThrownItemEntity {
             public @NotNull Identifier getLootId(ItemStack stack) {
                 NbtCompound nbt = stack.getNbt();
                 if (nbt != null && nbt.contains("CustomLootId")) {
-                    return new Identifier(nbt.getString("CustomLootId"));
+                    return Identifier.of(nbt.getString("CustomLootId"));
                 }
                 return SEED.getLootId(stack);
             }

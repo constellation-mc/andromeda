@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.world.crop_temperature;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -137,9 +136,7 @@ public final class PlantTemperatureData {
         protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
             IdentityHashMap<Block, float[]> replace = new IdentityHashMap<>();
             IdentityHashMap<Block, float[]> result = new IdentityHashMap<>();
-            Maps.transformValues(data, input -> MERGED_CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
-                throw new JsonParseException(string);
-            })).values().forEach(newHolder -> {
+            Maps.transformValues(data, input -> MERGED_CODEC.parse(JsonOps.INSTANCE, input).getOrThrow()).values().forEach(newHolder -> {
                 if (newHolder.replace()) replace.putAll(newHolder.temperatures());
                 else result.putAll(newHolder.temperatures());
             });

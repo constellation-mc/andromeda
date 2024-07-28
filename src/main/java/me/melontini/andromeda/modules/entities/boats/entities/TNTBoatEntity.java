@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -117,7 +118,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
             this.setFuse();
             if (!player.isCreative()) {
                 if (stack.isOf(Items.FLINT_AND_STEEL)) {
-                    stack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+                    stack.damage(1, player, EquipmentSlot.MAINHAND);
                 } else {
                     stack.decrement(1);
                 }
