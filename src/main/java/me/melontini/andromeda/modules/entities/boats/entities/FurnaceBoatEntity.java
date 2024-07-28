@@ -38,9 +38,9 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(FUEL, 0);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(FUEL, 0);
     }
 
     @Override

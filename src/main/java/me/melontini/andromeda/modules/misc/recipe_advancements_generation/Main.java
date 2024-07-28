@@ -61,7 +61,7 @@ public final class Main {
             } else {
                 if (!recipe.value().getIngredients().isEmpty()) {
                     count.getAndIncrement();
-                    advancementBuilders.put(new Identifier(recipe.id().getNamespace(), "recipes/gen/generic/" + recipe.id().toString().replace(":", "_")), createAdvBuilder(config, recipe.id(), recipe.value().getIngredients().toArray(Ingredient[]::new)));
+                    advancementBuilders.put(Identifier.of(recipe.id().getNamespace(), "recipes/gen/generic/" + recipe.id().toString().replace(":", "_")), createAdvBuilder(config, recipe.id(), recipe.value().getIngredients().toArray(Ingredient[]::new)));
                 }
             }
         }, Util.getMainWorkerExecutor())).toList();

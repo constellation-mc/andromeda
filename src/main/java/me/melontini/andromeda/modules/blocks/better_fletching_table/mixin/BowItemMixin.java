@@ -20,7 +20,7 @@ abstract class BowItemMixin extends RangedWeaponItem {
         super(settings);
     }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V"), method = "onStoppedUsing", index = 5)
+    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BowItem;shootAll(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/entity/LivingEntity;)V"), method = "onStoppedUsing", index = 5)
     public float andromeda$setVelocity(float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local PlayerEntity player) {
         NbtCompound stackNbt = stack.getNbt();
         int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);

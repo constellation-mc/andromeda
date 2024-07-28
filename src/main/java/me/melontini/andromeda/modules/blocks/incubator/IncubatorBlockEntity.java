@@ -30,6 +30,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.collection.DefaultedList;
@@ -145,9 +146,9 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
         NbtCompound nbt = new NbtCompound();
-        this.writeNbt(nbt);
+        this.writeNbt(nbt, lookup);
         return nbt;
     }
 
@@ -180,18 +181,18 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
         this.processingTime = nbt.getInt("ProcessingTime");
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        NbtUtil.readInventoryFromNbt(nbt, this);
+        NbtUtil.readInventoryFromNbt(nbt, this, lookup);
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.writeNbt(nbt, lookup);
         nbt.putInt("ProcessingTime", this.processingTime);
-        NbtUtil.writeInventoryToNbt(nbt, this);
+        NbtUtil.writeInventoryToNbt(nbt, this, lookup);
     }
 
     @Override

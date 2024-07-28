@@ -99,7 +99,7 @@ public final class Andromeda {
     }
 
     public static Identifier id(String path) {
-        return new Identifier(MODID, path);
+        return Identifier.of(MODID, path);
     }
 
     public static <T> RegistryKey<T> key(RegistryKey<? extends Registry<T>> registry, String path) {
@@ -109,7 +109,7 @@ public final class Andromeda {
     private void onInitialize(ModuleManager manager) {
         ResourceConditions.register(id("items_registered"), object -> JsonHelper.getArray(object, "values")
                 .asList().stream().filter(JsonElement::isJsonPrimitive)
-                .allMatch(e -> Registries.ITEM.containsId(new Identifier(e.getAsString()))));
+                .allMatch(e -> Registries.ITEM.containsId(Identifier.of(e.getAsString()))));
 
         ResourceConditions.register(id("modules_loaded"), object -> JsonHelper.getArray(object, "values")
                 .asList().stream().filter(JsonElement::isJsonPrimitive)

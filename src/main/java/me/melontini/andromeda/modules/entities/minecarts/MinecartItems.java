@@ -96,7 +96,7 @@ public class MinecartItems {
         String identifier = entry.entity().getString("id");
 
         try {
-            return StringUtils.isEmpty(identifier) ? Registries.ENTITY_TYPE.getDefaultId() : new Identifier(identifier);
+            return StringUtils.isEmpty(identifier) ? Registries.ENTITY_TYPE.getDefaultId() : Identifier.of(identifier);
         } catch (InvalidIdentifierException e) {
             BlockPos blockPos = mobSpawnerBlockEntity.getPos();
             ModuleManager.quick(Minecarts.class).logger().error(String.format("Invalid entity id '%s' at spawner %s:[%s,%s,%s]", identifier, Objects.requireNonNull(mobSpawnerBlockEntity.getWorld()).getRegistryKey().getValue(), blockPos.getX(), blockPos.getY(), blockPos.getZ()));

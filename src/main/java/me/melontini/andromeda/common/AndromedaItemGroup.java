@@ -4,6 +4,7 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.item_group.ItemGroupBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -82,7 +83,7 @@ public class AndromedaItemGroup {
             List<ItemStack> stacks = new ArrayList<>();
             small.forEach((m, itemStacks) -> {
                 ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
+                sign.set(DataComponentTypes.CUSTOM_NAME, TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
                 stacks.add(sign);
                 stacks.addAll(itemStacks);
                 stacks.add(ItemStack.EMPTY);
@@ -90,7 +91,7 @@ public class AndromedaItemGroup {
             entries.appendStacks(stacks);
             big.forEach((m, itemStacks) -> {
                 ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                sign.setCustomName(TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
+                sign.set(DataComponentTypes.CUSTOM_NAME, TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
                 itemStacks.add(0, sign);
                 entries.appendStacks(itemStacks);
             });

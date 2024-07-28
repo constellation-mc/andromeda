@@ -64,8 +64,8 @@ public class NewProviders {
         builder(Identifier.class, (type, value, def, setter, i18n, context) ->
                 ENTRY_BUILDER.startStrField(i18n(i18n, context), value.toString())
                         .setDefaultValue((def == null || context.generic()) ? null : def::toString)
-                        .setSaveConsumer(s -> setter.accept(new Identifier(s))).build(), (c) -> new Identifier(""))
-                .converter(Identifier::new, Identifier::toString)
+                        .setSaveConsumer(s -> setter.accept(Identifier.of(s))).build(), (c) -> Identifier.of(""))
+                .converter(Identifier::of, Identifier::toString)
                 .errorSupplier((String s) -> {
                     var r = Identifier.validate(s);
                     if (r.error().isPresent())
@@ -105,7 +105,7 @@ public class NewProviders {
 
         forRegistry(Item.class, Registries.ITEM);
         forRegistry(Block.class, Registries.BLOCK);
-        forRegistry(StatusEffect.class, Registries.STATUS_EFFECT, () -> StatusEffects.REGENERATION);
+        forRegistry(StatusEffect.class, Registries.STATUS_EFFECT, StatusEffects.REGENERATION::value);
 
         Runnable commander = Support.support("commander", () -> NewProviders::commanderIntermediaries, () -> NewProviders::constantIntermediaries);
         commander.run();
@@ -127,9 +127,9 @@ public class NewProviders {
 
             return ENTRY_BUILDER.startStrField(i18n(i18n, context), val)
                     .setDefaultValue((def == null || context.generic()) ? null : () -> newDef)
-                    .setSaveConsumer(s -> setter.accept(registry.get(new Identifier(s)))).build();
+                    .setSaveConsumer(s -> setter.accept(registry.get(Identifier.of(s)))).build();
         }, c -> supplier.get())
-                .converter((String s) -> registry.get(new Identifier(s)), t -> Objects.requireNonNull(registry.getId(t)).toString())
+                .converter((String s) -> registry.get(Identifier.of(s)), t -> Objects.requireNonNull(registry.getId(t)).toString())
                 .errorSupplier((String s) -> {
                     var r = Identifier.validate(s);
                     if (r.error().isPresent())

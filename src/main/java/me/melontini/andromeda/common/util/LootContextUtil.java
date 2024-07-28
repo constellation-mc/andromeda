@@ -55,7 +55,7 @@ public class LootContextUtil {
     public static Supplier<LootContext> entity(World world, Vec3d origin, Entity entity, @Nullable DamageSource source, @Nullable Entity killer, @Nullable Entity directKiller, @Nullable PlayerEntity lastDamagePlayer) {
         return () -> build(setBuilder((ServerWorld) world).add(ORIGIN, origin)
                 .add(THIS_ENTITY, entity).add(DAMAGE_SOURCE, Objects.requireNonNullElseGet(source, () -> world.getDamageSources().generic()))
-                .addOptional(KILLER_ENTITY, killer).addOptional(DIRECT_KILLER_ENTITY, directKiller)
+                .addOptional(ATTACKING_ENTITY, killer).addOptional(DIRECT_ATTACKING_ENTITY, directKiller)
                 .addOptional(LAST_DAMAGE_PLAYER, lastDamagePlayer)
                 .build(ENTITY));
     }
@@ -63,14 +63,14 @@ public class LootContextUtil {
     public static Supplier<LootContext> entity(World world, Vec3d origin, Entity entity, @Nullable DamageSource source, @Nullable Entity killer, @Nullable Entity directKiller) {
         return () -> build(setBuilder((ServerWorld) world).add(ORIGIN, origin)
                 .add(THIS_ENTITY, entity).add(DAMAGE_SOURCE, Objects.requireNonNullElseGet(source, () -> world.getDamageSources().generic()))
-                .addOptional(KILLER_ENTITY, killer).addOptional(DIRECT_KILLER_ENTITY, directKiller)
+                .addOptional(ATTACKING_ENTITY, killer).addOptional(DIRECT_ATTACKING_ENTITY, directKiller)
                 .build(ENTITY));
     }
 
     public static Supplier<LootContext> entity(World world, Vec3d origin, Entity entity, @Nullable DamageSource source, @Nullable Entity killer) {
         return () -> build(setBuilder((ServerWorld) world).add(ORIGIN, origin)
                 .add(THIS_ENTITY, entity).add(DAMAGE_SOURCE, Objects.requireNonNullElseGet(source, () -> world.getDamageSources().generic()))
-                .addOptional(KILLER_ENTITY, killer)
+                .addOptional(ATTACKING_ENTITY, killer)
                 .build(ENTITY));
     }
 

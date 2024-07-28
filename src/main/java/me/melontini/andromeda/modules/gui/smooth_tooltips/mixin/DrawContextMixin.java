@@ -43,8 +43,8 @@ abstract class DrawContextMixin {
         if (andromeda$makeSmooth(x, y)) {
             var c = AndromedaClient.HANDLER.get(SmoothTooltips.CONFIG);
             if (smoothPos == null) smoothPos = new Vector2d(x, y);
-            smoothPos.x = MathHelper.clamp(MathHelper.lerp(c.deltaX * client.getLastFrameDuration(), smoothPos.x, vic.x()), vic.x() - c.clampX, vic.x() + c.clampX);
-            smoothPos.y = MathHelper.clamp(MathHelper.lerp(c.deltaY * client.getLastFrameDuration(), smoothPos.y, vic.y()), vic.y() - c.clampY, vic.y() + c.clampY);
+            smoothPos.x = MathHelper.clamp(MathHelper.lerp(c.deltaX * client.getRenderTickCounter().getLastFrameDuration(), smoothPos.x, vic.x()), vic.x() - c.clampX, vic.x() + c.clampX);
+            smoothPos.y = MathHelper.clamp(MathHelper.lerp(c.deltaY * client.getRenderTickCounter().getLastFrameDuration(), smoothPos.y, vic.y()), vic.y() - c.clampY, vic.y() + c.clampY);
 
             popMatrix.set(true);
             this.matrices.push();

@@ -60,7 +60,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
             var cls = m.getConfigDefinition(ConfigState.GAME).supplier().get();
 
             object.entrySet().forEach(entry -> {
-                var map = configs.computeIfAbsent(new Identifier(entry.getKey()), string -> new Reference2ObjectOpenHashMap<>());
+                var map = configs.computeIfAbsent(Identifier.of(entry.getKey()), string -> new Reference2ObjectOpenHashMap<>());
                 map.computeIfAbsent(m, module -> new ReferenceLinkedOpenHashSet<>()).add(makeFuture(m, cls, entry.getValue()));
             });
         });

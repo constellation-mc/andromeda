@@ -23,8 +23,8 @@ public interface ItemBehavior {
         if (cd.toSource().left().isPresent()) return cd.asInt(null); //constant, can pass null.
 
         LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world);
-        builder.add(LootContextParameters.DIRECT_KILLER_ENTITY, fie);
-        builder.addOptional(LootContextParameters.KILLER_ENTITY, user);
+        builder.add(LootContextParameters.ATTACKING_ENTITY, fie);
+        builder.addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, user);
         builder.add(LootContextParameters.TOOL, stack);
         builder.add(LootContextParameters.ORIGIN, fie.getPos());
 

@@ -71,14 +71,12 @@ public record EggProcessingData(boolean replace, Item item, WeightedList<Entry> 
             for (Item item : Registries.ITEM) {
                 if (item instanceof SpawnEggItem egg) {
                     WeightedList<Entry> list =  new WeightedList<>();
-                    list.add(new Entry(egg.getEntityType(new NbtCompound()), new NbtCompound(), Collections.emptyList()), 1);
+                    list.add(new Entry(egg.getEntityType(egg.getDefaultStack()), new NbtCompound(), Collections.emptyList()), 1);
                     result.put(egg, new EggProcessingData(false, egg, list, Arithmetica.constant(8000)));
                 }
             }
 
-            Maps.transformValues(data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
-                throw new RuntimeException(string);
-            })).forEach((identifier, eData) -> {
+            Maps.transformValues(data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow()).forEach((identifier, eData) -> {
                 if (eData.replace()) replace.put(eData.item(), eData);
                 else result.put(eData.item(), eData);
             });

@@ -94,7 +94,7 @@ public class Client {
     private void renderFromComponents(MinecraftClient client, DrawContext context, List<TooltipComponent> components) {
         if (components.isEmpty()) return;
 
-        float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
+        float flow = MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), oldTooltipFlow, tooltipFlow);
         MatrixStack matrices = context.getMatrices();
 
         matrices.push();

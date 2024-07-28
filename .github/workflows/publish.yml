@@ -18,6 +18,6 @@ jobs:
   publish:
     uses: constellation-mc/actions/.github/workflows/mc-publish.yml@main
     with:
-      java: 17
+      java: 21
       version_type: ${{ inputs.version_type }}
     secrets: inherit

@@ -33,8 +33,8 @@ public class FlyingItemEntity extends ThrownItemEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         if (!this.world.isClient()) {
-            for (ItemBehavior behavior : requireNonNull(this.world.getServer()).dm$getReloader(ItemBehaviorManager.RELOADER).getBehaviors(getItem().getItem())) {
-                if (!this.isRemoved()) behavior.onCollision(getItem(), this, (ServerWorld) world, getOwner(), hitResult);
+            for (ItemBehavior behavior : requireNonNull(this.world.getServer()).dm$getReloader(ItemBehaviorManager.RELOADER).getBehaviors(getStack().getItem())) {
+                if (!this.isRemoved()) behavior.onCollision(getStack(), this, (ServerWorld) world, getOwner(), hitResult);
             }
         }
         this.discard();
@@ -42,6 +42,6 @@ public class FlyingItemEntity extends ThrownItemEntity {
 
     @Override
     protected Item getDefaultItem() {
-        return getItem().getItem();
+        return getStack().getItem();
     }
 }

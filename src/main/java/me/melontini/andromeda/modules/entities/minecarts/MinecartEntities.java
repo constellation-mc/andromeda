@@ -22,14 +22,14 @@ public class MinecartEntities {
     static void init(Minecarts.Config config) {
         ANVIL_MINECART_ENTITY.init(RegistryUtil.register(config.isAnvilMinecartOn, Registries.ENTITY_TYPE, id("anvil_minecart"),
                 () -> FabricEntityTypeBuilder.<AnvilMinecartEntity>create(SpawnGroup.MISC, AnvilMinecartEntity::new)
-                        .dimensions(new EntityDimensions(0.98F, 0.7F, true)).build()));
+                        .dimensions(EntityDimensions.fixed(0.98F, 0.7F)).build()));
 
         NOTEBLOCK_MINECART_ENTITY.init(RegistryUtil.register(config.isNoteBlockMinecartOn, Registries.ENTITY_TYPE, id("note_block_minecart"),
                 () -> FabricEntityTypeBuilder.<NoteBlockMinecartEntity>create(SpawnGroup.MISC, NoteBlockMinecartEntity::new)
-                        .dimensions(new EntityDimensions(0.98F, 0.7F, true)).build()));
+                        .dimensions(EntityDimensions.fixed(0.98F, 0.7F)).build()));
 
         JUKEBOX_MINECART_ENTITY.init(RegistryUtil.register(config.isJukeboxMinecartOn, Registries.ENTITY_TYPE, id("jukebox_minecart"),
                 () -> FabricEntityTypeBuilder.<JukeboxMinecartEntity>create(SpawnGroup.MISC, JukeboxMinecartEntity::new)
-                        .dimensions(new EntityDimensions(0.98F, 0.7F, true)).build()));
+                        .dimensions(EntityDimensions.fixed(0.98F, 0.7F)).build()));
     }
 }

@@ -69,7 +69,7 @@ public final class Main {
 
     public static void handleLockedContainer(PlayerEntity player, Collection<LivingEntity> monsters) {
         player.sendMessage(TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
-        player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        player.playSoundToPlayer(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
         player.emitGameEvent(GameEvent.CONTAINER_OPEN);
 
         for (LivingEntity livingEntity : monsters) {

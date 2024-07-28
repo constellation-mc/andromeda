@@ -30,7 +30,7 @@ public class BoatEntities {
     private static @Nullable <T extends Entity> EntityType<T> boatType(boolean register, Identifier id, EntityType.EntityFactory<T> factory) {
         return RegistryUtil.register(register, Registries.ENTITY_TYPE, id,
                 () -> FabricEntityTypeBuilder.create(SpawnGroup.MISC, factory)
-                        .dimensions(new EntityDimensions(1.375F, 0.5625F, true))
+                        .dimensions(EntityDimensions.fixed(1.375F, 0.5625F))
                         .build());
     }
 
