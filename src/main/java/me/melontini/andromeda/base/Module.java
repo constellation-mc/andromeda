@@ -1,6 +1,5 @@
 package me.melontini.andromeda.base;
 
-import com.google.common.base.Suppliers;
 import lombok.*;
 import lombok.experimental.Accessors;
 import me.melontini.andromeda.base.events.Bus;
@@ -10,6 +9,7 @@ import me.melontini.andromeda.base.util.config.ConfigDefinition;
 import me.melontini.andromeda.base.util.config.ConfigState;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.dark_matter.api.base.util.PrependingLogger;
+import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -96,7 +96,7 @@ public abstract class Module {
             ModuleInfo info = type.getAnnotation(ModuleInfo.class);
             if (info == null) throw new IllegalStateException("Module has no info!");
 
-            return new Zygote(type, Metadata.fromAnnotation(info), Suppliers.memoize(supplier::get));
+            return new Zygote(type, Metadata.fromAnnotation(info), Memoize.supplier(supplier));
         }
     }
 }

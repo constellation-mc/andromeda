@@ -1,6 +1,5 @@
 package me.melontini.andromeda.common.util;
 
-import com.google.common.base.Supplier;
 import lombok.experimental.UtilityClass;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,6 +15,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import static net.minecraft.loot.context.LootContextParameters.*;
 import static net.minecraft.loot.context.LootContextTypes.*;

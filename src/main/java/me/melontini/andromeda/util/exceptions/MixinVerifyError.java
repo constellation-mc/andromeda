@@ -1,11 +1,13 @@
 package me.melontini.andromeda.util.exceptions;
 
+import lombok.ToString;
 import me.melontini.andromeda.util.Debug;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@ToString
 public final class MixinVerifyError extends Error {
 
     private final Set<Complaint> complaints;

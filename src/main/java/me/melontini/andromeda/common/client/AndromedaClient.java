@@ -30,9 +30,9 @@ import org.joml.Matrix4f;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
@@ -45,13 +45,16 @@ public final class AndromedaClient {
     private static final Identifier BACKGROUND_TEXTURE = Andromeda.id("textures/gui/background.png");
     private static final Identifier GALAXY_TEXTURE = Andromeda.id("textures/gui/galaxy.png");
 
-    private static AndromedaClient INSTANCE;
+    private static Supplier<AndromedaClient> INSTANCE = () -> {
+        throw new NullPointerException("AndromedaClient not initialized");
+    };
     private boolean animate = true;
 
     public static void init() {
-        INSTANCE = new AndromedaClient();
-        INSTANCE.onInitializeClient(ModuleManager.get());
-        FabricLoader.getInstance().getObjectShare().put("andromeda:client", INSTANCE);
+        var instance = new AndromedaClient();
+        instance.onInitializeClient(ModuleManager.get());
+        FabricLoader.getInstance().getObjectShare().put("andromeda:client", instance);
+        INSTANCE = () -> instance;
     }
 
     public void onInitializeClient(ModuleManager manager) {
@@ -114,7 +117,7 @@ public final class AndromedaClient {
     }
 
     public static AndromedaClient get() {
-        return Objects.requireNonNull(INSTANCE, "AndromedaClient not initialized");
+        return INSTANCE.get();
     }
 
     public static void drawTexture(MatrixStack matrices, int x, int y, Consumer<MatrixStack> transform, Identifier id) {

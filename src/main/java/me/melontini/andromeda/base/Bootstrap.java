@@ -12,8 +12,8 @@ import me.melontini.andromeda.util.*;
 import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.andromeda.util.mixins.AndromedaMixins;
 import me.melontini.dark_matter.api.base.util.Context;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.Support;
-import me.melontini.dark_matter.api.base.util.functions.ThrowingRunnable;
 import me.melontini.dark_matter.api.crash_handler.Crashlytics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,7 +25,7 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import org.spongepowered.asm.mixin.Mixins;
 
-import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 
 import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
@@ -129,7 +129,12 @@ public class Bootstrap {
 
     public static void onPreLaunch() {
         try {
+            InstanceDataHolder.load();
             EarlyLanguage.load();
+            Exceptions.runAsResult(() -> {
+                Files.deleteIfExists(CommonValues.hiddenPath().resolve("git-response.json"));
+                Files.deleteIfExists(CommonValues.hiddenPath().resolve("last_version.txt"));
+            }).error().map(Exceptions::unwrap).ifPresent(t -> LOGGER.error("Failed to delete unused files in .andromeda!", t));
 
             Status.update();
             LOGGER.info(EarlyLanguage.translate("andromeda.bootstrap.loading", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version()));
@@ -155,7 +160,8 @@ public class Bootstrap {
 
             ModuleManager m;
             try {
-                ModuleManager.INSTANCE = (m = new ModuleManager(sorted));
+                m = new ModuleManager(sorted);
+                ModuleManager.INSTANCE = () -> m;
             } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
                 throw AndromedaException.builder()
                         .cause(t).literal("Failed to initialize ModuleManager!!!")
@@ -197,14 +203,6 @@ public class Bootstrap {
                         .literal("Duplicate module packages!")
                         .add("package", module.type().getPackageName()).add("module", pkg.type()).add("duplicate", module.type())
                         .build();
-        }
-    }
-
-    static void wrapIO(ThrowingRunnable<IOException> runnable, String msg) {
-        try {
-            runnable.run();
-        } catch (IOException e) {
-            LOGGER.error(msg, e);
         }
     }
 

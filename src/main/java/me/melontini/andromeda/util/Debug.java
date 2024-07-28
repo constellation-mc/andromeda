@@ -2,6 +2,7 @@ package me.melontini.andromeda.util;
 
 import lombok.CustomLog;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 import me.melontini.andromeda.util.mixins.ErrorHandler;
@@ -31,17 +32,18 @@ public class Debug {
         MANAGER.save(FabricLoader.getInstance().getConfigDir(), CONFIG, Context.of());
     }
 
-    @Getter
+    @Getter @ToString
     public static final class Key {
         @Accessors(fluent = true)
         private boolean isPresent = false;
         private final String key;
 
-        public Key(String key) {
+        private Key(String key) {
             this.key = key;
         }
     }
 
+    @ToString
     private final static class Holder {
         Set<String> keys = new LinkedHashSet<>();
         Map<String, Set<String>> skipModIntegration = new HashMap<>();

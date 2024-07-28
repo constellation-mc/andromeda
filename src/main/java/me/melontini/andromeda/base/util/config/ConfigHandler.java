@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import lombok.CustomLog;
 import lombok.Getter;
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
 import me.melontini.dark_matter.api.base.util.Exceptions;
@@ -17,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
-@CustomLog
+@CustomLog @ToString
 public final class ConfigHandler {
 
     private final Map<ConfigDefinition<?>, Module.BaseConfig> configs = new IdentityHashMap<>();
@@ -80,10 +81,12 @@ public final class ConfigHandler {
             JsonObject object;
             if (!topLevel) {
                 if (Files.exists(path)) {
-                    try (var reader = Files.newBufferedReader(path)) {
-                        object = JsonParser.parseReader(reader).getAsJsonObject();
-                    } catch (IOException | JsonParseException e) {
-                        object = new JsonObject();
+                    synchronized (module.getConfigDefinition(state)) {
+                        try (var reader = Files.newBufferedReader(path)) {
+                            object = JsonParser.parseReader(reader).getAsJsonObject();
+                        } catch (IOException | JsonParseException e) {
+                            object = new JsonObject();
+                        }
                     }
                 } else {
                     object = new JsonObject();
@@ -99,8 +102,10 @@ public final class ConfigHandler {
             }
 
             var parent = path.getParent();
-            if (parent != null) Files.createDirectories(parent);
-            Files.writeString(path, this.gson.toJson(object));
+            synchronized (module.getConfigDefinition(state)) {
+                if (parent != null) Files.createDirectories(parent);
+                Files.writeString(path, this.gson.toJson(object));
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to save {}!", FabricLoader.getInstance().getGameDir().relativize(path), e);
         }
@@ -124,18 +129,21 @@ public final class ConfigHandler {
 
     private Module.BaseConfig load(Module module) {
         if (!this.modules.contains(module)) throw new IllegalStateException(module.meta().id());
+        var definition = module.getConfigDefinition(state);
+
         var path = resolve(module);
         if (!Files.exists(path)) {
             if (root != null) return root.load(module);
-
-            return Exceptions.supply(() -> module.getConfigDefinition(state).supplier().get().getConstructor().newInstance());
+            return Exceptions.supply(() -> definition.supplier().get().getConstructor().newInstance());
         }
 
-        try (var reader = Files.newBufferedReader(path)) {
-            return parse(MakeSure.isTrue(JsonParser.parseReader(reader), JsonElement::isJsonObject), module);
-        } catch (Exception e) {
-            LOGGER.error("Failed to load {}! Returning default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
-            return Exceptions.supply(() -> module.getConfigDefinition(state).supplier().get().getConstructor().newInstance());
+        synchronized (definition) {
+            try (var reader = Files.newBufferedReader(path)) {
+                return parse(MakeSure.isTrue(JsonParser.parseReader(reader), JsonElement::isJsonObject), module);
+            } catch (Exception e) {
+                LOGGER.error("Failed to load {}! Returning default!", FabricLoader.getInstance().getGameDir().relativize(path), e);
+                return Exceptions.supply(() -> definition.supplier().get().getConstructor().newInstance());
+            }
         }
     }
 
@@ -144,6 +152,8 @@ public final class ConfigHandler {
         for (Module module : this.modules) {
             configs.put(module.getConfigDefinition(state), CompletableFuture.supplyAsync(() -> this.load(module)));
         }
-        this.configs.putAll(Maps.transformValues(configs, CompletableFuture::join));
+        synchronized (this.configs) {
+            this.configs.putAll(Maps.transformValues(configs, CompletableFuture::join));
+        }
     }
 }

@@ -1,11 +1,11 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
-import com.google.common.base.Suppliers;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.dark_matter.api.base.util.MathUtil;
+import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -33,7 +33,7 @@ public class LockpickItem extends Item {
 
     public boolean tryUse(ItemStack stack, LivingEntity user, Hand hand) {
         var c = user.world.am$get(Lockpick.CONFIG);
-        var supplier = Suppliers.memoize(LootContextUtil.fishing(user.world, user.getPos(), user.getStackInHand(hand), user));
+        var supplier = Memoize.supplier(LootContextUtil.fishing(user.world, user.getPos(), user.getStackInHand(hand), user));
         if (c.available.asBoolean(supplier) && hand == Hand.MAIN_HAND) {
             int chance = c.chance.asInt(supplier);
 

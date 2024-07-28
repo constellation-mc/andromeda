@@ -2,6 +2,7 @@ package me.melontini.andromeda.util;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.ToString;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 
 import java.io.IOException;
@@ -14,13 +15,13 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+@ToString
 public final class ClassPath {
 
     private final Set<Path> scanned = new HashSet<>();
     private final Set<Info> infos = new TreeSet<>(Comparator.comparing(info -> info.name));
 
     private ClassPath() {
-
     }
 
     public static ClassPath from(URL... urls) {

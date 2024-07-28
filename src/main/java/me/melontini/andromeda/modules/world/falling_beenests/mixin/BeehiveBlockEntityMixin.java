@@ -53,11 +53,11 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
     @Inject(at = @At("TAIL"), method = "readNbt")
     private void andromeda$readNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
-        this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
+        if (nbt.contains("AM-FromFallenBlock")) this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
     }
 
     @Inject(at = @At("TAIL"), method = "writeNbt")
     private void andromeda$writeNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
-        nbt.putBoolean("AM-FromFallenBlock", this.andromeda$FromFallen);
+        if (this.andromeda$FromFallen) nbt.putBoolean("AM-FromFallenBlock", true);
     }
 }

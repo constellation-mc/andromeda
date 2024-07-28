@@ -1,8 +1,9 @@
 package me.melontini.andromeda.common.util;
 
-import com.google.common.base.Supplier;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
+
+import java.util.function.Supplier;
 
 public interface ConstantLootContextAccessor {
 

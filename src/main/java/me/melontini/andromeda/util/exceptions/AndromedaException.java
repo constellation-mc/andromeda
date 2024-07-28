@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
+import lombok.ToString;
 import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.util.EarlyLanguage;
 import me.melontini.dark_matter.api.base.util.functions.ThrowingRunnable;
@@ -16,13 +17,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-@CustomLog
+@CustomLog @ToString
 public final class AndromedaException extends RuntimeException {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final boolean report;
     private final JsonObject statuses;
+    @ToString.Exclude
     private Consumer<StringBuilder> appender;
 
     private AndromedaException(boolean report, String message, @Nullable Throwable cause, JsonObject statuses) {

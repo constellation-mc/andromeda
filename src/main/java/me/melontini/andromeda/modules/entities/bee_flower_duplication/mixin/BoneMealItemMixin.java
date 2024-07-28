@@ -1,9 +1,9 @@
 package me.melontini.andromeda.modules.entities.bee_flower_duplication.mixin;
 
-import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
+import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallFlowerBlock;
 import net.minecraft.item.BoneMealItem;
@@ -25,7 +25,7 @@ abstract class BoneMealItemMixin {
 
         BlockState blockState = world.getBlockState(pos);
         var config = world.am$get(BeeFlowerDuplication.CONFIG);
-        var supplier = Suppliers.memoize(LootContextUtil.block(world, Vec3d.ofCenter(pos), blockState, stack));
+        var supplier = Memoize.supplier(LootContextUtil.block(world, Vec3d.ofCenter(pos), blockState, stack));
         if (!config.available.asBoolean(supplier) || !config.tallFlowers.asBoolean(supplier)) return;
 
         if (blockState.getBlock() instanceof TallFlowerBlock) {

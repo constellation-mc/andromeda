@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.blocks.campfire_effects.mixin;
 
-import com.google.common.base.Suppliers;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects;
+import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
@@ -30,7 +30,7 @@ abstract class CampfireBlockEntityMixin {
         if (world.getTime() % 180 == 0) {
                 if (state.get(CampfireBlock.LIT)) {
                     var config = world.am$get(CampfireEffects.CONFIG);
-                    var supplier = Suppliers.memoize(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, null, campfire));
+                    var supplier = Memoize.supplier(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, null, campfire));
                     if (!config.available.asBoolean(supplier)) return;
 
                     List<LivingEntity> entities = new ArrayList<>();

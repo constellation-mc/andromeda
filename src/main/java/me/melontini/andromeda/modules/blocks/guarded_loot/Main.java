@@ -1,10 +1,10 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
-import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.items.lockpick.Lockpick;
 import me.melontini.andromeda.modules.items.lockpick.LockpickItem;
+import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.BlockState;
@@ -49,7 +49,7 @@ public final class Main {
     //TODO fix igloos. Maybe check reach?
     public static List<LivingEntity> checkMonsterLock(World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
         var config = world.am$get(GuardedLoot.CONFIG);
-        var supplier = Suppliers.memoize(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, player, be));
+        var supplier = Memoize.supplier(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, player, be));
         if (!config.available.asBoolean(supplier)) return Collections.emptyList();
 
         return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range.asDouble(supplier)), Entity::isAlive).stream()

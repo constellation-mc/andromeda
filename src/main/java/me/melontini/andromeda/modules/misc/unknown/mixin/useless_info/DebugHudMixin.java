@@ -1,9 +1,9 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.useless_info;
 
-import com.google.common.base.Suppliers;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
+import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.DebugHud;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 @Mixin(DebugHud.class)
 abstract class DebugHudMixin {
 
-    @Unique private static final Supplier<String> SPLASH = Suppliers.memoize(() -> {
+    @Unique private static final Supplier<String> SPLASH = Memoize.supplier(() -> {
         var r = MinecraftClient.getInstance().getSplashTextLoader().get();
         if (r != null) return r.text;
         return null;

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.base;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.util.ModulePlugin;
@@ -11,13 +12,13 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.FabricUtil;
 import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.transformer.Config;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The MixinProcessor is responsible for injecting dynamic mixin configs.
@@ -33,7 +34,7 @@ public final class MixinProcessor {
 
     private final ModuleManager manager;
     private final Map<String, Module> mixinConfigs = new HashMap<>();
-    private final Map<String, List<String>> mixinClasses = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> mixinClasses = new HashMap<>();
 
     public MixinProcessor(ModuleManager manager) {
         this.manager = manager;
@@ -54,7 +55,11 @@ public final class MixinProcessor {
         CompletableFuture.allOf(manager.loaded().stream().map(module -> CompletableFuture.runAsync(() -> {
             String pkg = module.getClass().getPackageName() + ".mixin";
             var list = AndromedaMixins.discoverInPackage(pkg);
-            if (!list.isEmpty()) mixinClasses.put(pkg, list);
+            if (!list.isEmpty()) {
+                synchronized (this.mixinClasses) {
+                    this.mixinClasses.put(pkg, list);
+                }
+            }
         })).toArray(CompletableFuture[]::new)).join();
 
         VirtualMixins.addMixins(acceptor -> this.manager.loaded().stream().filter(module -> mixinClasses.containsKey(module.getClass().getPackageName() + ".mixin")).forEach((module) -> {
@@ -71,7 +76,13 @@ public final class MixinProcessor {
             }
         }));
 
-        Mixins.getConfigs().forEach(config -> {
+        var set = Mixins.getConfigs();
+        if (set instanceof HashSet<Config> hs) set = ((HashSet<Config>)hs.clone());// Maybe, hopefully will help avoid CMEs
+        else {
+            LOGGER.warn("Mixins.getConfigs() is not a HashSet?");
+            set = ImmutableSet.copyOf(set);
+        }
+        set.forEach(config -> {
             if (this.mixinConfigs.containsKey(config.getName())) {
                 config.getConfig().decorate(FabricUtil.KEY_MOD_ID, CommonValues.MODID);
             }

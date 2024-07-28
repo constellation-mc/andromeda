@@ -1,6 +1,7 @@
 package me.melontini.andromeda.util.mixins;
 
 import lombok.CustomLog;
+import lombok.ToString;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.mixin.ExtendablePlugin;
@@ -8,8 +9,7 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.List;
 
-@SuppressWarnings("UnstableApiUsage")
-@CustomLog
+@CustomLog @ToString
 public final class AndromedaMixinPlugin extends ExtendablePlugin {
 
     private String mixinPackage;

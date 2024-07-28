@@ -17,12 +17,12 @@ import me.melontini.andromeda.base.util.config.BootstrapConfig;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.EarlyLanguage;
+import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -33,6 +33,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +45,9 @@ public final class ModuleManager {
     public static final List<String> CATEGORIES = List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    @Nullable static ModuleManager INSTANCE;
+    static Supplier<ModuleManager> INSTANCE = () -> {
+        throw new NullPointerException("ModuleManager requested too early!");
+    };
 
     private final Map<Class<?>, Promise<?>> discoveredModules;
     private final Map<String, Promise<?>> discoveredModuleNames;
@@ -135,7 +138,7 @@ public final class ModuleManager {
     public void cleanConfigs(Path root, Collection<? extends Module> modules) {
         if (Files.exists(root)) {
             Set<Path> paths = collectPaths(Objects.requireNonNull(root.getParent(), () -> "Root config folder? %s".formatted(root)), modules);
-            Bootstrap.wrapIO(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
+            Exceptions.runAsResult(() -> Files.walkFileTree(root, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (file.toString().endsWith(".json") && !Files.isHidden(file) && !paths.contains(file)) {
@@ -153,7 +156,7 @@ public final class ModuleManager {
                     if (empty) Files.deleteIfExists(dir);
                     return super.postVisitDirectory(dir, exc);
                 }
-            }), "Failed to clean up configs!");
+            })).error().map(Exceptions::unwrap).ifPresent(t -> LOGGER.error("Failed to clean up configs!", t));
         }
     }
 
@@ -300,7 +303,7 @@ public final class ModuleManager {
      * @return The module manager.
      */
     public static ModuleManager get() {
-        return Objects.requireNonNull(INSTANCE, "ModuleManager requested too early!");
+        return INSTANCE.get();
     }
 
     void print() {
@@ -309,18 +312,14 @@ public final class ModuleManager {
 
         StringBuilder builder = new StringBuilder();
         categories.forEach((s, strings) -> {
-            builder.append("\n\t - ").append(s);
-            if (!ModuleManager.CATEGORIES.contains(s)) builder.append("*");
-            builder.append("\n\t  |-- ");
+            builder.append("\n\t - ").append(s).append("\n\t  |-- ");
 
             StringJoiner joiner = new StringJoiner(", ");
-            strings.forEach(m -> joiner.add(m.meta().name().replace('/', '.') +
-                    (!m.getClass().getName().startsWith("me.melontini.andromeda") ? '*' : "")));
+            strings.forEach(m -> joiner.add(m.meta().dotted()));
             builder.append(joiner);
         });
         if (!categories.isEmpty()) {
             LOGGER.info(EarlyLanguage.translate("andromeda.module_manager.loading_modules", loaded().size()) +" {}", builder);
-            LOGGER.info("* - %s".formatted(EarlyLanguage.translate("andromeda.module_manager.custom_modules")));
         } else {
             LOGGER.info(EarlyLanguage.translate("andromeda.module_manager.no_modules"));
         }

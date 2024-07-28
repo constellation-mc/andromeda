@@ -1,11 +1,11 @@
 package me.melontini.andromeda.modules.entities.bee_flower_duplication.mixin;
 
-import com.google.common.base.Suppliers;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
+import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -58,7 +58,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
         if (this.flowerPos != null) {
             BlockState flowerState = world.getBlockState(flowerPos);
             var config = world.am$get(BeeFlowerDuplication.CONFIG);
-            var supplier = Suppliers.memoize(LootContextUtil.block(world, this.getPos(), flowerState));
+            var supplier = Memoize.supplier(LootContextUtil.block(world, this.getPos(), flowerState));
             if (!config.available.asBoolean(supplier)) return;
 
             if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {

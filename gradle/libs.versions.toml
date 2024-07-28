@@ -1,8 +1,8 @@
 [versions]
-dark-matter = "4.0.2-1.20.4-build.81"
+dark-matter = "4.1.0-1.20.4-build.87"
 
 [libraries]
-fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.15.11" }
+fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.16.0" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.95.4+1.20.4" }
 
 dark-matter-base = { group = "me.melontini", name = "dark-matter-base", version.ref = "dark-matter" }
@@ -23,6 +23,6 @@ handy-tests = { group = "me.melontini", name = "handy-tests", version = "0.2.0-1
 [plugins]
 fabric-loom = { id = "fabric-loom", version = "1.7.2" }
 lombok = { id = "io.freefair.lombok", version = "8.6"}
-spotbugs-base = { id = "com.github.spotbugs-base", version = "6.0.18" }
+spotbugs-base = { id = "com.github.spotbugs-base", version = "6.0.19" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
-modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "0.5.2" }
+modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "0.6.2" }

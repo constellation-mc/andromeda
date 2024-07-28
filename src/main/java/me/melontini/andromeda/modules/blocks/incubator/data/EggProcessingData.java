@@ -28,9 +28,10 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmetica time) {
+public record EggProcessingData(boolean replace, Item item, WeightedList<Entry> entity, Arithmetica time) {
 
     public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
+            ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(EggProcessingData::replace),
             Registries.ITEM.getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
             ExtraCodecs.weightedList(Entry.CODEC).fieldOf("entries").forGetter(EggProcessingData::entity),
             Arithmetica.CODEC.fieldOf("time").forGetter(EggProcessingData::time)
@@ -39,8 +40,8 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmeti
     public record Entry(EntityType<?> type, NbtCompound nbt, List<Command.Conditioned> commands) {
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(data -> data.group(
                 Registries.ENTITY_TYPE.getCodec().fieldOf("entity").forGetter(Entry::type),
-                NbtCompound.CODEC.optionalFieldOf("nbt", new NbtCompound()).forGetter(Entry::nbt),
-                ExtraCodecs.list(Command.CODEC.codec()).optionalFieldOf("commands", Collections.emptyList()).forGetter(Entry::commands)
+                ExtraCodecs.optional("nbt", NbtCompound.CODEC, new NbtCompound()).forGetter(Entry::nbt),
+                ExtraCodecs.optional("commands", ExtraCodecs.list(Command.CODEC.codec()), Collections.emptyList()).forGetter(Entry::commands)
         ).apply(data, Entry::new));
     }
 
@@ -64,19 +65,24 @@ public record EggProcessingData(Item item, WeightedList<Entry> entity, Arithmeti
 
         @Override
         protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
+            IdentityHashMap<Item, EggProcessingData> replace = new IdentityHashMap<>();
             IdentityHashMap<Item, EggProcessingData> result = new IdentityHashMap<>();
 
             for (Item item : Registries.ITEM) {
                 if (item instanceof SpawnEggItem egg) {
                     WeightedList<Entry> list =  new WeightedList<>();
                     list.add(new Entry(egg.getEntityType(new NbtCompound()), new NbtCompound(), Collections.emptyList()), 1);
-                    result.put(egg, new EggProcessingData(egg, list, Arithmetica.constant(8000)));
+                    result.put(egg, new EggProcessingData(false, egg, list, Arithmetica.constant(8000)));
                 }
             }
 
             Maps.transformValues(data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
                 throw new RuntimeException(string);
-            })).forEach((identifier, eData) -> result.put(eData.item(), eData));
+            })).forEach((identifier, eData) -> {
+                if (eData.replace()) replace.put(eData.item(), eData);
+                else result.put(eData.item(), eData);
+            });
+            result.putAll(replace);
             this.map = result;
         }
     }

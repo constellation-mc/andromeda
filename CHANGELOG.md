@@ -1,10 +1,31 @@
 ### What's New:
 
-[`misc/translations`]:
+[`world/crop_temperature`]:
 
-* Now enabled by default!
+* Bamboo, grass blocks and a few other modded plants are now supported.
+* Fixed broken expression support.
+* Updated format to be a little more sensible.
+
+```json5
+{
+  "replace": false,
+  "entries": {
+    "minecraft:beetroots": [
+      0.2, // abs min
+      0.3, // min
+      1.0, // max
+      1.0  // abs max
+    ],
+  }
+}
+```
+
+[`blocks/incubator`]:
+
+* The format now supports `replace`.
 
 [`general`]:
 
-* Fixed invalid zh_cn.json file.
-* (Hopefully) fixed a crash introduced by a fix to a crash.
+* Moved misc client data to a single JSON file.
+* Tried to fix a rare CME in `MixinProcessor`. (I have no idea if this works)
+* Updated Dark Matter.

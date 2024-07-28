@@ -32,20 +32,22 @@ public class LazyLootParameterSet extends LootContextParameterSet {
     }
 
     public <T> T get(LootContextParameter<T> parameter) {
-        T object = (T) this.parameters.get(parameter).get();
+        var object = this.parameters.get(parameter);
         if (object == null) {
             throw new NoSuchElementException(parameter.getId().toString());
         } else {
-            return object;
+            return (T) object.get();
         }
     }
 
     @Nullable public <T> T method_51868(LootContextParameter<T> parameter) {
-        return (T) this.parameters.get(parameter).get();
+        var s = this.parameters.get(parameter);
+        return s == null ? null : (T) s.get();
     }
 
     @Nullable public <T> T getOptional(LootContextParameter<T> parameter) {
-        return (T) this.parameters.get(parameter).get();
+        var s = this.parameters.get(parameter);
+        return s == null ? null : (T) s.get();
     }
 
     public static class Builder {
@@ -62,19 +64,6 @@ public class LazyLootParameterSet extends LootContextParameterSet {
         public <T> Builder add(LootContextParameter<T> parameter, Supplier<T> value) {
             this.parameters.put(parameter, (Supplier<Object>) value);
             return this;
-        }
-
-        public <T> T get(LootContextParameter<T> parameter) {
-            T object = (T) this.parameters.get(parameter).get();
-            if (object == null) {
-                throw new NoSuchElementException(parameter.getId().toString());
-            } else {
-                return object;
-            }
-        }
-
-        @Nullable public <T> T getOptional(LootContextParameter<T> parameter) {
-            return (T) this.parameters.get(parameter).get();
         }
 
         public Builder addDynamicDrop(Identifier id, DynamicDrop dynamicDrop) {
