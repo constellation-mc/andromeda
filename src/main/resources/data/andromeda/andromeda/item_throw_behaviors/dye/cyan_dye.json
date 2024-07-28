@@ -6,7 +6,7 @@
       "event": "any",
       "commands": {
         "type": "andromeda:particles",
-        "selector": "minecraft:direct_killer_entity",
+        "selector": "minecraft:direct_attacking_entity",
         "colors": [5, 95, 95]
       }
     },
