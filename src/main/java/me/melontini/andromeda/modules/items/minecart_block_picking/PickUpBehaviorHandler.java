@@ -9,6 +9,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.HopperBlockEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -36,7 +38,7 @@ public class PickUpBehaviorHandler {
             ChestBlockEntity chestBlockEntity = (ChestBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
-            chestMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity));
+            chestMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity, world.getRegistryManager())));
             chestBlockEntity.clear();
             return chestMinecart;
         });
@@ -47,7 +49,7 @@ public class PickUpBehaviorHandler {
             AbstractFurnaceBlockEntity furnaceBlock = (AbstractFurnaceBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack furnaceMinecart = new ItemStack(Items.FURNACE_MINECART, 1);
             //2.25
-            furnaceMinecart.setNbt(NbtBuilder.create().putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25)).build());
+            furnaceMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25)).build()));
             return furnaceMinecart;
         });
 
@@ -55,7 +57,7 @@ public class PickUpBehaviorHandler {
             HopperBlockEntity hopperBlockEntity = (HopperBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
-            hopperMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity));
+            hopperMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity, world.getRegistryManager())));
             hopperBlockEntity.clear();
             return hopperMinecart;
         });

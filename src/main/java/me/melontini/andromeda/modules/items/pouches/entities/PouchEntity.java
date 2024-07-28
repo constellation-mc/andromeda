@@ -22,9 +22,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -149,17 +152,13 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     public enum Type {
-        SEED(0, Andromeda.id("pouches/seeds"), Main.SEED_POUCH),
-        SAPLING(1, Andromeda.id("pouches/saplings"), Main.SAPLING_POUCH),
-        FLOWER(2, Andromeda.id("pouches/flowers"), Main.FLOWER_POUCH),
+        SEED(0, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/seeds")), Main.SEED_POUCH),
+        SAPLING(1, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/saplings")), Main.SAPLING_POUCH),
+        FLOWER(2, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/flowers")), Main.FLOWER_POUCH),
         CUSTOM(3, null, Main.SPECIAL_POUCH) {
             @Override
-            public @NotNull Identifier getLootId(ItemStack stack) {
-                NbtCompound nbt = stack.getNbt();
-                if (nbt != null && nbt.contains("CustomLootId")) {
-                    return Identifier.of(nbt.getString("CustomLootId"));
-                }
-                return SEED.getLootId(stack);
+            public @NotNull RegistryKey<LootTable> getLootId(ItemStack stack) {
+                return stack.getOrDefault(Main.CUSTOM_COMPONENT.get(), CustomPouchComponent.DEFAULT).key();
             }
         };
 
@@ -172,16 +171,16 @@ public class PouchEntity extends ThrownItemEntity {
         });
 
         private final int syncId;
-        @Nullable private final Identifier lootId;
+        @Nullable private final RegistryKey<LootTable> lootId;
         private final Keeper<PouchItem> defaultItem;
 
-        Type(int syncId, @Nullable Identifier lootId, Keeper<PouchItem> defaultItem) {
+        Type(int syncId, @Nullable RegistryKey<LootTable> lootId, Keeper<PouchItem> defaultItem) {
             this.syncId = syncId;
             this.lootId = lootId;
             this.defaultItem = defaultItem;
         }
 
-        public @NotNull Identifier getLootId(ItemStack stack) {
+        public @NotNull RegistryKey<LootTable> getLootId(ItemStack stack) {
             return Objects.requireNonNull(lootId);
         }
 

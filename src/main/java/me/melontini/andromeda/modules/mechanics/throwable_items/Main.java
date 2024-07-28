@@ -16,6 +16,8 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -31,7 +33,10 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPointer;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import static me.melontini.andromeda.common.Andromeda.id;
@@ -47,12 +52,28 @@ public final class Main {
     public static final Identifier ITEMS_WITH_BEHAVIORS = Andromeda.id("items_with_behaviors");
     public static final Identifier COLORED_FLYING_STACK_LANDED = Andromeda.id("colored_flying_stack_landed");
 
-    public static final ProjectileDispenserBehavior BEHAVIOR = new ProjectileDispenserBehavior() {
-        @Override
-        protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
+    public static final ItemDispenserBehavior BEHAVIOR = new ItemDispenserBehavior() {
+
+        private ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
             ItemStack stack1 = stack.copy();
             stack1.setCount(1);
             return new FlyingItemEntity(stack1, position.getX(), position.getY(), position.getZ(), world);
+        }
+
+        @Override
+        protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+            World world = pointer.world();
+            Direction direction = pointer.state().get(DispenserBlock.FACING);
+            Position position = DispenserBlock.getOutputLocation(pointer, 0.7, new Vec3d(0.0, 0.1, 0.0));
+            ProjectileEntity projectileEntity = this.createProjectile(world, position, stack);
+            projectileEntity.setVelocity(projectileEntity, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), 1.1f, 6f);
+            world.spawnEntity(projectileEntity);
+            stack.decrement(1);
+            return stack;
+        }
+
+        protected void playSound(BlockPointer pointer) {
+            pointer.world().syncWorldEvent(1002, pointer.pos(), 0);
         }
     };
 

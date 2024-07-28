@@ -17,10 +17,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -57,7 +58,7 @@ public class MinecartItems {
                 if (world.am$get(MinecartBlockPicking.CONFIG).spawnerPicking) {
                     MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
                     ItemStack spawnerMinecart = new ItemStack(item, 1);
-                    spawnerMinecart.setNbt(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build());
+                    spawnerMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build()));
                     return spawnerMinecart;
                 }
                 return null;
@@ -70,7 +71,7 @@ public class MinecartItems {
                 int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
                 ItemStack noteBlockMinecart = new ItemStack(item);
 
-                noteBlockMinecart.setNbt(NbtBuilder.create().putInt("Note", noteProp).build());
+                noteBlockMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().putInt("Note", noteProp).build()));
                 return noteBlockMinecart;
             }));
 
@@ -82,7 +83,7 @@ public class MinecartItems {
 
                 if (!record.isEmpty()) {
                     world.syncWorldEvent(WorldEvents.JUKEBOX_STARTS_PLAYING, pos, 0);
-                    jukeboxMinecart.setNbt(NbtBuilder.create().put("Items", record.writeNbt(new NbtCompound())).build());
+                    jukeboxMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().put("Items", record.encode(world.getRegistryManager())).build()));
                 }
                 jukeboxBlockEntity.clear();
                 return jukeboxMinecart;

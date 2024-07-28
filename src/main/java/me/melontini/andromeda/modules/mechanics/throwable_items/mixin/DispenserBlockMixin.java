@@ -7,6 +7,7 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,11 +27,10 @@ abstract class DispenserBlockMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "getBehaviorForItem", cancellable = true)
-    private void andromeda$overrideBehavior(ItemStack stack, CallbackInfoReturnable<DispenserBehavior> cir) {
-        var server = Andromeda.get().getCurrentServer();
-        if (server == null) return;
+    private void andromeda$overrideBehavior(World world, ItemStack stack, CallbackInfoReturnable<DispenserBehavior> cir) {
+        if (world.isClient()) return;
 
-        var manager = server.dm$getReloader(RELOADER);
+        var manager = world.getServer().dm$getReloader(RELOADER);
         if (manager.hasBehaviors(stack) && manager.overridesVanilla(stack.getItem())) {
             cir.setReturnValue(Main.BEHAVIOR);
         }

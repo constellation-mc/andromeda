@@ -11,11 +11,13 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -32,7 +34,7 @@ import java.util.Optional;
 
 
 public class WorldUtil {
-    public static final Identifier BEE_LOOT_ID = Andromeda.id("bee_nest/bee_nest_broken");
+    public static final RegistryKey<LootTable> BEE_LOOT_ID = RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("bee_nest/bee_nest_broken"));
 
     public static final List<Direction> AROUND_BLOCK_DIRECTIONS = List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 
@@ -51,7 +53,7 @@ public class WorldUtil {
         }
     }
 
-    public static List<ItemStack> prepareLoot(@NonNull World world, @NonNull Identifier lootId) {
+    public static List<ItemStack> prepareLoot(@NonNull World world, @NonNull RegistryKey<LootTable> lootId) {
         var table = ((ServerWorld) world).getServer().getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(lootId);
         if (table == null) throw new IllegalStateException("No '%s' in loot registry".formatted(lootId));
         return table.generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world)).build(LootContextTypes.EMPTY));

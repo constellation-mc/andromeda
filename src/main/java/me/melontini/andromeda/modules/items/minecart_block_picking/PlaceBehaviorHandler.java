@@ -4,6 +4,8 @@ import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
@@ -32,20 +34,23 @@ public class PlaceBehaviorHandler {
     public static void init() {
         registerPlaceBehavior(Items.CHEST_MINECART, (stack, world, d, e, f, g, pos) -> {
             ChestMinecartEntity chestMinecart = (ChestMinecartEntity) AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.CHEST, stack, null);
-            NbtUtil.readInventoryFromNbt(stack.getNbt(), chestMinecart);
+            var nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+            NbtUtil.readInventoryFromNbt(nbt, chestMinecart, world.getRegistryManager());
             return chestMinecart;
         });
 
         registerPlaceBehavior(Items.HOPPER_MINECART, (stack, world, d, e, f, g, pos) -> {
             HopperMinecartEntity hopperMinecart = (HopperMinecartEntity) AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.HOPPER, stack, null);
-            NbtUtil.readInventoryFromNbt(stack.getNbt(), hopperMinecart);
+            var nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+            NbtUtil.readInventoryFromNbt(nbt, hopperMinecart, world.getRegistryManager());
             return hopperMinecart;
         });
 
         registerPlaceBehavior(Items.FURNACE_MINECART, (stack, world, d, e, f, g, pos) -> {
             FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE, stack, null);
 
-            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m -> Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel).orElse(32000));
+            var nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+            furnaceMinecart.fuel = NbtUtil.getInt(nbt, "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m -> Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel).orElse(32000));
             furnaceMinecart.pushX = furnaceMinecart.getX() - pos.getX();
             furnaceMinecart.pushZ = furnaceMinecart.getZ() - pos.getZ();
 

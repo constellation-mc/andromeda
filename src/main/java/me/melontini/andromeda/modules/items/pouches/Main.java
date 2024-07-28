@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.items.pouches;
 
 import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
+import me.melontini.andromeda.modules.items.pouches.entities.CustomPouchComponent;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
 import me.melontini.andromeda.util.Debug;
@@ -18,6 +19,7 @@ import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ViewerCountManager;
+import net.minecraft.component.ComponentType;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -42,6 +44,8 @@ public final class Main {
     public static final Keeper<PouchItem> SAPLING_POUCH = Keeper.create();
     public static final Keeper<PouchItem> SPECIAL_POUCH = Keeper.create();
     public static final Keeper<EntityType<PouchEntity>> POUCH = Keeper.create();
+
+    public static final Keeper<ComponentType<CustomPouchComponent>> CUSTOM_COMPONENT = Keeper.create();
 
     private static final Map<BlockEntityType<?>, Field> VIEWABLE_BLOCKS = new HashMap<>();
     public static final Map<BlockEntityType<?>, Field> VIEWABLE_VIEW = Collections.unmodifiableMap(VIEWABLE_BLOCKS);
@@ -85,6 +89,9 @@ public final class Main {
         POUCH.init(RegistryUtil.register(Registries.ENTITY_TYPE, id("pouch"), () -> FabricEntityTypeBuilder.<PouchEntity>create(SpawnGroup.MISC, PouchEntity::new)
                 .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
                 .trackRangeChunks(4).trackedUpdateRate(10).build()));
+
+        CUSTOM_COMPONENT.init(RegistryUtil.register(Registries.DATA_COMPONENT_TYPE, id("custom_loot"), () -> ComponentType.<CustomPouchComponent>builder()
+                .codec(CustomPouchComponent.CODEC).packetCodec(CustomPouchComponent.PACKET_CODEC).build()));
 
         Trades.register();
 
