@@ -11,8 +11,10 @@ import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ProjectileItem;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -25,16 +27,18 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
 import java.util.List;
 
 @Getter
-public class PouchItem extends Item {
+public class PouchItem extends Item implements ProjectileItem {
 
     private final PouchEntity.Type type;
 
-    public PouchItem(PouchEntity.Type type, Settings settings) {
+    public PouchItem(PouchEntity.Type type, Item.Settings settings) {
         super(settings);
         this.type = type;
     }
@@ -95,5 +99,12 @@ public class PouchItem extends Item {
             }
         }
         return ActionResult.PASS;
+    }
+
+    @Override
+    public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
+        var pouch = new PouchEntity(pos.getX(), pos.getY(), pos.getZ(), world);
+        pouch.setPouchType(((PouchItem) stack.getItem()).getType());
+        return pouch;
     }
 }

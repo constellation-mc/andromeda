@@ -59,7 +59,6 @@ abstract class FallingBlockMixin extends Entity {
             world.breakBlock(beehiveBlockEntity.getPos(), false);
             for (int i = 0; i < nbeetlist.size(); ++i) {
                 NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
-                BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
                 BeeEntity bee = EntityType.BEE.create(world);
                 if (bee == null) continue;
 

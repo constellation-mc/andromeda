@@ -3,10 +3,10 @@ package me.melontini.andromeda.modules.entities.boats.entities;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
+import me.melontini.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
 import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -18,7 +18,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -48,10 +47,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
         this.prevZ = z;
     }
 
-    private final Runnable explode = Support.support(EnvType.CLIENT, () -> () -> {
-        PacketByteBuf buf = PacketByteBufs.create().writeUuid(this.getUuid());
-        ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
-    }, () -> this::explode);
+    private final Runnable explode = Support.support(EnvType.CLIENT, () -> () -> ClientPlayNetworking.send(new ExplodeBoatC2SPayload(this.getUuid())), () -> this::explode);
 
     @Override
     public void tick() {

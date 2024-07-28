@@ -5,6 +5,7 @@ import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
+import me.melontini.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -15,8 +16,6 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
@@ -40,13 +39,9 @@ public class BoatEntities {
         BOAT_WITH_JUKEBOX.init(boatType(config.isJukeboxBoatOn, id("jukebox_boat"), JukeboxBoatEntity::new));
         BOAT_WITH_HOPPER.init(boatType(config.isHopperBoatOn, id("hopper_boat"), HopperBoatEntity::new));
 
-        BOAT_WITH_TNT.ifPresent(e -> ServerPlayNetworking.registerGlobalReceiver(TNTBoatEntity.EXPLODE_BOAT_ON_SERVER,
-                (server, player, handler, buf, responseSender) -> {
-                    UUID id = buf.readUuid();
-                    server.execute(() -> {
-                        Entity entity = player.world.getEntityLookup().get(id);
-                        if (entity instanceof TNTBoatEntity boat && boat.isAlive()) boat.explode();
-                    });
-                }));
+        BOAT_WITH_TNT.ifPresent(e -> ServerPlayNetworking.registerGlobalReceiver(ExplodeBoatC2SPayload.ID, (payload, context) -> context.server().execute(() -> {
+            Entity entity = context.player().world.getEntityLookup().get(payload.entity());
+            if (entity instanceof TNTBoatEntity boat && boat.isAlive()) boat.explode();
+        })));
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -64,7 +65,7 @@ public class WorldUtil {
         //Thanks AccessWidener!
         fallingBlock.readCustomDataFromNbt(NbtBuilder.create()
                 .put("TileEntityData", NbtBuilder.create()
-                        .put("Bees", beehiveBlockEntity.getBees())
+                        .put("Bees", BeehiveBlockEntity.BeeData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, beehiveBlockEntity.createBeesData()).getOrThrow())
                         .putBoolean("AM-FromFallenBlock", true).build())
                 .put("BlockState", NbtHelper.fromBlockState(state)).build());
 

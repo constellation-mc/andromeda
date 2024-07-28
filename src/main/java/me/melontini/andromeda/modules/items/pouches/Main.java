@@ -21,13 +21,11 @@ import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -93,17 +91,8 @@ public final class Main {
         List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
         AndromedaItemGroup.accept(acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, new ArrayList<>(l)));
 
-        var behavior = new ProjectileDispenserBehavior() {
-            @Override
-            protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-                var pouch = new PouchEntity(position.getX(), position.getY(), position.getZ(), world);
-                pouch.setPouchType(((PouchItem) stack.getItem()).getType());
-                return pouch;
-            }
-        };
-
         for (Keeper<PouchItem> pouchItemKeeper : l) {
-            pouchItemKeeper.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
+            pouchItemKeeper.ifPresent(pi -> DispenserBlock.registerBehavior(pi, new ProjectileDispenserBehavior(pi)));
         }
     }
 
