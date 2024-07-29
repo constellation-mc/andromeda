@@ -21,59 +21,71 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ZombieEntity.class)
 abstract class ZombieEntityMixin extends HostileEntity implements ItemThrowerMob<ZombieEntity> {
 
-    @Unique private int andromeda$cooldown = 0;
+  @Unique private int andromeda$cooldown = 0;
 
-    protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-    @Inject(at = @At("HEAD"), method = "initCustomGoals")
-    private void andromeda$initCustomGoals(CallbackInfo ci) {
-        if (world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems)
-            this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, 4, 16));
-    }
+  @Inject(at = @At("HEAD"), method = "initCustomGoals")
+  private void andromeda$initCustomGoals(CallbackInfo ci) {
+    if (world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems)
+      this.goalSelector.add(1, new ThrowableItemAttackGoal<>(this, 1.0f, 4, 16));
+  }
 
-    @Inject(at = @At("HEAD"), method = "tick")
-    private void andromeda$tick(CallbackInfo ci) {
-        if (this.andromeda$cooldown > 0) this.andromeda$cooldown--;
-    }
+  @Inject(at = @At("HEAD"), method = "tick")
+  private void andromeda$tick(CallbackInfo ci) {
+    if (this.andromeda$cooldown > 0) this.andromeda$cooldown--;
+  }
 
-    @Override
-    public void am$throwItem(LivingEntity target, float pullProgress) {
-        if (!world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems) return;
+  @Override
+  public void am$throwItem(LivingEntity target, float pullProgress) {
+    if (!world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems) return;
 
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+    world.playSound(
+        null,
+        this.getX(),
+        this.getY(),
+        this.getZ(),
+        SoundEvents.ENTITY_SNOWBALL_THROW,
+        SoundCategory.NEUTRAL,
+        0.5F,
+        0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
-        var entity = andromeda$getFlyingItemEntity(target);
-        world.spawnEntity(entity);
-        if (MathUtil.threadRandom().nextBoolean())
-            this.andromeda$cooldown += Math.max(MathUtil.nextInt((int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28)), ItemBehavior.getCooldown((ServerWorld) world, this, entity, this.getMainHandStack()));
-        this.getMainHandStack().decrement(1);
-    }
+    var entity = andromeda$getFlyingItemEntity(target);
+    world.spawnEntity(entity);
+    if (MathUtil.threadRandom().nextBoolean())
+      this.andromeda$cooldown += Math.max(
+          MathUtil.nextInt(
+              (int) (this.distanceTo(target) * 28) / 2, (int) (this.distanceTo(target) * 28)),
+          ItemBehavior.getCooldown((ServerWorld) world, this, entity, this.getMainHandStack()));
+    this.getMainHandStack().decrement(1);
+  }
 
-    @Unique @NotNull private FlyingItemEntity andromeda$getFlyingItemEntity(LivingEntity target) {
-        var entity = new FlyingItemEntity(this.getMainHandStack(), this, world);
-        entity.setPos(this.getX(), this.getEyeY() - 0.1F, this.getZ());
-        double d = target.getX() - this.getX();
-        double e = target.getBodyY(0.3333333333333333) - entity.getY();
-        double f = target.getZ() - this.getZ();
-        double g = Math.sqrt(d * d + f * f);
-        entity.setVelocity(d, e + g * 0.2F, f, 0.9F, 9.0F);
-        return entity;
-    }
+  @Unique @NotNull private FlyingItemEntity andromeda$getFlyingItemEntity(LivingEntity target) {
+    var entity = new FlyingItemEntity(this.getMainHandStack(), this, world);
+    entity.setPos(this.getX(), this.getEyeY() - 0.1F, this.getZ());
+    double d = target.getX() - this.getX();
+    double e = target.getBodyY(0.3333333333333333) - entity.getY();
+    double f = target.getZ() - this.getZ();
+    double g = Math.sqrt(d * d + f * f);
+    entity.setVelocity(d, e + g * 0.2F, f, 0.9F, 9.0F);
+    return entity;
+  }
 
-    @Override
-    public int am$cooldown() {
-        return this.andromeda$cooldown;
-    }
+  @Override
+  public int am$cooldown() {
+    return this.andromeda$cooldown;
+  }
 
-    @Inject(at = @At("HEAD"), method = "writeCustomDataToNbt")
-    private void andromeda$writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
-       if (this.andromeda$cooldown > 0) nbt.putInt("AM-Throw-Cooldown", this.andromeda$cooldown);
-    }
+  @Inject(at = @At("HEAD"), method = "writeCustomDataToNbt")
+  private void andromeda$writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
+    if (this.andromeda$cooldown > 0) nbt.putInt("AM-Throw-Cooldown", this.andromeda$cooldown);
+  }
 
-    @Inject(at = @At("HEAD"), method = "readCustomDataFromNbt")
-    private void andromeda$readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains("AM-Throw-Cooldown")) this.andromeda$cooldown = nbt.getInt("AM-Throw-Cooldown");
-    }
+  @Inject(at = @At("HEAD"), method = "readCustomDataFromNbt")
+  private void andromeda$readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
+    if (nbt.contains("AM-Throw-Cooldown"))
+      this.andromeda$cooldown = nbt.getInt("AM-Throw-Cooldown");
+  }
 }

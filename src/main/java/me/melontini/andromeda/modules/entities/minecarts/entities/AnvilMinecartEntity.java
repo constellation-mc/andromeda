@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.minecarts.entities;
 
+import java.util.Optional;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
@@ -23,67 +24,69 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import java.util.Optional;
-
 public class AnvilMinecartEntity extends AbstractMinecartEntity {
-    public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-    public AnvilMinecartEntity(World world, double x, double y, double z) {
-        super(MinecartEntities.ANVIL_MINECART_ENTITY.orThrow(), world, x, y, z);
-    }
+  public AnvilMinecartEntity(World world, double x, double y, double z) {
+    super(MinecartEntities.ANVIL_MINECART_ENTITY.orThrow(), world, x, y, z);
+  }
 
-    @Override
-    public Type getMinecartType() {
-        return Type.CHEST;
-    }
+  @Override
+  public Type getMinecartType() {
+    return Type.CHEST;
+  }
 
-    @Override
-    public ActionResult interact(PlayerEntity player, Hand hand) {
-        return ActionResult.success(world.isClient);
-    }
+  @Override
+  public ActionResult interact(PlayerEntity player, Hand hand) {
+    return ActionResult.success(world.isClient);
+  }
 
-    @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-        int i = MathHelper.ceil(fallDistance - 1.0F);
-        if (i >= 0) {
-            float f = (float) Math.min(MathUtil.fastFloor(i * 2), 40);
-            for (Entity entity : world.getEntitiesByClass(Entity.class, this.getBoundingBox().expand(0.1), EntityPredicates.EXCEPT_SPECTATOR)) {
-                if (!(entity instanceof AbstractMinecartEntity)) {
-                    entity.damage(world.getDamageSources().fallingAnvil(this), f);
-                }
-            }
-
+  @Override
+  public boolean handleFallDamage(
+      float fallDistance, float damageMultiplier, DamageSource damageSource) {
+    int i = MathHelper.ceil(fallDistance - 1.0F);
+    if (i >= 0) {
+      float f = (float) Math.min(MathUtil.fastFloor(i * 2), 40);
+      for (Entity entity : world.getEntitiesByClass(
+          Entity.class, this.getBoundingBox().expand(0.1), EntityPredicates.EXCEPT_SPECTATOR)) {
+        if (!(entity instanceof AbstractMinecartEntity)) {
+          entity.damage(world.getDamageSources().fallingAnvil(this), f);
         }
-        return false;
+      }
     }
+    return false;
+  }
 
-    @Override
-    public Item asItem() {
-        return MinecartItems.ANVIL_MINECART.orThrow();
-    }
+  @Override
+  public Item asItem() {
+    return MinecartItems.ANVIL_MINECART.orThrow();
+  }
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static final Optional<MinecartSpeedControl> optional = ModuleManager.get().getModule(MinecartSpeedControl.class);
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+  private static final Optional<MinecartSpeedControl> optional =
+      ModuleManager.get().getModule(MinecartSpeedControl.class);
 
-    @Override
-    public double getMaxSpeed() {
-        double d = (this.isTouchingWater() ? 0.08 : 0.1) / 20.0;
-        return optional.map(ms -> {
-            var c = world.am$get(MinecartSpeedControl.CONFIG);
-            var supplier = ConstantLootContextAccessor.get(this);
-            return c.available.asBoolean(supplier) ? d * c.modifier.asDouble(supplier) : d;
-        }).orElse(d);
-    }
+  @Override
+  public double getMaxSpeed() {
+    double d = (this.isTouchingWater() ? 0.08 : 0.1) / 20.0;
+    return optional
+        .map(ms -> {
+          var c = world.am$get(MinecartSpeedControl.CONFIG);
+          var supplier = ConstantLootContextAccessor.get(this);
+          return c.available.asBoolean(supplier) ? d * c.modifier.asDouble(supplier) : d;
+        })
+        .orElse(d);
+  }
 
-    @Override
-    public BlockState getDefaultContainedBlock() {
-        return Blocks.ANVIL.getDefaultState().with(AnvilBlock.FACING, Direction.NORTH);
-    }
+  @Override
+  public BlockState getDefaultContainedBlock() {
+    return Blocks.ANVIL.getDefaultState().with(AnvilBlock.FACING, Direction.NORTH);
+  }
 
-    @Override
-    public ItemStack getPickBlockStack() {
-        return new ItemStack(MinecartItems.ANVIL_MINECART.orThrow());
-    }
+  @Override
+  public ItemStack getPickBlockStack() {
+    return new ItemStack(MinecartItems.ANVIL_MINECART.orThrow());
+  }
 }

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.tooltips.mixin.clock;
 
+import java.util.List;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -17,22 +18,28 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-
 @Mixin(Item.class)
 abstract class ItemMixin {
 
-    @Inject(at = @At("HEAD"), method = "appendTooltip")
-    public void andromeda$tooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).clock) return;
+  @Inject(at = @At("HEAD"), method = "appendTooltip")
+  public void andromeda$tooltip(
+      ItemStack stack,
+      @Nullable World world,
+      List<Text> tooltip,
+      TooltipContext context,
+      CallbackInfo ci) {
+    if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).clock) return;
 
-        if (world != null && world.isClient) {
-            if (stack.getItem() == Items.CLOCK) {
-                //totally not stolen from here https://bukkit.org/threads/how-can-i-convert-minecraft-long-time-to-real-hours-and-minutes.122912/
-                int i = MathUtil.fastFloor((world.getTimeOfDay() / 1000d + 8) % 24);
-                int j = MathUtil.fastFloor(60 * (world.getTimeOfDay() % 1000d) / 1000);
-                tooltip.add(TextUtil.translatable("tooltip.andromeda.clock", String.format("%02d:%02d", i, j)).formatted(Formatting.GRAY));
-            }
-        }
+    if (world != null && world.isClient) {
+      if (stack.getItem() == Items.CLOCK) {
+        // totally not stolen from here
+        // https://bukkit.org/threads/how-can-i-convert-minecraft-long-time-to-real-hours-and-minutes.122912/
+        int i = MathUtil.fastFloor((world.getTimeOfDay() / 1000d + 8) % 24);
+        int j = MathUtil.fastFloor(60 * (world.getTimeOfDay() % 1000d) / 1000);
+        tooltip.add(
+            TextUtil.translatable("tooltip.andromeda.clock", String.format("%02d:%02d", i, j))
+                .formatted(Formatting.GRAY));
+      }
     }
+  }
 }

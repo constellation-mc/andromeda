@@ -26,22 +26,40 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AnvilScreenHandler.class)
 abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
-    public AnvilScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(type, syncId, playerInventory, context);
-    }
+  public AnvilScreenHandlerMixin(
+      @Nullable ScreenHandlerType<?> type,
+      int syncId,
+      PlayerInventory playerInventory,
+      ScreenHandlerContext context) {
+    super(type, syncId, playerInventory, context);
+  }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V", ordinal = 0), method = "onTakeOutput")
-    private void andromeda$particles(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        if (!AndromedaClient.HANDLER.get(GuiParticles.CONFIG).anvilScreenParticles) return;
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V",
+              ordinal = 0),
+      method = "onTakeOutput")
+  private void andromeda$particles(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
+    if (!AndromedaClient.HANDLER.get(GuiParticles.CONFIG).anvilScreenParticles) return;
 
-        if (MinecraftClient.getInstance().isOnThread() && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {
-            BlockState state = Blocks.ANVIL.getDefaultState();
-            var slot = this.slots.get(2);
-            boolean enchant = this.slots.get(1).getStack().isOf(Items.ENCHANTED_BOOK);
-            ScreenParticleHelper.addScreenParticles(
-                    !enchant ? new BlockStateParticleEffect(ParticleTypes.BLOCK, state) : ParticleTypes.END_ROD,
-                    anvilScreen.x + slot.x + 8, anvilScreen.y + slot.y + 8,
-                    0.5, 0.5, !enchant ? 0.5 : 0.07, 5);
-        }
+    if (MinecraftClient.getInstance().isOnThread()
+        && MinecraftClient.getInstance().currentScreen instanceof AnvilScreen anvilScreen) {
+      BlockState state = Blocks.ANVIL.getDefaultState();
+      var slot = this.slots.get(2);
+      boolean enchant = this.slots.get(1).getStack().isOf(Items.ENCHANTED_BOOK);
+      ScreenParticleHelper.addScreenParticles(
+          !enchant
+              ? new BlockStateParticleEffect(ParticleTypes.BLOCK, state)
+              : ParticleTypes.END_ROD,
+          anvilScreen.x + slot.x + 8,
+          anvilScreen.y + slot.y + 8,
+          0.5,
+          0.5,
+          !enchant ? 0.5 : 0.07,
+          5);
     }
+  }
 }

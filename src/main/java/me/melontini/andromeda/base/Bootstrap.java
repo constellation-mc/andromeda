@@ -1,6 +1,10 @@
 package me.melontini.andromeda.base;
 
+import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
+
 import com.google.common.collect.ImmutableMap;
+import java.nio.file.Files;
+import java.util.*;
 import lombok.CustomLog;
 import me.melontini.andromeda.base.events.Bus;
 import me.melontini.andromeda.base.events.InitEvent;
@@ -25,11 +29,6 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import org.spongepowered.asm.mixin.Mixins;
 
-import java.nio.file.Files;
-import java.util.*;
-
-import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
-
 /**
  * Bootstrap is responsible for bootstrapping the bulk of Andromeda.
  * <p> This includes, but not limited to: <br/>
@@ -44,212 +43,257 @@ import static me.melontini.andromeda.util.exceptions.AndromedaException.run;
 @CustomLog
 public class Bootstrap {
 
-    private static void runInit(String init, Module module) {
-        run(() -> {
-            Bus<InitEvent> event = module.getOrCreateBus(init + "_init_event", null);
-            if (event == null) return;
-            event.invoker().collectInits().run();
-        }, (b) -> b.literal("Failed to execute %s!".formatted(init)).add("module", module.meta().id()));
+  private static void runInit(String init, Module module) {
+    run(
+        () -> {
+          Bus<InitEvent> event = module.getOrCreateBus(init + "_init_event", null);
+          if (event == null) return;
+          event.invoker().collectInits().run();
+        },
+        (b) -> b.literal("Failed to execute %s!".formatted(init))
+            .add("module", module.meta().id()));
+  }
+
+  @Environment(EnvType.CLIENT)
+  public static void onClient() {
+    Status.update();
+
+    onMerged();
+
+    run(
+        () -> {
+          AndromedaClient.HANDLER.loadAll();
+          AndromedaClient.HANDLER.saveAll();
+        },
+        b -> b.literal("Failed to initialize AndromedaClient!"));
+
+    for (Module module : ModuleManager.get().loaded()) {
+      if (module.meta().environment().isServer()) continue;
+      runInit("client", module);
+    }
+    run(AndromedaClient::init, b -> b.literal("Failed to initialize AndromedaClient!"));
+  }
+
+  @Environment(EnvType.SERVER)
+  public static void onServer() {
+    Status.update();
+
+    onMerged();
+
+    for (Module module : ModuleManager.get().loaded()) {
+      if (module.meta().environment().isClient()) continue;
+      runInit("server", module);
+    }
+  }
+
+  private static void onMerged() {
+    run(
+        () -> {
+          Andromeda.GAME_HANDLER.loadAll();
+          Andromeda.GAME_HANDLER.saveAll();
+        },
+        b -> b.literal("Failed to initialize Andromeda!"));
+
+    for (Module module : ModuleManager.get().loaded()) {
+      runInit("merged", module);
+    }
+  }
+
+  public static void onMain() {
+    Status.update();
+    if (Mixins.getUnvisitedCount() > 0) {
+      for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
+        if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$")) {
+          boolean quilt = CommonValues.platform() == CommonValues.Platform.QUILT;
+
+          var builder = AndromedaException.builder()
+              .report(!quilt)
+              .literal("Mixin failed to consume Andromeda's late configs!")
+              .translatable(MixinProcessor.NOTICE)
+              .add("mixin_config", config.getName());
+
+          if (!quilt) {
+            List<String> list = FabricLoader.getInstance()
+                .getEntrypointContainers("preLaunch", PreLaunchEntrypoint.class)
+                .stream()
+                .map(EntrypointContainer::getEntrypoint)
+                .map(Object::getClass)
+                .map(Class::getName)
+                .toList();
+            if (!list.isEmpty()) builder.add("before_andromeda", list);
+          }
+          throw builder.build();
+        }
+      }
     }
 
-    @Environment(EnvType.CLIENT)
-    public static void onClient() {
-        Status.update();
+    run(
+        () -> {
+          Andromeda.ROOT_HANDLER.loadAll();
+          Andromeda.ROOT_HANDLER.saveAll();
+        },
+        b -> b.literal("Failed to initialize Andromeda!"));
 
-        onMerged();
-
-        run(() -> {
-            AndromedaClient.HANDLER.loadAll();
-            AndromedaClient.HANDLER.saveAll();
-        }, b -> b.literal("Failed to initialize AndromedaClient!"));
-
-        for (Module module : ModuleManager.get().loaded()) {
-            if (module.meta().environment().isServer()) continue;
-            runInit("client", module);
-        }
-        run(AndromedaClient::init, b -> b.literal("Failed to initialize AndromedaClient!"));
+    for (Module module : ModuleManager.get().loaded()) {
+      runInit("main", module);
     }
 
-    @Environment(EnvType.SERVER)
-    public static void onServer() {
-        Status.update();
+    run(Andromeda::init, b -> b.literal("Failed to initialize Andromeda!"));
+  }
 
-        onMerged();
+  public static void onPreLaunch() {
+    try {
+      InstanceDataHolder.load();
+      EarlyLanguage.load();
+      Exceptions.runAsResult(() -> {
+            Files.deleteIfExists(CommonValues.hiddenPath().resolve("git-response.json"));
+            Files.deleteIfExists(CommonValues.hiddenPath().resolve("last_version.txt"));
+          })
+          .error()
+          .map(Exceptions::unwrap)
+          .ifPresent(t -> LOGGER.error("Failed to delete unused files in .andromeda!", t));
 
-        for (Module module : ModuleManager.get().loaded()) {
-            if (module.meta().environment().isClient()) continue;
-            runInit("server", module);
-        }
+      Status.update();
+      LOGGER.info(EarlyLanguage.translate(
+          "andromeda.bootstrap.loading",
+          CommonValues.version(),
+          CommonValues.platform(),
+          CommonValues.platform().version()));
+
+      AndromedaConfig.save();
+      Experiments.save();
+
+      Status.update();
+
+      List<Module.Zygote> list = ModuleDiscovery.get();
+      if (list.isEmpty()) LOGGER.error(EarlyLanguage.translate("andromeda.bootstrap.no_modules"));
+
+      list.removeIf(m -> CommonValues.environment() == EnvType.SERVER
+          && !m.meta().environment().allows(EnvType.SERVER));
+
+      resolveConflicts(list);
+
+      List<Module.Zygote> sorted = list.stream()
+          .sorted(Comparator.comparingInt(m -> {
+            int i = ModuleManager.CATEGORIES.indexOf(m.meta().category());
+            return i >= 0 ? i : ModuleManager.CATEGORIES.size();
+          }))
+          .toList();
+
+      Status.update();
+
+      ModuleManager m;
+      try {
+        m = new ModuleManager(sorted);
+        ModuleManager.INSTANCE = () -> m;
+      } catch (
+          Throwable t) { // Manager constructor does a lot of heavy-lifting, so we want to catch any
+        // errors.
+        throw AndromedaException.builder()
+            .cause(t)
+            .literal("Failed to initialize ModuleManager!!!")
+            .build();
+      }
+      m.print();
+      run(() -> m.getMixinProcessor().addMixins(), (b) -> b.literal(
+              "Failed to inject dynamic mixin configs!")
+          .translatable(MixinProcessor.NOTICE));
+      Support.share("andromeda:module_manager", m);
+
+      Status.update();
+      Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
+    } catch (Throwable t) {
+      var e = AndromedaException.builder()
+          .cause(t)
+          .literal("Failed to bootstrap Andromeda!")
+          .build();
+      CrashHandler.handleCrash(e, Context.of());
+      e.setAppender(b -> {
+        b.append("State: ")
+            .append(AndromedaException.toString(CrashHandler.dumpState()))
+            .append('\n');
+        b.append("Statuses: ").append(AndromedaException.toString(e.getStatuses()));
+      });
+      throw e;
     }
+  }
 
-    private static void onMerged() {
-        run(() -> {
-            Andromeda.GAME_HANDLER.loadAll();
-            Andromeda.GAME_HANDLER.saveAll();
-        }, b -> b.literal("Failed to initialize Andromeda!"));
+  private static void resolveConflicts(Collection<Module.Zygote> list) {
+    Map<String, Module.Zygote> packages = new HashMap<>();
+    Map<String, Module.Zygote> ids = new HashMap<>();
+    for (Module.Zygote module : list) {
+      ModuleManager.validateZygote(module);
 
-        for (Module module : ModuleManager.get().loaded()) {
-            runInit("merged", module);
-        }
+      var id = ids.put(module.meta().id(), module);
+      if (id != null)
+        throw AndromedaException.builder()
+            .literal("Duplicate module IDs!")
+            .add("identifier", module.meta().id())
+            .add("module", id.type())
+            .add("duplicate", module.type())
+            .build();
+
+      var pkg = packages.put(module.type().getPackageName(), module);
+      if (pkg != null)
+        throw AndromedaException.builder()
+            .literal("Duplicate module packages!")
+            .add("package", module.type().getPackageName())
+            .add("module", pkg.type())
+            .add("duplicate", module.type())
+            .build();
     }
+  }
 
-    public static void onMain() {
-        Status.update();
-        if (Mixins.getUnvisitedCount() > 0) {
-            for (org.spongepowered.asm.mixin.transformer.Config config : Mixins.getConfigs()) {
-                if (!config.isVisited() && config.getName().startsWith("andromeda_dynamic$$")) {
-                    boolean quilt = CommonValues.platform() == CommonValues.Platform.QUILT;
+  public static ClassPath getModuleClassPath() {
+    return AndromedaMixins.CLASS_PATH;
+  }
 
-                    var builder = AndromedaException.builder().report(!quilt)
-                            .literal("Mixin failed to consume Andromeda's late configs!").translatable(MixinProcessor.NOTICE)
-                            .add("mixin_config", config.getName());
-
-                    if (!quilt) {
-                        List<String> list = FabricLoader.getInstance().getEntrypointContainers("preLaunch", PreLaunchEntrypoint.class).stream()
-                                .map(EntrypointContainer::getEntrypoint).map(Object::getClass).map(Class::getName)
-                                .toList();
-                        if (!list.isEmpty()) builder.add("before_andromeda", list);
-                    }
-                    throw builder.build();
-                }
-            }
-        }
-
-        run(() -> {
-            Andromeda.ROOT_HANDLER.loadAll();
-            Andromeda.ROOT_HANDLER.saveAll();
-        }, b -> b.literal("Failed to initialize Andromeda!"));
-
-        for (Module module : ModuleManager.get().loaded()) {
-            runInit("main", module);
-        }
-
-        run(Andromeda::init, b -> b.literal("Failed to initialize Andromeda!"));
-    }
-
-    public static void onPreLaunch() {
-        try {
-            InstanceDataHolder.load();
-            EarlyLanguage.load();
-            Exceptions.runAsResult(() -> {
-                Files.deleteIfExists(CommonValues.hiddenPath().resolve("git-response.json"));
-                Files.deleteIfExists(CommonValues.hiddenPath().resolve("last_version.txt"));
-            }).error().map(Exceptions::unwrap).ifPresent(t -> LOGGER.error("Failed to delete unused files in .andromeda!", t));
-
-            Status.update();
-            LOGGER.info(EarlyLanguage.translate("andromeda.bootstrap.loading", CommonValues.version(), CommonValues.platform(), CommonValues.platform().version()));
-
-            AndromedaConfig.save();
-            Experiments.save();
-
-            Status.update();
-
-            List<Module.Zygote> list = ModuleDiscovery.get();
-            if (list.isEmpty()) LOGGER.error(EarlyLanguage.translate("andromeda.bootstrap.no_modules"));
-
-            list.removeIf(m -> CommonValues.environment() == EnvType.SERVER && !m.meta().environment().allows(EnvType.SERVER));
-
-            resolveConflicts(list);
-
-            List<Module.Zygote> sorted = list.stream().sorted(Comparator.comparingInt(m -> {
-                int i = ModuleManager.CATEGORIES.indexOf(m.meta().category());
-                return i >= 0 ? i : ModuleManager.CATEGORIES.size();
-            })).toList();
-
-            Status.update();
-
-            ModuleManager m;
-            try {
-                m = new ModuleManager(sorted);
-                ModuleManager.INSTANCE = () -> m;
-            } catch (Throwable t) {//Manager constructor does a lot of heavy-lifting, so we want to catch any errors.
-                throw AndromedaException.builder()
-                        .cause(t).literal("Failed to initialize ModuleManager!!!")
-                        .build();
-            }
-            m.print();
-            run(() -> m.getMixinProcessor().addMixins(), (b) -> b.literal("Failed to inject dynamic mixin configs!").translatable(MixinProcessor.NOTICE));
-            Support.share("andromeda:module_manager", m);
-
-            Status.update();
-            Crashlytics.addHandler("andromeda", CrashHandler::handleCrash);
-        } catch (Throwable t) {
-            var e = AndromedaException.builder().cause(t).literal("Failed to bootstrap Andromeda!").build();
-            CrashHandler.handleCrash(e, Context.of());
-            e.setAppender(b -> {
-                b.append("State: ").append(AndromedaException.toString(CrashHandler.dumpState())).append('\n');
-                b.append("Statuses: ").append(AndromedaException.toString(e.getStatuses()));
-            });
-            throw e;
-        }
-    }
-
-    private static void resolveConflicts(Collection<Module.Zygote> list) {
-        Map<String, Module.Zygote> packages = new HashMap<>();
-        Map<String, Module.Zygote> ids = new HashMap<>();
-        for (Module.Zygote module : list) {
-            ModuleManager.validateZygote(module);
-
-            var id = ids.put(module.meta().id(), module);
-            if (id != null)
-                throw AndromedaException.builder()
-                        .literal("Duplicate module IDs!")
-                        .add("identifier", module.meta().id()).add("module", id.type()).add("duplicate", module.type())
-                        .build();
-
-            var pkg = packages.put(module.type().getPackageName(), module);
-            if (pkg != null)
-                throw AndromedaException.builder()
-                        .literal("Duplicate module packages!")
-                        .add("package", module.type().getPackageName()).add("module", pkg.type()).add("duplicate", module.type())
-                        .build();
-        }
-    }
-
-    public static ClassPath getModuleClassPath() {
-        return AndromedaMixins.CLASS_PATH;
-    }
-
-    public static boolean testModVersion(Module m, String modId, String predicate) {
-        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
-        if (mod.isPresent() && !Debug.skipIntegration(m.meta().id(), modId)) {
-            try {
-                VersionPredicate version = VersionPredicate.parse(predicate);
-                return version.test(mod.get().getMetadata().getVersion());
-            } catch (VersionParsingException e) {
-                return false;
-            }
-        }
+  public static boolean testModVersion(Module m, String modId, String predicate) {
+    Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
+    if (mod.isPresent() && !Debug.skipIntegration(m.meta().id(), modId)) {
+      try {
+        VersionPredicate version = VersionPredicate.parse(predicate);
+        return version.test(mod.get().getMetadata().getVersion());
+      } catch (VersionParsingException e) {
         return false;
+      }
+    }
+    return false;
+  }
+
+  public static boolean isModLoaded(Module module, String mod) {
+    return !Debug.skipIntegration(module.meta().id(), mod)
+        && FabricLoader.getInstance().isModLoaded(mod);
+  }
+
+  public enum Status {
+    PRE_INIT,
+    INIT,
+    DISCOVERY,
+    SETUP,
+    PRE_LAUNCH,
+    MAIN,
+    DEFAULT;
+
+    private static final Map<Status, Status> PROGRESS = ImmutableMap.<Status, Status>builder()
+        .put(PRE_INIT, INIT)
+        .put(INIT, DISCOVERY)
+        .put(DISCOVERY, SETUP)
+        .put(SETUP, PRE_LAUNCH)
+        .put(PRE_LAUNCH, MAIN)
+        .put(MAIN, DEFAULT)
+        .build();
+    private static Status CURRENT = PRE_INIT;
+
+    public static void update() {
+      var progress = PROGRESS.get(Status.CURRENT);
+      if (progress == null) throw new IllegalStateException();
+      Status.CURRENT = progress;
+      LOGGER.debug("Status updated to {}", Status.CURRENT);
     }
 
-    public static boolean isModLoaded(Module module, String mod) {
-        return !Debug.skipIntegration(module.meta().id(), mod) && FabricLoader.getInstance().isModLoaded(mod);
+    public static synchronized Status get() {
+      return CURRENT;
     }
-
-    public enum Status {
-        PRE_INIT, INIT, DISCOVERY, SETUP,
-        PRE_LAUNCH, MAIN, DEFAULT;
-
-        private static final Map<Status, Status> PROGRESS = ImmutableMap.<Status, Status>builder()
-                .put(PRE_INIT, INIT)
-                .put(INIT, DISCOVERY)
-                .put(DISCOVERY, SETUP)
-                .put(SETUP, PRE_LAUNCH)
-                .put(PRE_LAUNCH, MAIN)
-                .put(MAIN, DEFAULT)
-                .build();
-        private static Status CURRENT = PRE_INIT;
-
-        public static void update() {
-            var progress = PROGRESS.get(Status.CURRENT);
-            if (progress == null) throw new IllegalStateException();
-            Status.CURRENT = progress;
-            LOGGER.debug("Status updated to {}", Status.CURRENT);
-        }
-
-        public static synchronized Status get() {
-            return CURRENT;
-        }
-    }
+  }
 }

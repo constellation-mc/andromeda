@@ -16,9 +16,15 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(SubCategoryListEntry.class)
 abstract class SubCategoryListEntryMixin {
 
-    //Why am I fixing CC bugs?
-    @ModifyExpressionValue(method = "isRequiresRestart", at = @At(value = "INVOKE", target = "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"))
-    private boolean andromeda$isEdited(boolean original, @Local AbstractConfigListEntry<?> e) {
-        return original && e.isEdited();
-    }
+  // Why am I fixing CC bugs?
+  @ModifyExpressionValue(
+      method = "isRequiresRestart",
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"))
+  private boolean andromeda$isEdited(boolean original, @Local AbstractConfigListEntry<?> e) {
+    return original && e.isEdited();
+  }
 }

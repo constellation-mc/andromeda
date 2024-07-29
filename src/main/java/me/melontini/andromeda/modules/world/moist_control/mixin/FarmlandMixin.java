@@ -18,20 +18,31 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FarmlandBlock.class)
 abstract class FarmlandMixin {
 
-    @Inject(at = @At("HEAD"), method = "isWaterNearby")
-    private static void andromeda$prepareRule(WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir, @Share("value") LocalIntRef ref) {
-        if (world instanceof ServerWorld sw) {
-            ref.set(sw.am$get(MoistControl.CONFIG).customMoisture.asInt(LootContextUtil.command(sw, Vec3d.ofCenter(pos))));
-        }
+  @Inject(at = @At("HEAD"), method = "isWaterNearby")
+  private static void andromeda$prepareRule(
+      WorldView world,
+      BlockPos pos,
+      CallbackInfoReturnable<Boolean> cir,
+      @Share("value") LocalIntRef ref) {
+    if (world instanceof ServerWorld sw) {
+      ref.set(sw.am$get(MoistControl.CONFIG)
+          .customMoisture
+          .asInt(LootContextUtil.command(sw, Vec3d.ofCenter(pos))));
     }
+  }
 
-    @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "intValue=4"), method = "isWaterNearby")
-    private static int andromeda$modifyMoisture(int original, @Share("value") LocalIntRef ref) {
-        return ref.get();
-    }
+  @ModifyExpressionValue(
+      at = @At(value = "CONSTANT", args = "intValue=4"),
+      method = "isWaterNearby")
+  private static int andromeda$modifyMoisture(int original, @Share("value") LocalIntRef ref) {
+    return ref.get();
+  }
 
-    @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "intValue=-4"), method = "isWaterNearby")
-    private static int andromeda$modifyMoistureNegative(int original, @Share("value") LocalIntRef ref) {
-        return -ref.get();
-    }
+  @ModifyExpressionValue(
+      at = @At(value = "CONSTANT", args = "intValue=-4"),
+      method = "isWaterNearby")
+  private static int andromeda$modifyMoistureNegative(
+      int original, @Share("value") LocalIntRef ref) {
+    return -ref.get();
+  }
 }

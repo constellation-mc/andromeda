@@ -12,37 +12,37 @@ import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.minecarts.client.Client;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
-
 @ModuleInfo(name = "minecarts", category = "entities")
 public final class Minecarts extends Module {
 
-    public static final ConfigDefinition<Config> MAIN_CONFIG = new ConfigDefinition<>(() -> Config.class);
+  public static final ConfigDefinition<Config> MAIN_CONFIG =
+      new ConfigDefinition<>(() -> Config.class);
 
-    Minecarts() {
-        this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
-        InitEvent.main(this).listen(() -> () -> {
-            MinecartItems.init(this, Andromeda.ROOT_HANDLER.get(MAIN_CONFIG));
-            MinecartEntities.init(Andromeda.ROOT_HANDLER.get(MAIN_CONFIG));
-        });
-        InitEvent.client(this).listen(() -> Client::init);
-    }
+  Minecarts() {
+    this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
+    InitEvent.main(this).listen(() -> () -> {
+      MinecartItems.init(this, Andromeda.ROOT_HANDLER.get(MAIN_CONFIG));
+      MinecartEntities.init(Andromeda.ROOT_HANDLER.get(MAIN_CONFIG));
+    });
+    InitEvent.client(this).listen(() -> Client::init);
+  }
 
-    @ToString
-    public static final class Config extends BaseConfig {
-        @ConfigEntry.Gui.RequiresRestart
-        @SpecialEnvironment(Environment.BOTH)
-        public boolean isAnvilMinecartOn = false;
+  @ToString
+  public static final class Config extends BaseConfig {
+    @ConfigEntry.Gui.RequiresRestart
+    @SpecialEnvironment(Environment.BOTH)
+    public boolean isAnvilMinecartOn = false;
 
-        @ConfigEntry.Gui.RequiresRestart
-        @SpecialEnvironment(Environment.BOTH)
-        public boolean isNoteBlockMinecartOn = false;
+    @ConfigEntry.Gui.RequiresRestart
+    @SpecialEnvironment(Environment.BOTH)
+    public boolean isNoteBlockMinecartOn = false;
 
-        @ConfigEntry.Gui.RequiresRestart
-        @SpecialEnvironment(Environment.BOTH)
-        public boolean isJukeboxMinecartOn = false;
+    @ConfigEntry.Gui.RequiresRestart
+    @SpecialEnvironment(Environment.BOTH)
+    public boolean isJukeboxMinecartOn = false;
 
-        @ConfigEntry.Gui.RequiresRestart
-        @SpecialEnvironment(Environment.BOTH)
-        public boolean isSpawnerMinecartOn = false;
-    }
+    @ConfigEntry.Gui.RequiresRestart
+    @SpecialEnvironment(Environment.BOTH)
+    public boolean isSpawnerMinecartOn = false;
+  }
 }

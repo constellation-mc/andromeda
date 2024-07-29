@@ -30,136 +30,149 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-
 public class TNTBoatEntity extends BoatEntityWithBlock {
-    public static final Identifier EXPLODE_BOAT_ON_SERVER = Andromeda.id("explode_boat_on_server");
-    public int fuseTicks = -1;
+  public static final Identifier EXPLODE_BOAT_ON_SERVER = Andromeda.id("explode_boat_on_server");
+  public int fuseTicks = -1;
 
-    public TNTBoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  public TNTBoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-    public TNTBoatEntity(World world, double x, double y, double z) {
-        this(BoatEntities.BOAT_WITH_TNT.orThrow(), world);
-        this.setPosition(x, y, z);
-        this.prevX = x;
-        this.prevY = y;
-        this.prevZ = z;
-    }
+  public TNTBoatEntity(World world, double x, double y, double z) {
+    this(BoatEntities.BOAT_WITH_TNT.orThrow(), world);
+    this.setPosition(x, y, z);
+    this.prevX = x;
+    this.prevY = y;
+    this.prevZ = z;
+  }
 
-    private final Runnable explode = Support.support(EnvType.CLIENT, () -> () -> {
+  private final Runnable explode = Support.support(
+      EnvType.CLIENT,
+      () -> () -> {
         PacketByteBuf buf = PacketByteBufs.create().writeUuid(this.getUuid());
         ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
-    }, () -> this::explode);
+      },
+      () -> this::explode);
 
-    @Override
-    public void tick() {
-        if (this.fuseTicks > 0) {
-            --this.fuseTicks;
-            Vec3d vec3d = new Vec3d(-0.55, 0.0, 0.0).rotateY(-this.getYaw() * PIby180 - PIby2);
-            world.addParticle(ParticleTypes.SMOKE, this.getX() + vec3d.x, this.getY() + 0.8, this.getZ() + vec3d.z, -(this.getVelocity().x * 0.3), 0.08, -(this.getVelocity().z * 0.3));
-        } else if (this.fuseTicks == 0) {
-            this.explode();
-        }
-
-        if (this.horizontalCollision) {
-            if ((this.getFirstPassenger() instanceof PlayerEntity)) {
-                this.explode.run();
-            } else {
-                this.explode();
-            }
-        }
-        super.tick();
+  @Override
+  public void tick() {
+    if (this.fuseTicks > 0) {
+      --this.fuseTicks;
+      Vec3d vec3d = new Vec3d(-0.55, 0.0, 0.0).rotateY(-this.getYaw() * PIby180 - PIby2);
+      world.addParticle(
+          ParticleTypes.SMOKE,
+          this.getX() + vec3d.x,
+          this.getY() + 0.8,
+          this.getZ() + vec3d.z,
+          -(this.getVelocity().x * 0.3),
+          0.08,
+          -(this.getVelocity().z * 0.3));
+    } else if (this.fuseTicks == 0) {
+      this.explode();
     }
 
-    @Override
-    public boolean damage(DamageSource source, float amount) {
-        Entity entity = source.getSource();
+    if (this.horizontalCollision) {
+      if ((this.getFirstPassenger() instanceof PlayerEntity)) {
+        this.explode.run();
+      } else {
+        this.explode();
+      }
+    }
+    super.tick();
+  }
 
-        if (entity instanceof PersistentProjectileEntity persistentProjectileEntity && persistentProjectileEntity.isOnFire()) {
-            this.setFuse();
-            return false;
-        }
-        if (source.isIn(DamageTypeTags.IS_FIRE)) {
-            this.setFuse();
-            return false;
-        }
+  @Override
+  public boolean damage(DamageSource source, float amount) {
+    Entity entity = source.getSource();
 
-        if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-            this.setFuse();
-            return false;
-        }
+    if (entity instanceof PersistentProjectileEntity persistentProjectileEntity
+        && persistentProjectileEntity.isOnFire()) {
+      this.setFuse();
+      return false;
+    }
+    if (source.isIn(DamageTypeTags.IS_FIRE)) {
+      this.setFuse();
+      return false;
+    }
 
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        } else if (!this.world.isClient && !this.isRemoved()) {
-            this.setDamageWobbleSide(-this.getDamageWobbleSide());
-            this.setDamageWobbleTicks(10);
-            this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
-            this.scheduleVelocityUpdate();
-            this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-            boolean bl = source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode;
-            if (bl) {
-                this.discard();
-                return false;
-            }
-            if (this.getDamageWobbleStrength() > 40.0F) {
-                this.explode();
-            }
-        }
+    if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
+      this.setFuse();
+      return false;
+    }
+
+    if (this.isInvulnerableTo(source)) {
+      return false;
+    } else if (!this.world.isClient && !this.isRemoved()) {
+      this.setDamageWobbleSide(-this.getDamageWobbleSide());
+      this.setDamageWobbleTicks(10);
+      this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
+      this.scheduleVelocityUpdate();
+      this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+      boolean bl =
+          source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode;
+      if (bl) {
+        this.discard();
         return false;
+      }
+      if (this.getDamageWobbleStrength() > 40.0F) {
+        this.explode();
+      }
     }
+    return false;
+  }
 
-    @Override
-    public ActionResult interact(PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getStackInHand(hand);
-        if (hand == Hand.MAIN_HAND && (stack.isOf(Items.FLINT_AND_STEEL) || stack.isOf(Items.FIRE_CHARGE))) {
-            this.setFuse();
-            if (!player.isCreative()) {
-                if (stack.isOf(Items.FLINT_AND_STEEL)) {
-                    stack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
-                } else {
-                    stack.decrement(1);
-                }
-            }
-            return ActionResult.SUCCESS;
+  @Override
+  public ActionResult interact(PlayerEntity player, Hand hand) {
+    ItemStack stack = player.getStackInHand(hand);
+    if (hand == Hand.MAIN_HAND
+        && (stack.isOf(Items.FLINT_AND_STEEL) || stack.isOf(Items.FIRE_CHARGE))) {
+      this.setFuse();
+      if (!player.isCreative()) {
+        if (stack.isOf(Items.FLINT_AND_STEEL)) {
+          stack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+        } else {
+          stack.decrement(1);
         }
-        return super.interact(player, hand);
+      }
+      return ActionResult.SUCCESS;
     }
+    return super.interact(player, hand);
+  }
 
-    @Override
-    public Item asItem() {
-        return Registries.ITEM.get(BoatItems.boatId(this.getVariant(), "tnt"));
+  @Override
+  public Item asItem() {
+    return Registries.ITEM.get(BoatItems.boatId(this.getVariant(), "tnt"));
+  }
+
+  @Override
+  protected void readCustomDataFromNbt(NbtCompound nbt) {
+    super.readCustomDataFromNbt(nbt);
+    if (nbt.contains("AM-TNTFuse", 99)) {
+      this.fuseTicks = nbt.getInt("AM-TNTFuse");
     }
+  }
 
-    @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("AM-TNTFuse", 99)) {
-            this.fuseTicks = nbt.getInt("AM-TNTFuse");
-        }
+  @Override
+  protected void writeCustomDataToNbt(NbtCompound nbt) {
+    super.writeCustomDataToNbt(nbt);
+    nbt.putInt("AM-TNTFuse", this.fuseTicks);
+  }
 
+  public void setFuse() {
+    if (this.fuseTicks == -1) {
+      this.fuseTicks = 50 + world.getRandom().nextInt(20);
+      if (!world.isClient) {
+        world.playSoundFromEntity(
+            null, this, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE, 1F, 1F);
+      }
     }
+  }
 
-    @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("AM-TNTFuse", this.fuseTicks);
+  public void explode() {
+    if (!this.world.isClient) {
+      this.discard();
+      this.world.createExplosion(
+          this, this.getX(), this.getY(), this.getZ(), 4.0F, World.ExplosionSourceType.TNT);
     }
-
-    public void setFuse() {
-        if (this.fuseTicks == -1) {
-            this.fuseTicks = 50 + world.getRandom().nextInt(20);
-            if (!world.isClient) {
-                world.playSoundFromEntity(null, this, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE, 1F, 1F);
-            }
-        }
-    }
-
-    public void explode() {
-        if (!this.world.isClient) {
-            this.discard();
-            this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 4.0F, World.ExplosionSourceType.TNT);
-        }
-    }
+  }
 }

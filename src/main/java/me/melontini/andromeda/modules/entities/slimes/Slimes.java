@@ -12,21 +12,21 @@ import me.melontini.andromeda.util.commander.number.LongIntermediary;
 @ModuleInfo(name = "slimes", category = "entities", environment = Environment.SERVER)
 public final class Slimes extends Module {
 
-    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
+  public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
-    Slimes() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  Slimes() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 
-    @ToString
-    public static final class Config extends GameConfig {
+  @ToString
+  public static final class Config extends GameConfig {
 
-        public BooleanIntermediary flee = BooleanIntermediary.of(true);
+    public BooleanIntermediary flee = BooleanIntermediary.of(true);
 
-        public BooleanIntermediary merge = BooleanIntermediary.of(true);
+    public BooleanIntermediary merge = BooleanIntermediary.of(true);
 
-        public LongIntermediary maxMerge = LongIntermediary.of(4);
+    public LongIntermediary maxMerge = LongIntermediary.of(4);
 
-        public BooleanIntermediary slowness = BooleanIntermediary.of(false);
-    }
+    public BooleanIntermediary slowness = BooleanIntermediary.of(false);
+  }
 }

@@ -20,18 +20,37 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PropaguleBlock.class)
 abstract class PropaguleBlockMixin {
 
-    @Shadow private static boolean isFullyGrown(BlockState state) {
-        return false;
-    }
+  @Shadow
+  private static boolean isFullyGrown(BlockState state) {
+    return false;
+  }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/PropaguleBlock;isFullyGrown(Lnet/minecraft/block/BlockState;)Z", shift = At.Shift.BEFORE), method = "randomTick")
-    private void andromeda$randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
-        if (isFullyGrown(state) && random.nextInt(40) == 0 && world.am$get(FallingPropagule.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) {
-            FallingBlockEntity fallingBlock = new FallingBlockEntity(
-                    world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
-                    state.contains(Properties.WATERLOGGED) ? state.with(Properties.WATERLOGGED, Boolean.FALSE) : state);
-            world.setBlockState(pos, state.getFluidState().getBlockState(), Block.NOTIFY_ALL);
-            world.spawnEntity(fallingBlock);
-        }
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/block/PropaguleBlock;isFullyGrown(Lnet/minecraft/block/BlockState;)Z",
+              shift = At.Shift.BEFORE),
+      method = "randomTick")
+  private void andromeda$randomTick(
+      BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
+    if (isFullyGrown(state)
+        && random.nextInt(40) == 0
+        && world
+            .am$get(FallingPropagule.CONFIG)
+            .available
+            .asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) {
+      FallingBlockEntity fallingBlock = new FallingBlockEntity(
+          world,
+          pos.getX() + 0.5,
+          pos.getY(),
+          pos.getZ() + 0.5,
+          state.contains(Properties.WATERLOGGED)
+              ? state.with(Properties.WATERLOGGED, Boolean.FALSE)
+              : state);
+      world.setBlockState(pos, state.getFluidState().getBlockState(), Block.NOTIFY_ALL);
+      world.spawnEntity(fallingBlock);
     }
+  }
 }

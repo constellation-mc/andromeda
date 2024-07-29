@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.villager_gifting.mixin;
 
+import java.util.Map;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
@@ -23,49 +24,67 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Map;
-
 @Mixin(VillagerEntity.class)
 abstract class VillagerEntityMixin extends MerchantEntity {
 
-    @Shadow @Final private VillagerGossips gossip;
-    @Shadow protected abstract void sayNo();
+  @Shadow
+  @Final
+  private VillagerGossips gossip;
 
-    public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  @Shadow
+  protected abstract void sayNo();
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;getOffers()Lnet/minecraft/village/TradeOfferList;", shift = At.Shift.BEFORE), cancellable = true, method = "interactMob")
-    private void andromeda$useGifts(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (hand != Hand.MAIN_HAND || world.isClient()) return;
-        ItemStack stack = player.getStackInHand(hand);
+  public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-        if (!world.am$get(VillagerGifting.CONFIG).available.asBoolean(LootContextUtil.fishing(world, player.getPos(), stack, player))) return;
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/entity/passive/VillagerEntity;getOffers()Lnet/minecraft/village/TradeOfferList;",
+              shift = At.Shift.BEFORE),
+      cancellable = true,
+      method = "interactMob")
+  private void andromeda$useGifts(
+      PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+    if (hand != Hand.MAIN_HAND || world.isClient()) return;
+    ItemStack stack = player.getStackInHand(hand);
 
-        ItemStack gift = stack.copy();
-        gift.setCount(1);
+    if (!world
+        .am$get(VillagerGifting.CONFIG)
+        .available
+        .asBoolean(LootContextUtil.fishing(world, player.getPos(), stack, player))) return;
 
-        for (Map.Entry<TagKey<Item>, GiftTags.Action> entry : GiftTags.ACTION_MAP.entrySet()) {
-            if (stack.isIn(entry.getKey())) {
-                if (andromeda$tryInsertGift(cir, player, gift, entry.getValue().type())) {
-                    this.world.sendEntityStatus(this, entry.getValue().status());
-                    if (!player.isCreative()) stack.decrement(1);
-                    break;
-                }
-            }
+    ItemStack gift = stack.copy();
+    gift.setCount(1);
+
+    for (Map.Entry<TagKey<Item>, GiftTags.Action> entry : GiftTags.ACTION_MAP.entrySet()) {
+      if (stack.isIn(entry.getKey())) {
+        if (andromeda$tryInsertGift(cir, player, gift, entry.getValue().type())) {
+          this.world.sendEntityStatus(this, entry.getValue().status());
+          if (!player.isCreative()) stack.decrement(1);
+          break;
         }
+      }
     }
+  }
 
-    @Unique private boolean andromeda$tryInsertGift(CallbackInfoReturnable<ActionResult> cir, PlayerEntity player, ItemStack stack, VillageGossipType type) {
-        if (this.getInventory().canInsert(stack)) {
-            this.getInventory().addStack(stack);
-            this.gossip.startGossip(player.getUuid(), type, 3);
-            cir.setReturnValue(ActionResult.success(this.world.isClient));
-            return true;
-        } else {
-            this.sayNo();
-            cir.setReturnValue(ActionResult.success(this.world.isClient));
-            return false;
-        }
+  @Unique private boolean andromeda$tryInsertGift(
+      CallbackInfoReturnable<ActionResult> cir,
+      PlayerEntity player,
+      ItemStack stack,
+      VillageGossipType type) {
+    if (this.getInventory().canInsert(stack)) {
+      this.getInventory().addStack(stack);
+      this.gossip.startGossip(player.getUuid(), type, 3);
+      cir.setReturnValue(ActionResult.success(this.world.isClient));
+      return true;
+    } else {
+      this.sayNo();
+      cir.setReturnValue(ActionResult.success(this.world.isClient));
+      return false;
     }
+  }
 }

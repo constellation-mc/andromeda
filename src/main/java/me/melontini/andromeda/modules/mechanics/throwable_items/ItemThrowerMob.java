@@ -4,8 +4,7 @@ import net.minecraft.entity.LivingEntity;
 
 public interface ItemThrowerMob<T extends LivingEntity> {
 
-    void am$throwItem(LivingEntity target, float pullProgress);
+  void am$throwItem(LivingEntity target, float pullProgress);
 
-    int am$cooldown();
-
+  int am$cooldown();
 }

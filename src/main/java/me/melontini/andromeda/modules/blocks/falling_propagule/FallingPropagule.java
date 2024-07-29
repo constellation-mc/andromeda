@@ -9,9 +9,10 @@ import me.melontini.andromeda.base.util.config.ConfigState;
 @ModuleInfo(name = "falling_propagule", category = "blocks", environment = Environment.SERVER)
 public final class FallingPropagule extends Module {
 
-    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+  public static final ConfigDefinition<Module.GameConfig> CONFIG =
+      new ConfigDefinition<>(() -> Module.GameConfig.class);
 
-    FallingPropagule() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  FallingPropagule() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 }

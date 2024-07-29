@@ -1,5 +1,8 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.items.lockpick.Lockpick;
@@ -26,54 +29,67 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 public final class Main {
 
-    static void init() {
-        PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
-            if (player.getAbilities().creativeMode) return true;
+  static void init() {
+    PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+      if (player.getAbilities().creativeMode) return true;
 
-            if (blockEntity instanceof LootableContainerBlockEntity && world.am$get(GuardedLoot.CONFIG).breakingHandler == GuardedLoot.BreakingHandler.UNBREAKABLE) {
-                var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
-                if (monsters.isEmpty() || checkLockPicking(player)) return true;
-                handleLockedContainer(player, monsters);
-                return false;
+      if (blockEntity instanceof LootableContainerBlockEntity
+          && world.am$get(GuardedLoot.CONFIG).breakingHandler
+              == GuardedLoot.BreakingHandler.UNBREAKABLE) {
+        var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
+        if (monsters.isEmpty() || checkLockPicking(player)) return true;
+        handleLockedContainer(player, monsters);
+        return false;
+      }
+      return true;
+    });
+  }
+
+  // TODO fix igloos. Maybe check reach?
+  public static List<LivingEntity> checkMonsterLock(
+      World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
+    var config = world.am$get(GuardedLoot.CONFIG);
+    var supplier = Memoize.supplier(
+        LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, player, be));
+    if (!config.available.asBoolean(supplier)) return Collections.emptyList();
+
+    return world
+        .getEntitiesByClass(
+            LivingEntity.class,
+            new Box(pos).expand(config.range.asDouble(supplier)),
+            Entity::isAlive)
+        .stream()
+        .filter(Monster.class::isInstance)
+        .toList();
+  }
+
+  public static boolean checkLockPicking(PlayerEntity player) {
+    return ModuleManager.get()
+        .getModule(Lockpick.class)
+        .map(m -> {
+          if (player.world.am$get(GuardedLoot.CONFIG).allowLockPicking) {
+            if (player.getMainHandStack().isOf(LockpickItem.INSTANCE.orThrow())) {
+              return LockpickItem.INSTANCE
+                  .orThrow()
+                  .tryUse(player.getMainHandStack(), player, Hand.MAIN_HAND);
             }
-            return true;
-        });
+          }
+          return false;
+        })
+        .orElse(false);
+  }
+
+  public static void handleLockedContainer(PlayerEntity player, Collection<LivingEntity> monsters) {
+    player.sendMessage(
+        TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
+    player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+    player.emitGameEvent(GameEvent.CONTAINER_OPEN);
+
+    for (LivingEntity livingEntity : monsters) {
+      livingEntity.addStatusEffect(
+          new StatusEffectInstance(StatusEffects.GLOWING, 5 * 20, 0, false, false));
     }
-
-    //TODO fix igloos. Maybe check reach?
-    public static List<LivingEntity> checkMonsterLock(World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
-        var config = world.am$get(GuardedLoot.CONFIG);
-        var supplier = Memoize.supplier(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, player, be));
-        if (!config.available.asBoolean(supplier)) return Collections.emptyList();
-
-        return world.getEntitiesByClass(LivingEntity.class, new Box(pos).expand(config.range.asDouble(supplier)), Entity::isAlive).stream()
-                .filter(Monster.class::isInstance).toList();
-    }
-
-    public static boolean checkLockPicking(PlayerEntity player) {
-        return ModuleManager.get().getModule(Lockpick.class).map(m -> {
-            if (player.world.am$get(GuardedLoot.CONFIG).allowLockPicking) {
-                if (player.getMainHandStack().isOf(LockpickItem.INSTANCE.orThrow())) {
-                    return LockpickItem.INSTANCE.orThrow().tryUse(player.getMainHandStack(), player, Hand.MAIN_HAND);
-                }
-            }
-            return false;
-        }).orElse(false);
-    }
-
-    public static void handleLockedContainer(PlayerEntity player, Collection<LivingEntity> monsters) {
-        player.sendMessage(TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
-        player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
-        player.emitGameEvent(GameEvent.CONTAINER_OPEN);
-
-        for (LivingEntity livingEntity : monsters) {
-            livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 5 * 20, 0, false, false));
-        }
-    }
+  }
 }

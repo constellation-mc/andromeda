@@ -4,7 +4,4 @@ import me.melontini.andromeda.base.Module;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "lava_disintegrator", category = "items")
-public class LavaDisintegrator extends Module {
-
-
-}
+public class LavaDisintegrator extends Module {}

@@ -16,18 +16,31 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(BowItem.class)
 abstract class BowItemMixin extends RangedWeaponItem {
 
-    public BowItemMixin(Settings settings) {
-        super(settings);
-    }
+  public BowItemMixin(Settings settings) {
+    super(settings);
+  }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V"), method = "onStoppedUsing", index = 5)
-    public float andromeda$setVelocity(float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local PlayerEntity player) {
-        NbtCompound stackNbt = stack.getNbt();
-        int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);
-        if (a > 0) {
-            stackNbt.putInt("AM-Tightened", a - 1);
-            return f * player.world.am$get(BetterFletchingTable.CONFIG).divergenceModifier.asFloat(LootContextUtil.fishing(player.world, player.getPos(), stack, player));
-        }
-        return f;
+  @ModifyArg(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V"),
+      method = "onStoppedUsing",
+      index = 5)
+  public float andromeda$setVelocity(
+      float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local PlayerEntity player) {
+    NbtCompound stackNbt = stack.getNbt();
+    int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);
+    if (a > 0) {
+      stackNbt.putInt("AM-Tightened", a - 1);
+      return f
+          * player
+              .world
+              .am$get(BetterFletchingTable.CONFIG)
+              .divergenceModifier
+              .asFloat(LootContextUtil.fishing(player.world, player.getPos(), stack, player));
     }
+    return f;
+  }
 }

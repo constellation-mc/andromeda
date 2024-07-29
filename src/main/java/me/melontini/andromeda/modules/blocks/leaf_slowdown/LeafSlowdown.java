@@ -10,9 +10,10 @@ import me.melontini.andromeda.base.util.config.ConfigState;
 @ModuleInfo(name = "leaf_slowdown", category = "blocks", environment = Environment.SERVER)
 public final class LeafSlowdown extends Module {
 
-    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+  public static final ConfigDefinition<Module.GameConfig> CONFIG =
+      new ConfigDefinition<>(() -> Module.GameConfig.class);
 
-    LeafSlowdown() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  LeafSlowdown() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 }

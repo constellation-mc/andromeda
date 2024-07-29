@@ -1,71 +1,70 @@
 package me.melontini.andromeda.common.util;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.jetbrains.annotations.Nullable;
 
 public final class Keeper<T> {
 
-    private volatile boolean initialized;
+  private volatile boolean initialized;
 
-    private @Nullable T value;
+  private @Nullable T value;
 
-    private final Set<Consumer<T>> consumers = new HashSet<>();
+  private final Set<Consumer<T>> consumers = new HashSet<>();
 
-    public static <T> Keeper<T> create() {
-        return new Keeper<>();
-    }
+  public static <T> Keeper<T> create() {
+    return new Keeper<>();
+  }
 
-    public static <T> Keeper<T> now(T value) {
-        Keeper<T> keeper = create();
-        keeper.init(value);
-        return keeper;
-    }
+  public static <T> Keeper<T> now(T value) {
+    Keeper<T> keeper = create();
+    keeper.init(value);
+    return keeper;
+  }
 
-    public boolean isPresent() {
-        return this.value != null;
-    }
+  public boolean isPresent() {
+    return this.value != null;
+  }
 
-    public void ifPresent(Consumer<T> consumer) {
-        if (this.value != null) consumer.accept(this.value);
-    }
+  public void ifPresent(Consumer<T> consumer) {
+    if (this.value != null) consumer.accept(this.value);
+  }
 
-    public Keeper<T> afterInit(Consumer<T> consumer) {
-        this.consumers.add(consumer);
-        return this;
-    }
+  public Keeper<T> afterInit(Consumer<T> consumer) {
+    this.consumers.add(consumer);
+    return this;
+  }
 
-    public void init(@Nullable T value) {
+  public void init(@Nullable T value) {
+    if (!initialized) {
+      synchronized (this) {
         if (!initialized) {
-            synchronized (this) {
-                if (!initialized) {
-                    this.value = value;
-                    this.initialized = true;
+          this.value = value;
+          this.initialized = true;
 
-                    if (isPresent()) this.consumers.forEach(c -> c.accept(this.value));
-                    this.consumers.clear();
-                }
-            }
+          if (isPresent()) this.consumers.forEach(c -> c.accept(this.value));
+          this.consumers.clear();
         }
+      }
     }
+  }
 
-    public @Nullable T get() {
-        return this.value;
-    }
+  public @Nullable T get() {
+    return this.value;
+  }
 
-    public T orThrow() {
-        return orThrow("No value present! Keeper not bootstrapped?");
-    }
+  public T orThrow() {
+    return orThrow("No value present! Keeper not bootstrapped?");
+  }
 
-    public T orThrow(String msg) {
-        return orThrow(() -> new IllegalStateException(msg));
-    }
+  public T orThrow(String msg) {
+    return orThrow(() -> new IllegalStateException(msg));
+  }
 
-    public <X extends Throwable> T orThrow(Supplier<X> e) throws X {
-        if (this.value == null) throw e.get();
-        return this.value;
-    }
+  public <X extends Throwable> T orThrow(Supplier<X> e) throws X {
+    if (this.value == null) throw e.get();
+    return this.value;
+  }
 }

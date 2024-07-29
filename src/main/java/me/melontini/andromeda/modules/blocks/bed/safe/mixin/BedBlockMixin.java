@@ -1,5 +1,7 @@
 package me.melontini.andromeda.modules.blocks.bed.safe.mixin;
 
+import static net.minecraft.block.BedBlock.isBedWorking;
+
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -19,22 +21,32 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.minecraft.block.BedBlock.isBedWorking;
-
 @Mixin(BedBlock.class)
 abstract class BedBlockMixin extends Block {
 
-    public BedBlockMixin(Settings settings) {
-        super(settings);
-    }
+  public BedBlockMixin(Settings settings) {
+    super(settings);
+  }
 
-    @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    public void andromeda$onUse(BlockState state, @NotNull World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (world.isClient()) return;
+  @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
+  public void andromeda$onUse(
+      BlockState state,
+      @NotNull World world,
+      BlockPos pos,
+      PlayerEntity player,
+      Hand hand,
+      BlockHitResult hit,
+      CallbackInfoReturnable<ActionResult> cir) {
+    if (world.isClient()) return;
 
-        if (!isBedWorking(world) && world.am$get(Safe.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
-            player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
-            cir.setReturnValue(ActionResult.SUCCESS);
-        }
+    if (!isBedWorking(world)
+        && world
+            .am$get(Safe.CONFIG)
+            .available
+            .asBoolean(LootContextUtil.block(
+                world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
+      player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
+      cir.setReturnValue(ActionResult.SUCCESS);
     }
+  }
 }

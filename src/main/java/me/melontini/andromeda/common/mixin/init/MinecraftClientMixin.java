@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftClient.class)
 abstract class MinecraftClientMixin {
 
-    @Inject(method = "method_29338", at = @At("TAIL"))
-    private void andromeda$init(CallbackInfo ci) {
-        AndromedaClient.get().lateInit(ModuleManager.get());
-    }
+  @Inject(method = "method_29338", at = @At("TAIL"))
+  private void andromeda$init(CallbackInfo ci) {
+    AndromedaClient.get().lateInit(ModuleManager.get());
+  }
 }

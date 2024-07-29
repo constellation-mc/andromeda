@@ -22,20 +22,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FletchingTableBlock.class)
 abstract class FletchingTableBlockMixin extends CraftingTableBlock {
 
-    public FletchingTableBlockMixin(Settings settings) {
-        super(settings);
-    }
+  public FletchingTableBlockMixin(Settings settings) {
+    super(settings);
+  }
 
-    @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (state.isOf(Blocks.FLETCHING_TABLE)) {
-            if (player.world.isClient) {
-                cir.setReturnValue(ActionResult.SUCCESS);
-                return;
-            }
+  @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
+  private void andromeda$onUse(
+      BlockState state,
+      World world,
+      BlockPos pos,
+      PlayerEntity player,
+      Hand hand,
+      BlockHitResult hit,
+      CallbackInfoReturnable<ActionResult> cir) {
+    if (state.isOf(Blocks.FLETCHING_TABLE)) {
+      if (player.world.isClient) {
+        cir.setReturnValue(ActionResult.SUCCESS);
+        return;
+      }
 
-            player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player1) -> new FletchingScreenHandler(syncId, inv, ScreenHandlerContext.create(world, pos)), TextUtil.translatable("block.minecraft.fletching_table")));
-            cir.setReturnValue(ActionResult.SUCCESS);
-        }
+      player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+          (syncId, inv, player1) ->
+              new FletchingScreenHandler(syncId, inv, ScreenHandlerContext.create(world, pos)),
+          TextUtil.translatable("block.minecraft.fletching_table")));
+      cir.setReturnValue(ActionResult.SUCCESS);
     }
+  }
 }

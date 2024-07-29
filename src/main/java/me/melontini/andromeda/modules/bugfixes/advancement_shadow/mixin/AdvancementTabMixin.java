@@ -11,16 +11,34 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(AdvancementTab.class)
 abstract class AdvancementTabMixin {
 
-    @Shadow private float alpha;
-    @Shadow @Final private MinecraftClient client;
+  @Shadow
+  private float alpha;
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 0), index = 0, method = "drawWidgetTooltip")
-    private float andromeda$draw(float value) {
-        return this.alpha + (0.04F * client.getLastFrameDuration());
-    }
+  @Shadow
+  @Final
+  private MinecraftClient client;
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F", ordinal = 1), index = 0, method = "drawWidgetTooltip")
-    private float andromeda$draw1(float value) {
-        return this.alpha - (0.06F * client.getLastFrameDuration());
-    }
+  @ModifyArg(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F",
+              ordinal = 0),
+      index = 0,
+      method = "drawWidgetTooltip")
+  private float andromeda$draw(float value) {
+    return this.alpha + (0.04F * client.getLastFrameDuration());
+  }
+
+  @ModifyArg(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F",
+              ordinal = 1),
+      index = 0,
+      method = "drawWidgetTooltip")
+  private float andromeda$draw1(float value) {
+    return this.alpha - (0.06F * client.getLastFrameDuration());
+  }
 }

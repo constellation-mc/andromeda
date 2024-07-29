@@ -19,22 +19,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SnowballEntity.class)
 abstract class SnowballEntityMixin extends ThrownItemEntity {
 
-    public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
-        super(entityType, world);
+  public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
+    super(entityType, world);
+  }
+
+  @Inject(at = @At("TAIL"), method = "onEntityHit")
+  private void andromeda$extinguish(EntityHitResult result, CallbackInfo ci) {
+    if (result.getEntity().world.isClient()) return;
+
+    var config = result.getEntity().world.am$get(Snowballs.CONFIG);
+    if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
+    Entity entity = result.getEntity();
+    if (!config.extinguish.asBoolean(
+        LootContextUtil.entity(world, entity.getPos(), entity, null, this))) return;
+
+    if (entity.isOnFire()) {
+      entity.extinguish();
+      entity.playSound(
+          SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE,
+          0.7F,
+          1.6F
+              + (MathUtil.threadRandom().nextFloat() - MathUtil.threadRandom().nextFloat()) * 0.4F);
     }
-
-    @Inject(at = @At("TAIL"), method = "onEntityHit")
-    private void andromeda$extinguish(EntityHitResult result, CallbackInfo ci) {
-        if (result.getEntity().world.isClient()) return;
-
-        var config = result.getEntity().world.am$get(Snowballs.CONFIG);
-        if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
-        Entity entity = result.getEntity();
-        if (!config.extinguish.asBoolean(LootContextUtil.entity(world, entity.getPos(), entity, null, this))) return;
-
-        if (entity.isOnFire()) {
-            entity.extinguish();
-            entity.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (MathUtil.threadRandom().nextFloat() - MathUtil.threadRandom().nextFloat()) * 0.4F);
-        }
-    }
+  }
 }

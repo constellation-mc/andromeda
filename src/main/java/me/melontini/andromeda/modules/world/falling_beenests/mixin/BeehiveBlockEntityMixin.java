@@ -1,5 +1,7 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
+import static me.melontini.andromeda.common.util.WorldUtil.trySpawnFallingBeeNest;
+
 import me.melontini.andromeda.common.util.LootContextUtil;
 import me.melontini.andromeda.common.util.WorldUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
@@ -21,43 +23,52 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.melontini.andromeda.common.util.WorldUtil.trySpawnFallingBeeNest;
-
 @Mixin(BeehiveBlockEntity.class)
 abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
-    @Unique private boolean andromeda$FromFallen;
+  @Unique private boolean andromeda$FromFallen;
 
-    public BeehiveBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
-    }
+  public BeehiveBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    super(type, pos, state);
+  }
 
-    @Inject(at = @At("HEAD"), method = "serverTick")
-    private static void andromeda$fallingHive(@NotNull World world, BlockPos pos, BlockState state, BeehiveBlockEntity beehiveBlockEntity, CallbackInfo ci) {
-        if (state.getBlock() != Blocks.BEE_NEST) return;
+  @Inject(at = @At("HEAD"), method = "serverTick")
+  private static void andromeda$fallingHive(
+      @NotNull World world,
+      BlockPos pos,
+      BlockState state,
+      BeehiveBlockEntity beehiveBlockEntity,
+      CallbackInfo ci) {
+    if (state.getBlock() != Blocks.BEE_NEST) return;
 
-        if (world.am$get(CanBeeNestsFall.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, null, beehiveBlockEntity)) && world.random.nextInt(32000) == 0) {
-            if (!world.getBlockState(pos.offset(Direction.DOWN)).isAir()) return;
+    if (world
+            .am$get(CanBeeNestsFall.CONFIG)
+            .available
+            .asBoolean(LootContextUtil.block(
+                world, Vec3d.ofCenter(pos), state, null, null, beehiveBlockEntity))
+        && world.random.nextInt(32000) == 0) {
+      if (!world.getBlockState(pos.offset(Direction.DOWN)).isAir()) return;
 
-            BlockState up = world.getBlockState(pos.offset(Direction.UP));
-            if (!up.isIn(BlockTags.LOGS) && !up.isIn(BlockTags.LEAVES)) return;
+      BlockState up = world.getBlockState(pos.offset(Direction.UP));
+      if (!up.isIn(BlockTags.LOGS) && !up.isIn(BlockTags.LEAVES)) return;
 
-            for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {
-                if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
-                    trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
-                    break;
-                }
-            }
+      for (Direction direction : WorldUtil.AROUND_BLOCK_DIRECTIONS) {
+        if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
+          trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
+          break;
         }
+      }
     }
+  }
 
-    @Inject(at = @At("TAIL"), method = "readNbt")
-    private void andromeda$readNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains("AM-FromFallenBlock")) this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
-    }
+  @Inject(at = @At("TAIL"), method = "readNbt")
+  private void andromeda$readNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
+    if (nbt.contains("AM-FromFallenBlock"))
+      this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
+  }
 
-    @Inject(at = @At("TAIL"), method = "writeNbt")
-    private void andromeda$writeNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
-        if (this.andromeda$FromFallen) nbt.putBoolean("AM-FromFallenBlock", true);
-    }
+  @Inject(at = @At("TAIL"), method = "writeNbt")
+  private void andromeda$writeNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
+    if (this.andromeda$FromFallen) nbt.putBoolean("AM-FromFallenBlock", true);
+  }
 }

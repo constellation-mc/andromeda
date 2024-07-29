@@ -11,14 +11,14 @@ import me.melontini.andromeda.util.commander.number.LongIntermediary;
 @ModuleInfo(name = "moist_control", category = "world", environment = Environment.SERVER)
 public final class MoistControl extends Module {
 
-    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
+  public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
-    MoistControl() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  MoistControl() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 
-    @ToString
-    public static class Config extends BaseConfig {
-        public LongIntermediary customMoisture = LongIntermediary.of(4);
-    }
+  @ToString
+  public static class Config extends BaseConfig {
+    public LongIntermediary customMoisture = LongIntermediary.of(4);
+  }
 }

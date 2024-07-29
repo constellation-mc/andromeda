@@ -1,5 +1,7 @@
 package me.melontini.andromeda.modules.items.minecart_block_picking;
 
+import java.util.IdentityHashMap;
+import java.util.Optional;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
@@ -16,52 +18,55 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.IdentityHashMap;
-import java.util.Optional;
-
 public class PickUpBehaviorHandler {
 
-    private static final IdentityHashMap<Block, PickUpBehavior> PICK_UP_BEHAVIOR_MAP = new IdentityHashMap<>();
+  private static final IdentityHashMap<Block, PickUpBehavior> PICK_UP_BEHAVIOR_MAP =
+      new IdentityHashMap<>();
 
-    public static void registerPickUpBehavior(Block block, PickUpBehavior pickUpBehavior) {
-        PICK_UP_BEHAVIOR_MAP.put(block, pickUpBehavior);
-    }
+  public static void registerPickUpBehavior(Block block, PickUpBehavior pickUpBehavior) {
+    PICK_UP_BEHAVIOR_MAP.put(block, pickUpBehavior);
+  }
 
-    public static Optional<PickUpBehavior> getPickUpBehavior(Block block) {
-        return Optional.ofNullable(PICK_UP_BEHAVIOR_MAP.get(block));
-    }
+  public static Optional<PickUpBehavior> getPickUpBehavior(Block block) {
+    return Optional.ofNullable(PICK_UP_BEHAVIOR_MAP.get(block));
+  }
 
-    public static void init() {
-        registerPickUpBehavior(Blocks.CHEST, (state, world, pos) -> {
-            ChestBlockEntity chestBlockEntity = (ChestBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
-            ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
+  public static void init() {
+    registerPickUpBehavior(Blocks.CHEST, (state, world, pos) -> {
+      ChestBlockEntity chestBlockEntity = (ChestBlockEntity) MakeSure.notNull(
+          world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+      ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
-            chestMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity));
-            chestBlockEntity.clear();
-            return chestMinecart;
-        });
+      chestMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity));
+      chestBlockEntity.clear();
+      return chestMinecart;
+    });
 
-        registerPickUpBehavior(Blocks.TNT, (state, world, pos) -> new ItemStack(Items.TNT_MINECART, 1));
+    registerPickUpBehavior(Blocks.TNT, (state, world, pos) -> new ItemStack(Items.TNT_MINECART, 1));
 
-        registerPickUpBehavior(Blocks.FURNACE, (state, world, pos) -> {
-            AbstractFurnaceBlockEntity furnaceBlock = (AbstractFurnaceBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
-            ItemStack furnaceMinecart = new ItemStack(Items.FURNACE_MINECART, 1);
-            //2.25
-            furnaceMinecart.setNbt(NbtBuilder.create().putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25)).build());
-            return furnaceMinecart;
-        });
+    registerPickUpBehavior(Blocks.FURNACE, (state, world, pos) -> {
+      AbstractFurnaceBlockEntity furnaceBlock = (AbstractFurnaceBlockEntity) MakeSure.notNull(
+          world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+      ItemStack furnaceMinecart = new ItemStack(Items.FURNACE_MINECART, 1);
+      // 2.25
+      furnaceMinecart.setNbt(NbtBuilder.create()
+          .putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25))
+          .build());
+      return furnaceMinecart;
+    });
 
-        registerPickUpBehavior(Blocks.HOPPER, (state, world, pos) -> {
-            HopperBlockEntity hopperBlockEntity = (HopperBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
-            ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
+    registerPickUpBehavior(Blocks.HOPPER, (state, world, pos) -> {
+      HopperBlockEntity hopperBlockEntity = (HopperBlockEntity) MakeSure.notNull(
+          world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+      ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
-            hopperMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity));
-            hopperBlockEntity.clear();
-            return hopperMinecart;
-        });
-    }
+      hopperMinecart.setNbt(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity));
+      hopperBlockEntity.clear();
+      return hopperMinecart;
+    });
+  }
 
-    public interface PickUpBehavior {
-        @Nullable ItemStack pickUp(BlockState state, World world, BlockPos pos);
-    }
+  public interface PickUpBehavior {
+    @Nullable ItemStack pickUp(BlockState state, World world, BlockPos pos);
+  }
 }

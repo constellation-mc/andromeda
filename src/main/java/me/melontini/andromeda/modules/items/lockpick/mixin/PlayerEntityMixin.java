@@ -16,15 +16,23 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin extends LivingEntity {
 
-    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-    @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;interact(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"), method = "interact")
-    private ActionResult andromeda$stopInteract(Entity entity, PlayerEntity player, Hand hand, Operation<ActionResult> original) {
-        if (getStackInHand(Hand.MAIN_HAND).getItem() instanceof LockpickItem || getStackInHand(Hand.OFF_HAND).getItem() instanceof LockpickItem) {
-            return ActionResult.PASS;
-        }
-        return original.call(entity, player, hand);
+  @WrapOperation(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/entity/Entity;interact(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"),
+      method = "interact")
+  private ActionResult andromeda$stopInteract(
+      Entity entity, PlayerEntity player, Hand hand, Operation<ActionResult> original) {
+    if (getStackInHand(Hand.MAIN_HAND).getItem() instanceof LockpickItem
+        || getStackInHand(Hand.OFF_HAND).getItem() instanceof LockpickItem) {
+      return ActionResult.PASS;
     }
+    return original.call(entity, player, hand);
+  }
 }

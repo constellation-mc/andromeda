@@ -20,33 +20,43 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin {
 
-    @Shadow @Final public PlayerScreenHandler playerScreenHandler;
+  @Shadow
+  @Final
+  public PlayerScreenHandler playerScreenHandler;
 
-    @Shadow @Nullable public abstract ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership);
+  @Shadow
+  @Nullable public abstract ItemEntity dropItem(
+      ItemStack stack, boolean throwRandomly, boolean retainOwnership);
 
-    @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
-    private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
-        NbtUtil.writeInventoryToNbt("AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput());
+  @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
+  private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
+    NbtUtil.writeInventoryToNbt(
+        "AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput());
+  }
+
+  @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
+  private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
+    try {
+      TinyStorage.LOADING.set(true); // We have to skip sending handler updates.
+      NbtUtil.readInventoryFromNbt(
+          "AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput());
+    } finally {
+      TinyStorage.LOADING.remove();
     }
+  }
 
-    @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
-    private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        try {
-            TinyStorage.LOADING.set(true);//We have to skip sending handler updates.
-            NbtUtil.readInventoryFromNbt("AM-Tiny-Storage", nbt, this.playerScreenHandler.getCraftingInput());
-        } finally {
-            TinyStorage.LOADING.remove();
-        }
+  @Inject(
+      at =
+          @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V"),
+      method = "dropInventory")
+  private void andromeda$dropAll(CallbackInfo ci) {
+    if (Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode
+        == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
+
+    for (int i = 0; i < this.playerScreenHandler.getCraftingInput().size(); ++i) {
+      ItemStack stack = this.playerScreenHandler.getCraftingInput().removeStack(i);
+      if (!stack.isEmpty() && EnchantmentHelper.hasVanishingCurse(stack)) continue;
+      this.dropItem(stack, true, false);
     }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V"), method = "dropInventory")
-    private void andromeda$dropAll(CallbackInfo ci) {
-        if (Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode == TinyStorage.TransferMode.ALWAYS_TRANSFER) return;
-
-        for(int i = 0; i < this.playerScreenHandler.getCraftingInput().size(); ++i) {
-            ItemStack stack = this.playerScreenHandler.getCraftingInput().removeStack(i);
-            if (!stack.isEmpty() && EnchantmentHelper.hasVanishingCurse(stack)) continue;
-            this.dropItem(stack, true, false);
-        }
-    }
+  }
 }

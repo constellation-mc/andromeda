@@ -18,21 +18,31 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(SnowballItem.class)
 abstract class SnowballItemMixin extends Item {
 
-    public SnowballItemMixin(Settings settings) {
-        super(settings);
-    }
+  public SnowballItemMixin(Settings settings) {
+    super(settings);
+  }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), method = "use")
-    private Entity andromeda$useCooldown(Entity par1, @Local(argsOnly = true) World world, @Local(argsOnly = true) PlayerEntity user, @Local(argsOnly = true) Hand hand) {
-        if (world.isClient()) return null;
+  @ModifyArg(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"),
+      method = "use")
+  private Entity andromeda$useCooldown(
+      Entity par1,
+      @Local(argsOnly = true) World world,
+      @Local(argsOnly = true) PlayerEntity user,
+      @Local(argsOnly = true) Hand hand) {
+    if (world.isClient()) return null;
 
-        var config = world.am$get(Snowballs.CONFIG);
-        if (!config.available.asBoolean(ConstantLootContextAccessor.get(par1))) return par1;
+    var config = world.am$get(Snowballs.CONFIG);
+    if (!config.available.asBoolean(ConstantLootContextAccessor.get(par1))) return par1;
 
-        var supplier = Memoize.supplier(LootContextUtil.fishing(world, user.getPos(), user.getStackInHand(hand), user));
-        if (!config.enableCooldown.asBoolean(supplier)) return par1;
+    var supplier = Memoize.supplier(
+        LootContextUtil.fishing(world, user.getPos(), user.getStackInHand(hand), user));
+    if (!config.enableCooldown.asBoolean(supplier)) return par1;
 
-        user.getItemCooldownManager().set(this, config.cooldown.asInt(supplier));
-        return par1;
-    }
+    user.getItemCooldownManager().set(this, config.cooldown.asInt(supplier));
+    return par1;
+  }
 }

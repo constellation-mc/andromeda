@@ -19,15 +19,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ZombieEntity.class)
 abstract class ZombieEntityMixin extends HostileEntity {
 
-    protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  protected ZombieEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombieEntity;setCanPickUpLoot(Z)V", shift = At.Shift.AFTER), method = "initialize")
-    private void andromeda$initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, NbtCompound entityNbt, CallbackInfoReturnable<EntityData> cir) {
-        if (world.isClient()) return;
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/entity/mob/ZombieEntity;setCanPickUpLoot(Z)V",
+              shift = At.Shift.AFTER),
+      method = "initialize")
+  private void andromeda$initialize(
+      ServerWorldAccess world,
+      LocalDifficulty difficulty,
+      SpawnReason spawnReason,
+      EntityData entityData,
+      NbtCompound entityNbt,
+      CallbackInfoReturnable<EntityData> cir) {
+    if (world.isClient()) return;
 
-        if (world.toServerWorld().am$get(Pickup.CONFIG).available.asBoolean(ConstantLootContextAccessor.get(this)))
-            this.setCanPickUpLoot(true);
-    }
+    if (world
+        .toServerWorld()
+        .am$get(Pickup.CONFIG)
+        .available
+        .asBoolean(ConstantLootContextAccessor.get(this))) this.setCanPickUpLoot(true);
+  }
 }

@@ -1,6 +1,14 @@
 package me.melontini.andromeda.modules.items.magnet;
 
+import static me.melontini.andromeda.common.Andromeda.id;
+
 import com.google.common.collect.ImmutableSet;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.LootContextUtil;
@@ -45,190 +53,221 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-import static me.melontini.andromeda.common.Andromeda.id;
-
 public class MagnetItem extends Item {
 
-    public static final Keeper<MagnetItem> MAGNET = Keeper.create();
-    private static final BiConsumer<ItemStack, PlayerEntity> ITEM_PARTICLES = Support.support(EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
-    private static final Consumer<PlayerEntity> UPGRADE_PARTICLES = Support.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
+  public static final Keeper<MagnetItem> MAGNET = Keeper.create();
+  private static final BiConsumer<ItemStack, PlayerEntity> ITEM_PARTICLES =
+      Support.support(EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
+  private static final Consumer<PlayerEntity> UPGRADE_PARTICLES =
+      Support.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
 
-    public MagnetItem(Settings settings) {
-        super(settings);
+  public MagnetItem(Settings settings) {
+    super(settings);
+  }
+
+  public static final String LEVEL_KEY = "PowerLevel";
+
+  @Override
+  public boolean onStackClicked(
+      ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
+    if (clickType == ClickType.RIGHT) {
+      ItemStack itemStack = slot.getStack();
+      if (itemStack.isEmpty()) {
+        removeFirst(stack);
+        this.playRemoveOneSound(player);
+      } else {
+        addFirst(stack, itemStack);
+        ITEM_PARTICLES.accept(itemStack, player);
+        this.playInsertSound(player);
+      }
+      return true;
     }
+    return false;
+  }
 
-    public static final String LEVEL_KEY = "PowerLevel";
-
-    @Override
-    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
-        if (clickType == ClickType.RIGHT) {
-            ItemStack itemStack = slot.getStack();
-            if (itemStack.isEmpty()) {
-                removeFirst(stack);
-                this.playRemoveOneSound(player);
-            } else {
-                addFirst(stack, itemStack);
-                ITEM_PARTICLES.accept(itemStack, player);
-                this.playInsertSound(player);
-            }
-            return true;
+  @Override
+  public boolean onClicked(
+      ItemStack stack,
+      ItemStack otherStack,
+      Slot slot,
+      ClickType clickType,
+      PlayerEntity player,
+      StackReference cursorStackReference) {
+    if (clickType == ClickType.RIGHT) {
+      if (otherStack.isEmpty()) {
+        removeFirst(stack);
+        this.playRemoveOneSound(player);
+      } else {
+        addFirst(stack, otherStack);
+        ITEM_PARTICLES.accept(otherStack, player);
+        this.playInsertSound(player);
+      }
+      return true;
+    }
+    if (clickType == ClickType.LEFT) {
+      if (otherStack.isOf(Items.HEART_OF_THE_SEA)) {
+        if (incrementLevel(stack)) {
+          otherStack.decrement(1);
+          UPGRADE_PARTICLES.accept(player);
+          playUpgradeSound(player);
         }
-        return false;
-    }
-
-    @Override
-    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
-        if (clickType == ClickType.RIGHT) {
-            if (otherStack.isEmpty()) {
-                removeFirst(stack);
-                this.playRemoveOneSound(player);
-            } else {
-                addFirst(stack, otherStack);
-                ITEM_PARTICLES.accept(otherStack, player);
-                this.playInsertSound(player);
-            }
-            return true;
-        }
-        if (clickType == ClickType.LEFT) {
-            if (otherStack.isOf(Items.HEART_OF_THE_SEA)) {
-                if (incrementLevel(stack)) {
-                    otherStack.decrement(1);
-                    UPGRADE_PARTICLES.accept(player);
-                    playUpgradeSound(player);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void upgradeParticles(PlayerEntity player) {
-        if (player.world.isClient()) {
-            var client = MinecraftClient.getInstance();
-            int x = (int) (client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth());
-            int y = (int) (client.mouse.getY() * (double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight());
-            ScreenParticleHelper.addScreenParticles(ParticleTypes.END_ROD,
-                    x, y, 0.5, 0.5, 0.07, 7);
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void itemParticles(ItemStack stack, PlayerEntity player) {
-        if (player.world.isClient()) {
-            var client = MinecraftClient.getInstance();
-            int x = (int) (client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth());
-            int y = (int) (client.mouse.getY() * (double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight());
-            ScreenParticleHelper.addScreenParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
-                    x, y, 0.5, 0.5, 0.1, 7);
-        }
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (!world.isClient()) {
-            if (entity instanceof LivingEntity pe) { //selected doesn't account for offhand
-                if (!ItemStack.areItemsEqual(stack, pe.getStackInHand(Hand.MAIN_HAND)) && !ItemStack.areItemsEqual(stack, pe.getStackInHand(Hand.OFF_HAND)))
-                    return;
-            } else if (!selected) return;
-
-            Set<Item> magnetables = magnetable(stack);
-            int level = getLevel(stack);
-            world.getEntitiesByClass(ItemEntity.class, new Box(entity.getBlockPos()).expand(level * world.am$get(Magnet.CONFIG).rangeMultiplier.asDouble(LootContextUtil.fishing(world, entity.getPos(), stack, entity))), ie -> magnetables.contains(ie.getDataTracker().get(ItemEntity.STACK).getItem()))
-                    .forEach(ie -> {
-                        Vec3d vel = ie.getPos().relativize(entity.getPos()).normalize().multiply(0.05f * level);
-                        ie.addVelocity(vel.x, vel.y, vel.z);
-                    });
-        }
-    }
-
-    @Override
-    public Optional<TooltipData> getTooltipData(ItemStack stack) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-        magnetable(stack).forEach(item -> defaultedList.add(item.getDefaultStack()));
-        return Optional.of(new BundleTooltipData(defaultedList, Integer.MAX_VALUE));
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(TextUtil.translatable("tooltip.andromeda.magnet.level", getLevel(stack)).formatted(Formatting.GRAY));
-    }
-
-    private static boolean incrementLevel(ItemStack stack) {
-        NbtCompound nbt = stack.getOrCreateNbt();
-        if (!nbt.contains(LEVEL_KEY)) nbt.putInt(LEVEL_KEY, 1);
-        int level = nbt.getInt(LEVEL_KEY);
-        if (level >= 5) return false;
-        nbt.putInt(LEVEL_KEY, level + 1);
         return true;
+      }
+    }
+    return false;
+  }
+
+  @Environment(EnvType.CLIENT)
+  private static void upgradeParticles(PlayerEntity player) {
+    if (player.world.isClient()) {
+      var client = MinecraftClient.getInstance();
+      int x = (int) (client.mouse.getX()
+          * (double) client.getWindow().getScaledWidth()
+          / (double) client.getWindow().getWidth());
+      int y = (int) (client.mouse.getY()
+          * (double) client.getWindow().getScaledHeight()
+          / (double) client.getWindow().getHeight());
+      ScreenParticleHelper.addScreenParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 7);
+    }
+  }
+
+  @Environment(EnvType.CLIENT)
+  private static void itemParticles(ItemStack stack, PlayerEntity player) {
+    if (player.world.isClient()) {
+      var client = MinecraftClient.getInstance();
+      int x = (int) (client.mouse.getX()
+          * (double) client.getWindow().getScaledWidth()
+          / (double) client.getWindow().getWidth());
+      int y = (int) (client.mouse.getY()
+          * (double) client.getWindow().getScaledHeight()
+          / (double) client.getWindow().getHeight());
+      ScreenParticleHelper.addScreenParticles(
+          new ItemStackParticleEffect(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7);
+    }
+  }
+
+  @Override
+  public void inventoryTick(
+      ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    if (!world.isClient()) {
+      if (entity instanceof LivingEntity pe) { // selected doesn't account for offhand
+        if (!ItemStack.areItemsEqual(stack, pe.getStackInHand(Hand.MAIN_HAND))
+            && !ItemStack.areItemsEqual(stack, pe.getStackInHand(Hand.OFF_HAND))) return;
+      } else if (!selected) return;
+
+      Set<Item> magnetables = magnetable(stack);
+      int level = getLevel(stack);
+      world
+          .getEntitiesByClass(
+              ItemEntity.class,
+              new Box(entity.getBlockPos())
+                  .expand(level
+                      * world
+                          .am$get(Magnet.CONFIG)
+                          .rangeMultiplier
+                          .asDouble(
+                              LootContextUtil.fishing(world, entity.getPos(), stack, entity))),
+              ie ->
+                  magnetables.contains(ie.getDataTracker().get(ItemEntity.STACK).getItem()))
+          .forEach(ie -> {
+            Vec3d vel = ie.getPos().relativize(entity.getPos()).normalize().multiply(0.05f * level);
+            ie.addVelocity(vel.x, vel.y, vel.z);
+          });
+    }
+  }
+
+  @Override
+  public Optional<TooltipData> getTooltipData(ItemStack stack) {
+    DefaultedList<ItemStack> defaultedList = DefaultedList.of();
+    magnetable(stack).forEach(item -> defaultedList.add(item.getDefaultStack()));
+    return Optional.of(new BundleTooltipData(defaultedList, Integer.MAX_VALUE));
+  }
+
+  @Override
+  public void appendTooltip(
+      ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    tooltip.add(TextUtil.translatable("tooltip.andromeda.magnet.level", getLevel(stack))
+        .formatted(Formatting.GRAY));
+  }
+
+  private static boolean incrementLevel(ItemStack stack) {
+    NbtCompound nbt = stack.getOrCreateNbt();
+    if (!nbt.contains(LEVEL_KEY)) nbt.putInt(LEVEL_KEY, 1);
+    int level = nbt.getInt(LEVEL_KEY);
+    if (level >= 5) return false;
+    nbt.putInt(LEVEL_KEY, level + 1);
+    return true;
+  }
+
+  private static int getLevel(ItemStack stack) {
+    NbtCompound nbt = stack.getNbt();
+    if (nbt != null) {
+      if (nbt.contains(LEVEL_KEY)) return MathUtil.clamp(nbt.getInt(LEVEL_KEY), 0, 5);
+    }
+    return 1;
+  }
+
+  public static void addFirst(ItemStack bundle, ItemStack other) {
+    NbtCompound nbt = bundle.getOrCreateNbt();
+    if (!nbt.contains("Items")) {
+      nbt.put("Items", new NbtList());
     }
 
-    private static int getLevel(ItemStack stack) {
-        NbtCompound nbt = stack.getNbt();
-        if (nbt != null) {
-            if (nbt.contains(LEVEL_KEY))
-                return MathUtil.clamp(nbt.getInt(LEVEL_KEY), 0, 5);
-        }
-        return 1;
+    NbtList list = nbt.getList("Items", NbtElement.STRING_TYPE);
+    NbtString id = NbtString.of(Registries.ITEM.getId(other.getItem()).toString());
+    if (list.contains(id)) return;
+    list.add(0, id);
+  }
+
+  private static void removeFirst(ItemStack stack) {
+    NbtCompound nbt = stack.getOrCreateNbt();
+    if (nbt.contains("Items")) {
+      NbtList list = nbt.getList("Items", NbtElement.STRING_TYPE);
+      if (!list.isEmpty()) {
+        list.remove(0);
+        if (list.isEmpty()) stack.removeSubNbt("Items");
+      }
     }
+  }
 
-    public static void addFirst(ItemStack bundle, ItemStack other) {
-        NbtCompound nbt = bundle.getOrCreateNbt();
-        if (!nbt.contains("Items")) {
-            nbt.put("Items", new NbtList());
-        }
-
-        NbtList list = nbt.getList("Items", NbtElement.STRING_TYPE);
-        NbtString id = NbtString.of(Registries.ITEM.getId(other.getItem()).toString());
-        if (list.contains(id)) return;
-        list.add(0, id);
+  private static Set<Item> magnetable(ItemStack stack) {
+    NbtCompound nbt = stack.getNbt();
+    if (nbt == null) {
+      return Collections.emptySet();
+    } else {
+      NbtList nbtList = nbt.getList("Items", NbtElement.STRING_TYPE);
+      return nbtList.stream()
+          .map(NbtString.class::cast)
+          .map(s -> Registries.ITEM.get(new Identifier(s.asString())))
+          .collect(ImmutableSet.toImmutableSet());
     }
+  }
 
-    private static void removeFirst(ItemStack stack) {
-        NbtCompound nbt = stack.getOrCreateNbt();
-        if (nbt.contains("Items")) {
-            NbtList list = nbt.getList("Items", NbtElement.STRING_TYPE);
-            if (!list.isEmpty()) {
-                list.remove(0);
-                if (list.isEmpty()) stack.removeSubNbt("Items");
-            }
-        }
-    }
+  private void playUpgradeSound(Entity entity) {
+    entity.playSound(
+        SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
+        0.8F,
+        0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+  }
 
-    private static Set<Item> magnetable(ItemStack stack) {
-        NbtCompound nbt = stack.getNbt();
-        if (nbt == null) {
-            return Collections.emptySet();
-        } else {
-            NbtList nbtList = nbt.getList("Items", NbtElement.STRING_TYPE);
-            return nbtList.stream().map(NbtString.class::cast)
-                    .map(s -> Registries.ITEM.get(new Identifier(s.asString())))
-                    .collect(ImmutableSet.toImmutableSet());
-        }
-    }
+  private void playRemoveOneSound(Entity entity) {
+    entity.playSound(
+        SoundEvents.ITEM_BUNDLE_REMOVE_ONE,
+        0.8F,
+        0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+  }
 
-    private void playUpgradeSound(Entity entity) {
-        entity.playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
-    }
+  private void playInsertSound(Entity entity) {
+    entity.playSound(
+        SoundEvents.ITEM_BUNDLE_INSERT,
+        0.8F,
+        0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+  }
 
-    private void playRemoveOneSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
-    }
+  static void init(Magnet module) {
+    MagnetItem.MAGNET.init(RegistryUtil.register(
+        Registries.ITEM, id("magnet"), () -> new MagnetItem(new FabricItemSettings().maxCount(1))));
 
-    private void playInsertSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
-    }
-
-    static void init(Magnet module) {
-        MagnetItem.MAGNET.init(RegistryUtil.register(Registries.ITEM, id("magnet"), () -> new MagnetItem(new FabricItemSettings().maxCount(1))));
-
-        AndromedaItemGroup.accept(a -> a.keeper(module, ItemGroups.TOOLS, MagnetItem.MAGNET));
-    }
+    AndromedaItemGroup.accept(a -> a.keeper(module, ItemGroups.TOOLS, MagnetItem.MAGNET));
+  }
 }

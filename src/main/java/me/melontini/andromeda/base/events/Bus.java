@@ -7,20 +7,20 @@ import java.util.function.Function;
 
 public final class Bus<T> {
 
-    private final Queue<T> listeners = new ArrayDeque<>();
-    private final T invoker;
+  private final Queue<T> listeners = new ArrayDeque<>();
+  private final T invoker;
 
-    public Bus(Function<Collection<T>, T> factory) {
-        this.invoker = factory.apply(listeners);
-    }
+  public Bus(Function<Collection<T>, T> factory) {
+    this.invoker = factory.apply(listeners);
+  }
 
-    public void listen(T listener) {
-        synchronized (this) {
-            listeners.add(listener);
-        }
+  public void listen(T listener) {
+    synchronized (this) {
+      listeners.add(listener);
     }
+  }
 
-    public T invoker() {
-        return this.invoker;
-    }
+  public T invoker() {
+    return this.invoker;
+  }
 }

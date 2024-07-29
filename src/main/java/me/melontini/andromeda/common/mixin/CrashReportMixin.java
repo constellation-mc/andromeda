@@ -11,15 +11,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CrashReport.class)
 abstract class CrashReportMixin {
 
-    @Inject(at = @At("TAIL"), method = "<init>", require = 0)
-    private void andromeda$init(String message, Throwable cause, CallbackInfo ci) {
-        CrashHandler.traverse(cause).ifPresent(statuses -> {
-            var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
-            sec.trimStackTraceEnd(sec.getStackTrace().length);
-            sec.add("state", "\n" + AndromedaException.toString(CrashHandler.dumpState()));
-            sec.add("statuses", "\n" + AndromedaException.toString(statuses));
-        });
+  @Inject(at = @At("TAIL"), method = "<init>", require = 0)
+  private void andromeda$init(String message, Throwable cause, CallbackInfo ci) {
+    CrashHandler.traverse(cause).ifPresent(statuses -> {
+      var sec = ((CrashReport) (Object) this).addElement("Andromeda Statuses");
+      sec.trimStackTraceEnd(sec.getStackTrace().length);
+      sec.add("state", "\n" + AndromedaException.toString(CrashHandler.dumpState()));
+      sec.add("statuses", "\n" + AndromedaException.toString(statuses));
+    });
 
-        CrashHandler.sanitizeTrace(cause);
-    }
+    CrashHandler.sanitizeTrace(cause);
+  }
 }

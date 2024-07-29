@@ -7,16 +7,17 @@ import net.minecraft.nbt.NbtCompound;
 
 public class JukeboxMinecartItem extends AndromedaMinecartItem<JukeboxMinecartEntity> {
 
-    public JukeboxMinecartItem(Settings settings) {
-        super(MinecartEntities.JUKEBOX_MINECART_ENTITY, settings);
-    }
+  public JukeboxMinecartItem(Settings settings) {
+    super(MinecartEntities.JUKEBOX_MINECART_ENTITY, settings);
+  }
 
-    @Override
-    protected void onCreate(ItemStack stack, JukeboxMinecartEntity entity) {
-        NbtCompound nbt = stack.getNbt();
-        if (nbt != null) if (nbt.getCompound("Items") != null) {
-            entity.record = ItemStack.fromNbt(nbt.getCompound("Items"));
-            if (!entity.record.isEmpty()) entity.startPlaying();
-        }
-    }
+  @Override
+  protected void onCreate(ItemStack stack, JukeboxMinecartEntity entity) {
+    NbtCompound nbt = stack.getNbt();
+    if (nbt != null)
+      if (nbt.getCompound("Items") != null) {
+        entity.record = ItemStack.fromNbt(nbt.getCompound("Items"));
+        if (!entity.record.isEmpty()) entity.startPlaying();
+      }
+  }
 }

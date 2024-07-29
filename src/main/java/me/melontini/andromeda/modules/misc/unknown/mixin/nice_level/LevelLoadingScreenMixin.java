@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.nice_level;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import java.util.Objects;
 import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
 import net.minecraft.client.gui.screen.world.LevelLoadingScreen;
@@ -15,13 +16,13 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LevelLoadingScreen.class)
 abstract class LevelLoadingScreenMixin {
 
-    @Shadow @Final private WorldGenerationProgressTracker progressProvider;
+  @Shadow @Final private WorldGenerationProgressTracker progressProvider;
 
     @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
-    private Text andromeda$getPercentage(Text original) {
-        if (this.progressProvider.getProgressPercentage() == 69) {
-            return Text.literal("Nice%");
-        }
-        return original;
+  private Text andromeda$getPercentage(Text original) {
+    if (this.progressProvider.getProgressPercentage() == 69) {
+      return Text.literal("Nice%");
     }
+    return original;
+  }
 }

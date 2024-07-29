@@ -2,6 +2,14 @@ package me.melontini.andromeda.modules.gui.item_frame_tooltips;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -18,100 +26,114 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector2i;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 public class Client {
 
-    private Supplier<List<TooltipComponent>> action;
-    private float tooltipFlow;
-    private float oldTooltipFlow;
+  private Supplier<List<TooltipComponent>> action;
+  private float tooltipFlow;
+  private float oldTooltipFlow;
 
-    Client() {
-        inGameTooltips();
+  Client() {
+    inGameTooltips();
 
-        ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            var cast = client.crosshairTarget;
-            getCast(cast);
-            oldTooltipFlow = tooltipFlow;
-            tooltipFlow = action != null ? MathHelper.lerp(0.25f, tooltipFlow, 1) :
-                    MathHelper.lerp(0.1f, tooltipFlow, 0);
-            if (Math.abs(tooltipFlow) < 1.0E-5F) tooltipFlow = 0;
-        });
-    }
+    ClientTickEvents.START_CLIENT_TICK.register(client -> {
+      var cast = client.crosshairTarget;
+      getCast(cast);
+      oldTooltipFlow = tooltipFlow;
+      tooltipFlow = action != null
+          ? MathHelper.lerp(0.25f, tooltipFlow, 1)
+          : MathHelper.lerp(0.1f, tooltipFlow, 0);
+      if (Math.abs(tooltipFlow) < 1.0E-5F) tooltipFlow = 0;
+    });
+  }
 
-    public static void registerEntityTooltip(Predicate<EntityHitResult> predicate, Function<EntityHitResult, List<TooltipComponent>> function) {
-        ENTITY_LOOKUP.put(predicate, function);
-    }
+  public static void registerEntityTooltip(
+      Predicate<EntityHitResult> predicate,
+      Function<EntityHitResult, List<TooltipComponent>> function) {
+    ENTITY_LOOKUP.put(predicate, function);
+  }
 
-    private void inGameTooltips() {
-        HudRenderCallback.EVENT.register((context, delta) -> {
-            if (MinecraftClient.getInstance().currentScreen == null) {
-                var client = MinecraftClient.getInstance();
+  private void inGameTooltips() {
+    HudRenderCallback.EVENT.register((context, delta) -> {
+      if (MinecraftClient.getInstance().currentScreen == null) {
+        var client = MinecraftClient.getInstance();
 
-                if (action != null) {
-                    renderFromComponents(client, context, action.get());
-                }
-            }
-        });
+        if (action != null) {
+          renderFromComponents(client, context, action.get());
+        }
+      }
+    });
 
-        registerEntityTooltip(entityHitResult -> entityHitResult.getEntity() instanceof ItemFrameEntity ife && !ife.getHeldItemStack().isEmpty(), entityHitResult -> {
-            var frameStack = ((ItemFrameEntity) entityHitResult.getEntity()).getHeldItemStack();
-            if (frameStack.isEmpty()) return Collections.emptyList();
+    registerEntityTooltip(
+        entityHitResult -> entityHitResult.getEntity() instanceof ItemFrameEntity ife
+            && !ife.getHeldItemStack().isEmpty(),
+        entityHitResult -> {
+          var frameStack = ((ItemFrameEntity) entityHitResult.getEntity()).getHeldItemStack();
+          if (frameStack.isEmpty()) return Collections.emptyList();
 
-            var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), frameStack);
-            List<TooltipComponent> components = list.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toCollection(ArrayList::new));
+          var list = Screen.getTooltipFromItem(MinecraftClient.getInstance(), frameStack);
+          List<TooltipComponent> components = list.stream()
+              .map(Text::asOrderedText)
+              .map(TooltipComponent::of)
+              .collect(Collectors.toCollection(ArrayList::new));
 
-            frameStack.getTooltipData().ifPresent(datax -> components.add(1, Utilities.supply(() -> {
-                TooltipComponent component = TooltipComponentCallback.EVENT.invoker().getComponent(datax);
+          frameStack
+              .getTooltipData()
+              .ifPresent(datax -> components.add(1, Utilities.supply(() -> {
+                TooltipComponent component =
+                    TooltipComponentCallback.EVENT.invoker().getComponent(datax);
                 if (component == null) component = TooltipComponent.of(datax);
                 return component;
-            })));
-            return components;
+              })));
+          return components;
         });
-    }
+  }
 
-    private static final Map<Predicate<EntityHitResult>, Function<EntityHitResult, List<TooltipComponent>>> ENTITY_LOOKUP = new Reference2ObjectOpenHashMap<>();
+  private static final Map<
+          Predicate<EntityHitResult>, Function<EntityHitResult, List<TooltipComponent>>>
+      ENTITY_LOOKUP = new Reference2ObjectOpenHashMap<>();
 
-    private void getCast(HitResult cast) {
-        if (cast != null) if (cast.getType() == HitResult.Type.ENTITY) {
-            EntityHitResult hitResult = (EntityHitResult) cast;
-            var opt = ENTITY_LOOKUP.entrySet().stream().filter(p -> p.getKey().test(hitResult)).findFirst();
-            if (opt.isPresent()) {
-                action = () -> opt.get().getValue().apply(hitResult);
-                return;
-            }
+  private void getCast(HitResult cast) {
+    if (cast != null)
+      if (cast.getType() == HitResult.Type.ENTITY) {
+        EntityHitResult hitResult = (EntityHitResult) cast;
+        var opt = ENTITY_LOOKUP.entrySet().stream()
+            .filter(p -> p.getKey().test(hitResult))
+            .findFirst();
+        if (opt.isPresent()) {
+          action = () -> opt.get().getValue().apply(hitResult);
+          return;
         }
-        action = null;
-    }
+      }
+    action = null;
+  }
 
-    private void renderFromComponents(MinecraftClient client, DrawContext context, List<TooltipComponent> components) {
-        if (components.isEmpty()) return;
+  private void renderFromComponents(
+      MinecraftClient client, DrawContext context, List<TooltipComponent> components) {
+    if (components.isEmpty()) return;
 
-        float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
-        MatrixStack matrices = context.getMatrices();
+    float flow = MathHelper.lerp(client.getTickDelta(), oldTooltipFlow, tooltipFlow);
+    MatrixStack matrices = context.getMatrices();
 
-        matrices.push();
-        matrices.translate(0, 0, -450);
-        matrices.scale(1, 1, 1);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
+    matrices.push();
+    matrices.translate(0, 0, -450);
+    matrices.scale(1, 1, 1);
+    RenderSystem.enableBlend();
+    RenderSystem.defaultBlendFunc();
+    RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
 
-        context.drawTooltip(client.textRenderer, components, 0, 0, (screenWidth, screenHeight, sameX, sameY, width, height) -> {
-            float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
-            float smoothY = ((client.getWindow().getScaledHeight() - height) / 2f);
-            matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY, 1);
-            return new Vector2i((int) smoothX, (int) smoothY);
+    context.drawTooltip(
+        client.textRenderer,
+        components,
+        0,
+        0,
+        (screenWidth, screenHeight, sameX, sameY, width, height) -> {
+          float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
+          float smoothY = ((client.getWindow().getScaledHeight() - height) / 2f);
+          matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY, 1);
+          return new Vector2i((int) smoothX, (int) smoothY);
         });
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
-        matrices.pop();
-    }
+    RenderSystem.setShaderColor(1, 1, 1, 1);
+    RenderSystem.disableBlend();
+    matrices.pop();
+  }
 }

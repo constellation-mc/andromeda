@@ -15,20 +15,25 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(MobEntity.class)
 abstract class MobEntityMixin extends Entity {
 
-    public MobEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
+  public MobEntityMixin(EntityType<?> type, World world) {
+    super(type, world);
+  }
+
+  @ModifyExpressionValue(
+      at = @At(value = "CONSTANT", args = "floatValue=90"),
+      method = "lookAtEntity")
+  private float andromeda$rotateSlime(
+      float original, Entity target, float maxYawChange, float maxPitchChange) {
+    if ((MobEntity) (Object) this instanceof SlimeEntity slime
+        && !(target instanceof SlimeEntity)) {
+      var config = world.am$get(Slimes.CONFIG);
+
+      if (!slime.isSmall()) return original;
+      if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return original;
+
+      if (config.flee.asBoolean(LootContextUtil.entity(world, target.getPos(), target, null, this)))
+        return 270;
     }
-
-    @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=90"), method = "lookAtEntity")
-    private float andromeda$rotateSlime(float original, Entity target, float maxYawChange, float maxPitchChange) {
-        if ((MobEntity) (Object) this instanceof SlimeEntity slime && !(target instanceof SlimeEntity)) {
-            var config = world.am$get(Slimes.CONFIG);
-
-            if (!slime.isSmall()) return original;
-            if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return original;
-
-            if (config.flee.asBoolean(LootContextUtil.entity(world, target.getPos(), target, null, this))) return 270;
-        }
-        return original;
-    }
+    return original;
+  }
 }

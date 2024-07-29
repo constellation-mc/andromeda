@@ -16,16 +16,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BundleItem.class)
 abstract class BundleItemMixin {
 
-    @Inject(at = @At("RETURN"), method = "addToBundle")
-    private static void andromeda$spawnParticles(ItemStack bundle, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
-        if (cir.getReturnValueI() > 0 && AndromedaClient.HANDLER.get(GuiParticles.CONFIG).bundleInputParticles) {
-            var client = MinecraftClient.getInstance();
-            if (client.isOnThread() && client.currentScreen != null) {
-                int x = (int) (client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth());
-                int y = (int) (client.mouse.getY() * (double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight());
-                ScreenParticleHelper.addScreenParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
-                        x, y, 0.5, 0.5, 0.1, 7);
-            }
-        }
+  @Inject(at = @At("RETURN"), method = "addToBundle")
+  private static void andromeda$spawnParticles(
+      ItemStack bundle, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+    if (cir.getReturnValueI() > 0
+        && AndromedaClient.HANDLER.get(GuiParticles.CONFIG).bundleInputParticles) {
+      var client = MinecraftClient.getInstance();
+      if (client.isOnThread() && client.currentScreen != null) {
+        int x = (int) (client.mouse.getX()
+            * (double) client.getWindow().getScaledWidth()
+            / (double) client.getWindow().getWidth());
+        int y = (int) (client.mouse.getY()
+            * (double) client.getWindow().getScaledHeight()
+            / (double) client.getWindow().getHeight());
+        ScreenParticleHelper.addScreenParticles(
+            new ItemStackParticleEffect(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7);
+      }
     }
+  }
 }

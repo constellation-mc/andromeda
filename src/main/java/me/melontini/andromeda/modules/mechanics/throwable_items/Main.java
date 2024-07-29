@@ -1,5 +1,8 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
+import static me.melontini.andromeda.common.Andromeda.id;
+import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
+
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBehaviors;
@@ -35,71 +38,82 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
-import static me.melontini.andromeda.common.Andromeda.id;
-import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
-
 public final class Main {
 
-    public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
+  public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
 
-    public static final RegistryKey<DamageType> BRICKED = Andromeda.key(RegistryKeys.DAMAGE_TYPE, "bricked");
+  public static final RegistryKey<DamageType> BRICKED =
+      Andromeda.key(RegistryKeys.DAMAGE_TYPE, "bricked");
 
-    public static final Identifier FLYING_STACK_LANDED = Andromeda.id("flying_stack_landed");
-    public static final Identifier ITEMS_WITH_BEHAVIORS = Andromeda.id("items_with_behaviors");
-    public static final Identifier COLORED_FLYING_STACK_LANDED = Andromeda.id("colored_flying_stack_landed");
+  public static final Identifier FLYING_STACK_LANDED = Andromeda.id("flying_stack_landed");
+  public static final Identifier ITEMS_WITH_BEHAVIORS = Andromeda.id("items_with_behaviors");
+  public static final Identifier COLORED_FLYING_STACK_LANDED =
+      Andromeda.id("colored_flying_stack_landed");
 
-    public static final ProjectileDispenserBehavior BEHAVIOR = new ProjectileDispenserBehavior() {
-        @Override
-        protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-            ItemStack stack1 = stack.copy();
-            stack1.setCount(1);
-            return new FlyingItemEntity(stack1, position.getX(), position.getY(), position.getZ(), world);
-        }
-    };
-
-    public static final Keeper<LootContextType> CONTEXT_TYPE = Keeper.create();
-    public static final Keeper<CommandType> PARTICLE_COMMAND = Keeper.create();
-    public static final Keeper<CommandType> ITEM_PLOP_COMMAND = Keeper.create();
-
-    static void init() {
-        FLYING_ITEM.init(RegistryUtil.register(Registries.ENTITY_TYPE, id("flying_item"), () -> FabricEntityTypeBuilder.<FlyingItemEntity>create(SpawnGroup.MISC, FlyingItemEntity::new)
-                .dimensions(new EntityDimensions(0.25F, 0.25F, true))
-                .trackRangeChunks(4).trackedUpdateRate(10).build()));
-
-        CONTEXT_TYPE.init(LootContextTypes.register("andromeda:throwable_items", builder -> builder
-                .require(LootContextParameters.ORIGIN).require(LootContextParameters.DIRECT_KILLER_ENTITY)
-                .require(LootContextParameters.TOOL).allow(LootContextParameters.KILLER_ENTITY)
-                .allow(LootContextParameters.THIS_ENTITY).allow(LootContextParameters.BLOCK_STATE)
-                .allow(LootContextParameters.BLOCK_ENTITY)));
-        PARTICLE_COMMAND.init(CommandType.register(id("particles"), ParticleCommand.CODEC));
-        ITEM_PLOP_COMMAND.init(CommandType.register(id("item_plop"), ItemPlopEffect.CODEC));
-
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
-            sender.sendPacket(ITEMS_WITH_BEHAVIORS, packet);
-        });
-        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-            var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
-            for (ServerPlayerEntity player : PlayerLookup.all(server)) {
-                ServerPlayNetworking.send(player, ITEMS_WITH_BEHAVIORS, packet);
-            }
-        });
-
-        ServerReloadersEvent.EVENT.register(context -> context.register(new ItemBehaviorManager()));
-
-        DefaultBehaviors.init();
+  public static final ProjectileDispenserBehavior BEHAVIOR = new ProjectileDispenserBehavior() {
+    @Override
+    protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
+      ItemStack stack1 = stack.copy();
+      stack1.setCount(1);
+      return new FlyingItemEntity(stack1, position.getX(), position.getY(), position.getZ(), world);
     }
+  };
 
-    private static PacketByteBuf sendItemsS2CPacket(ItemBehaviorManager manger) {
-        var items = manger.itemsWithBehaviors();
-        var packet = PacketByteBufs.create().writeVarInt(items.size());
-        for (Item item : items) {
-            packet.writeIdentifier(Registries.ITEM.getId(item));
-        }
-        return packet;
-    }
+  public static final Keeper<LootContextType> CONTEXT_TYPE = Keeper.create();
+  public static final Keeper<CommandType> PARTICLE_COMMAND = Keeper.create();
+  public static final Keeper<CommandType> ITEM_PLOP_COMMAND = Keeper.create();
 
-    public enum Event {
-        BLOCK, ENTITY, MISS, ANY
+  static void init() {
+    FLYING_ITEM.init(RegistryUtil.register(
+        Registries.ENTITY_TYPE,
+        id("flying_item"),
+        () -> FabricEntityTypeBuilder.<FlyingItemEntity>create(
+                SpawnGroup.MISC, FlyingItemEntity::new)
+            .dimensions(new EntityDimensions(0.25F, 0.25F, true))
+            .trackRangeChunks(4)
+            .trackedUpdateRate(10)
+            .build()));
+
+    CONTEXT_TYPE.init(LootContextTypes.register("andromeda:throwable_items", builder -> builder
+        .require(LootContextParameters.ORIGIN)
+        .require(LootContextParameters.DIRECT_KILLER_ENTITY)
+        .require(LootContextParameters.TOOL)
+        .allow(LootContextParameters.KILLER_ENTITY)
+        .allow(LootContextParameters.THIS_ENTITY)
+        .allow(LootContextParameters.BLOCK_STATE)
+        .allow(LootContextParameters.BLOCK_ENTITY)));
+    PARTICLE_COMMAND.init(CommandType.register(id("particles"), ParticleCommand.CODEC));
+    ITEM_PLOP_COMMAND.init(CommandType.register(id("item_plop"), ItemPlopEffect.CODEC));
+
+    ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+      var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
+      sender.sendPacket(ITEMS_WITH_BEHAVIORS, packet);
+    });
+    ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+      var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
+      for (ServerPlayerEntity player : PlayerLookup.all(server)) {
+        ServerPlayNetworking.send(player, ITEMS_WITH_BEHAVIORS, packet);
+      }
+    });
+
+    ServerReloadersEvent.EVENT.register(context -> context.register(new ItemBehaviorManager()));
+
+    DefaultBehaviors.init();
+  }
+
+  private static PacketByteBuf sendItemsS2CPacket(ItemBehaviorManager manger) {
+    var items = manger.itemsWithBehaviors();
+    var packet = PacketByteBufs.create().writeVarInt(items.size());
+    for (Item item : items) {
+      packet.writeIdentifier(Registries.ITEM.getId(item));
     }
+    return packet;
+  }
+
+  public enum Event {
+    BLOCK,
+    ENTITY,
+    MISS,
+    ANY
+  }
 }

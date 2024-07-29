@@ -20,19 +20,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EndCrystalEntity.class)
 abstract class EndCrystalMixin extends Entity {
 
-    @Shadow public abstract boolean shouldShowBottom();
+  @Shadow
+  public abstract boolean shouldShowBottom();
 
-    public EndCrystalMixin(EntityType<?> type, World world) {
-        super(type, world);
+  public EndCrystalMixin(EntityType<?> type, World world) {
+    super(type, world);
+  }
+
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/entity/decoration/EndCrystalEntity;remove(Lnet/minecraft/entity/Entity$RemovalReason;)V",
+              shift = At.Shift.BEFORE),
+      method = "damage")
+  private void andromeda$damage(
+      DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    if (!Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).respawnCrystals) return;
+
+    if (world.getRegistryKey() == World.END
+        && !((ServerWorld) world).getAliveEnderDragons().isEmpty()
+        && shouldShowBottom()) {
+      if (this.getPos().getY() <= 71) return;
+      ((ServerWorld) world)
+          .getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get())
+          .queueRespawn(new MutableInt(MathUtil.nextInt(1900, 3500)), this.getPos());
     }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/decoration/EndCrystalEntity;remove(Lnet/minecraft/entity/Entity$RemovalReason;)V", shift = At.Shift.BEFORE), method = "damage")
-    private void andromeda$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).respawnCrystals) return;
-
-        if (world.getRegistryKey() == World.END && !((ServerWorld) world).getAliveEnderDragons().isEmpty() && shouldShowBottom()) {
-            if (this.getPos().getY() <= 71) return;
-            ((ServerWorld)world).getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get()).queueRespawn(new MutableInt(MathUtil.nextInt(1900, 3500)), this.getPos());
-        }
-    }
+  }
 }

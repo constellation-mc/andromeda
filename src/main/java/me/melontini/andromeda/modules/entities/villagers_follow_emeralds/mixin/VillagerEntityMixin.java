@@ -15,12 +15,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(VillagerEntity.class)
 abstract class VillagerEntityMixin extends MerchantEntity {
 
-    public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;setVillagerData(Lnet/minecraft/village/VillagerData;)V", shift = At.Shift.AFTER), method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;Lnet/minecraft/village/VillagerType;)V")
-    private void andromeda$init(EntityType<? extends VillagerEntity> entityType, World world, VillagerType type, CallbackInfo ci) {
-        this.goalSelector.add(6, new VillagerTemptGoal((VillagerEntity) (Object) this, 0.5, Ingredient.fromTag(VillagerTemptGoal.TEMPTING), false));
-    }
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/entity/passive/VillagerEntity;setVillagerData(Lnet/minecraft/village/VillagerData;)V",
+              shift = At.Shift.AFTER),
+      method =
+          "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;Lnet/minecraft/village/VillagerType;)V")
+  private void andromeda$init(
+      EntityType<? extends VillagerEntity> entityType,
+      World world,
+      VillagerType type,
+      CallbackInfo ci) {
+    this.goalSelector.add(
+        6,
+        new VillagerTemptGoal(
+            (VillagerEntity) (Object) this,
+            0.5,
+            Ingredient.fromTag(VillagerTemptGoal.TEMPTING),
+            false));
+  }
 }

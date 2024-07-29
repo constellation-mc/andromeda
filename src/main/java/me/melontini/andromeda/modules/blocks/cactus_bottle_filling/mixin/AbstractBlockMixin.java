@@ -30,38 +30,63 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractBlock.class)
 abstract class AbstractBlockMixin {
 
-    @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (state.getBlock() instanceof CactusBlock) {
-            ItemStack stack = player.getStackInHand(hand);
-            if (stack.isOf(Items.GLASS_BOTTLE)) {
-                BlockPos pos1 = pos;
-                while (true) {
-                    BlockState state1 = world.getBlockState(pos1 = pos1.up());
-                    if (state.isOf(state1.getBlock())) {
-                        state = state1;
-                    } else {
-                        break;
-                    }
-                }
-
-                if (!world.isClient() && world.am$get(CactusFiller.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
-                    player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-
-                    if (state.get(Main.WATER_LEVEL_3) == 3) {
-                        world.breakBlock(pos1.down(), false, player);
-                        ItemStackUtil.spawnVelocity(pos1, Items.DEAD_BUSH.getDefaultStack(), world,
-                                -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
-                    } else {
-                        world.setBlockState(pos1.down(), state.cycle(Main.WATER_LEVEL_3));
-                    }
-
-                    ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.6, 0.5, 0.6, 0.5);
-                }
-
-                cir.setReturnValue(ActionResult.SUCCESS);
-            }
+  @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
+  private void andromeda$onUse(
+      BlockState state,
+      World world,
+      BlockPos pos,
+      PlayerEntity player,
+      Hand hand,
+      BlockHitResult hit,
+      CallbackInfoReturnable<ActionResult> cir) {
+    if (state.getBlock() instanceof CactusBlock) {
+      ItemStack stack = player.getStackInHand(hand);
+      if (stack.isOf(Items.GLASS_BOTTLE)) {
+        BlockPos pos1 = pos;
+        while (true) {
+          BlockState state1 = world.getBlockState(pos1 = pos1.up());
+          if (state.isOf(state1.getBlock())) {
+            state = state1;
+          } else {
+            break;
+          }
         }
+
+        if (!world.isClient()
+            && world
+                .am$get(CactusFiller.CONFIG)
+                .available
+                .asBoolean(LootContextUtil.block(
+                    world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
+          player.setStackInHand(
+              hand,
+              ItemUsage.exchangeStack(
+                  stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+          player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+
+          if (state.get(Main.WATER_LEVEL_3) == 3) {
+            world.breakBlock(pos1.down(), false, player);
+            ItemStackUtil.spawnVelocity(
+                pos1, Items.DEAD_BUSH.getDefaultStack(), world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
+          } else {
+            world.setBlockState(pos1.down(), state.cycle(Main.WATER_LEVEL_3));
+          }
+
+          ((ServerWorld) world)
+              .spawnParticles(
+                  ParticleTypes.FALLING_WATER,
+                  pos.getX() + 0.5,
+                  pos.getY() + 0.5,
+                  pos.getZ() + 0.5,
+                  5,
+                  0.6,
+                  0.5,
+                  0.6,
+                  0.5);
+        }
+
+        cir.setReturnValue(ActionResult.SUCCESS);
+      }
     }
+  }
 }

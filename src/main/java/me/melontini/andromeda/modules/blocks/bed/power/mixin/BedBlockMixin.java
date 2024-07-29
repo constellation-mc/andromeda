@@ -19,15 +19,22 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(BedBlock.class)
 abstract class BedBlockMixin extends Block {
 
-    public BedBlockMixin(Settings settings) {
-        super(settings);
-    }
+  public BedBlockMixin(Settings settings) {
+    super(settings);
+  }
 
-    @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=5.0F"), method = "onUse")
-    public float andromeda$explosionRedirect(float power, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos, @Local(argsOnly = true) BlockState state, @Local(argsOnly = true) PlayerEntity player, @Local(argsOnly = true) Hand hand) {
-        if (world.isClient()) return power;
-        var supplier = Memoize.supplier(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player));
-        var config = world.am$get(Power.CONFIG);
-        return config.available.asBoolean(supplier) ? config.power.asFloat(supplier) : power;
-    }
+  @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=5.0F"), method = "onUse")
+  public float andromeda$explosionRedirect(
+      float power,
+      @Local(argsOnly = true) World world,
+      @Local(argsOnly = true) BlockPos pos,
+      @Local(argsOnly = true) BlockState state,
+      @Local(argsOnly = true) PlayerEntity player,
+      @Local(argsOnly = true) Hand hand) {
+    if (world.isClient()) return power;
+    var supplier = Memoize.supplier(LootContextUtil.block(
+        world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player));
+    var config = world.am$get(Power.CONFIG);
+    return config.available.asBoolean(supplier) ? config.power.asFloat(supplier) : power;
+  }
 }

@@ -1,5 +1,6 @@
 package me.melontini.andromeda.util.mixins;
 
+import java.util.List;
 import lombok.CustomLog;
 import lombok.ToString;
 import me.melontini.andromeda.util.CommonValues;
@@ -7,26 +8,25 @@ import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.mixin.ExtendablePlugin;
 import org.spongepowered.asm.mixin.Mixins;
 
-import java.util.List;
-
-@CustomLog @ToString
+@CustomLog
+@ToString
 public final class AndromedaMixinPlugin extends ExtendablePlugin {
 
-    private String mixinPackage;
+  private String mixinPackage;
 
-    @Override
-    public void onPluginLoad(String mixinPackage) {
-        this.mixinPackage = mixinPackage;
+  @Override
+  public void onPluginLoad(String mixinPackage) {
+    this.mixinPackage = mixinPackage;
 
-        Debug.load();
+    Debug.load();
 
-        AndromedaMixins.CLASS_PATH.addPaths(CommonValues.mod().getRootPaths());
+    AndromedaMixins.CLASS_PATH.addPaths(CommonValues.mod().getRootPaths());
 
-        Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
-    }
+    Mixins.registerErrorHandlerClass(ErrorHandler.class.getName());
+  }
 
-    @Override
-    protected void getMixins(List<String> mixins) {
-        mixins.addAll(AndromedaMixins.discoverInPackage(this.mixinPackage));
-    }
+  @Override
+  protected void getMixins(List<String> mixins) {
+    mixins.addAll(AndromedaMixins.discoverInPackage(this.mixinPackage));
+  }
 }

@@ -13,11 +13,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerManager.class)
 abstract class PlayerManagerMixin {
 
-    @Shadow @Final private MinecraftServer server;
+  @Shadow
+  @Final
+  private MinecraftServer server;
 
-    @Inject(at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;", ordinal = 0, shift = At.Shift.BEFORE), method = "onDataPacksReloaded")
-    private void andromeda$reload(CallbackInfo ci) {
-        //we don't sync until our advancements have been generated
-        BeforeDataPackSyncEvent.EVENT.invoker().beforeDataPackReload(server);
-    }
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Ljava/util/Map;values()Ljava/util/Collection;",
+              ordinal = 0,
+              shift = At.Shift.BEFORE),
+      method = "onDataPacksReloaded")
+  private void andromeda$reload(CallbackInfo ci) {
+    // we don't sync until our advancements have been generated
+    BeforeDataPackSyncEvent.EVENT.invoker().beforeDataPackReload(server);
+  }
 }

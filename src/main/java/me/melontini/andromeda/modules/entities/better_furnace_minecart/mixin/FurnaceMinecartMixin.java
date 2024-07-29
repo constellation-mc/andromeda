@@ -21,43 +21,50 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FurnaceMinecartEntity.class)
 abstract class FurnaceMinecartMixin {
 
-    @Shadow public int fuel;
+  @Shadow
+  public int fuel;
 
-    @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
-    public void andromeda$interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        ItemStack stack = player.getStackInHand(hand);
-        Item item = stack.getItem();
+  @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
+  public void andromeda$interact(
+      PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+    ItemStack stack = player.getStackInHand(hand);
+    Item item = stack.getItem();
 
-        FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
-        if (FuelRegistry.INSTANCE.get(item) != null) {
-            int itemFuel = FuelRegistry.INSTANCE.get(item);
-            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
-                if (!player.getAbilities().creativeMode) {
-                    ItemStack reminder = stack.getRecipeRemainder();
-                    if (!reminder.isEmpty())
-                        player.getInventory().offerOrDrop(stack.getRecipeRemainder());
-                    stack.decrement(1);
-                }
-
-                this.fuel += (int) (itemFuel * 2.25);
-            }
+    FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
+    if (FuelRegistry.INSTANCE.get(item) != null) {
+      int itemFuel = FuelRegistry.INSTANCE.get(item);
+      if ((this.fuel + (itemFuel * 2.25))
+          <= Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
+        if (!player.getAbilities().creativeMode) {
+          ItemStack reminder = stack.getRecipeRemainder();
+          if (!reminder.isEmpty()) player.getInventory().offerOrDrop(stack.getRecipeRemainder());
+          stack.decrement(1);
         }
 
-        if (this.fuel > 0) {
-            furnaceMinecart.pushX = furnaceMinecart.getX() - player.getX();
-            furnaceMinecart.pushZ = furnaceMinecart.getZ() - player.getZ();
-        }
-
-        cir.setReturnValue(ActionResult.success(furnaceMinecart.world.isClient));
+        this.fuel += (int) (itemFuel * 2.25);
+      }
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"), method = "writeCustomDataToNbt")
-    private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, short value  /* short */) {
-        nbt.putInt(key, this.fuel);
+    if (this.fuel > 0) {
+      furnaceMinecart.pushX = furnaceMinecart.getX() - player.getX();
+      furnaceMinecart.pushZ = furnaceMinecart.getZ() - player.getZ();
     }
 
-    @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
-    public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        this.fuel = nbt.getInt("Fuel");
-    }
+    cir.setReturnValue(ActionResult.success(furnaceMinecart.world.isClient));
+  }
+
+  @Redirect(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"),
+      method = "writeCustomDataToNbt")
+  private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, short value /* short */) {
+    nbt.putInt(key, this.fuel);
+  }
+
+  @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
+  public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
+    this.fuel = nbt.getInt("Fuel");
+  }
 }

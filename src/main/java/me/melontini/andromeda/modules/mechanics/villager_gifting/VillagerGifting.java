@@ -9,9 +9,10 @@ import me.melontini.andromeda.base.util.config.ConfigState;
 @ModuleInfo(name = "villager_gifting", category = "mechanics", environment = Environment.SERVER)
 public final class VillagerGifting extends Module {
 
-    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+  public static final ConfigDefinition<Module.GameConfig> CONFIG =
+      new ConfigDefinition<>(() -> Module.GameConfig.class);
 
-    VillagerGifting() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  VillagerGifting() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 }

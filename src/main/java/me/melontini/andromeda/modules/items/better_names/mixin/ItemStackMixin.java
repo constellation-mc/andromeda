@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.items.better_names.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import java.util.List;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,25 +17,46 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.List;
-
 @Mixin(ItemStack.class)
 abstract class ItemStackMixin {
 
-    @Shadow public abstract int getMaxDamage();
-    @Shadow public abstract Item getItem();
-    @Shadow public abstract int getCount();
-    @Shadow public abstract int getDamage();
-    @Shadow public abstract Rarity getRarity();
+  @Shadow
+  public abstract int getMaxDamage();
 
-    @Inject(at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.BEFORE), method = "getTooltip")
-    private void andromeda$getTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, @Local MutableText mutableText) {
-        if (!this.getItem().isDamageable()) {
-            if (this.getCount() > 1)
-                mutableText.append(TextUtil.literal(" x" + this.getCount()).formatted(getRarity().formatting));
-        } else {
-            if (this.getDamage() > 0)
-                mutableText.append(TextUtil.literal(" " + ((this.getMaxDamage() - this.getDamage()) * 100 / this.getMaxDamage()) + "%").formatted(getRarity().formatting));
-        }
+  @Shadow
+  public abstract Item getItem();
+
+  @Shadow
+  public abstract int getCount();
+
+  @Shadow
+  public abstract int getDamage();
+
+  @Shadow
+  public abstract Rarity getRarity();
+
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Ljava/util/List;add(Ljava/lang/Object;)Z",
+              ordinal = 0,
+              shift = At.Shift.BEFORE),
+      method = "getTooltip")
+  private void andromeda$getTooltip(
+      @Nullable PlayerEntity player,
+      TooltipContext context,
+      CallbackInfoReturnable<List<Text>> cir,
+      @Local MutableText mutableText) {
+    if (!this.getItem().isDamageable()) {
+      if (this.getCount() > 1)
+        mutableText.append(
+            TextUtil.literal(" x" + this.getCount()).formatted(getRarity().formatting));
+    } else {
+      if (this.getDamage() > 0)
+        mutableText.append(TextUtil.literal(
+                " " + ((this.getMaxDamage() - this.getDamage()) * 100 / this.getMaxDamage()) + "%")
+            .formatted(getRarity().formatting));
     }
+  }
 }
