@@ -1,6 +1,11 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
+import static java.util.Objects.requireNonNull;
+import static me.melontini.andromeda.common.Andromeda.id;
+
 import com.mojang.serialization.MapCodec;
+import java.util.List;
+import java.util.Set;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
@@ -35,125 +40,145 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Set;
-
-import static java.util.Objects.requireNonNull;
-import static me.melontini.andromeda.common.Andromeda.id;
-
 @SuppressWarnings("deprecation")
 public class IncubatorBlock extends BlockWithEntity implements InventoryProvider {
 
-    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-    public static final Keeper<IncubatorBlock> INCUBATOR_BLOCK = Keeper.create();
-    public static final Keeper<BlockItem> INCUBATOR = Keeper.create();
-    public static final Keeper<BlockEntityType<IncubatorBlockEntity>> INCUBATOR_BLOCK_ENTITY = Keeper.create();
-    private final VoxelShape BASE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
-    private final VoxelShape GLASS_SHAPE = Block.createCuboidShape(3.0, 11.0, 3.0, 13.0, 18.0, 13.0);
-    public static final MapCodec<IncubatorBlock> CODEC = createCodec(IncubatorBlock::new);
+  public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+  public static final Keeper<IncubatorBlock> INCUBATOR_BLOCK = Keeper.create();
+  public static final Keeper<BlockItem> INCUBATOR = Keeper.create();
+  public static final Keeper<BlockEntityType<IncubatorBlockEntity>> INCUBATOR_BLOCK_ENTITY =
+      Keeper.create();
+  private final VoxelShape BASE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
+  private final VoxelShape GLASS_SHAPE = Block.createCuboidShape(3.0, 11.0, 3.0, 13.0, 18.0, 13.0);
+  public static final MapCodec<IncubatorBlock> CODEC = createCodec(IncubatorBlock::new);
 
-    public IncubatorBlock(Settings settings) {
-        super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
-    }
+  public IncubatorBlock(Settings settings) {
+    super(settings);
+    this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+  }
 
-    @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
+  @Override
+  protected MapCodec<? extends BlockWithEntity> getCodec() {
+    return CODEC;
+  }
 
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
-    }
+  @Override
+  public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+      World world, BlockState state, BlockEntityType<T> type) {
+    return validateTicker(type, INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
+  }
 
-    @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+  @Override
+  protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
         if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ItemActionResult.success(true);
 
-        if (requireNonNull(world.getServer()).dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem()) != null) return entity.insertEgg(stack);
-        if (stack.isEmpty()) return entity.extractEgg(player);
+    if (requireNonNull(world.getServer())
+            .dm$getReloader(EggProcessingData.RELOADER)
+            .get(stack.getItem())
+        != null) return entity.insertEgg(stack);
+    if (stack.isEmpty()) return entity.extractEgg(player);
 
-        return ItemActionResult.success(false);
-    }
+    return ItemActionResult.success(false);
+  }
 
-    @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-        if (ModuleManager.get().getModule(Unknown.class).isPresent())
-            tooltip.add(TextUtil.translatable("tooltip.andromeda.incubator[1]").formatted(Formatting.GRAY));
-    }
+  @Override
+  public void appendTooltip(
+      ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
+    if (ModuleManager.get().getModule(Unknown.class).isPresent())
+      tooltip.add(
+          TextUtil.translatable("tooltip.andromeda.incubator[1]").formatted(Formatting.GRAY));
+  }
 
-    @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
-    }
+  @Override
+  public BlockState getPlacementState(ItemPlacementContext ctx) {
+    return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+  }
 
-    @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity) {
-                if (!world.isClient) {
-                    ItemScatterer.spawn(world, pos, incubatorBlockEntity);
-                }
-                world.updateComparators(pos, this);
-            }
-
-            super.onStateReplaced(state, world, pos, newState, moved);
+  @Override
+  public void onStateReplaced(
+      BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    if (!state.isOf(newState.getBlock())) {
+      BlockEntity blockEntity = world.getBlockEntity(pos);
+      if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity) {
+        if (!world.isClient) {
+          ItemScatterer.spawn(world, pos, incubatorBlockEntity);
         }
-    }
+        world.updateComparators(pos, this);
+      }
 
-    @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(FACING, rotation.rotate(state.get(FACING)));
+      super.onStateReplaced(state, world, pos, newState, moved);
     }
+  }
 
-    @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(FACING)));
-    }
+  @Override
+  public BlockState rotate(BlockState state, BlockRotation rotation) {
+    return state.with(FACING, rotation.rotate(state.get(FACING)));
+  }
 
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
+  @Override
+  public BlockState mirror(BlockState state, BlockMirror mirror) {
+    return state.rotate(mirror.getRotation(state.get(FACING)));
+  }
 
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
-    }
+  @Override
+  public BlockRenderType getRenderType(BlockState state) {
+    return BlockRenderType.MODEL;
+  }
 
-    @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
-        return VoxelShapes.union(BASE_SHAPE, GLASS_SHAPE);
-    }
+  @Override
+  protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    builder.add(FACING);
+  }
 
-    @Nullable @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new IncubatorBlockEntity(pos, state);
-    }
+  @Override
+  public VoxelShape getOutlineShape(
+      BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
+    return VoxelShapes.union(BASE_SHAPE, GLASS_SHAPE);
+  }
 
-    @Override
-    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
+  @Nullable @Override
+  public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    return new IncubatorBlockEntity(pos, state);
+  }
+
+  @Override
+  protected boolean canPathfindThrough(
+      BlockState state, NavigationType type) {
         return false;
     }
 
-    @Override
-    public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity) return incubatorBlockEntity;
-        throw AndromedaException.builder().literal("Invalid block entity type! Must be an instance of %s".formatted(IncubatorBlockEntity.class.getName()))
-                .add("block_entity", blockEntity).build();
-    }
+  @Override
+  public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
+    BlockEntity blockEntity = world.getBlockEntity(pos);
+    if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity)
+      return incubatorBlockEntity;
+    throw AndromedaException.builder()
+        .literal("Invalid block entity type! Must be an instance of %s"
+            .formatted(IncubatorBlockEntity.class.getName()))
+        .add("block_entity", blockEntity)
+        .build();
+  }
 
-    public static void init(Incubator module) {
-        IncubatorBlock.INCUBATOR_BLOCK.init(RegistryUtil.register(Registries.BLOCK, id("incubator"), () -> new IncubatorBlock(FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))));
-        IncubatorBlock.INCUBATOR.init(RegistryUtil.register(Registries.ITEM, id("incubator"), () -> new BlockItem(IncubatorBlock.INCUBATOR_BLOCK.orThrow(), new Item.Settings())));
-        IncubatorBlock.INCUBATOR_BLOCK_ENTITY.init(RegistryUtil.register(Registries.BLOCK_ENTITY_TYPE, id("incubator"), () -> new BlockEntityType<>(IncubatorBlockEntity::new, Set.of(IncubatorBlock.INCUBATOR_BLOCK.orThrow()), null)));
+  public static void init(Incubator module) {
+    IncubatorBlock.INCUBATOR_BLOCK.init(RegistryUtil.register(
+        Registries.BLOCK,
+        id("incubator"),
+        () -> new IncubatorBlock(
+            FabricBlockSettings.create().strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))));
+    IncubatorBlock.INCUBATOR.init(RegistryUtil.register(
+        Registries.ITEM,
+        id("incubator"),
+        () -> new BlockItem(IncubatorBlock.INCUBATOR_BLOCK.orThrow(), new Item.Settings())));
+    IncubatorBlock.INCUBATOR_BLOCK_ENTITY.init(RegistryUtil.register(
+        Registries.BLOCK_ENTITY_TYPE,
+        id("incubator"),
+        () -> new BlockEntityType<>(
+            IncubatorBlockEntity::new, Set.of(IncubatorBlock.INCUBATOR_BLOCK.orThrow()), null)));
 
-        AndromedaItemGroup.accept(acceptor -> acceptor.keeper(module, ItemGroups.FUNCTIONAL, IncubatorBlock.INCUBATOR));
+    AndromedaItemGroup.accept(
+        acceptor -> acceptor.keeper(module, ItemGroups.FUNCTIONAL, IncubatorBlock.INCUBATOR));
 
-        EggProcessingData.init();
-    }
+    EggProcessingData.init();
+  }
 }

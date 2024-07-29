@@ -1,5 +1,7 @@
 package me.melontini.andromeda.base.util;
 
+import java.util.List;
+import java.util.Set;
 import me.melontini.andromeda.base.MixinProcessor;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
@@ -18,75 +20,89 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
 import org.spongepowered.asm.util.Annotations;
 
-import java.util.List;
-import java.util.Set;
-
 @SuppressWarnings("UnstableApiUsage")
 public class ModulePlugin extends ExtendablePlugin {
 
-    private static final String MIXIN_ENVIRONMENT_ANNOTATION = "L" + SpecialEnvironment.class.getName().replace(".", "/") + ";";
+  private static final String MIXIN_ENVIRONMENT_ANNOTATION =
+      "L" + SpecialEnvironment.class.getName().replace(".", "/") + ";";
 
-    private String mixinPackage;
-    private final MixinProcessor processor = ModuleManager.get().getMixinProcessor();
+  private String mixinPackage;
+  private final MixinProcessor processor = ModuleManager.get().getMixinProcessor();
 
-    @Override
-    protected void collectPlugins(Set<IPluginPlugin> plugins) {
-        plugins.add(DefaultPlugins.constructDummyPlugin());
+  @Override
+  protected void collectPlugins(Set<IPluginPlugin> plugins) {
+    plugins.add(DefaultPlugins.constructDummyPlugin());
+  }
+
+  @Override
+  protected void onPluginLoad(String mixinPackage) {
+    this.mixinPackage = mixinPackage;
+  }
+
+  @Override
+  protected void getMixins(List<String> mixins) {
+    mixins.addAll(processor.mixinsFromPackage(this.mixinPackage));
+  }
+
+  @Override
+  protected void afterApply(
+      String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+    if (targetClass.visibleAnnotations != null
+        && !targetClass.visibleAnnotations.isEmpty()) { // strip our annotation from the class
+      targetClass.visibleAnnotations.removeIf(
+          node -> MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
     }
 
-    @Override
-    protected void onPluginLoad(String mixinPackage) {
-        this.mixinPackage = mixinPackage;
+    for (MethodNode method : targetClass.methods) {
+      AnnotationNode unique = Annotations.getVisible(method, Unique.class);
+      if (unique != null) continue;
+      AnnotationNode mixinMerged = Annotations.getVisible(method, MixinMerged.class);
+      if (mixinMerged == null) continue;
+
+      String mixin = Annotations.getValue(mixinMerged, "mixin");
+      if (mixin.startsWith(this.mixinPackage)) {
+        wrapNodeWithErrorHandling(
+            method,
+            processor
+                .fromConfig(mixinInfo.getConfig().getName())
+                .orElseThrow()
+                .meta()
+                .id());
+      }
     }
+  }
 
-    @Override
-    protected void getMixins(List<String> mixins) {
-        mixins.addAll(processor.mixinsFromPackage(this.mixinPackage));
-    }
+  private void wrapNodeWithErrorHandling(MethodNode handlerNode, String module) {
+    Label start = new Label(), end = new Label(), handler = new Label(), handlerEnd = new Label();
 
-    @Override
-    protected void afterApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-        if (targetClass.visibleAnnotations != null && !targetClass.visibleAnnotations.isEmpty()) {//strip our annotation from the class
-            targetClass.visibleAnnotations.removeIf(node -> MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
-        }
+    String throwable = Type.getInternalName(Throwable.class);
+    handlerNode.visitTryCatchBlock(start, end, handler, throwable);
 
-        for (MethodNode method : targetClass.methods) {
-            AnnotationNode unique = Annotations.getVisible(method, Unique.class);
-            if (unique != null) continue;
-            AnnotationNode mixinMerged = Annotations.getVisible(method, MixinMerged.class);
-            if (mixinMerged == null) continue;
+    InsnList old = handlerNode.instructions;
+    handlerNode.instructions = new InsnList();
+    handlerNode.visitLabel(start);
+    handlerNode.instructions.add(old);
 
-            String mixin = Annotations.getValue(mixinMerged, "mixin");
-            if (mixin.startsWith(this.mixinPackage)) {
-                wrapNodeWithErrorHandling(method, processor.fromConfig(mixinInfo.getConfig().getName()).orElseThrow().meta().id());
-            }
-        }
-    }
+    handlerNode.visitLabel(end);
+    handlerNode.visitJumpInsn(Opcodes.GOTO, handlerEnd);
 
-    private void wrapNodeWithErrorHandling(MethodNode handlerNode, String module) {
-        Label start = new Label(), end = new Label(), handler = new Label(), handlerEnd = new Label();
+    handlerNode.visitLabel(handler);
+    handlerNode.visitVarInsn(Opcodes.ASTORE, handlerNode.maxLocals);
 
-        String throwable = Type.getInternalName(Throwable.class);
-        handlerNode.visitTryCatchBlock(start, end, handler, throwable);
+    handlerNode.visitVarInsn(Opcodes.ALOAD, handlerNode.maxLocals);
+    handlerNode.visitLdcInsn(module);
+    handlerNode.visitMethodInsn(
+        Opcodes.INVOKESTATIC,
+        Type.getInternalName(AndromedaException.class),
+        "moduleException",
+        "(" + Type.getDescriptor(Throwable.class) + Type.getDescriptor(String.class) + ")"
+            + Type.getDescriptor(AndromedaException.class),
+        false);
 
-        InsnList old = handlerNode.instructions;
-        handlerNode.instructions = new InsnList();
-        handlerNode.visitLabel(start);
-        handlerNode.instructions.add(old);
+    handlerNode.visitInsn(Opcodes.ATHROW);
+    handlerNode.visitLabel(handlerEnd);
 
-        handlerNode.visitLabel(end);
-        handlerNode.visitJumpInsn(Opcodes.GOTO, handlerEnd);
-
-        handlerNode.visitLabel(handler);
-        handlerNode.visitVarInsn(Opcodes.ASTORE, handlerNode.maxLocals);
-
-        handlerNode.visitVarInsn(Opcodes.ALOAD, handlerNode.maxLocals);
-        handlerNode.visitLdcInsn(module);
-        handlerNode.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(AndromedaException.class), "moduleException", "(" + Type.getDescriptor(Throwable.class) + Type.getDescriptor(String.class) + ")" + Type.getDescriptor(AndromedaException.class), false);
-
-        handlerNode.visitInsn(Opcodes.ATHROW);
-        handlerNode.visitLabel(handlerEnd);
-
-        handlerNode.visitLocalVariable("exc", "L" + throwable + ";", null, start, handler, handlerNode.maxLocals);
-    }
+    handlerNode.visitLocalVariable(
+        "exc", "L" + throwable + ";", null, start, handler, handlerNode.maxLocals);
+  }
 }

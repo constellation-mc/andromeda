@@ -15,13 +15,15 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LevelLoadingScreen.class)
 abstract class LevelLoadingScreenMixin {
 
-    @Shadow @Final private WorldGenerationProgressTracker progressProvider;
+  @Shadow
+  @Final
+  private WorldGenerationProgressTracker progressProvider;
 
-    @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
-    private Text andromeda$getPercentage(Text original) {
-        if (this.progressProvider.getProgressPercentage() == 69) {
-            return Text.literal("Nice%");
-        }
-        return original;
+  @ModifyReturnValue(at = @At("RETURN"), method = "getPercentage")
+  private Text andromeda$getPercentage(Text original) {
+    if (this.progressProvider.getProgressPercentage() == 69) {
+      return Text.literal("Nice%");
     }
+    return original;
+  }
 }

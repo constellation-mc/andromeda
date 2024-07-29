@@ -24,51 +24,65 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MinecartItem.class)
 abstract class MinecartItemMixin extends Item {
 
-    public MinecartItemMixin(Settings settings) {
-        super(settings);
+  public MinecartItemMixin(Settings settings) {
+    super(settings);
+  }
+
+  @Inject(at = @At("HEAD"), method = "useOnBlock", cancellable = true)
+  public void andromeda$useOnStuff(
+      @NotNull ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
+    World world = context.getWorld();
+    BlockPos pos = context.getBlockPos();
+    BlockState state = world.getBlockState(pos);
+    ItemStack stack = context.getStack();
+    PlayerEntity player = context.getPlayer();
+    if (player == null) return;
+
+    if (state.isIn(BlockTags.RAILS)) {
+      RailShape railShape = state.getBlock() instanceof AbstractRailBlock
+          ? state.get(((AbstractRailBlock) state.getBlock()).getShapeProperty())
+          : RailShape.NORTH_SOUTH;
+      double d = railShape.isAscending() ? 0.5 : 0.0;
+
+      PlaceBehaviorHandler.getPlaceBehavior(stack.getItem()).ifPresent(b -> {
+        if (!world.isClient()) {
+          AbstractMinecartEntity entity = b.dispense(
+              stack,
+              (ServerWorld) world,
+              pos.getX() + 0.5,
+              pos.getY() + 0.0625,
+              pos.getZ() + 0.5,
+              d,
+              pos);
+          if (entity == null) return;
+
+          world.spawnEntity(entity);
+          if (!player.isCreative()) stack.decrement(1);
+        }
+        cir.setReturnValue(ActionResult.success(world.isClient()));
+      });
+      return;
     }
 
-    @Inject(at = @At("HEAD"), method = "useOnBlock", cancellable = true)
-    public void andromeda$useOnStuff(@NotNull ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
-        World world = context.getWorld();
-        BlockPos pos = context.getBlockPos();
-        BlockState state = world.getBlockState(pos);
-        ItemStack stack = context.getStack();
-        PlayerEntity player = context.getPlayer();
-        if (player == null) return;
+    if (player.isSneaking()) {
+      if (stack.getItem() != Items.MINECART) return;
 
-        if (state.isIn(BlockTags.RAILS)) {
-            RailShape railShape = state.getBlock() instanceof AbstractRailBlock ? state.get(((AbstractRailBlock) state.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
-            double d = railShape.isAscending() ? 0.5 : 0.0;
-
-            PlaceBehaviorHandler.getPlaceBehavior(stack.getItem()).ifPresent(b -> {
-                if (!world.isClient()) {
-                    AbstractMinecartEntity entity = b.dispense(stack, (ServerWorld) world, pos.getX() + 0.5, pos.getY() + 0.0625, pos.getZ() + 0.5, d, pos);
-                    if (entity == null) return;
-
-                    world.spawnEntity(entity);
-                    if (!player.isCreative()) stack.decrement(1);
-                }
-                cir.setReturnValue(ActionResult.success(world.isClient()));
-            });
+      PickUpBehaviorHandler.getPickUpBehavior(state.getBlock()).ifPresent(b -> {
+        if (!world.isClient()) {
+          if (!world
+              .am$get(MinecartBlockPicking.CONFIG)
+              .available
+              .asBoolean(LootContextUtil.fishing(world, context.getHitPos(), stack, player)))
             return;
+          ItemStack stack1 = b.pickUp(state, world, pos);
+          if (stack1 == null || stack1.isEmpty()) return;
+
+          if (!player.isCreative()) stack.decrement(1);
+          player.getInventory().offerOrDrop(stack1);
+          world.breakBlock(pos, false);
         }
-
-        if (player.isSneaking()) {
-            if (stack.getItem() != Items.MINECART) return;
-
-            PickUpBehaviorHandler.getPickUpBehavior(state.getBlock()).ifPresent(b -> {
-                if (!world.isClient()) {
-                    if (!world.am$get(MinecartBlockPicking.CONFIG).available.asBoolean(LootContextUtil.fishing(world, context.getHitPos(), stack, player))) return;
-                    ItemStack stack1 = b.pickUp(state, world, pos);
-                    if (stack1 == null || stack1.isEmpty()) return;
-
-                    if (!player.isCreative()) stack.decrement(1);
-                    player.getInventory().offerOrDrop(stack1);
-                    world.breakBlock(pos, false);
-                }
-                cir.setReturnValue(ActionResult.success(world.isClient()));
-            });
-        }
+        cir.setReturnValue(ActionResult.success(world.isClient()));
+      });
     }
+  }
 }

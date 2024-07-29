@@ -449,11 +449,11 @@
     "commands.andromeda.damage.success": "已将%s伤害施加于%s",
 
     "andromeda.bootstrap.no_modules": "群星无法发现任何特性！一般情况下，这不该发生！",
-    "andromeda.bootstrap.loading": "群星（%s）正在 %s（%s）",
+    "andromeda.bootstrap.loading": "群星（%s）正在 %s（%s）上运行",
   
     "andromeda.module_manager.invalid_scope": "%s 特性 “%s” 存在无效分化（%s），它需要是 %s",
     "andromeda.module_manager.removed_unlinked_config": "已移除 %s，因为它不是任何特性的配置文件！",
-    "andromeda.module_manager.loading_modules": "载入 %s 特性中：",
+    "andromeda.module_manager.loading_modules": "%s 个特性载入中：",
     "andromeda.module_manager.custom_modules": "群星模组不支持自定义特性或类别。",
     "andromeda.module_manager.no_modules": "未载入特性！",
 

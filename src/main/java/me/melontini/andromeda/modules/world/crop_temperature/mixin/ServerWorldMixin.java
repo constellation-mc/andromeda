@@ -12,8 +12,16 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ServerWorld.class)
 abstract class ServerWorldMixin {
 
-    @WrapWithCondition(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)V"), method = "tickChunk")
-    private boolean andromeda$tickPlants(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        return PlantTemperatureData.roll(pos, state, world.getBiome(pos).value().getTemperature(), world);
-    }
+  @WrapWithCondition(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)V"),
+      method = "tickChunk")
+  private boolean andromeda$tickPlants(
+      BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    return PlantTemperatureData.roll(
+        pos, state, world.getBiome(pos).value().getTemperature(), world);
+  }
 }

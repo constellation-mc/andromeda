@@ -9,9 +9,10 @@ import me.melontini.andromeda.base.util.config.ConfigState;
 @ModuleInfo(name = "zombie/clean_pickup", category = "entities", environment = Environment.SERVER)
 public final class Pickup extends Module {
 
-    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+  public static final ConfigDefinition<Module.GameConfig> CONFIG =
+      new ConfigDefinition<>(() -> Module.GameConfig.class);
 
-    Pickup() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  Pickup() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 }

@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.packets.FlyingStackLandedPayload;
 import me.melontini.commander.api.command.Command;
@@ -20,36 +21,40 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
 
-import java.util.Optional;
+public record ParticleCommand(Selector.Conditioned selector, boolean item, Optional<Integer> colors)
+    implements Command {
 
-public record ParticleCommand(Selector.Conditioned selector, boolean item, Optional<Integer> colors) implements Command {
+  public static final MapCodec<ParticleCommand> CODEC =
+      RecordCodecBuilder.mapCodec(data -> data.group(
+              Selector.CODEC.fieldOf("selector").forGetter(ParticleCommand::selector),
+              ExtraCodecs.optional("item", Codec.BOOL, true).forGetter(ParticleCommand::item),
+              ExtraCodecs.optional("colors", ExtraCodecs.COLOR).forGetter(ParticleCommand::colors))
+          .apply(data, ParticleCommand::new));
 
-    public static final MapCodec<ParticleCommand> CODEC = RecordCodecBuilder.mapCodec(data -> data.group(
-            Selector.CODEC.fieldOf("selector").forGetter(ParticleCommand::selector),
-            ExtraCodecs.optional("item", Codec.BOOL, true).forGetter(ParticleCommand::item),
-            ExtraCodecs.optional("colors", ExtraCodecs.COLOR).forGetter(ParticleCommand::colors)
-    ).apply(data, ParticleCommand::new));
+  @Override
+  public boolean execute(EventContext context) {
+    var opt = selector.select(context);
+    if (opt.isEmpty()) return false;
 
-    @Override
-    public boolean execute(EventContext context) {
-        var opt = selector.select(context);
-        if (opt.isEmpty()) return false;
+    sendParticlePacket(
+        opt.get().getWorld(),
+        opt.get().getPosition(),
+        context.lootContext().get(LootContextParameters.TOOL));
+    return true;
+  }
 
-        sendParticlePacket(opt.get().getWorld(), opt.get().getPosition(), context.lootContext().get(LootContextParameters.TOOL));
-        return true;
-    }
+  @Override
+  public CommandType type() {
+    return Main.PARTICLE_COMMAND.orThrow();
+  }
 
-    @Override
-    public CommandType type() {
-        return Main.PARTICLE_COMMAND.orThrow();
-    }
-
-    public void sendParticlePacket(ServerWorld world, Vec3d pos, ItemStack stack) {
-        var payload = new FlyingStackLandedPayload(
+  public void sendParticlePacket(ServerWorld world, Vec3d pos, ItemStack stack) {
+    var payload = new FlyingStackLandedPayload(
                 new Vector3f((float) pos.x, (float) pos.y, (float) pos.z),
                 Optional.of(stack).filter(unused -> item), colors);
-        for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
-            ServerPlayNetworking.send(serverPlayerEntity, payload);
-        }
+    for (ServerPlayerEntity serverPlayerEntity :
+        PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
+      ServerPlayNetworking.send(serverPlayerEntity, payload);
     }
+  }
 }

@@ -13,8 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CactusBlock.class)
 abstract class CactusBlockMixin {
 
-    @Inject(at = @At("TAIL"), method = "appendProperties")
-    private void andromeda$appendProperties(StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
-        builder.add(Main.WATER_LEVEL_3);
-    }
+  @Inject(at = @At("TAIL"), method = "appendProperties")
+  private void andromeda$appendProperties(
+      StateManager.Builder<Block, BlockState> builder, CallbackInfo ci) {
+    builder.add(Main.WATER_LEVEL_3);
+  }
 }

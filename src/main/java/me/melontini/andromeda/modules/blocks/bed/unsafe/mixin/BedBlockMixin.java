@@ -17,10 +17,25 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(BedBlock.class)
 abstract class BedBlockMixin {
 
-    @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BedBlock;isBedWorking(Lnet/minecraft/world/World;)Z"), method = "onUse")
-    private boolean andromeda$explode(boolean original, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos, @Local(argsOnly = true) BlockState state, @Local(argsOnly = true) PlayerEntity player) {
-        if (world.isClient()) return original;
+  @ModifyExpressionValue(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/block/BedBlock;isBedWorking(Lnet/minecraft/world/World;)Z"),
+      method = "onUse")
+  private boolean andromeda$explode(
+      boolean original,
+      @Local(argsOnly = true) World world,
+      @Local(argsOnly = true) BlockPos pos,
+      @Local(argsOnly = true) BlockState state,
+      @Local(argsOnly = true) PlayerEntity player) {
+    if (world.isClient()) return original;
 
-        return !world.am$get(Unsafe.CONFIG).available.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state, UseWithItemHack.getContext().stack(), player)) && original;
-    }
+    return !world
+            .am$get(Unsafe.CONFIG)
+            .available
+            .asBoolean(LootContextUtil.block(
+                world, Vec3d.ofCenter(pos), state, UseWithItemHack.getContext().stack(), player))
+        && original;
+  }
 }

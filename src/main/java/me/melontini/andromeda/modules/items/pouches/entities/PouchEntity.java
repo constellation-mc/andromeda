@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.items.pouches.entities;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.Objects;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.WorldUtil;
@@ -37,12 +38,10 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
-
 public class PouchEntity extends ThrownItemEntity {
 
-    private static final TrackedData<Integer> POUCH_TYPE = DataTracker.registerData(PouchEntity.class, TrackedDataHandlerRegistry.INTEGER);
+  private static final TrackedData<Integer> POUCH_TYPE =
+      DataTracker.registerData(PouchEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     public PouchEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -59,139 +58,166 @@ public class PouchEntity extends ThrownItemEntity {
         setItem(new ItemStack(getPouchType().getDefaultItem()));
     }
 
-    @Override
-    protected void onCollision(HitResult hitResult) {
-        HitResult.Type type = hitResult.getType();
+  @Override
+  protected void onCollision(HitResult hitResult) {
+    HitResult.Type type = hitResult.getType();
 
-        ItemStack stack = getStack();
-        if (type == HitResult.Type.ENTITY) {
-            this.onEntityHit((EntityHitResult) hitResult);
-            if (world instanceof ServerWorld sw) {
-                sw.spawnParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, stack), getX(), getY(), getZ(), 10, 0.2, 0.2, 0.2, 0.25);
-            }
-            this.discard();
-        } else if (type == HitResult.Type.BLOCK) {
-            this.onBlockHit((BlockHitResult) hitResult);
-            if (world instanceof ServerWorld sw) {
-                sw.spawnParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, stack), getX(), getY(), getZ(), 10, 0.2, 0.2, 0.2, 0.25);
-            }
-            this.discard();
+    ItemStack stack = getStack();
+    if (type == HitResult.Type.ENTITY) {
+      this.onEntityHit((EntityHitResult) hitResult);
+      if (world instanceof ServerWorld sw) {
+        sw.spawnParticles(
+            new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
+            getX(),
+            getY(),
+            getZ(),
+            10,
+            0.2,
+            0.2,
+            0.2,
+            0.25);
+      }
+      this.discard();
+    } else if (type == HitResult.Type.BLOCK) {
+      this.onBlockHit((BlockHitResult) hitResult);
+      if (world instanceof ServerWorld sw) {
+        sw.spawnParticles(
+            new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
+            getX(),
+            getY(),
+            getZ(),
+            10,
+            0.2,
+            0.2,
+            0.2,
+            0.25);
+      }
+      this.discard();
+    }
+
+    if (type != HitResult.Type.MISS) {
+      this.emitGameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());
+    }
+  }
+
+  @Override
+  protected void onEntityHit(EntityHitResult entityHitResult) {
+    if (!world.isClient()) {
+      var stacks = WorldUtil.prepareLoot(world, this.getPouchType().getLootId(getStack()));
+
+      Entity entity = entityHitResult.getEntity();
+      if (entity instanceof PlayerEntity pe) {
+        stacks.forEach(stack -> pe.getInventory().offerOrDrop(stack));
+        return;
+      } else if (entity instanceof InventoryOwner io) {
+        var storage = InventoryStorage.of(io.getInventory(), null);
+        stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
+        return;
+      } else if (entity instanceof Inventory inv) {
+        var storage = InventoryStorage.of(inv, null);
+        stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
+        return;
+      }
+      stacks.forEach(stack ->
+          ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
+    }
+  }
+
+  @Override
+  protected void onBlockHit(BlockHitResult blockHitResult) {
+    if (!world.isClient()) {
+      var stacks = WorldUtil.prepareLoot(world, this.getPouchType().getLootId(getStack()));
+
+      var be = world.getBlockEntity(blockHitResult.getBlockPos());
+      if ((be != null && Main.getViewCount(be) > 0)) {
+        var storage = ItemStorage.SIDED.find(
+            world,
+            blockHitResult.getBlockPos(),
+            world.getBlockState(blockHitResult.getBlockPos()),
+            be,
+            blockHitResult.getSide());
+        if (storage != null) {
+          stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
+          return;
         }
-
-        if (type != HitResult.Type.MISS) {
-            this.emitGameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());
-        }
+      }
+      stacks.forEach(stack ->
+          ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
     }
+  }
 
-    @Override
-    protected void onEntityHit(EntityHitResult entityHitResult) {
-        if (!world.isClient()) {
-            var stacks = WorldUtil.prepareLoot(world, this.getPouchType().getLootId(getStack()));
+  @Override
+  protected void initDataTracker(DataTracker.Builder builder) {
+    super.initDataTracker(builder);
+    builder.add(POUCH_TYPE, Type.SEED.syncId);
+  }
 
-            Entity entity = entityHitResult.getEntity();
-            if (entity instanceof PlayerEntity pe) {
-                stacks.forEach(stack -> pe.getInventory().offerOrDrop(stack));
-                return;
-            } else if (entity instanceof InventoryOwner io) {
-                var storage = InventoryStorage.of(io.getInventory(), null);
-                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
-                return;
-            } else if (entity instanceof Inventory inv) {
-                var storage = InventoryStorage.of(inv, null);
-                stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
-                return;
-            }
-            stacks.forEach(stack -> ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
-        }
+  @Override
+  protected PouchItem getDefaultItem() {
+    return Type.SEED.getDefaultItem();
+  }
+
+  public Type getPouchType() {
+    return Type.getType(this.dataTracker.get(POUCH_TYPE));
+  }
+
+  public void setPouchType(Type type) {
+    this.dataTracker.set(POUCH_TYPE, type.syncId);
+  }
+
+  @Override
+  public void writeCustomDataToNbt(NbtCompound nbt) {
+    nbt.putString("Type", getPouchType().name());
+  }
+
+  @Override
+  public void readCustomDataFromNbt(NbtCompound nbt) {
+    if (nbt.contains("Type")) {
+      setPouchType(Type.valueOf(nbt.getString("Type")));
     }
+  }
 
-    @Override
-    protected void onBlockHit(BlockHitResult blockHitResult) {
-        if (!world.isClient()) {
-            var stacks = WorldUtil.prepareLoot(world, this.getPouchType().getLootId(getStack()));
-
-            var be = world.getBlockEntity(blockHitResult.getBlockPos());
-            if ((be != null && Main.getViewCount(be) > 0)) {
-                var storage = ItemStorage.SIDED.find(world, blockHitResult.getBlockPos(), world.getBlockState(blockHitResult.getBlockPos()), be, blockHitResult.getSide());
-                if (storage != null) {
-                    stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
-                    return;
-                }
-            }
-            stacks.forEach(stack -> ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
-        }
-    }
-
-    @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(POUCH_TYPE, Type.SEED.syncId);
-    }
-
-    @Override
-    protected PouchItem getDefaultItem() {
-        return Type.SEED.getDefaultItem();
-    }
-
-    public Type getPouchType() {
-        return Type.getType(this.dataTracker.get(POUCH_TYPE));
-    }
-
-    public void setPouchType(Type type) {
-        this.dataTracker.set(POUCH_TYPE, type.syncId);
-    }
-
-    @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putString("Type", getPouchType().name());
-    }
-
-    @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        if (nbt.contains("Type")) {
-            setPouchType(Type.valueOf(nbt.getString("Type")));
-        }
-    }
-
-    public enum Type {
-        SEED(0, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/seeds")), Main.SEED_POUCH),
-        SAPLING(1, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/saplings")), Main.SAPLING_POUCH),
-        FLOWER(2, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/flowers")), Main.FLOWER_POUCH),
-        CUSTOM(3, null, Main.SPECIAL_POUCH) {
-            @Override
-            public @NotNull RegistryKey<LootTable> getLootId(ItemStack stack) {
+  public enum Type {
+    SEED(0, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/seeds")), Main.SEED_POUCH),
+    SAPLING(1, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/saplings")), Main.SAPLING_POUCH),
+    FLOWER(2, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/flowers")), Main.FLOWER_POUCH),
+    CUSTOM(3, null, Main.SPECIAL_POUCH) {
+      @Override
+      public @NotNull RegistryKey<LootTable> getLootId(ItemStack stack) {
                 return stack.getOrDefault(Main.CUSTOM_COMPONENT.get(), CustomPouchComponent.DEFAULT).key();
-            }
-        };
+      }
+    };
 
-        private static final Int2ObjectMap<Type> LOOKUP = Utilities.supply(() -> {
-            Int2ObjectMap<Type> map = new Int2ObjectOpenHashMap<>();
-            for (Type value : Type.values()) {
-                map.put(value.syncId, value);
-            }
-            return map;
-        });
+    private static final Int2ObjectMap<Type> LOOKUP = Utilities.supply(() -> {
+      Int2ObjectMap<Type> map = new Int2ObjectOpenHashMap<>();
+      for (Type value : Type.values()) {
+        map.put(value.syncId, value);
+      }
+      return map;
+    });
 
-        private final int syncId;
-        @Nullable private final RegistryKey<LootTable> lootId;
-        private final Keeper<PouchItem> defaultItem;
+    private final int syncId;
 
-        Type(int syncId, @Nullable RegistryKey<LootTable> lootId, Keeper<PouchItem> defaultItem) {
-            this.syncId = syncId;
-            this.lootId = lootId;
-            this.defaultItem = defaultItem;
-        }
+    @Nullable private final RegistryKey<LootTable> lootId;
 
-        public @NotNull RegistryKey<LootTable> getLootId(ItemStack stack) {
-            return Objects.requireNonNull(lootId);
-        }
+    private final Keeper<PouchItem> defaultItem;
 
-        public PouchItem getDefaultItem() {
-            return defaultItem.orThrow();
-        }
-
-        public static Type getType(int syncId) {
-            return LOOKUP.get(syncId);
-        }
+    Type(int syncId, @Nullable RegistryKey<LootTable> lootId, Keeper<PouchItem> defaultItem) {
+      this.syncId = syncId;
+      this.lootId = lootId;
+      this.defaultItem = defaultItem;
     }
+
+    public @NotNull RegistryKey<LootTable> getLootId(ItemStack stack) {
+      return Objects.requireNonNull(lootId);
+    }
+
+    public PouchItem getDefaultItem() {
+      return defaultItem.orThrow();
+    }
+
+    public static Type getType(int syncId) {
+      return LOOKUP.get(syncId);
+    }
+  }
 }

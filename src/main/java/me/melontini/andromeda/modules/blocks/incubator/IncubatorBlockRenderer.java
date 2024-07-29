@@ -20,46 +20,77 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBlockEntity> {
 
-    public IncubatorBlockRenderer(BlockEntityRendererFactory.Context context) {
-    }
+  public IncubatorBlockRenderer(BlockEntityRendererFactory.Context context) {}
 
-    @Override
-    public void render(IncubatorBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        renderHay(matrices, vertexConsumers, light, overlay);
-        renderItem(entity, matrices, vertexConsumers, light, overlay);
-    }
+  @Override
+  public void render(
+      IncubatorBlockEntity entity,
+      float tickDelta,
+      MatrixStack matrices,
+      VertexConsumerProvider vertexConsumers,
+      int light,
+      int overlay) {
+    renderHay(matrices, vertexConsumers, light, overlay);
+    renderItem(entity, matrices, vertexConsumers, light, overlay);
+  }
 
-    private void renderItem(IncubatorBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        matrices.push();
-        matrices.translate(0.5, 0.7, 0.5);
-        World world = MakeSure.notNull(entity.getWorld());
-        BlockState state = world.getBlockState(entity.getPos());
-        if (state.getBlock() instanceof IncubatorBlock) {
-            switch (state.get(IncubatorBlock.FACING)) {
-                case NORTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-                case WEST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
-                case EAST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-                case SOUTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0));
-                default -> throw new IllegalStateException(String.valueOf(state.get(IncubatorBlock.FACING)));
-            }
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-45));
-            if (entity.processingTime > -1 && !entity.inventory.get(0).isEmpty()) {
-                MinecraftClient.getInstance().getItemRenderer().renderItem(entity.inventory.get(0), ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, entity.getWorld(), 0);
-            }
-        }
-        matrices.pop();
+  private void renderItem(
+      IncubatorBlockEntity entity,
+      MatrixStack matrices,
+      VertexConsumerProvider vertexConsumers,
+      int light,
+      int overlay) {
+    matrices.push();
+    matrices.translate(0.5, 0.7, 0.5);
+    World world = MakeSure.notNull(entity.getWorld());
+    BlockState state = world.getBlockState(entity.getPos());
+    if (state.getBlock() instanceof IncubatorBlock) {
+      switch (state.get(IncubatorBlock.FACING)) {
+        case NORTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+        case WEST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
+        case EAST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
+        case SOUTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0));
+        default -> throw new IllegalStateException(
+            String.valueOf(state.get(IncubatorBlock.FACING)));
+      }
+      matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-45));
+      if (entity.processingTime > -1 && !entity.inventory.get(0).isEmpty()) {
+        MinecraftClient.getInstance()
+            .getItemRenderer()
+            .renderItem(
+                entity.inventory.get(0),
+                ModelTransformationMode.GROUND,
+                light,
+                overlay,
+                matrices,
+                vertexConsumers,
+                entity.getWorld(),
+                0);
+      }
     }
+    matrices.pop();
+  }
 
-    private void renderHay(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        matrices.push();
-        matrices.scale(0.5F, 0.5F, 0.5F);
-        matrices.translate(0.5, 1.4, 0.5);
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(Blocks.HORN_CORAL_FAN.getDefaultState(/*very comfy*/), matrices, vertexConsumers, light, overlay);
-        matrices.pop();
-    }
+  private void renderHay(
+      MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    matrices.push();
+    matrices.scale(0.5F, 0.5F, 0.5F);
+    matrices.translate(0.5, 1.4, 0.5);
+    MinecraftClient.getInstance()
+        .getBlockRenderManager()
+        .renderBlockAsEntity(
+            Blocks.HORN_CORAL_FAN.getDefaultState(/*very comfy*/ ),
+            matrices,
+            vertexConsumers,
+            light,
+            overlay);
+    matrices.pop();
+  }
 
-    public static void onClient() {
-        IncubatorBlock.INCUBATOR_BLOCK.ifPresent(b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
-        IncubatorBlock.INCUBATOR_BLOCK_ENTITY.ifPresent(b -> BlockEntityRendererFactories.register(b, IncubatorBlockRenderer::new));
-    }
+  public static void onClient() {
+    IncubatorBlock.INCUBATOR_BLOCK.ifPresent(
+        b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
+    IncubatorBlock.INCUBATOR_BLOCK_ENTITY.ifPresent(
+        b -> BlockEntityRendererFactories.register(b, IncubatorBlockRenderer::new));
+  }
 }

@@ -2,6 +2,7 @@ package me.melontini.andromeda.common.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+import java.util.function.Function;
 import lombok.CustomLog;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.base.util.Support;
@@ -15,28 +16,28 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 
-import java.util.function.Function;
-
-
 @CustomLog
 @Environment(EnvType.CLIENT)
 public class ModMenuIntegration implements ModMenuApi {
 
-    public static final Function<Screen, Screen> SCREEN_PROVIDER = Support.support("cloth-config", () -> NewAutoConfigScreen::get, () -> screen -> null);
+  public static final Function<Screen, Screen> SCREEN_PROVIDER =
+      Support.support("cloth-config", () -> NewAutoConfigScreen::get, () -> screen -> null);
 
-    public static final Identifier WIKI_BUTTON_TEXTURE = Andromeda.id("textures/gui/wiki_button.png");
-    public static final Identifier LAB_BUTTON_TEXTURE = Andromeda.id("textures/gui/lab_button.png");
-    public static final Style WIKI_LINK = Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
+  public static final Identifier WIKI_BUTTON_TEXTURE = Andromeda.id("textures/gui/wiki_button.png");
+  public static final Identifier LAB_BUTTON_TEXTURE = Andromeda.id("textures/gui/lab_button.png");
+  public static final Style WIKI_LINK = Style.EMPTY.withClickEvent(
+      new ClickEvent(ClickEvent.Action.OPEN_URL, "https://andromeda-wiki.pages.dev/"));
 
-    @Override
-    public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return SCREEN_PROVIDER::apply;
-    }
+  @Override
+  public ConfigScreenFactory<?> getModConfigScreenFactory() {
+    return SCREEN_PROVIDER::apply;
+  }
 
-    static <T extends Element & Drawable & Selectable> T addDrawableChild(Screen screen, T drawableElement) {
-        screen.drawables.add(drawableElement);
-        screen.children.add(drawableElement);
-        screen.selectables.add(drawableElement);
-        return drawableElement;
-    }
+  static <T extends Element & Drawable & Selectable> T addDrawableChild(
+      Screen screen, T drawableElement) {
+    screen.drawables.add(drawableElement);
+    screen.children.add(drawableElement);
+    screen.selectables.add(drawableElement);
+    return drawableElement;
+  }
 }

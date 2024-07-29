@@ -13,17 +13,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemPredicate.class)
 abstract class ItemPredicateMixin implements ItemPredicateAccessor {
 
-    @Unique private Ingredient andromeda$ingredient;//Really stretching records over here.
+  @Unique private Ingredient andromeda$ingredient; // Really stretching records over here.
 
-    @Inject(at = @At("HEAD"), method = "test(Lnet/minecraft/item/ItemStack;)Z", cancellable = true)
-    private void andromeda$test(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (this.andromeda$ingredient != null) {
-            cir.setReturnValue(this.andromeda$ingredient.test(stack));
-        }
+  @Inject(at = @At("HEAD"), method = "test(Lnet/minecraft/item/ItemStack;)Z", cancellable = true)
+  private void andromeda$test(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+    if (this.andromeda$ingredient != null) {
+      cir.setReturnValue(this.andromeda$ingredient.test(stack));
     }
+  }
 
-    @Override
-    public void andromeda$setIngredient(Ingredient ingredient) {
-        this.andromeda$ingredient = ingredient;
-    }
+  @Override
+  public void andromeda$setIngredient(Ingredient ingredient) {
+    this.andromeda$ingredient = ingredient;
+  }
 }

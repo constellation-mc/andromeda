@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.items.tooltips.mixin.compass;
 
+import java.util.List;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
@@ -21,31 +22,42 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-
 @Mixin(Item.class)
 abstract class ItemMixin {
 
-    @Inject(at = @At("HEAD"), method = "appendTooltip")
-    public void andromeda$tooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, CallbackInfo ci) {
+  @Inject(at = @At("HEAD"), method = "appendTooltip")
+  public void andromeda$tooltip(
+      ItemStack stack,
+      Item.TooltipContext context,
+      List<Text> tooltip,
+      TooltipType type, CallbackInfo ci) {
         if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).compass) return;
         var world = MinecraftClient.getInstance().world;
 
-        if (world != null) if (world.isClient) {
-            var player = MinecraftClient.getInstance().player;
-            if (stack.getItem() == Items.COMPASS && player != null) {
-                boolean lodestone = stack.contains(DataComponentTypes.LODESTONE_TRACKER);
-                GlobalPos globalPos = lodestone ? stack.get(DataComponentTypes.LODESTONE_TRACKER).target().orElse(null) : CompassItem.createSpawnPos(world);
+    if (world != null)
+      if (world.isClient) {
+        var player = MinecraftClient.getInstance().player;
+        if (stack.getItem() == Items.COMPASS && player != null) {
+          boolean lodestone = stack.contains(DataComponentTypes.LODESTONE_TRACKER);
+          GlobalPos globalPos = lodestone
+              ? stack.get(DataComponentTypes.LODESTONE_TRACKER).target().orElse(null)
+              : CompassItem.createSpawnPos(world);
 
-                double dist;
-                if (globalPos != null && world.getRegistryKey() == globalPos.dimension()) {
-                    Vec3d compassPos = new Vec3d(globalPos.pos().getX() + 0.5, globalPos.pos().getY() + 0.5, globalPos.pos().getZ() + 0.5);
-                    dist = MiscUtil.horizontalDistanceTo(player.getPos(), compassPos);
-                } else {
-                    dist = MathUtil.threadRandom().nextGaussian() * 0.1;
-                }
-                tooltip.add(TextUtil.translatable(lodestone ? "tooltip.andromeda.compass.lodestone" : "tooltip.andromeda.compass", String.format("%.1f", dist)).formatted(Formatting.GRAY));
-            }
+          double dist;
+          if (globalPos != null && world.getRegistryKey() == globalPos.dimension()) {
+            Vec3d compassPos = new Vec3d(
+                globalPos.pos().getX() + 0.5,
+                globalPos.pos().getY() + 0.5,
+                globalPos.pos().getZ() + 0.5);
+            dist = MiscUtil.horizontalDistanceTo(player.getPos(), compassPos);
+          } else {
+            dist = MathUtil.threadRandom().nextGaussian() * 0.1;
+          }
+          tooltip.add(TextUtil.translatable(
+                  lodestone ? "tooltip.andromeda.compass.lodestone" : "tooltip.andromeda.compass",
+                  String.format("%.1f", dist))
+              .formatted(Formatting.GRAY));
         }
-    }
+      }
+  }
 }

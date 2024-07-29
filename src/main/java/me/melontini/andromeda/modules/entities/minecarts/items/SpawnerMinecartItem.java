@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.entities.minecarts.items;
 
+import java.util.List;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.component.DataComponentTypes;
@@ -14,27 +15,37 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
-
 public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEntity> {
 
-    public SpawnerMinecartItem(Settings settings) {
-        super(Keeper.now(EntityType.SPAWNER_MINECART), settings);
-    }
+  public SpawnerMinecartItem(Settings settings) {
+    super(Keeper.now(EntityType.SPAWNER_MINECART), settings);
+  }
 
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
-        if (nbt.getString("Entity") != null) {
-            tooltip.add(TextUtil.translatable("tooltip.andromeda.spawner_minecart.filled", Registries.ENTITY_TYPE.get(Identifier.of(nbt.getString("Entity"))).getName()).formatted(Formatting.GRAY));
-        }
-    }
+  @Override
+  public void appendTooltip(
+      ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+    if (nbt.getString("Entity") != null) {
+        tooltip.add(TextUtil.translatable(
+                "tooltip.andromeda.spawner_minecart.filled",
+                Registries.ENTITY_TYPE
+                    .get(Identifier.of(nbt.getString("Entity")))
+                    .getName())
+            .formatted(Formatting.GRAY));
+      }
+  }
 
-    @Override
-    protected void onCreate(ItemStack stack, SpawnerMinecartEntity entity) {
-        NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
-        if (nbt.getString("Entity") != null) {
-            entity.getLogic().setEntityId(Registries.ENTITY_TYPE.get(Identifier.of(nbt.getString("Entity"))), entity.world, entity.world.random, entity.getBlockPos());
-        }
-    }
+  @Override
+  protected void onCreate(ItemStack stack, SpawnerMinecartEntity entity) {
+    NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+    if (nbt.getString("Entity") != null) {
+        entity
+            .getLogic()
+            .setEntityId(
+                Registries.ENTITY_TYPE.get(Identifier.of(nbt.getString("Entity"))),
+                entity.world,
+                entity.world.random,
+                entity.getBlockPos());
+      }
+  }
 }

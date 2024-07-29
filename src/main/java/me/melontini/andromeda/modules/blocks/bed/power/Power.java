@@ -11,14 +11,14 @@ import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
 @ModuleInfo(name = "bed/power", category = "blocks", environment = Environment.SERVER)
 public final class Power extends Module {
 
-    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
+  public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
-    Power() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  Power() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 
-    @ToString
-    public static class Config extends GameConfig {
-        public DoubleIntermediary power = DoubleIntermediary.of(5);
-    }
+  @ToString
+  public static class Config extends GameConfig {
+    public DoubleIntermediary power = DoubleIntermediary.of(5);
+  }
 }

@@ -17,23 +17,25 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public record ItemPlopEffect(Selector.Conditioned selector) implements Command {
 
-    public static final MapCodec<ItemPlopEffect> CODEC = Selector.CODEC.fieldOf("selector").xmap(ItemPlopEffect::new, ItemPlopEffect::selector);
+  public static final MapCodec<ItemPlopEffect> CODEC =
+      Selector.CODEC.fieldOf("selector").xmap(ItemPlopEffect::new, ItemPlopEffect::selector);
 
-    @Override
-    public boolean execute(EventContext context) {
-        var opt = selector.select(context);
-        if (opt.isEmpty()) return false;
-        Entity entity = opt.get().getEntity();
-        if (entity instanceof ServerPlayerEntity player) {
-            ServerPlayNetworking.send(player, new ColoredStackLandedPayload(context.lootContext().get(LootContextParameters.TOOL)));
-        } else if (entity instanceof LivingEntity living){
-            living.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0, false, false, true));
-        }
-        return true;
+  @Override
+  public boolean execute(EventContext context) {
+    var opt = selector.select(context);
+    if (opt.isEmpty()) return false;
+    Entity entity = opt.get().getEntity();
+    if (entity instanceof ServerPlayerEntity player) {
+      ServerPlayNetworking.send(player, new ColoredStackLandedPayload(context.lootContext().get(LootContextParameters.TOOL)));
+    } else if (entity instanceof LivingEntity living) {
+      living.addStatusEffect(
+          new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0, false, false, true));
     }
+    return true;
+  }
 
-    @Override
-    public CommandType type() {
-        return Main.ITEM_PLOP_COMMAND.orThrow();
-    }
+  @Override
+  public CommandType type() {
+    return Main.ITEM_PLOP_COMMAND.orThrow();
+  }
 }

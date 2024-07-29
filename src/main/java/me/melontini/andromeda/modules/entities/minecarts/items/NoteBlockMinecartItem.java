@@ -9,15 +9,16 @@ import net.minecraft.nbt.NbtCompound;
 
 public class NoteBlockMinecartItem extends AndromedaMinecartItem<NoteBlockMinecartEntity> {
 
-    public NoteBlockMinecartItem(Settings settings) {
-        super(MinecartEntities.NOTEBLOCK_MINECART_ENTITY, settings);
-    }
+  public NoteBlockMinecartItem(Settings settings) {
+    super(MinecartEntities.NOTEBLOCK_MINECART_ENTITY, settings);
+  }
 
-    @Override
-    protected void onCreate(ItemStack stack, NoteBlockMinecartEntity entity) {
-        NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
-        if (nbt.getInt("Note") >= 0) {
-            entity.note = nbt.getInt("Note");
-        }
-    }
+  @Override
+  protected void onCreate(ItemStack stack, NoteBlockMinecartEntity entity) {
+    NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+
+      if (nbt.getInt("Note") >= 0) {
+        entity.note = nbt.getInt("Note");
+      }
+  }
 }

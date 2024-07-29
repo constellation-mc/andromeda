@@ -6,7 +6,7 @@ import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 
 public class Client {
 
-    public static void init() {
-        EntityRendererRegistry.register(Main.POUCH.orThrow(), FlyingItemEntityRenderer::new);
-    }
+  public static void init() {
+    EntityRendererRegistry.register(Main.POUCH.orThrow(), FlyingItemEntityRenderer::new);
+  }
 }

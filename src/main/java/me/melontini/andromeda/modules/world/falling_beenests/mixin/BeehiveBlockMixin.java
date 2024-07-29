@@ -16,15 +16,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BeehiveBlock.class)
 abstract class BeehiveBlockMixin {
 
-    @Inject(at = @At("HEAD"), method = "getStateForNeighborUpdate", cancellable = true)
-    private void andromeda$checkSupport(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos, CallbackInfoReturnable<BlockState> cir) {
-        if (!(world instanceof World)) return;
-        for (Direction value : Direction.values()) {
-            if (!world.getBlockState(pos.offset(value)).isAir()) {
-                return;
-            }
-        }
-        WorldUtil.trySpawnFallingBeeNest((World) world, pos, state, (BeehiveBlockEntity) world.getBlockEntity(pos));
-        cir.setReturnValue(state.getFluidState().getBlockState());
+  @Inject(at = @At("HEAD"), method = "getStateForNeighborUpdate", cancellable = true)
+  private void andromeda$checkSupport(
+      BlockState state,
+      Direction direction,
+      BlockState neighborState,
+      WorldAccess world,
+      BlockPos pos,
+      BlockPos neighborPos,
+      CallbackInfoReturnable<BlockState> cir) {
+    if (!(world instanceof World)) return;
+    for (Direction value : Direction.values()) {
+      if (!world.getBlockState(pos.offset(value)).isAir()) {
+        return;
+      }
     }
+    WorldUtil.trySpawnFallingBeeNest(
+        (World) world, pos, state, (BeehiveBlockEntity) world.getBlockEntity(pos));
+    cir.setReturnValue(state.getFluidState().getBlockState());
+  }
 }

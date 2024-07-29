@@ -9,9 +9,10 @@ import me.melontini.andromeda.base.util.config.ConfigState;
 @ModuleInfo(name = "falling_beenests", category = "world", environment = Environment.SERVER)
 public final class CanBeeNestsFall extends Module {
 
-    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+  public static final ConfigDefinition<Module.GameConfig> CONFIG =
+      new ConfigDefinition<>(() -> Module.GameConfig.class);
 
-    CanBeeNestsFall() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  CanBeeNestsFall() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 }

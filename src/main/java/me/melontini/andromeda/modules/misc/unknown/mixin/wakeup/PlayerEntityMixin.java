@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.wakeup;
 
+import java.util.Optional;
 import me.melontini.andromeda.common.util.WorldUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
@@ -18,30 +19,34 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Optional;
-
 @Mixin(PlayerEntity.class)
 abstract class PlayerEntityMixin {
 
-    @Shadow public abstract void playSoundToPlayer(SoundEvent sound, SoundCategory category, float volume, float pitch);
+  @Shadow
+  public abstract void playSoundToPlayer(
+      SoundEvent sound, SoundCategory category, float volume, float pitch);
 
-    @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
-    private void andromeda$wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
-        PlayerEntity player = (PlayerEntity) (Object) this;
+  @Inject(at = @At("HEAD"), method = "wakeUp(ZZ)V")
+  private void andromeda$wakeUp(
+      boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
+    PlayerEntity player = (PlayerEntity) (Object) this;
 
-        if (!player.world.isClient) if (player.world.getRandom().nextInt(100000) == 0) {
-            Optional<BlockPos> optional = WorldUtil.pickRandomSpot(player.world, player.getBlockPos(), 10, player.world.getRandom());
-            if (optional.isPresent()) {
-                BlockPos pos = optional.get();
-                ArmorStandEntity stand = new ArmorStandEntity(player.world, pos.getX(), pos.getY(), pos.getZ());
-                ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
+    if (!player.world.isClient)
+      if (player.world.getRandom().nextInt(100000) == 0) {
+        Optional<BlockPos> optional = WorldUtil.pickRandomSpot(
+            player.world, player.getBlockPos(), 10, player.world.getRandom());
+        if (optional.isPresent()) {
+          BlockPos pos = optional.get();
+          ArmorStandEntity stand =
+              new ArmorStandEntity(player.world, pos.getX(), pos.getY(), pos.getZ());
+          ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-                stack.set(DataComponentTypes.PROFILE, new ProfileComponent(player.getGameProfile()));
+          stack.set(DataComponentTypes.PROFILE, new ProfileComponent(player.getGameProfile()));
 
-                stand.equipStack(EquipmentSlot.HEAD, stack);
-                player.world.spawnEntity(stand);
-                playSoundToPlayer(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
-            }
+          stand.equipStack(EquipmentSlot.HEAD, stack);
+          player.world.spawnEntity(stand);
+          playSoundToPlayer(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 4, 1);
         }
-    }
+      }
+  }
 }

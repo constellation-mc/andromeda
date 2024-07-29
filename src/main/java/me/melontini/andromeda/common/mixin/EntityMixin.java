@@ -1,5 +1,6 @@
 package me.melontini.andromeda.common.mixin;
 
+import java.util.function.Supplier;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.common.util.LazyLootParameterSet;
 import me.melontini.andromeda.common.util.LootContextUtil;
@@ -16,25 +17,25 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.function.Supplier;
-
 @Mixin(Entity.class)
 abstract class EntityMixin implements ConstantLootContextAccessor {
 
-    @Shadow public abstract Vec3d getPos();
+  @Shadow
+  public abstract Vec3d getPos();
 
-    @Shadow public abstract World getWorld();
+  @Shadow
+  public abstract World getWorld();
 
-    @Unique private final Supplier<LootContext> andromeda$context = Utilities.supply(() -> {
-        var c = new LazyLootParameterSet.Builder(() -> (ServerWorld) getWorld())
-                .add(LootContextParameters.ORIGIN, this::getPos)
-                .add(LootContextParameters.THIS_ENTITY, () -> (Entity) (Object) this)
-                .build(LootContextTypes.COMMAND);
-        return Memoize.supplier(() -> LootContextUtil.build(c));
-    });
+  @Unique private final Supplier<LootContext> andromeda$context = Utilities.supply(() -> {
+    var c = new LazyLootParameterSet.Builder(() -> (ServerWorld) getWorld())
+        .add(LootContextParameters.ORIGIN, this::getPos)
+        .add(LootContextParameters.THIS_ENTITY, () -> (Entity) (Object) this)
+        .build(LootContextTypes.COMMAND);
+    return Memoize.supplier(() -> LootContextUtil.build(c));
+  });
 
-    @Override
-    public Supplier<LootContext> andromeda$getLootContext() {
-        return andromeda$context;
-    }
+  @Override
+  public Supplier<LootContext> andromeda$getLootContext() {
+    return andromeda$context;
+  }
 }

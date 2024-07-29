@@ -6,11 +6,12 @@ import net.minecraft.server.MinecraftServer;
 
 public interface BeforeDataPackSyncEvent {
 
-    Event<BeforeDataPackSyncEvent> EVENT = EventFactory.createArrayBacked(BeforeDataPackSyncEvent.class, afterFirstReload -> server -> {
+  Event<BeforeDataPackSyncEvent> EVENT =
+      EventFactory.createArrayBacked(BeforeDataPackSyncEvent.class, afterFirstReload -> server -> {
         for (BeforeDataPackSyncEvent event : afterFirstReload) {
-            event.beforeDataPackReload(server);
+          event.beforeDataPackReload(server);
         }
-    });
+      });
 
-    void beforeDataPackReload(MinecraftServer server);
+  void beforeDataPackReload(MinecraftServer server);
 }

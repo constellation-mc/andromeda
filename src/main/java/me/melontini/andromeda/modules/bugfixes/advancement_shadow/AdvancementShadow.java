@@ -5,6 +5,4 @@ import me.melontini.andromeda.base.util.Environment;
 import me.melontini.andromeda.base.util.annotations.ModuleInfo;
 
 @ModuleInfo(name = "advancement_shadow", category = "bugfixes", environment = Environment.CLIENT)
-public final class AdvancementShadow extends Module {
-
-}
+public final class AdvancementShadow extends Module {}

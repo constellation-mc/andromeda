@@ -12,25 +12,25 @@ import me.melontini.andromeda.util.commander.number.LongIntermediary;
 @ModuleInfo(name = "snowball_tweaks", category = "entities", environment = Environment.SERVER)
 public final class Snowballs extends Module {
 
-    public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
+  public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
-    Snowballs() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  Snowballs() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 
-    @ToString
-    public static final class Config extends GameConfig {
+  @ToString
+  public static final class Config extends GameConfig {
 
-        public BooleanIntermediary freeze = BooleanIntermediary.of(true);
+    public BooleanIntermediary freeze = BooleanIntermediary.of(true);
 
-        public BooleanIntermediary extinguish = BooleanIntermediary.of(true);
+    public BooleanIntermediary extinguish = BooleanIntermediary.of(true);
 
-        public BooleanIntermediary melt = BooleanIntermediary.of(true);
+    public BooleanIntermediary melt = BooleanIntermediary.of(true);
 
-        public BooleanIntermediary layers = BooleanIntermediary.of(false);
+    public BooleanIntermediary layers = BooleanIntermediary.of(false);
 
-        public BooleanIntermediary enableCooldown = BooleanIntermediary.of(true);
+    public BooleanIntermediary enableCooldown = BooleanIntermediary.of(true);
 
-        public LongIntermediary cooldown = LongIntermediary.of(10);
-    }
+    public LongIntermediary cooldown = LongIntermediary.of(10);
+  }
 }

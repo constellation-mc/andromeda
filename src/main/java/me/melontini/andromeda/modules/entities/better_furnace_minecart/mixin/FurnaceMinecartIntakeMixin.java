@@ -1,5 +1,10 @@
 package me.melontini.andromeda.modules.entities.better_furnace_minecart.mixin;
 
+import static me.melontini.dark_matter.api.base.util.Exceptions.supply;
+
+import java.lang.reflect.Field;
+import java.util.Comparator;
+import java.util.Optional;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
@@ -19,57 +24,59 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.lang.reflect.Field;
-import java.util.Comparator;
-import java.util.Optional;
-
-import static me.melontini.dark_matter.api.base.util.Exceptions.supply;
-
 @Mixin(FurnaceMinecartEntity.class)
 abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
 
-    //stfu IDEA.
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    @Unique private static final Optional<Field> fb$pauseFuel = Support.fallback("fabrication", () -> Reflect.findField(FurnaceMinecartEntity.class, "fabrication$pauseFuel"), Optional::empty);
+  // stfu IDEA.
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+  @Unique private static final Optional<Field> fb$pauseFuel = Support.fallback(
+      "fabrication",
+      () -> Reflect.findField(FurnaceMinecartEntity.class, "fabrication$pauseFuel"),
+      Optional::empty);
 
+  @Shadow
+  public int fuel;
 
-    @Shadow public int fuel;
+  protected FurnaceMinecartIntakeMixin(EntityType<?> entityType, World world) {
+    super(entityType, world);
+  }
 
-    protected FurnaceMinecartIntakeMixin(EntityType<?> entityType, World world) {
-        super(entityType, world);
-    }
+  @Inject(at = @At("HEAD"), method = "tick")
+  private void andromeda$tick(CallbackInfo ci) {
+    if (!Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).takeFuelWhenLow) return;
 
-    @Inject(at = @At("HEAD"), method = "tick")
-    private void andromeda$tick(CallbackInfo ci) {
-        if (!Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).takeFuelWhenLow) return;
+    if (!this.world.isClient() && this.fuel < 100) {
+      if (world.getTime() % 20 == 0) {
+        if (fb$pauseFuel.map(f -> supply(() -> f.getInt(this)) > 0).orElse(false)) return;
 
-        if (!this.world.isClient() && this.fuel < 100) {
-            if (world.getTime() % 20 == 0) {
-                if (fb$pauseFuel.map(f -> supply(() -> f.getInt(this)) > 0).orElse(false)) return;
+        AbstractMinecartEntity entity = this.world
+            .getEntitiesByClass(
+                AbstractMinecartEntity.class,
+                this.getBoundingBox().expand(1.5, 0, 1.5),
+                Inventory.class::isInstance)
+            .stream()
+            .min(Comparator.comparingDouble(value -> value.squaredDistanceTo(this)))
+            .orElse(null);
 
-                AbstractMinecartEntity entity = this.world
-                        .getEntitiesByClass(AbstractMinecartEntity.class, this.getBoundingBox().expand(1.5, 0, 1.5), Inventory.class::isInstance).stream()
-                        .min(Comparator.comparingDouble(value -> value.squaredDistanceTo(this)))
-                        .orElse(null);
+        if (entity instanceof Inventory inventory) {
+          for (int i = 0; i < inventory.size(); ++i) {
+            ItemStack stack = inventory.getStack(i);
+            if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
+              int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
+              if ((this.fuel + (itemFuel * 2.25))
+                  <= Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
+                ItemStack reminder = stack.getRecipeRemainder();
+                if (!reminder.isEmpty())
+                  ItemStackUtil.spawn(entity.getPos(), stack.getRecipeRemainder(), world);
+                stack.decrement(1);
 
-                if (entity instanceof Inventory inventory) {
-                    for (int i = 0; i < inventory.size(); ++i) {
-                        ItemStack stack = inventory.getStack(i);
-                        if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
-                            int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
-                            if ((this.fuel + (itemFuel * 2.25)) <= Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
-                                ItemStack reminder = stack.getRecipeRemainder();
-                                if (!reminder.isEmpty())
-                                    ItemStackUtil.spawn(entity.getPos(), stack.getRecipeRemainder(), world);
-                                stack.decrement(1);
-
-                                this.fuel += (int) (itemFuel * 2.25);
-                            }
-                            break;
-                        }
-                    }
-                }
+                this.fuel += (int) (itemFuel * 2.25);
+              }
+              break;
             }
+          }
         }
+      }
     }
+  }
 }

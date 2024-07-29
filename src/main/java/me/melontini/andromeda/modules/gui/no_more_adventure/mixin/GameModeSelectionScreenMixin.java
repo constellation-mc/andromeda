@@ -11,19 +11,34 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GameModeSelectionScreen.class)
 abstract class GameModeSelectionScreenMixin extends Screen {
-    protected GameModeSelectionScreenMixin(Text title) {
-        super(title);
-    }
+  protected GameModeSelectionScreenMixin(Text title) {
+    super(title);
+  }
 
-    @Unique private final GameModeSelectionScreen.GameModeSelection[] andromeda$gameModeSelections = ArrayUtils.removeElement(GameModeSelectionScreen.GameModeSelection.values(), GameModeSelectionScreen.GameModeSelection.ADVENTURE);
+  @Unique private final GameModeSelectionScreen.GameModeSelection[] andromeda$gameModeSelections =
+      ArrayUtils.removeElement(
+          GameModeSelectionScreen.GameModeSelection.values(),
+          GameModeSelectionScreen.GameModeSelection.ADVENTURE);
 
-    @ModifyExpressionValue(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;VALUES:[Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;"))
-    private GameModeSelectionScreen.GameModeSelection[] andromeda$modValues(GameModeSelectionScreen.GameModeSelection[] original) {
-        return andromeda$gameModeSelections;
-    }
+  @ModifyExpressionValue(
+      method = "init",
+      at =
+          @At(
+              value = "FIELD",
+              target =
+                  "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;VALUES:[Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;"))
+  private GameModeSelectionScreen.GameModeSelection[] andromeda$modValues(
+      GameModeSelectionScreen.GameModeSelection[] original) {
+    return andromeda$gameModeSelections;
+  }
 
-    @ModifyExpressionValue(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen;UI_WIDTH:I"))
-    private int andromeda$modValues(int original) {
-        return andromeda$gameModeSelections.length * 31 - 5;
-    }
+  @ModifyExpressionValue(
+      method = "init",
+      at =
+          @At(
+              value = "FIELD",
+              target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen;UI_WIDTH:I"))
+  private int andromeda$modValues(int original) {
+    return andromeda$gameModeSelections.length * 31 - 5;
+  }
 }

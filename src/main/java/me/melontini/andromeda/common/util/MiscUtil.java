@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class MiscUtil {
 
-    public static final PacketCodec<RegistryByteBuf, UUID> UUID_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_LONG, UUID::getMostSignificantBits, PacketCodecs.VAR_LONG, UUID::getLeastSignificantBits, UUID::new);
+  public static final PacketCodec<RegistryByteBuf, UUID> UUID_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_LONG, UUID::getMostSignificantBits, PacketCodecs.VAR_LONG, UUID::getLeastSignificantBits, UUID::new);
 
     public static double horizontalDistanceTo(Vec3d owner, Vec3d target) {
         double d = target.x - owner.x;
@@ -19,7 +19,8 @@ public class MiscUtil {
         return Math.sqrt(d * d + f * f);
     }
 
-    public static BlockPos vec3dAsBlockPos(Vec3d vec3d) {
-        return new BlockPos(MathHelper.floor(vec3d.x), MathHelper.floor(vec3d.y), MathHelper.floor(vec3d.z));
-    }
+  public static BlockPos vec3dAsBlockPos(Vec3d vec3d) {
+    return new BlockPos(
+        MathHelper.floor(vec3d.x), MathHelper.floor(vec3d.y), MathHelper.floor(vec3d.z));
+  }
 }

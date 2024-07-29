@@ -17,15 +17,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EnchantmentScreen.class)
 abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentScreenHandler> {
-    public EnchantmentScreenMixin(EnchantmentScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, title);
-    }
+  public EnchantmentScreenMixin(
+      EnchantmentScreenHandler handler, PlayerInventory inventory, Text title) {
+    super(handler, inventory, title);
+  }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickButton(II)V", shift = At.Shift.AFTER), method = "mouseClicked")
-    private void andromeda$particles(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (!AndromedaClient.HANDLER.get(GuiParticles.CONFIG).enchantmentScreenParticles) return;
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickButton(II)V",
+              shift = At.Shift.AFTER),
+      method = "mouseClicked")
+  private void andromeda$particles(
+      double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+    if (!AndromedaClient.HANDLER.get(GuiParticles.CONFIG).enchantmentScreenParticles) return;
 
-        Slot slot = this.handler.slots.get(0);
-        ScreenParticleHelper.addScreenParticles(ParticleTypes.END_ROD, this.x + slot.x + 8, this.y + slot.y + 8, 0.5, 0.5, 0.07, 10);
-    }
+    Slot slot = this.handler.slots.get(0);
+    ScreenParticleHelper.addScreenParticles(
+        ParticleTypes.END_ROD, this.x + slot.x + 8, this.y + slot.y + 8, 0.5, 0.5, 0.07, 10);
+  }
 }

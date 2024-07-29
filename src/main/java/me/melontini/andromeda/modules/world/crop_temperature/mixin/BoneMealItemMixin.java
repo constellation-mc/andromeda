@@ -19,17 +19,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BoneMealItem.class)
 abstract class BoneMealItemMixin {
 
-    @Inject(at = @At("HEAD"), method = "useOnBlock", cancellable = true)
-    private void andromeda$useOnFertilizable(ItemUsageContext ctx, CallbackInfoReturnable<ActionResult> cir) {
-        World world = ctx.getWorld();
-        BlockPos pos = ctx.getBlockPos();
-        if (world.isClient()) return;
+  @Inject(at = @At("HEAD"), method = "useOnBlock", cancellable = true)
+  private void andromeda$useOnFertilizable(
+      ItemUsageContext ctx, CallbackInfoReturnable<ActionResult> cir) {
+    World world = ctx.getWorld();
+    BlockPos pos = ctx.getBlockPos();
+    if (world.isClient()) return;
 
-        BlockState state = world.getBlockState(pos);
-        if (world.am$get(PlantTemperature.CONFIG).affectBoneMeal.asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) {
-            if (!PlantTemperatureData.roll(pos, state, world.getBiome(pos).value().getTemperature(), (ServerWorld) world)) {
-                cir.setReturnValue(ActionResult.FAIL);
-            }
-        }
+    BlockState state = world.getBlockState(pos);
+    if (world
+        .am$get(PlantTemperature.CONFIG)
+        .affectBoneMeal
+        .asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) {
+      if (!PlantTemperatureData.roll(
+          pos, state, world.getBiome(pos).value().getTemperature(), (ServerWorld) world)) {
+        cir.setReturnValue(ActionResult.FAIL);
+      }
     }
+  }
 }

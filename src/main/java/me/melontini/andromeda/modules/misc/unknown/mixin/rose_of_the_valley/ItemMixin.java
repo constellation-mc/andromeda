@@ -16,12 +16,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Item.class)
 abstract class ItemMixin {
 
-    @Inject(at = @At("HEAD"), method = "onClicked", cancellable = true)
-    private void andromeda$onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir) {
-            if (clickType == ClickType.RIGHT && stack.isOf(Items.LILY_OF_THE_VALLEY) && otherStack.isOf(Items.DIAMOND)) {
-                //I mean .....yeah
-                RoseOfTheValley.handleClick(stack, otherStack, player);
-                cir.setReturnValue(true);
-            }
+  @Inject(at = @At("HEAD"), method = "onClicked", cancellable = true)
+  private void andromeda$onClicked(
+      ItemStack stack,
+      ItemStack otherStack,
+      Slot slot,
+      ClickType clickType,
+      PlayerEntity player,
+      StackReference cursorStackReference,
+      CallbackInfoReturnable<Boolean> cir) {
+    if (clickType == ClickType.RIGHT
+        && stack.isOf(Items.LILY_OF_THE_VALLEY)
+        && otherStack.isOf(Items.DIAMOND)) {
+      // I mean .....yeah
+      RoseOfTheValley.handleClick(stack, otherStack, player);
+      cir.setReturnValue(true);
     }
+  }
 }

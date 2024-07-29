@@ -18,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(BundleItem.class)
 abstract class BundleItemMixin {
 
-    @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/component/type/BundleContentsComponent$Builder;add(Lnet/minecraft/item/ItemStack;)I"), method = "onClicked")
-    private int andromeda$spawnParticlesClicked(int original, @Local(ordinal = 1, argsOnly = true) ItemStack other) {
+  @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/minecraft/component/type/BundleContentsComponent$Builder;add(Lnet/minecraft/item/ItemStack;)I"), method = "onClicked")
+  private int andromeda$spawnParticlesClicked(int original, @Local(ordinal = 1, argsOnly = true) ItemStack other) {
         if (original > 0) this.andromeda$renderParticles(other);
         return original;
     }
@@ -31,7 +31,7 @@ abstract class BundleItemMixin {
     }
 
     @Unique private void andromeda$renderParticles(ItemStack stack) {
-        if (AndromedaClient.HANDLER.get(GuiParticles.CONFIG).bundleInputParticles) {
+    if (AndromedaClient.HANDLER.get(GuiParticles.CONFIG).bundleInputParticles) {
             var client = MinecraftClient.getInstance();
             if (client.isOnThread() && client.currentScreen != null) {
                 int x = (int) (client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth());

@@ -14,25 +14,34 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-
 @Mixin(SnowballEntity.class)
 abstract class SnowballEntityMixin extends ThrownItemEntity {
 
-    public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
-        super(entityType, world);
-    }
+  public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
+    super(entityType, world);
+  }
 
-    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @ConstructDummy(owner = "net.minecraft.class_1297", name = "method_5773", desc = "()V")
-    @Inject(at = @At("HEAD"), method = "tick()V")
-    public void andromeda$melt(CallbackInfo ci) {
-        if (world.isClient() || !this.isOnFire()) return;
+  @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
+  @ConstructDummy(owner = "net.minecraft.class_1297", name = "method_5773", desc = "()V")
+  @Inject(at = @At("HEAD"), method = "tick()V")
+  public void andromeda$melt(CallbackInfo ci) {
+    if (world.isClient() || !this.isOnFire()) return;
 
-        var config = world.am$get(Snowballs.CONFIG);
-        var supplier = ConstantLootContextAccessor.get(this);
-        if (!config.available.asBoolean(supplier) || !config.melt.asBoolean(supplier)) return;
+    var config = world.am$get(Snowballs.CONFIG);
+    var supplier = ConstantLootContextAccessor.get(this);
+    if (!config.available.asBoolean(supplier) || !config.melt.asBoolean(supplier)) return;
 
-        ((ServerWorld) world).spawnParticles(ParticleTypes.FALLING_WATER, this.getX(), this.getY(), this.getZ(), 10, 0.5, 0.5, 0.5, 0.4);
-        this.discard();
-    }
+    ((ServerWorld) world)
+        .spawnParticles(
+            ParticleTypes.FALLING_WATER,
+            this.getX(),
+            this.getY(),
+            this.getZ(),
+            10,
+            0.5,
+            0.5,
+            0.5,
+            0.4);
+    this.discard();
+  }
 }

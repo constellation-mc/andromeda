@@ -17,23 +17,43 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-
 @Mixin(CreativeInventoryScreen.class)
-abstract class CreativeInventoryScreenMixin extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
-    public CreativeInventoryScreenMixin(CreativeInventoryScreen.CreativeScreenHandler screenHandler, PlayerInventory playerInventory, Text text) {
-        super(screenHandler, playerInventory, text);
-    }
+abstract class CreativeInventoryScreenMixin
+    extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
+  public CreativeInventoryScreenMixin(
+      CreativeInventoryScreen.CreativeScreenHandler screenHandler,
+      PlayerInventory playerInventory,
+      Text text) {
+    super(screenHandler, playerInventory, text);
+  }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickCreativeStack(Lnet/minecraft/item/ItemStack;I)V", ordinal = 0, shift = At.Shift.BEFORE), method = "onMouseClick")
-    private void andromeda$clickDeleteParticles(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci, @Local(ordinal = 2) int index) {
-        var config = AndromedaClient.HANDLER.get(GuiParticles.CONFIG);
-        if (!config.creativeScreenParticles) return;
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/client/network/ClientPlayerInteractionManager;clickCreativeStack(Lnet/minecraft/item/ItemStack;I)V",
+              ordinal = 0,
+              shift = At.Shift.BEFORE),
+      method = "onMouseClick")
+  private void andromeda$clickDeleteParticles(
+      Slot slot,
+      int slotId,
+      int button,
+      SlotActionType actionType,
+      CallbackInfo ci,
+      @Local(ordinal = 2) int index) {
+    var config = AndromedaClient.HANDLER.get(GuiParticles.CONFIG);
+    if (!config.creativeScreenParticles) return;
 
-        if (index >= this.handler.slots.size()) return;
-        Slot slot1 = this.handler.slots.get(index);
-        ScreenParticleHelper.addScreenParticle(new CustomItemStackParticle(this.x + slot1.x + 8, this.y + slot1.y + 8,
-                MathUtil.nextDouble(
-                        -config.creativeScreenParticlesVelX,
-                        config.creativeScreenParticlesVelX), 0.6, slot1.getStack()));
-    }
+    if (index >= this.handler.slots.size()) return;
+    Slot slot1 = this.handler.slots.get(index);
+    ScreenParticleHelper.addScreenParticle(new CustomItemStackParticle(
+        this.x + slot1.x + 8,
+        this.y + slot1.y + 8,
+        MathUtil.nextDouble(
+            -config.creativeScreenParticlesVelX, config.creativeScreenParticlesVelX),
+        0.6,
+        slot1.getStack()));
+  }
 }

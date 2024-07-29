@@ -8,9 +8,10 @@ import me.melontini.andromeda.base.util.config.ConfigState;
 @ModuleInfo(name = "cactus_bottle_filling", category = "blocks")
 public final class CactusFiller extends Module {
 
-    public static final ConfigDefinition<Module.GameConfig> CONFIG = new ConfigDefinition<>(() -> Module.GameConfig.class);
+  public static final ConfigDefinition<Module.GameConfig> CONFIG =
+      new ConfigDefinition<>(() -> Module.GameConfig.class);
 
-    CactusFiller() {
-        this.defineConfig(ConfigState.GAME, CONFIG);
-    }
+  CactusFiller() {
+    this.defineConfig(ConfigState.GAME, CONFIG);
+  }
 }
