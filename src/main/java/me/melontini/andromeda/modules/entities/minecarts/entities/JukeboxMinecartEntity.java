@@ -133,15 +133,15 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
 
   public void stopPlaying() {
     var payload = new StopPayload(this.getUuid());
-        for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
+    for (PlayerEntity player1 : world.getPlayers()) {
+      ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
     }
   }
 
   public void startPlaying() {
     var payload = new StartPayload(this.getUuid(), this.record);
-        for (PlayerEntity player1 : world.getPlayers()) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
+    for (PlayerEntity player1 : world.getPlayers()) {
+      ServerPlayNetworking.send((ServerPlayerEntity) player1, payload);
     }
   }
 

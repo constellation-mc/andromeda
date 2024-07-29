@@ -25,9 +25,10 @@ abstract class ItemMixin {
       ItemStack stack,
       Item.TooltipContext context,
       List<Text> tooltip,
-      TooltipType type, CallbackInfo ci) {
-        if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).clock) return;
-        var world = MinecraftClient.getInstance().world;
+      TooltipType type,
+      CallbackInfo ci) {
+    if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).clock) return;
+    var world = MinecraftClient.getInstance().world;
 
     if (world != null && world.isClient) {
       if (stack.getItem() == Items.CLOCK) {

@@ -68,11 +68,11 @@ abstract class FallingBlockMixin extends Entity {
           PlayerUtil.findClosestNonCreativePlayerInRange(world, this.getBlockPos(), 16);
       final NbtList nbeetlist = blockEntityData.getList("Bees", 10);
 
-            world.breakBlock(beehiveBlockEntity.getPos(), false);
-            for (int i = 0; i < nbeetlist.size(); ++i) {
-                NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
-                BeeEntity bee = EntityType.BEE.create(world);
-                if (bee == null) continue;
+      world.breakBlock(beehiveBlockEntity.getPos(), false);
+      for (int i = 0; i < nbeetlist.size(); ++i) {
+        NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
+        BeeEntity bee = EntityType.BEE.create(world);
+        if (bee == null) continue;
 
         bee.readNbt(entityData);
         bee.setPosition(getPos());

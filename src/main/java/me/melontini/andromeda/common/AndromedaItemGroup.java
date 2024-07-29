@@ -96,17 +96,22 @@ public class AndromedaItemGroup {
           List<ItemStack> stacks = new ArrayList<>();
           small.forEach((m, itemStacks) -> {
             ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-            sign.set(DataComponentTypes.CUSTOM_NAME, TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
-                stacks.add(sign);
-                stacks.addAll(itemStacks);
-                stacks.add(ItemStack.EMPTY);
-            });
-            entries.appendStacks(stacks);
-            big.forEach((m, itemStacks) -> {
-                ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-                sign.set(DataComponentTypes.CUSTOM_NAME, TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
-                itemStacks.add(0, sign);
-                entries.appendStacks(itemStacks);});
+            sign.set(
+                DataComponentTypes.CUSTOM_NAME,
+                TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
+            stacks.add(sign);
+            stacks.addAll(itemStacks);
+            stacks.add(ItemStack.EMPTY);
+          });
+          entries.appendStacks(stacks);
+          big.forEach((m, itemStacks) -> {
+            ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
+            sign.set(
+                DataComponentTypes.CUSTOM_NAME,
+                TextUtil.translatable("config.andromeda.%s".formatted(m.meta().dotted())));
+            itemStacks.add(0, sign);
+            entries.appendStacks(itemStacks);
+          });
         })
         .displayName(TextUtil.translatable("itemGroup.andromeda.items"))
         .optional()

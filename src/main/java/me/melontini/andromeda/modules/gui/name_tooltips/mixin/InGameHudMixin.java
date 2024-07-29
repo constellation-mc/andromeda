@@ -25,9 +25,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 abstract class InGameHudMixin {
-    @Shadow @Final private MinecraftClient client;
-    @Shadow private int heldItemTooltipFade;
-    @Shadow private ItemStack currentStack;
+  @Shadow
+  @Final
+  private MinecraftClient client;
+
+  @Shadow
+  private int heldItemTooltipFade;
+
+  @Shadow
+  private ItemStack currentStack;
 
   @Inject(at = @At("HEAD"), method = "renderHeldItemTooltip", cancellable = true)
   private void andromeda$renderTooltip(DrawContext context, CallbackInfo ci) {

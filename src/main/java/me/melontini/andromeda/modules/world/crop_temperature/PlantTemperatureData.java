@@ -175,8 +175,7 @@ public final class PlantTemperatureData {
       IdentityHashMap<Block, float[]> replace = new IdentityHashMap<>();
       IdentityHashMap<Block, float[]> result = new IdentityHashMap<>();
       Maps.transformValues(
-              data,
-              input -> MERGED_CODEC.parse(JsonOps.INSTANCE, input).getOrThrow())
+              data, input -> MERGED_CODEC.parse(JsonOps.INSTANCE, input).getOrThrow())
           .values()
           .forEach(newHolder -> {
             if (newHolder.replace()) replace.putAll(newHolder.temperatures());

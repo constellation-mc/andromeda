@@ -48,9 +48,9 @@ public class MinecartEntities {
         id("jukebox_minecart"),
         () -> FabricEntityTypeBuilder.<JukeboxMinecartEntity>create(
                 SpawnGroup.MISC, JukeboxMinecartEntity::new)
-            .dimensions(EntityDimensions.fixed(0.98F, 0.7F)).build()));
+            .dimensions(EntityDimensions.fixed(0.98F, 0.7F))
+            .build()));
 
-
-        JUKEBOX_MINECART_ENTITY.ifPresent(type -> SoundHandler.INITIALIZER.run());
-    }
+    JUKEBOX_MINECART_ENTITY.ifPresent(type -> SoundHandler.INITIALIZER.run());
+  }
 }

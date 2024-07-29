@@ -5,13 +5,14 @@ import static me.melontini.andromeda.common.Andromeda.id;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import lombok.With;
-import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import lombok.With;
 import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.LootContextUtil;
@@ -52,22 +53,14 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import static me.melontini.andromeda.common.Andromeda.id;
-
 public class MagnetItem extends Item {
 
   public static final Keeper<MagnetItem> MAGNET = Keeper.create();
   public static final Keeper<ComponentType<MagnetContents>> COMPONENT_TYPE = Keeper.create();
-    private static final BiConsumer<ItemStack, PlayerEntity> ITEM_PARTICLES = Support.support(EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
-    private static final Consumer<PlayerEntity> UPGRADE_PARTICLES = Support.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
+  private static final BiConsumer<ItemStack, PlayerEntity> ITEM_PARTICLES =
+      Support.support(EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
+  private static final Consumer<PlayerEntity> UPGRADE_PARTICLES =
+      Support.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
 
   public MagnetItem(Settings settings) {
     super(settings);
@@ -184,11 +177,10 @@ public class MagnetItem extends Item {
     }
   }
 
-    @Override
-    public Optional<TooltipData> getTooltipData(ItemStack stack) {
-        return Optional.of(new BundleTooltipData(
-                        new BundleContentsComponent(magnetable(stack).stream()
-                                .map(Item::getDefaultStack).toList())));
+  @Override
+  public Optional<TooltipData> getTooltipData(ItemStack stack) {
+    return Optional.of(new BundleTooltipData(new BundleContentsComponent(
+        magnetable(stack).stream().map(Item::getDefaultStack).toList())));
   }
 
   @Override
@@ -198,29 +190,40 @@ public class MagnetItem extends Item {
         .formatted(Formatting.GRAY));
   }
 
-    private static boolean incrementLevel(ItemStack stack) {
-        int level = getLevel(stack);
+  private static boolean incrementLevel(ItemStack stack) {
+    int level = getLevel(stack);
     if (level >= 5) return false;
-    stack.apply(COMPONENT_TYPE.get(), MagnetContents.DEFAULT, contents -> contents.withLevel(contents.level() + 1));
+    stack.apply(
+        COMPONENT_TYPE.get(),
+        MagnetContents.DEFAULT,
+        contents -> contents.withLevel(contents.level() + 1));
     return true;
   }
 
-    private static int getLevel(ItemStack stack) {
-        return stack.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT).level();
+  private static int getLevel(ItemStack stack) {
+    return stack.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT).level();
   }
 
-    public static void addFirst(ItemStack bundle, ItemStack other) {
-        bundle.apply(COMPONENT_TYPE.get(), MagnetContents.DEFAULT,
-                component -> component.withItems(Stream.concat(Stream.of(other.getItem()), component.items().stream()).collect(ImmutableList.toImmutableList())));
+  public static void addFirst(ItemStack bundle, ItemStack other) {
+    bundle.apply(
+        COMPONENT_TYPE.get(),
+        MagnetContents.DEFAULT,
+        component -> component.withItems(
+            Stream.concat(Stream.of(other.getItem()), component.items().stream())
+                .collect(ImmutableList.toImmutableList())));
   }
 
-    private static void removeFirst(ItemStack stack) {
-        stack.apply(COMPONENT_TYPE.get(), MagnetContents.DEFAULT,
-        component -> component.withItems(component.items().stream().skip(1).collect(ImmutableList.toImmutableList())));
+  private static void removeFirst(ItemStack stack) {
+    stack.apply(
+        COMPONENT_TYPE.get(),
+        MagnetContents.DEFAULT,
+        component -> component.withItems(
+            component.items().stream().skip(1).collect(ImmutableList.toImmutableList())));
   }
 
   private static Set<Item> magnetable(ItemStack stack) {
-    return new LinkedHashSet<>(stack.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT).items());
+    return new LinkedHashSet<>(
+        stack.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT).items());
   }
 
   private void playUpgradeSound(Entity entity) {
@@ -245,30 +248,39 @@ public class MagnetItem extends Item {
   }
 
   static void init(Magnet module) {
-    COMPONENT_TYPE.init(RegistryUtil.register(Registries.DATA_COMPONENT_TYPE, id("magnet_contents"), () -> ComponentType.<MagnetContents>builder()
-                .codec(MagnetContents.CODEC).packetCodec(MagnetContents.PACKET_CODEC).build()));
-        MagnetItem.MAGNET.init(RegistryUtil.register(Registries.ITEM, id("magnet"), () -> new MagnetItem(new Item.Settings().maxCount(1))));
+    COMPONENT_TYPE.init(RegistryUtil.register(
+        Registries.DATA_COMPONENT_TYPE,
+        id("magnet_contents"),
+        () -> ComponentType.<MagnetContents>builder()
+            .codec(MagnetContents.CODEC)
+            .packetCodec(MagnetContents.PACKET_CODEC)
+            .build()));
+    MagnetItem.MAGNET.init(RegistryUtil.register(
+        Registries.ITEM, id("magnet"), () -> new MagnetItem(new Item.Settings().maxCount(1))));
 
     AndromedaItemGroup.accept(a -> a.keeper(module, ItemGroups.TOOLS, MagnetItem.MAGNET));
   }
 
-    @With
-    public record MagnetContents(ImmutableList<Item> items, int level) {
+  @With
+  public record MagnetContents(ImmutableList<Item> items, int level) {
 
-        private MagnetContents(List<Item> items, int level) {
-            this(ImmutableList.copyOf(items), level);
-        }
-
-        public static final MagnetContents DEFAULT = new MagnetContents(ImmutableList.of(), 1);
-
-        public static final Codec<MagnetContents> CODEC = RecordCodecBuilder.create(data -> data.group(
-                Registries.ITEM.getCodec().listOf().fieldOf("items").forGetter(MagnetContents::items),
-                Codec.intRange(0, 5).fieldOf("level").forGetter(MagnetContents::level)
-        ).apply(data, MagnetContents::new));
-
-        public static final PacketCodec<RegistryByteBuf, MagnetContents> PACKET_CODEC = PacketCodec.tuple(
-                PacketCodecs.registryCodec(Registries.ITEM.getCodec().listOf()), MagnetContents::items,
-                PacketCodecs.VAR_INT, MagnetContents::level,
-                MagnetContents::new);
+    private MagnetContents(List<Item> items, int level) {
+      this(ImmutableList.copyOf(items), level);
     }
+
+    public static final MagnetContents DEFAULT = new MagnetContents(ImmutableList.of(), 1);
+
+    public static final Codec<MagnetContents> CODEC = RecordCodecBuilder.create(data -> data.group(
+            Registries.ITEM.getCodec().listOf().fieldOf("items").forGetter(MagnetContents::items),
+            Codec.intRange(0, 5).fieldOf("level").forGetter(MagnetContents::level))
+        .apply(data, MagnetContents::new));
+
+    public static final PacketCodec<RegistryByteBuf, MagnetContents> PACKET_CODEC =
+        PacketCodec.tuple(
+            PacketCodecs.registryCodec(Registries.ITEM.getCodec().listOf()),
+            MagnetContents::items,
+            PacketCodecs.VAR_INT,
+            MagnetContents::level,
+            MagnetContents::new);
+  }
 }

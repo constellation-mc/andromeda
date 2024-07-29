@@ -25,8 +25,12 @@ abstract class FletchingTableBlockMixin extends CraftingTableBlock {
     super(settings);
   }
 
-    @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    private void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
+  @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
+  private void andromeda$onUse(
+      BlockState state,
+      World world,
+      BlockPos pos,
+      PlayerEntity player,
       BlockHitResult hit,
       CallbackInfoReturnable<ActionResult> cir) {
     if (state.isOf(Blocks.FLETCHING_TABLE)) {

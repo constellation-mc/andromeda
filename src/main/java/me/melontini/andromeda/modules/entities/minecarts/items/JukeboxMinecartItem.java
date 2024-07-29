@@ -15,12 +15,13 @@ public class JukeboxMinecartItem extends AndromedaMinecartItem<JukeboxMinecartEn
 
   @Override
   protected void onCreate(ItemStack stack, JukeboxMinecartEntity entity) {
-    NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+    NbtCompound nbt =
+        stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
     if (nbt.getCompound("Items") != null) {
-            ItemStack.fromNbt(entity.getRegistryManager(), nbt.getCompound("Items")).ifPresent(stack1 -> {
-                entity.record = stack1;
-                entity.startPlaying();
-            });
-        }
+      ItemStack.fromNbt(entity.getRegistryManager(), nbt.getCompound("Items")).ifPresent(stack1 -> {
+        entity.record = stack1;
+        entity.startPlaying();
+      });
     }
+  }
 }

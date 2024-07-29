@@ -19,14 +19,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractBlock.AbstractBlockState.class)
 abstract class AbstractBlockStateMixin {
 
-    @ModifyReturnValue(method = "onUseWithItem", at = @At("RETURN"))
-    private ItemActionResult catchUseContext(ItemActionResult original, @Local(argsOnly = true) ItemStack stack, @Local(argsOnly = true) Hand hand) {
-        if (original == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) UseWithItemHack.setContext(new UseWithItemHack.Context(stack, hand));
-        return original;
-    }
+  @ModifyReturnValue(method = "onUseWithItem", at = @At("RETURN"))
+  private ItemActionResult catchUseContext(
+      ItemActionResult original,
+      @Local(argsOnly = true) ItemStack stack,
+      @Local(argsOnly = true) Hand hand) {
+    if (original == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION)
+      UseWithItemHack.setContext(new UseWithItemHack.Context(stack, hand));
+    return original;
+  }
 
-    @Inject(at = @At("RETURN"), method = "onUse")
-    private void resetUseContext(World world, PlayerEntity player, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (UseWithItemHack.getContext() != null) UseWithItemHack.setContext(null);
-    }
+  @Inject(at = @At("RETURN"), method = "onUse")
+  private void resetUseContext(
+      World world,
+      PlayerEntity player,
+      BlockHitResult hit,
+      CallbackInfoReturnable<ActionResult> cir) {
+    if (UseWithItemHack.getContext() != null) UseWithItemHack.setContext(null);
+  }
 }

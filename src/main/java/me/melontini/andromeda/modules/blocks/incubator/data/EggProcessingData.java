@@ -79,14 +79,15 @@ public record EggProcessingData(
           WeightedList<Entry> list = new WeightedList<>();
           list.add(
               new Entry(
-                  egg.getEntityType(egg.getDefaultStack()), new NbtCompound(), Collections.emptyList()),
+                  egg.getEntityType(egg.getDefaultStack()),
+                  new NbtCompound(),
+                  Collections.emptyList()),
               1);
           result.put(egg, new EggProcessingData(false, egg, list, Arithmetica.constant(8000)));
         }
       }
 
-      Maps.transformValues(
-              data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow())
+      Maps.transformValues(data, input -> CODEC.parse(JsonOps.INSTANCE, input).getOrThrow())
           .forEach((identifier, eData) -> {
             if (eData.replace()) replace.put(eData.item(), eData);
             else result.put(eData.item(), eData);

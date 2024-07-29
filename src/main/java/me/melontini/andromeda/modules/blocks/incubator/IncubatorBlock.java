@@ -69,9 +69,17 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
   }
 
   @Override
-  protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
-        if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND)) return ItemActionResult.success(true);
+  protected ItemActionResult onUseWithItem(
+      ItemStack stack,
+      BlockState state,
+      World world,
+      BlockPos pos,
+      PlayerEntity player,
+      Hand hand,
+      BlockHitResult hit) {
+    IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
+    if (world.isClient || entity == null || !hand.equals(Hand.MAIN_HAND))
+      return ItemActionResult.success(true);
 
     if (requireNonNull(world.getServer())
             .dm$getReloader(EggProcessingData.RELOADER)
@@ -143,10 +151,9 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
   }
 
   @Override
-  protected boolean canPathfindThrough(
-      BlockState state, NavigationType type) {
-        return false;
-    }
+  protected boolean canPathfindThrough(BlockState state, NavigationType type) {
+    return false;
+  }
 
   @Override
   public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {

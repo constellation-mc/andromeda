@@ -31,7 +31,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class WorldUtil {
-  public static final RegistryKey<LootTable> BEE_LOOT_ID = RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("bee_nest/bee_nest_broken"));
+  public static final RegistryKey<LootTable> BEE_LOOT_ID =
+      RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("bee_nest/bee_nest_broken"));
 
   public static final List<Direction> AROUND_BLOCK_DIRECTIONS =
       List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
@@ -52,11 +53,18 @@ public class WorldUtil {
     }
   }
 
-  public static List<ItemStack> prepareLoot(@NonNull World world, @NonNull RegistryKey<LootTable> lootId) {
-    var table = ((ServerWorld) world).getServer().getReloadableRegistries().getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(lootId);
-        if (table == null) throw new IllegalStateException("No '%s' in loot registry".formatted(lootId));
-        return table.generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world))
-            .build(LootContextTypes.EMPTY));
+  public static List<ItemStack> prepareLoot(
+      @NonNull World world, @NonNull RegistryKey<LootTable> lootId) {
+    var table = ((ServerWorld) world)
+        .getServer()
+        .getReloadableRegistries()
+        .getRegistryManager()
+        .get(RegistryKeys.LOOT_TABLE)
+        .get(lootId);
+    if (table == null)
+      throw new IllegalStateException("No '%s' in loot registry".formatted(lootId));
+    return table.generateLoot(
+        new LootContextParameterSet.Builder(((ServerWorld) world)).build(LootContextTypes.EMPTY));
   }
 
   public static void trySpawnFallingBeeNest(
@@ -78,7 +86,11 @@ public class WorldUtil {
         .put(
             "TileEntityData",
             NbtBuilder.create()
-                .put("Bees", BeehiveBlockEntity.BeeData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, beehiveBlockEntity.createBeesData()).getOrThrow())
+                .put(
+                    "Bees",
+                    BeehiveBlockEntity.BeeData.LIST_CODEC
+                        .encodeStart(NbtOps.INSTANCE, beehiveBlockEntity.createBeesData())
+                        .getOrThrow())
                 .putBoolean("AM-FromFallenBlock", true)
                 .build())
         .put("BlockState", NbtHelper.fromBlockState(state))

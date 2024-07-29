@@ -46,8 +46,8 @@ public class PouchItem extends Item implements ProjectileItem {
   public void appendTooltip(
       ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
     if (type.isAdvanced() && Debug.Keys.DISPLAY_TRACKED_VALUES.isPresent()) {
-      tooltip.add(
-          TextUtil.literal("Loot: " + this.getType().getLootId(stack).getValue()).formatted(Formatting.GRAY));
+      tooltip.add(TextUtil.literal("Loot: " + this.getType().getLootId(stack).getValue())
+          .formatted(Formatting.GRAY));
     }
   }
 
@@ -122,10 +122,11 @@ public class PouchItem extends Item implements ProjectileItem {
     return ActionResult.PASS;
   }
 
-    @Override
-    public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
-        var pouch = new PouchEntity(pos.getX(), pos.getY(), pos.getZ(), world);
-        pouch.setPouchType(((PouchItem) stack.getItem()).getType());
-        return pouch;
-    }
+  @Override
+  public ProjectileEntity createEntity(
+      World world, Position pos, ItemStack stack, Direction direction) {
+    var pouch = new PouchEntity(pos.getX(), pos.getY(), pos.getZ(), world);
+    pouch.setPouchType(((PouchItem) stack.getItem()).getType());
+    return pouch;
+  }
 }

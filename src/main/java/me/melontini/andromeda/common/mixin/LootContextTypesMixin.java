@@ -10,8 +10,14 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LootContextTypes.class)
 abstract class LootContextTypesMixin {
 
-    @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Identifier;ofVanilla(Ljava/lang/String;)Lnet/minecraft/util/Identifier;"), method = "register")
-    private static Identifier identifierOfAnything(String path, Operation<Identifier> original) {
-        return Identifier.of(path);
-    }
+  @WrapOperation(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/util/Identifier;ofVanilla(Ljava/lang/String;)Lnet/minecraft/util/Identifier;"),
+      method = "register")
+  private static Identifier identifierOfAnything(String path, Operation<Identifier> original) {
+    return Identifier.of(path);
+  }
 }

@@ -44,10 +44,12 @@ public final class Main {
   public static final Keeper<PouchItem> SPECIAL_POUCH = Keeper.create();
   public static final Keeper<EntityType<PouchEntity>> POUCH = Keeper.create();
 
-  public static final Keeper<ComponentType<CustomPouchComponent>> CUSTOM_COMPONENT = Keeper.create();
+  public static final Keeper<ComponentType<CustomPouchComponent>> CUSTOM_COMPONENT =
+      Keeper.create();
 
-    private static final Map<BlockEntityType<?>, Field> VIEWABLE_BLOCKS = new HashMap<>();
-    public static final Map<BlockEntityType<?>, Field> VIEWABLE_VIEW = Collections.unmodifiableMap(VIEWABLE_BLOCKS);
+  private static final Map<BlockEntityType<?>, Field> VIEWABLE_BLOCKS = new HashMap<>();
+  public static final Map<BlockEntityType<?>, Field> VIEWABLE_VIEW =
+      Collections.unmodifiableMap(VIEWABLE_BLOCKS);
 
   public static int getViewCount(BlockEntity be) {
     Field f = Main.VIEWABLE_VIEW.get(be.getType());
@@ -108,17 +110,23 @@ public final class Main {
             .trackedUpdateRate(10)
             .build()));
 
-    CUSTOM_COMPONENT.init(RegistryUtil.register(Registries.DATA_COMPONENT_TYPE, id("custom_loot"), () -> ComponentType.<CustomPouchComponent>builder()
-                .codec(CustomPouchComponent.CODEC).packetCodec(CustomPouchComponent.PACKET_CODEC).build()));
+    CUSTOM_COMPONENT.init(RegistryUtil.register(
+        Registries.DATA_COMPONENT_TYPE,
+        id("custom_loot"),
+        () -> ComponentType.<CustomPouchComponent>builder()
+            .codec(CustomPouchComponent.CODEC)
+            .packetCodec(CustomPouchComponent.PACKET_CODEC)
+            .build()));
 
-        Trades.register();
+    Trades.register();
 
     List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
     AndromedaItemGroup.accept(
         acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, new ArrayList<>(l)));
 
-        for (Keeper<PouchItem> pouchItemKeeper : l) {
-            pouchItemKeeper.ifPresent(pi -> DispenserBlock.registerBehavior(pi, new ProjectileDispenserBehavior(pi)));
+    for (Keeper<PouchItem> pouchItemKeeper : l) {
+      pouchItemKeeper.ifPresent(
+          pi -> DispenserBlock.registerBehavior(pi, new ProjectileDispenserBehavior(pi)));
     }
   }
 

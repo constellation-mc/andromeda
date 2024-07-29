@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.entities.boats;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-import java.util.UUID;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
@@ -21,8 +20,6 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-
-import static me.melontini.andromeda.common.Andromeda.id;
 
 public class BoatEntities {
 
@@ -51,13 +48,16 @@ public class BoatEntities {
 
     BOAT_WITH_JUKEBOX.ifPresent(type -> SoundHandler.INITIALIZER.run());
 
-        BOAT_WITH_TNT.ifPresent(e -> {
-            PayloadTypeRegistry.playC2S().register(ExplodeBoatC2SPayload.ID, ExplodeBoatC2SPayload.CODEC);
+    BOAT_WITH_TNT.ifPresent(e -> {
+      PayloadTypeRegistry.playC2S().register(ExplodeBoatC2SPayload.ID, ExplodeBoatC2SPayload.CODEC);
 
-            ServerPlayNetworking.registerGlobalReceiver(ExplodeBoatC2SPayload.ID, (payload, context) -> context.server().execute(() -> {
-                Entity entity = context.player().world.getEntityLookup().get(payload.entity());
-                if (entity instanceof TNTBoatEntity boat && boat.isAlive()&& player == boat.getFirstPassenger()) boat.explode();
-            }));
-        });
+      ServerPlayNetworking.registerGlobalReceiver(
+          ExplodeBoatC2SPayload.ID, (payload, context) -> context.server().execute(() -> {
+            Entity entity = context.player().world.getEntityLookup().get(payload.entity());
+            if (entity instanceof TNTBoatEntity boat
+                && boat.isAlive()
+                && player == boat.getFirstPassenger()) boat.explode();
+          }));
+    });
   }
 }

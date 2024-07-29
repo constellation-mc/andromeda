@@ -50,8 +50,9 @@ public record ParticleCommand(Selector.Conditioned selector, boolean item, Optio
 
   public void sendParticlePacket(ServerWorld world, Vec3d pos, ItemStack stack) {
     var payload = new FlyingStackLandedPayload(
-                new Vector3f((float) pos.x, (float) pos.y, (float) pos.z),
-                Optional.of(stack).filter(unused -> item), colors);
+        new Vector3f((float) pos.x, (float) pos.y, (float) pos.z),
+        Optional.of(stack).filter(unused -> item),
+        colors);
     for (ServerPlayerEntity serverPlayerEntity :
         PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
       ServerPlayNetworking.send(serverPlayerEntity, payload);

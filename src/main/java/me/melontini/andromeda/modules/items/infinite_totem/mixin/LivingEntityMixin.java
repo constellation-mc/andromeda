@@ -72,9 +72,12 @@ abstract class LivingEntityMixin extends Entity {
       @Local(ordinal = 0) ItemStack itemStack) {
     if (itemStack.isOf(Main.INFINITE_TOTEM.orThrow())) {
       if (!world.isClient()) {
-        var payload = new UsedCustomTotemPayload(this.getUuid(), new ItemStack(Main.INFINITE_TOTEM.orThrow()), Main.KNOCKOFF_TOTEM_PARTICLE.orThrow());
-                for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
-                    ServerPlayNetworking.send((ServerPlayerEntity) player, payload);
+        var payload = new UsedCustomTotemPayload(
+            this.getUuid(),
+            new ItemStack(Main.INFINITE_TOTEM.orThrow()),
+            Main.KNOCKOFF_TOTEM_PARTICLE.orThrow());
+        for (PlayerEntity player : PlayerUtil.findPlayersInRange(world, getBlockPos(), 120)) {
+          ServerPlayNetworking.send((ServerPlayerEntity) player, payload);
         }
       }
       cir.setReturnValue(true);

@@ -1,9 +1,9 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import com.google.common.collect.ImmutableList;
 import static me.melontini.andromeda.common.Andromeda.id;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
+import com.google.common.collect.ImmutableList;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.DefaultBehaviors;
@@ -59,27 +59,33 @@ public final class Main {
   public static final ItemDispenserBehavior BEHAVIOR = new ItemDispenserBehavior() {
 
     private ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-            ItemStack stack1 = stack.copy();
-            stack1.setCount(1);
-            return new FlyingItemEntity(stack1, position.getX(), position.getY(), position.getZ(), world);
-        }
+      ItemStack stack1 = stack.copy();
+      stack1.setCount(1);
+      return new FlyingItemEntity(stack1, position.getX(), position.getY(), position.getZ(), world);
+    }
 
-        @Override
-        protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-            World world = pointer.world();
-            Direction direction = pointer.state().get(DispenserBlock.FACING);
-            Position position = DispenserBlock.getOutputLocation(pointer, 0.7, new Vec3d(0.0, 0.1, 0.0));
-            ProjectileEntity projectileEntity = this.createProjectile(world, position, stack);
-            projectileEntity.setVelocity(projectileEntity, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), 1.1f, 6f);
-            world.spawnEntity(projectileEntity);
-            stack.decrement(1);
-            return stack;
-        }
+    @Override
+    protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+      World world = pointer.world();
+      Direction direction = pointer.state().get(DispenserBlock.FACING);
+      Position position = DispenserBlock.getOutputLocation(pointer, 0.7, new Vec3d(0.0, 0.1, 0.0));
+      ProjectileEntity projectileEntity = this.createProjectile(world, position, stack);
+      projectileEntity.setVelocity(
+          projectileEntity,
+          direction.getOffsetX(),
+          direction.getOffsetY(),
+          direction.getOffsetZ(),
+          1.1f,
+          6f);
+      world.spawnEntity(projectileEntity);
+      stack.decrement(1);
+      return stack;
+    }
 
-        protected void playSound(BlockPointer pointer) {
-            pointer.world().syncWorldEvent(1002, pointer.pos(), 0);
-        }
-    };
+    protected void playSound(BlockPointer pointer) {
+      pointer.world().syncWorldEvent(1002, pointer.pos(), 0);
+    }
+  };
 
   public static final Keeper<LootContextType> CONTEXT_TYPE = Keeper.create();
   public static final Keeper<CommandType> PARTICLE_COMMAND = Keeper.create();
@@ -108,25 +114,32 @@ public final class Main {
     ITEM_PLOP_COMMAND.init(CommandType.register(id("item_plop"), ItemPlopEffect.CODEC));
 
     PayloadTypeRegistry.playS2C().register(ItemBehaviorsPayload.ID, ItemBehaviorsPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(ColoredStackLandedPayload.ID, ColoredStackLandedPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(FlyingStackLandedPayload.ID, FlyingStackLandedPayload.CODEC);
+    PayloadTypeRegistry.playS2C()
+        .register(ColoredStackLandedPayload.ID, ColoredStackLandedPayload.CODEC);
+    PayloadTypeRegistry.playS2C()
+        .register(FlyingStackLandedPayload.ID, FlyingStackLandedPayload.CODEC);
 
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            sender.sendPacket(new ItemBehaviorsPayload(ImmutableList.copyOf(server.dm$getReloader(RELOADER).itemsWithBehaviors())));
+    ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+      sender.sendPacket(new ItemBehaviorsPayload(
+          ImmutableList.copyOf(server.dm$getReloader(RELOADER).itemsWithBehaviors())));
     });
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-      var packet = new ItemBehaviorsPayload(ImmutableList.copyOf(server.dm$getReloader(RELOADER).itemsWithBehaviors()));
+      var packet = new ItemBehaviorsPayload(
+          ImmutableList.copyOf(server.dm$getReloader(RELOADER).itemsWithBehaviors()));
       for (ServerPlayerEntity player : PlayerLookup.all(server)) {
         ServerPlayNetworking.send(player, packet);
-            }
-        });
+      }
+    });
 
     ServerReloadersEvent.EVENT.register(context -> context.register(new ItemBehaviorManager()));
 
     DefaultBehaviors.init();
   }
 
-    public enum Event {
-        BLOCK, ENTITY, MISS, ANY
-    }
+  public enum Event {
+    BLOCK,
+    ENTITY,
+    MISS,
+    ANY
+  }
 }

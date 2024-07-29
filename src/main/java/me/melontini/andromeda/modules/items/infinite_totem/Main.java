@@ -35,8 +35,9 @@ public final class Main {
         Registries.PARTICLE_TYPE, id("knockoff_totem_particles"), FabricParticleTypes::simple));
 
     PayloadTypeRegistry.playS2C().register(UsedCustomTotemPayload.ID, UsedCustomTotemPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(NotifyClientPayload.ID, NotifyClientPayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(NotifyClientPayload.ID, NotifyClientPayload.CODEC);
 
-        AndromedaItemGroup.accept(acceptor -> acceptor.keeper(module, ItemGroups.COMBAT, INFINITE_TOTEM));
-    }
+    AndromedaItemGroup.accept(
+        acceptor -> acceptor.keeper(module, ItemGroups.COMBAT, INFINITE_TOTEM));
+  }
 }

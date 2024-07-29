@@ -24,28 +24,28 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<SpawnerMinecartEn
   @Override
   public void appendTooltip(
       ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-    NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+    NbtCompound nbt =
+        stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
     if (nbt.getString("Entity") != null) {
-        tooltip.add(TextUtil.translatable(
-                "tooltip.andromeda.spawner_minecart.filled",
-                Registries.ENTITY_TYPE
-                    .get(Identifier.of(nbt.getString("Entity")))
-                    .getName())
-            .formatted(Formatting.GRAY));
-      }
+      tooltip.add(TextUtil.translatable(
+              "tooltip.andromeda.spawner_minecart.filled",
+              Registries.ENTITY_TYPE.get(Identifier.of(nbt.getString("Entity"))).getName())
+          .formatted(Formatting.GRAY));
+    }
   }
 
   @Override
   protected void onCreate(ItemStack stack, SpawnerMinecartEntity entity) {
-    NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+    NbtCompound nbt =
+        stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
     if (nbt.getString("Entity") != null) {
-        entity
-            .getLogic()
-            .setEntityId(
-                Registries.ENTITY_TYPE.get(Identifier.of(nbt.getString("Entity"))),
-                entity.world,
-                entity.world.random,
-                entity.getBlockPos());
-      }
+      entity
+          .getLogic()
+          .setEntityId(
+              Registries.ENTITY_TYPE.get(Identifier.of(nbt.getString("Entity"))),
+              entity.world,
+              entity.world.random,
+              entity.getBlockPos());
+    }
   }
 }

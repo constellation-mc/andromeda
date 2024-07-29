@@ -114,8 +114,8 @@ abstract class ItemEntityMixin extends Entity {
               world.spawnEntity(entity);
 
               var payload = new NotifyClientPayload(andromeda$itemEntity.getId(), targetStack);
-                            for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
-                                ServerPlayNetworking.send(serverPlayerEntity, payload);
+              for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
+                ServerPlayNetworking.send(serverPlayerEntity, payload);
               }
             }
 

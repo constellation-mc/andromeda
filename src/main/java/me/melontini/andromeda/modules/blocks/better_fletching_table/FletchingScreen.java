@@ -46,7 +46,7 @@ public class FletchingScreen extends ForgingScreen<FletchingScreenHandler> {
         s -> HandledScreens.register(s, FletchingScreen::new));
 
     ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
-            int i = stack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);
+      int i = stack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);
       if (i > 0)
         lines.add(
             TextUtil.translatable("tooltip.andromeda.bow.tight", i).formatted(Formatting.GRAY));

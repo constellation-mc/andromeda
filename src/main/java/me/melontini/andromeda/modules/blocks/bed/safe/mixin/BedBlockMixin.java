@@ -27,8 +27,12 @@ abstract class BedBlockMixin extends Block {
     super(settings);
   }
 
-    @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
-    public void andromeda$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
+  @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
+  public void andromeda$onUse(
+      BlockState state,
+      World world,
+      BlockPos pos,
+      PlayerEntity player,
       BlockHitResult hit,
       CallbackInfoReturnable<ActionResult> cir) {
     if (world.isClient()) return;

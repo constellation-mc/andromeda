@@ -32,7 +32,7 @@ import net.minecraft.util.Identifier;
 public class FletchingScreenHandler extends ForgingScreenHandler {
 
   public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.create();
-    public static final Keeper<ComponentType<Integer>> TIGHTENED = Keeper.create();
+  public static final Keeper<ComponentType<Integer>> TIGHTENED = Keeper.create();
 
   public FletchingScreenHandler(int syncId, PlayerInventory playerInventory) {
     this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
@@ -115,9 +115,15 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
   }
 
   static void init(BetterFletchingTable module) {
-    FLETCHING.init(RegistryUtil.register(Registries.SCREEN_HANDLER, id("fletching"), RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
-        TIGHTENED.init(RegistryUtil.register(Registries.DATA_COMPONENT_TYPE, id("tightened"), () -> ComponentType.<Integer>builder()
-                .codec(Codec.INT).packetCodec(PacketCodecs.VAR_INT).build()));
+    FLETCHING.init(RegistryUtil.register(
+        Registries.SCREEN_HANDLER,
+        id("fletching"),
+        RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
+    TIGHTENED.init(RegistryUtil.register(
+        Registries.DATA_COMPONENT_TYPE, id("tightened"), () -> ComponentType.<Integer>builder()
+            .codec(Codec.INT)
+            .packetCodec(PacketCodecs.VAR_INT)
+            .build()));
 
     Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 
@@ -133,8 +139,9 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
           });
     }
 
-        FletchingScreenHandler.addRecipe(stack -> {
-            int i = stack.getOrDefault(TIGHTENED.get(), 0);
+    FletchingScreenHandler.addRecipe(
+        stack -> {
+          int i = stack.getOrDefault(TIGHTENED.get(), 0);
           if (i >= 32) return ItemStack.EMPTY;
 
           ItemStack newStack = stack.copy();

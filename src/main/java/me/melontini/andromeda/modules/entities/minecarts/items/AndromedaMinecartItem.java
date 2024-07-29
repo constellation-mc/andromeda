@@ -61,7 +61,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Ite
         onCreate(itemStack, minecart);
 
         var customName = itemStack.get(DataComponentTypes.CUSTOM_NAME);
-                if (customName != null) {
+        if (customName != null) {
           minecart.setCustomName(customName);
         }
 
@@ -112,7 +112,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecartEntity> extends Ite
       onCreate(stack, minecart);
 
       var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
-            if (customName != null) {
+      if (customName != null) {
         minecart.setCustomName(customName);
       }
 

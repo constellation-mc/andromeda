@@ -62,12 +62,14 @@ public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfi
     return true;
   }
 
-  public record LootBarrelConfiguration(RegistryKey<LootTable> loot, WeightedList<BlockState> decorations)
-      implements FeatureConfig {
+  public record LootBarrelConfiguration(
+      RegistryKey<LootTable> loot, WeightedList<BlockState> decorations) implements FeatureConfig {
 
     public static final Codec<LootBarrelConfiguration> CODEC =
         RecordCodecBuilder.create(data -> data.group(
-                RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).fieldOf("loot").forGetter(LootBarrelConfiguration::loot),
+                RegistryKey.createCodec(RegistryKeys.LOOT_TABLE)
+                    .fieldOf("loot")
+                    .forGetter(LootBarrelConfiguration::loot),
                 WeightedList.createCodec(BlockState.CODEC)
                     .fieldOf("decorations")
                     .forGetter(LootBarrelConfiguration::decorations))

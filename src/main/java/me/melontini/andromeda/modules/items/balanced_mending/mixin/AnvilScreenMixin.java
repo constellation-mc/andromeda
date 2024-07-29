@@ -13,7 +13,6 @@ import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-
 @SpecialEnvironment(Environment.CLIENT)
 @Mixin(AnvilScreen.class)
 abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler> {
@@ -22,14 +21,15 @@ abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler> {
     super(handler, inventory, title);
   }
 
-    @ModifyExpressionValue(method = "drawForeground", at = @At(value = "CONSTANT", args = "intValue=40"))
-    private int andromeda$setRepairLimit(int constant) {
-            if (!this.handler.getSlot(1).getStack().isOf(Items.ENCHANTED_BOOK)) {
-      if (Utils.hasMending(this.handler.getSlot(0).getStack())
-          ) {
-                    return Integer.MAX_VALUE;
-                }
-            }
-        return constant;
+  @ModifyExpressionValue(
+      method = "drawForeground",
+      at = @At(value = "CONSTANT", args = "intValue=40"))
+  private int andromeda$setRepairLimit(int constant) {
+    if (!this.handler.getSlot(1).getStack().isOf(Items.ENCHANTED_BOOK)) {
+      if (Utils.hasMending(this.handler.getSlot(0).getStack())) {
+        return Integer.MAX_VALUE;
+      }
     }
+    return constant;
+  }
 }

@@ -30,9 +30,10 @@ abstract class ItemMixin {
       ItemStack stack,
       Item.TooltipContext context,
       List<Text> tooltip,
-      TooltipType type, CallbackInfo ci) {
-        if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).compass) return;
-        var world = MinecraftClient.getInstance().world;
+      TooltipType type,
+      CallbackInfo ci) {
+    if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).compass) return;
+    var world = MinecraftClient.getInstance().world;
 
     if (world != null)
       if (world.isClient) {

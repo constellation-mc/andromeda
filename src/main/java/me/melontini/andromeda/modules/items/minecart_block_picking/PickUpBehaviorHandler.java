@@ -41,10 +41,12 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
-      var nbt = NbtBuilder.create(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity, world.getRegistryManager()))
-                    .putString("id", Registries.ENTITY_TYPE.getId(EntityType.CHEST_MINECART).toString())
-                    .build();
-            chestMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
+      var nbt = NbtBuilder.create(NbtUtil.writeInventoryToNbt(
+              new NbtCompound(), chestBlockEntity, world.getRegistryManager()))
+          .putString(
+              "id", Registries.ENTITY_TYPE.getId(EntityType.CHEST_MINECART).toString())
+          .build();
+      chestMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
       chestBlockEntity.clear();
       return chestMinecart;
     });
@@ -57,10 +59,11 @@ public class PickUpBehaviorHandler {
       ItemStack furnaceMinecart = new ItemStack(Items.FURNACE_MINECART, 1);
       // 2.25
       var nbt = NbtBuilder.create()
-                    .putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25))
-                    .putString("id", Registries.ENTITY_TYPE.getId(EntityType.FURNACE_MINECART).toString())
-                    .build();
-            furnaceMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
+          .putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25))
+          .putString(
+              "id", Registries.ENTITY_TYPE.getId(EntityType.FURNACE_MINECART).toString())
+          .build();
+      furnaceMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
       return furnaceMinecart;
     });
 
@@ -69,10 +72,12 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
-      var nbt = NbtBuilder.create(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity, world.getRegistryManager()))
-                    .putString("id", Registries.ENTITY_TYPE.getId(EntityType.HOPPER_MINECART).toString())
-                    .build();
-            hopperMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
+      var nbt = NbtBuilder.create(NbtUtil.writeInventoryToNbt(
+              new NbtCompound(), hopperBlockEntity, world.getRegistryManager()))
+          .putString(
+              "id", Registries.ENTITY_TYPE.getId(EntityType.HOPPER_MINECART).toString())
+          .build();
+      hopperMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
       hopperBlockEntity.clear();
       return hopperMinecart;
     });

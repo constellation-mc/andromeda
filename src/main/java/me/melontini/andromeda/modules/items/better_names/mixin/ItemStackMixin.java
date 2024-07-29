@@ -47,7 +47,9 @@ abstract class ItemStackMixin {
               shift = At.Shift.BEFORE),
       method = "getTooltip")
   private void andromeda$getTooltip(
-      Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type,
+      Item.TooltipContext context,
+      @Nullable PlayerEntity player,
+      TooltipType type,
       CallbackInfoReturnable<List<Text>> cir,
       @Local MutableText mutableText) {
     if (!this.isDamageable()) {

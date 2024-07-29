@@ -36,7 +36,8 @@ abstract class ItemMixin {
       StackReference cursorStackReference,
       CallbackInfoReturnable<Boolean> cir) {
     if (clickType == ClickType.RIGHT && stack.isOf(Items.LAVA_BUCKET)) {
-      if (otherStack.contains(DataComponentTypes.FIRE_RESISTANT)) return; // TODO  || EnchantmentHelper.getLevel(Enchantments.FIRE_PROTECTION, otherStack) > 0
+      if (otherStack.contains(DataComponentTypes.FIRE_RESISTANT))
+        return; // TODO  || EnchantmentHelper.getLevel(Enchantments.FIRE_PROTECTION, otherStack) > 0
 
       cursorStackReference.set(ItemStack.EMPTY);
       if (player.world.isClient)

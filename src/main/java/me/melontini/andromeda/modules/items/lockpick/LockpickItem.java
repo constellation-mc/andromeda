@@ -39,7 +39,8 @@ public class LockpickItem extends Item {
 
       if (!(user instanceof PlayerEntity p && p.getAbilities().creativeMode)) {
         if (c.breakAfterUse.asBoolean(supplier)) {
-          if (!user.world.isClient()) user.sendEquipmentBreakStatus(INSTANCE.get(), EquipmentSlot.MAINHAND);
+          if (!user.world.isClient())
+            user.sendEquipmentBreakStatus(INSTANCE.get(), EquipmentSlot.MAINHAND);
 
           stack.decrement(1);
         }
@@ -70,9 +71,7 @@ public class LockpickItem extends Item {
 
   static void init(Lockpick module, Lockpick.MainConfig config) {
     LockpickItem.INSTANCE.init(RegistryUtil.register(
-        Registries.ITEM,
-        id("lockpick"),
-        () -> new LockpickItem(new Item.Settings().maxCount(16))));
+        Registries.ITEM, id("lockpick"), () -> new LockpickItem(new Item.Settings().maxCount(16))));
     MerchantInventoryScreenHandler.INSTANCE.init(RegistryUtil.register(
         config.villagerInventory,
         Registries.SCREEN_HANDLER,

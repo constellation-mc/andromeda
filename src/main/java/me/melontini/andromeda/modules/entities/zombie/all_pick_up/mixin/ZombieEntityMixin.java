@@ -22,8 +22,18 @@ abstract class ZombieEntityMixin extends HostileEntity {
     super(entityType, world);
   }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombieEntity;setCanPickUpLoot(Z)V", shift = At.Shift.AFTER), method = "initialize")
-    private void andromeda$initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData,
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/entity/mob/ZombieEntity;setCanPickUpLoot(Z)V",
+              shift = At.Shift.AFTER),
+      method = "initialize")
+  private void andromeda$initialize(
+      ServerWorldAccess world,
+      LocalDifficulty difficulty,
+      SpawnReason spawnReason,
+      EntityData entityData,
       CallbackInfoReturnable<EntityData> cir) {
     if (world.isClient()) return;
 

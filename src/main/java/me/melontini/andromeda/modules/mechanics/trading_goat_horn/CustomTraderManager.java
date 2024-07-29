@@ -105,7 +105,7 @@ public class CustomTraderManager {
 
   @Nullable private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
     BlockPos blockPos = null;
-        SpawnLocation spawnLocation = SpawnRestriction.getLocation(EntityType.WANDERING_TRADER);
+    SpawnLocation spawnLocation = SpawnRestriction.getLocation(EntityType.WANDERING_TRADER);
 
     for (int i = 0; i < 10; ++i) {
       int x = pos.getX() + MathUtil.threadRandom().nextInt(range * 2) - range;
@@ -113,10 +113,10 @@ public class CustomTraderManager {
       int y = world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z);
       BlockPos blockPos2 = new BlockPos(x, y, z);
       if (spawnLocation.isSpawnPositionOk(world, blockPos2, EntityType.WANDERING_TRADER)) {
-                blockPos = blockPos2;
-                break;
-            }
-        }
+        blockPos = blockPos2;
+        break;
+      }
+    }
 
     return blockPos;
   }

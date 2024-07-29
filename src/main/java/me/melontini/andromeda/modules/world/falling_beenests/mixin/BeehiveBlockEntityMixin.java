@@ -63,13 +63,15 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
   }
 
   @Inject(at = @At("TAIL"), method = "readNbt")
-  private void andromeda$readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
+  private void andromeda$readNbt(
+      NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
     if (nbt.contains("AM-FromFallenBlock"))
       this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
   }
 
   @Inject(at = @At("TAIL"), method = "writeNbt")
-  private void andromeda$writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
+  private void andromeda$writeNbt(
+      NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
     if (this.andromeda$FromFallen) nbt.putBoolean("AM-FromFallenBlock", true);
   }
 }

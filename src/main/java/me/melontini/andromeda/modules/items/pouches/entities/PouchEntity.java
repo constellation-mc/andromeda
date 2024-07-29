@@ -43,20 +43,20 @@ public class PouchEntity extends ThrownItemEntity {
   private static final TrackedData<Integer> POUCH_TYPE =
       DataTracker.registerData(PouchEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    public PouchEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
-        super(entityType, world);
-        setItem(new ItemStack(getPouchType().getDefaultItem()));
-    }
+  public PouchEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+    super(entityType, world);
+    setItem(new ItemStack(getPouchType().getDefaultItem()));
+  }
 
-    public PouchEntity(double d, double e, double f, World world) {
-        super(Main.POUCH.orThrow(), d, e, f, world);
-        setItem(new ItemStack(getPouchType().getDefaultItem()));
-    }
+  public PouchEntity(double d, double e, double f, World world) {
+    super(Main.POUCH.orThrow(), d, e, f, world);
+    setItem(new ItemStack(getPouchType().getDefaultItem()));
+  }
 
-    public PouchEntity(LivingEntity livingEntity, World world) {
-        super(Main.POUCH.orThrow(), livingEntity, world);
-        setItem(new ItemStack(getPouchType().getDefaultItem()));
-    }
+  public PouchEntity(LivingEntity livingEntity, World world) {
+    super(Main.POUCH.orThrow(), livingEntity, world);
+    setItem(new ItemStack(getPouchType().getDefaultItem()));
+  }
 
   @Override
   protected void onCollision(HitResult hitResult) {
@@ -178,13 +178,22 @@ public class PouchEntity extends ThrownItemEntity {
   }
 
   public enum Type {
-    SEED(0, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/seeds")), Main.SEED_POUCH),
-    SAPLING(1, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/saplings")), Main.SAPLING_POUCH),
-    FLOWER(2, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/flowers")), Main.FLOWER_POUCH),
+    SEED(
+        0, RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/seeds")), Main.SEED_POUCH),
+    SAPLING(
+        1,
+        RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/saplings")),
+        Main.SAPLING_POUCH),
+    FLOWER(
+        2,
+        RegistryKey.of(RegistryKeys.LOOT_TABLE, Andromeda.id("pouches/flowers")),
+        Main.FLOWER_POUCH),
     CUSTOM(3, null, Main.SPECIAL_POUCH) {
       @Override
       public @NotNull RegistryKey<LootTable> getLootId(ItemStack stack) {
-                return stack.getOrDefault(Main.CUSTOM_COMPONENT.get(), CustomPouchComponent.DEFAULT).key();
+        return stack
+            .getOrDefault(Main.CUSTOM_COMPONENT.get(), CustomPouchComponent.DEFAULT)
+            .key();
       }
     };
 

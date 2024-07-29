@@ -35,16 +35,20 @@ public class PlaceBehaviorHandler {
     registerPlaceBehavior(Items.CHEST_MINECART, (stack, world, d, e, f, g, pos) -> {
       ChestMinecartEntity chestMinecart = (ChestMinecartEntity) AbstractMinecartEntity.create(
           world, d, e + g, f, AbstractMinecartEntity.Type.CHEST, stack, null);
-      var nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
-            NbtUtil.readInventoryFromNbt(nbt, chestMinecart, world.getRegistryManager());
+      var nbt = stack
+          .getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT)
+          .copyNbt();
+      NbtUtil.readInventoryFromNbt(nbt, chestMinecart, world.getRegistryManager());
       return chestMinecart;
     });
 
     registerPlaceBehavior(Items.HOPPER_MINECART, (stack, world, d, e, f, g, pos) -> {
       HopperMinecartEntity hopperMinecart = (HopperMinecartEntity) AbstractMinecartEntity.create(
           world, d, e + g, f, AbstractMinecartEntity.Type.HOPPER, stack, null);
-      var nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
-            NbtUtil.readInventoryFromNbt(nbt, hopperMinecart, world.getRegistryManager());
+      var nbt = stack
+          .getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT)
+          .copyNbt();
+      NbtUtil.readInventoryFromNbt(nbt, hopperMinecart, world.getRegistryManager());
       return hopperMinecart;
     });
 
@@ -52,8 +56,11 @@ public class PlaceBehaviorHandler {
       FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) AbstractMinecartEntity.create(
           world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE, stack, null);
 
-      var nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
-            furnaceMinecart.fuel = NbtUtil.getInt(nbt,
+      var nbt = stack
+          .getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT)
+          .copyNbt();
+      furnaceMinecart.fuel = NbtUtil.getInt(
+          nbt,
           "Fuel",
           0,
           ModuleManager.get()

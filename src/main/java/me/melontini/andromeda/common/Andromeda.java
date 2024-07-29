@@ -125,9 +125,8 @@ public final class Andromeda {
   }
 
   private void onInitialize(ModuleManager manager) {
-    ResourceConditions.register(
-        ItemsRegisteredCondition.TYPE);
-        ResourceConditions.register(ModulesLoadedCondition.TYPE);
+    ResourceConditions.register(ItemsRegisteredCondition.TYPE);
+    ResourceConditions.register(ModulesLoadedCondition.TYPE);
 
     AndromedaItemGroup.Acceptor acceptor = (module, main, stack) -> {
       if (!stack.isEmpty())

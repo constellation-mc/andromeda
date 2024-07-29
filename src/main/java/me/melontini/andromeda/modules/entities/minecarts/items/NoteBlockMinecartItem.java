@@ -15,10 +15,11 @@ public class NoteBlockMinecartItem extends AndromedaMinecartItem<NoteBlockMineca
 
   @Override
   protected void onCreate(ItemStack stack, NoteBlockMinecartEntity entity) {
-    NbtCompound nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
+    NbtCompound nbt =
+        stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
 
-      if (nbt.getInt("Note") >= 0) {
-        entity.note = nbt.getInt("Note");
-      }
+    if (nbt.getInt("Note") >= 0) {
+      entity.note = nbt.getInt("Note");
+    }
   }
 }

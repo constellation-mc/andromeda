@@ -26,7 +26,9 @@ public record ItemPlopEffect(Selector.Conditioned selector) implements Command {
     if (opt.isEmpty()) return false;
     Entity entity = opt.get().getEntity();
     if (entity instanceof ServerPlayerEntity player) {
-      ServerPlayNetworking.send(player, new ColoredStackLandedPayload(context.lootContext().get(LootContextParameters.TOOL)));
+      ServerPlayNetworking.send(
+          player,
+          new ColoredStackLandedPayload(context.lootContext().get(LootContextParameters.TOOL)));
     } else if (entity instanceof LivingEntity living) {
       living.addStatusEffect(
           new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0, false, false, true));

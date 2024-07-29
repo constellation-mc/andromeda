@@ -31,7 +31,7 @@ abstract class DispenserBlockMixin {
   @Inject(at = @At("HEAD"), method = "getBehaviorForItem", cancellable = true)
   private void andromeda$overrideBehavior(
       World world, ItemStack stack, CallbackInfoReturnable<DispenserBehavior> cir) {
-        if (world.isClient()) return;
+    if (world.isClient()) return;
 
     var manager = world.getServer().dm$getReloader(RELOADER);
     if (manager.hasBehaviors(stack) && manager.overridesVanilla(stack.getItem())) {

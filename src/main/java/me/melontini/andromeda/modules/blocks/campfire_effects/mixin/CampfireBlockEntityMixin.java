@@ -49,12 +49,16 @@ abstract class CampfireBlockEntityMixin {
         for (LivingEntity player : entities) {
           for (CampfireEffects.Config.Effect effect : effects) {
             StatusEffectInstance effectInstance = new StatusEffectInstance(
-                Registries.STATUS_EFFECT.getEntry(effect.identifier),//TODO
-                                    200, effect.amplifier.asInt(supplier), true, false, true);
-                            player.addStatusEffect(effectInstance);
-                        }
-                    }
-                }
-            }
+                Registries.STATUS_EFFECT.getEntry(effect.identifier), // TODO
+                200,
+                effect.amplifier.asInt(supplier),
+                true,
+                false,
+                true);
+            player.addStatusEffect(effectInstance);
+          }
+        }
+      }
     }
+  }
 }
