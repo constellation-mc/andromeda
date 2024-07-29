@@ -19,9 +19,11 @@ import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -58,7 +60,11 @@ public class MinecartItems {
                 if (world.am$get(MinecartBlockPicking.CONFIG).spawnerPicking) {
                     MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
                     ItemStack spawnerMinecart = new ItemStack(item, 1);
-                    spawnerMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity))).build()));
+                    var nbt = NbtBuilder.create()
+                            .putString("id", Registries.ENTITY_TYPE.getId(EntityType.SPAWNER_MINECART).toString())
+                            .putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity)))
+                            .build();
+                    spawnerMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
                     return spawnerMinecart;
                 }
                 return null;
@@ -71,7 +77,11 @@ public class MinecartItems {
                 int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
                 ItemStack noteBlockMinecart = new ItemStack(item);
 
-                noteBlockMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().putInt("Note", noteProp).build()));
+                var nbt = NbtBuilder.create()
+                        .putString("id", Registries.ENTITY_TYPE.getId(MinecartEntities.NOTEBLOCK_MINECART_ENTITY.get()).toString())
+                        .putInt("Note", noteProp)
+                        .build();
+                noteBlockMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
                 return noteBlockMinecart;
             }));
 
@@ -83,7 +93,11 @@ public class MinecartItems {
 
                 if (!record.isEmpty()) {
                     world.syncWorldEvent(WorldEvents.JUKEBOX_STARTS_PLAYING, pos, 0);
-                    jukeboxMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().put("Items", record.encode(world.getRegistryManager())).build()));
+                    var nbt = NbtBuilder.create()
+                            .putString("id", Registries.ENTITY_TYPE.getId(MinecartEntities.JUKEBOX_MINECART_ENTITY.get()).toString())
+                            .put("Items", record.encode(world.getRegistryManager()))
+                            .build();
+                    jukeboxMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
                 }
                 jukeboxBlockEntity.clear();
                 return jukeboxMinecart;

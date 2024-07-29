@@ -1,6 +1,6 @@
-package me.melontini.andromeda.modules.entities.boats.client;
+package me.melontini.andromeda.modules.entities.boats.packets.sound;
 
-import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.util.OneTimeRunnable;
 import me.melontini.andromeda.modules.entities.boats.packets.StartPayload;
 import me.melontini.andromeda.modules.entities.boats.packets.StopPayload;
 import me.melontini.dark_matter.api.base.util.MakeSure;
@@ -13,7 +13,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 
 import java.util.HashMap;
@@ -23,15 +22,8 @@ import java.util.UUID;
 
 public class ClientSoundHolder {
 
-    public static final Identifier JUKEBOX_START_PLAYING = Andromeda.id("jukebox_start_playing");
-    public static final Identifier JUKEBOX_STOP_PLAYING = Andromeda.id("jukebox_stop_playing");
-
-    private static boolean done = false;
     private static final Map<UUID, PersistentMovingSoundInstance> soundInstanceMap = new HashMap<>();
-
-    public static void init() {
-        if (done) return;
-
+    public static final OneTimeRunnable INITIALIZER = OneTimeRunnable.of(() -> {
         ClientPlayNetworking.registerGlobalReceiver(StartPayload.ID, (payload, context) -> context.client().execute(() -> {
             var client = context.client();
 
@@ -59,9 +51,7 @@ public class ClientSoundHolder {
             SoundInstance instance = soundInstanceMap.remove(payload.entity());
             if (context.client().getSoundManager().isPlaying(instance)) context.client().getSoundManager().stop(instance);
         }));
-
-        done = true;
-    }
+    });
 
     public static class PersistentMovingSoundInstance extends MovingSoundInstance {
 

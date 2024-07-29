@@ -53,7 +53,7 @@ public class WorldUtil {
     }
 
     public static List<ItemStack> prepareLoot(@NonNull World world, @NonNull RegistryKey<LootTable> lootId) {
-        var table = ((ServerWorld) world).getServer().getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(lootId);
+        var table = ((ServerWorld) world).getServer().getReloadableRegistries().getLootTable(lootId);
         if (table == null) throw new IllegalStateException("No '%s' in loot registry".formatted(lootId));
         return table.generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world)).build(LootContextTypes.EMPTY));
     }

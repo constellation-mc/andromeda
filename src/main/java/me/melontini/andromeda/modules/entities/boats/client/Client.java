@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.entities.boats.client;
 
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
+import me.melontini.andromeda.modules.entities.boats.packets.sound.ClientSoundHolder;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
@@ -14,6 +15,6 @@ public class Client {
         BoatEntities.BOAT_WITH_TNT.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.TNT.getDefaultState())));
         BoatEntities.BOAT_WITH_HOPPER.ifPresent(e -> EntityRendererRegistry.register(e, ctx -> new BoatWithBlockRenderer(ctx, Blocks.HOPPER.getDefaultState())));
 
-        BoatEntities.BOAT_WITH_JUKEBOX.ifPresent(type -> ClientSoundHolder.init());
+        BoatEntities.BOAT_WITH_JUKEBOX.ifPresent(type -> ClientSoundHolder.INITIALIZER.run());
     }
 }

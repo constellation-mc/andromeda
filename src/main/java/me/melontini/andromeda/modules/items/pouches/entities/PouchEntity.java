@@ -46,14 +46,17 @@ public class PouchEntity extends ThrownItemEntity {
 
     public PouchEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
+        setItem(new ItemStack(getPouchType().getDefaultItem()));
     }
 
     public PouchEntity(double d, double e, double f, World world) {
         super(Main.POUCH.orThrow(), d, e, f, world);
+        setItem(new ItemStack(getPouchType().getDefaultItem()));
     }
 
     public PouchEntity(LivingEntity livingEntity, World world) {
         super(Main.POUCH.orThrow(), livingEntity, world);
+        setItem(new ItemStack(getPouchType().getDefaultItem()));
     }
 
     @Override
@@ -127,7 +130,7 @@ public class PouchEntity extends ThrownItemEntity {
 
     @Override
     protected PouchItem getDefaultItem() {
-        return getPouchType().getDefaultItem();
+        return Type.SEED.getDefaultItem();
     }
 
     public Type getPouchType() {

@@ -11,9 +11,12 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +41,10 @@ public class PickUpBehaviorHandler {
             ChestBlockEntity chestBlockEntity = (ChestBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
-            chestMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity, world.getRegistryManager())));
+            var nbt = NbtBuilder.create(NbtUtil.writeInventoryToNbt(new NbtCompound(), chestBlockEntity, world.getRegistryManager()))
+                    .putString("id", Registries.ENTITY_TYPE.getId(EntityType.CHEST_MINECART).toString())
+                    .build();
+            chestMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
             chestBlockEntity.clear();
             return chestMinecart;
         });
@@ -49,7 +55,11 @@ public class PickUpBehaviorHandler {
             AbstractFurnaceBlockEntity furnaceBlock = (AbstractFurnaceBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack furnaceMinecart = new ItemStack(Items.FURNACE_MINECART, 1);
             //2.25
-            furnaceMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtBuilder.create().putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25)).build()));
+            var nbt = NbtBuilder.create()
+                    .putInt("Fuel", (int) (furnaceBlock.burnTime * 2.25))
+                    .putString("id", Registries.ENTITY_TYPE.getId(EntityType.FURNACE_MINECART).toString())
+                    .build();
+            furnaceMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
             return furnaceMinecart;
         });
 
@@ -57,7 +67,10 @@ public class PickUpBehaviorHandler {
             HopperBlockEntity hopperBlockEntity = (HopperBlockEntity) MakeSure.notNull(world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
-            hopperMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity, world.getRegistryManager())));
+            var nbt = NbtBuilder.create(NbtUtil.writeInventoryToNbt(new NbtCompound(), hopperBlockEntity, world.getRegistryManager()))
+                    .putString("id", Registries.ENTITY_TYPE.getId(EntityType.HOPPER_MINECART).toString())
+                    .build();
+            hopperMinecart.set(DataComponentTypes.ENTITY_DATA, NbtComponent.of(nbt));
             hopperBlockEntity.clear();
             return hopperMinecart;
         });
