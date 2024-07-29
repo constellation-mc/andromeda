@@ -3,9 +3,9 @@ package me.melontini.andromeda.modules.blocks.incubator;
 import static java.util.Objects.requireNonNull;
 import static me.melontini.andromeda.common.Andromeda.id;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Set;
-import com.mojang.serialization.MapCodec;
 import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.common.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
@@ -54,7 +54,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
       Keeper.create();
   private final VoxelShape BASE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
   private final VoxelShape GLASS_SHAPE = Block.createCuboidShape(3.0, 11.0, 3.0, 13.0, 18.0, 13.0);
-    public static final MapCodec<IncubatorBlock> CODEC = createCodec(IncubatorBlock::new);
+  public static final MapCodec<IncubatorBlock> CODEC = createCodec(IncubatorBlock::new);
 
   public IncubatorBlock(Settings settings) {
     super(settings);
@@ -62,11 +62,11 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
   }
 
   @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
+  protected MapCodec<? extends BlockWithEntity> getCodec() {
+    return CODEC;
+  }
 
-    @Override
+  @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
       World world, BlockState state, BlockEntityType<T> type) {
     return validateTicker(type, INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);

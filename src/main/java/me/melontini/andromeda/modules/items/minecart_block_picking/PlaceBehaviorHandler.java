@@ -31,26 +31,33 @@ public class PlaceBehaviorHandler {
 
   public static void init() {
     registerPlaceBehavior(Items.CHEST_MINECART, (stack, world, d, e, f, g, pos) -> {
-      ChestMinecartEntity chestMinecart = (ChestMinecartEntity)
-          AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.CHEST, stack, null);
-            NbtUtil.readInventoryFromNbt(stack.getNbt(), chestMinecart);
+      ChestMinecartEntity chestMinecart = (ChestMinecartEntity) AbstractMinecartEntity.create(
+          world, d, e + g, f, AbstractMinecartEntity.Type.CHEST, stack, null);
+      NbtUtil.readInventoryFromNbt(stack.getNbt(), chestMinecart);
       return chestMinecart;
     });
 
     registerPlaceBehavior(Items.HOPPER_MINECART, (stack, world, d, e, f, g, pos) -> {
-      HopperMinecartEntity hopperMinecart = (HopperMinecartEntity)
-          AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.HOPPER, stack, null);
-            NbtUtil.readInventoryFromNbt(stack.getNbt(), hopperMinecart);
+      HopperMinecartEntity hopperMinecart = (HopperMinecartEntity) AbstractMinecartEntity.create(
+          world, d, e + g, f, AbstractMinecartEntity.Type.HOPPER, stack, null);
+      NbtUtil.readInventoryFromNbt(stack.getNbt(), hopperMinecart);
       return hopperMinecart;
     });
 
     registerPlaceBehavior(Items.FURNACE_MINECART, (stack, world, d, e, f, g, pos) -> {
-      FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity)
-          AbstractMinecartEntity.create(world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE, stack, null);
+      FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) AbstractMinecartEntity.create(
+          world, d, e + g, f, AbstractMinecartEntity.Type.FURNACE, stack, null);
 
-            furnaceMinecart.fuel = NbtUtil.getInt(stack.getNbt(), "Fuel", 0, ModuleManager.get().getModule(BetterFurnaceMinecart.class).map(m -> Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel).orElse(32000));
-            furnaceMinecart.pushX = furnaceMinecart.getX() - pos.getX();
-            furnaceMinecart.pushZ = furnaceMinecart.getZ() - pos.getZ();
+      furnaceMinecart.fuel = NbtUtil.getInt(
+          stack.getNbt(),
+          "Fuel",
+          0,
+          ModuleManager.get()
+              .getModule(BetterFurnaceMinecart.class)
+              .map(m -> Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel)
+              .orElse(32000));
+      furnaceMinecart.pushX = furnaceMinecart.getX() - pos.getX();
+      furnaceMinecart.pushZ = furnaceMinecart.getZ() - pos.getZ();
 
       return furnaceMinecart;
     });

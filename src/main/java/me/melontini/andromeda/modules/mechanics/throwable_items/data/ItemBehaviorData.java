@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
@@ -29,11 +30,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 public record ItemBehaviorData(Parameters parameters, List<Subscription> subscriptions)
     implements ItemBehavior {

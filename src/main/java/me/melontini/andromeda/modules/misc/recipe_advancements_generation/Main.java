@@ -87,20 +87,21 @@ public final class Main {
     server.runTasks(future::isDone);
 
     var map = Maps.transformEntries(advancementBuilders, (key, value) -> value.build(key));
-        AdvancementManager advancementManager = server.getAdvancementLoader().getManager();
+    AdvancementManager advancementManager = server.getAdvancementLoader().getManager();
     advancementManager.addAll(map.values());
-        var mutable = new HashMap<>(server.getAdvancementLoader().advancements);
-        mutable.putAll(map);
-        server.getAdvancementLoader().advancements = Collections.unmodifiableMap(mutable);
+    var mutable = new HashMap<>(server.getAdvancementLoader().advancements);
+    mutable.putAll(map);
+    server.getAdvancementLoader().advancements = Collections.unmodifiableMap(mutable);
 
     module.logger().info("finished generating {} recipe advancements", count.get());
     advancementBuilders.clear();
   }
 
-    public static @NotNull Advancement.Builder createAdvBuilder(AdvancementGeneration.Config config, Identifier id, Ingredient... ingredients) {
-        MakeSure.notEmpty(ingredients);// shouldn't really happen
-        var builder = Advancement.Builder.createUntelemetered();
-        builder.parent(Identifier.of("minecraft", "recipes/root"));
+  public static @NotNull Advancement.Builder createAdvBuilder(
+      AdvancementGeneration.Config config, Identifier id, Ingredient... ingredients) {
+    MakeSure.notEmpty(ingredients); // shouldn't really happen
+    var builder = Advancement.Builder.createUntelemetered();
+    builder.parent(Identifier.of("minecraft", "recipes/root"));
 
     List<String> names = new ArrayList<>();
     Set<Ingredient> elements = new HashSet<>();
@@ -112,13 +113,12 @@ public final class Main {
 
       var name = String.valueOf(i);
       names.add(name);
-      //This is horrible
-            var predicate = ItemPredicate.Builder.create().build();
-            ((ItemPredicateAccessor) (Object) predicate).andromeda$setIngredient(ingredient);
-            builder.criterion(name, InventoryChangedCriterion.Conditions.items(predicate));
+      // This is horrible
+      var predicate = ItemPredicate.Builder.create().build();
+      ((ItemPredicateAccessor) (Object) predicate).andromeda$setIngredient(ingredient);
+      builder.criterion(name, InventoryChangedCriterion.Conditions.items(predicate));
     }
-    builder.criterion(
-        "has_recipe", RecipeUnlockedCriterion.create(id));
+    builder.criterion("has_recipe", RecipeUnlockedCriterion.create(id));
 
     String[][] reqs;
     if (config.requireAllItems) {
@@ -136,7 +136,8 @@ public final class Main {
       }
       reqs[0][names.size()] = "has_recipe";
     }
-    builder.requirements(new AdvancementRequirements(Arrays.stream(reqs).map(List::of).toList()));
+    builder.requirements(
+        new AdvancementRequirements(Arrays.stream(reqs).map(List::of).toList()));
 
     Optional.ofNullable(AdvancementRewards.Builder.recipe(id).build()).ifPresent(builder::rewards);
     return builder;

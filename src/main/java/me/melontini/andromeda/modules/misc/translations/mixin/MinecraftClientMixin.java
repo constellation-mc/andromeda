@@ -26,9 +26,9 @@ abstract class MinecraftClientMixin {
               value = "INVOKE",
               target = "Lnet/minecraft/resource/ResourcePackManager;scanPacks()V",
               shift = At.Shift.BEFORE),
-      method = "reloadResources(ZLnet/minecraft/client/MinecraftClient$LoadingContext;)Ljava/util/concurrent/CompletableFuture;")
-  private void andromeda$downloadLangFiles(
-      CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-        Client.onResourceReload(this.options.language, ModuleManager.quick(Translations.class));
-    }
+      method =
+          "reloadResources(ZLnet/minecraft/client/MinecraftClient$LoadingContext;)Ljava/util/concurrent/CompletableFuture;")
+  private void andromeda$downloadLangFiles(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+    Client.onResourceReload(this.options.language, ModuleManager.quick(Translations.class));
+  }
 }

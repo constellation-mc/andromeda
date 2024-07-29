@@ -42,10 +42,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
-import static java.util.Objects.requireNonNull;
-
 public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
 
   public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);

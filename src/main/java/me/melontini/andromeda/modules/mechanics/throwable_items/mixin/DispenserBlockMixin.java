@@ -22,8 +22,8 @@ abstract class DispenserBlockMixin {
   private static void andromeda$throwItem(
       Object2ObjectOpenHashMap<Item, DispenserBehavior> map, CallbackInfo ci) {
     var b = map.defaultReturnValue();
-    map.defaultReturnValue((pointer, stack) ->
-        pointer.world().getServer().dm$getReloader(RELOADER).hasBehaviors(stack)
+    map.defaultReturnValue(
+        (pointer, stack) -> pointer.world().getServer().dm$getReloader(RELOADER).hasBehaviors(stack)
             ? Main.BEHAVIOR.dispense(pointer, stack)
             : b.dispense(pointer, stack));
   }

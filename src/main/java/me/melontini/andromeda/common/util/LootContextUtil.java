@@ -4,6 +4,7 @@ import static net.minecraft.loot.context.LootContextParameters.*;
 import static net.minecraft.loot.context.LootContextTypes.*;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.experimental.UtilityClass;
 import net.minecraft.block.BlockState;
@@ -18,13 +19,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import static net.minecraft.loot.context.LootContextParameters.*;
-import static net.minecraft.loot.context.LootContextTypes.*;
 
 @UtilityClass
 public class LootContextUtil {

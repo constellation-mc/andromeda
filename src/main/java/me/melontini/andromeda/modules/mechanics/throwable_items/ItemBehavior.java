@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -10,10 +11,6 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
-
-import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
 @FunctionalInterface
 public interface ItemBehavior {

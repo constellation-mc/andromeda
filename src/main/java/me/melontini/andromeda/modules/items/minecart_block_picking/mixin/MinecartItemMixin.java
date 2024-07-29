@@ -47,7 +47,13 @@ abstract class MinecartItemMixin extends Item {
       PlaceBehaviorHandler.getPlaceBehavior(stack.getItem()).ifPresent(b -> {
         if (!world.isClient()) {
           AbstractMinecartEntity entity = b.dispense(
-              stack, (ServerWorld) world, pos.getX() + 0.5, pos.getY() + 0.0625, pos.getZ() + 0.5, d, pos);
+              stack,
+              (ServerWorld) world,
+              pos.getX() + 0.5,
+              pos.getY() + 0.0625,
+              pos.getZ() + 0.5,
+              d,
+              pos);
           if (entity == null) return;
 
           world.spawnEntity(entity);
