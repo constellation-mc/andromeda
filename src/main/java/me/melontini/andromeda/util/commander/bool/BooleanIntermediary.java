@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public interface BooleanIntermediary {
     BooleanFunction<BooleanIntermediary> FACTORY = Support.support("commander",
             () -> b -> new CommanderBooleanIntermediary(BooleanExpression.constant(b)),
-            () -> ConstantBooleanIntermediary::new);
+            () -> ConstantBooleanIntermediary::of);
 
     boolean asBoolean(Supplier<LootContext> supplier);
 

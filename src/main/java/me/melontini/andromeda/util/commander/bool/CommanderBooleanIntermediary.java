@@ -11,7 +11,14 @@ import java.util.function.Supplier;
 @ToString
 public final class CommanderBooleanIntermediary implements BooleanIntermediary {
 
+    public static final CommanderBooleanIntermediary TRUE = new CommanderBooleanIntermediary(BooleanExpression.constant(true));
+    public static final CommanderBooleanIntermediary FALSE = new CommanderBooleanIntermediary(BooleanExpression.constant(false));
+
     public static final Codec<CommanderBooleanIntermediary> CODEC = BooleanExpression.CODEC.xmap(CommanderBooleanIntermediary::new, CommanderBooleanIntermediary::getExpression);
+
+    public static CommanderBooleanIntermediary constant(Boolean b) {
+        return Boolean.TRUE.equals(b) ? TRUE : FALSE;
+    }
 
     @Getter
     private final BooleanExpression expression;

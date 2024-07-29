@@ -184,7 +184,7 @@ public class NewProviders {
                         toNumber.apply(s);
                         return Optional.empty();
                     } catch (Exception e) {
-                        return Optional.of(TextUtil.literal(e.getLocalizedMessage()));
+                        return Optional.of(TextUtil.literal(getExceptionMessage(e)));
                     }
                 }).build();
 
@@ -208,7 +208,7 @@ public class NewProviders {
                         toLong.apply(s);
                         return Optional.empty();
                     } catch (Exception e) {
-                        return Optional.of(TextUtil.literal(e.getLocalizedMessage()));
+                        return Optional.of(TextUtil.literal(getExceptionMessage(e)));
                     }
                 }).build();
 
@@ -241,8 +241,19 @@ public class NewProviders {
                         toBoolean.apply(s);
                         return Optional.empty();
                     } catch (Exception e) {
-                        return Optional.of(TextUtil.literal(e.getLocalizedMessage()));
+                        return Optional.of(TextUtil.literal(getExceptionMessage(e)));
                     }
                 }).build();
+    }
+
+    private static String getExceptionMessage(Exception e) {
+        Throwable unwrapped = Exceptions.unwrap(e);
+        String msg = untilNotNull(unwrapped);
+        return msg == null ? unwrapped.getClass().getSimpleName() : msg;
+    }
+
+    private static String untilNotNull(Throwable throwable) {
+        if (throwable.getMessage() == null) return throwable.getCause() != null ? untilNotNull(throwable) : null;
+        return throwable.getMessage();
     }
 }
