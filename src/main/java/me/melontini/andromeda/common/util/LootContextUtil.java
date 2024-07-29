@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static net.minecraft.loot.context.LootContextParameters.*;
@@ -124,6 +125,6 @@ public class LootContextUtil {
     }
 
     public static LootContext build(LootContextParameterSet set) {
-        return new LootContext.Builder(set).build(null);
+        return new LootContext.Builder(set).build(Optional.empty());
     }
 }
