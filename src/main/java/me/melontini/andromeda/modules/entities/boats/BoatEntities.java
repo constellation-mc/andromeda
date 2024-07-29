@@ -56,7 +56,7 @@ public class BoatEntities {
             Entity entity = context.player().world.getEntityLookup().get(payload.entity());
             if (entity instanceof TNTBoatEntity boat
                 && boat.isAlive()
-                && player == boat.getFirstPassenger()) boat.explode();
+                && context.player() == boat.getFirstPassenger()) boat.explode();
           }));
     });
   }
