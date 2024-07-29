@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 public final class MixinProcessor {
 
     public static final String NOTICE = "mixin_processor.config_notice";
-    public static final String JAVA_VERSION = "JAVA_17";
+    public static final String JAVA_VERSION = "JAVA_21";
     public static final String MIXIN_VERSION = "0.8.5";
 
     private final ModuleManager manager;
