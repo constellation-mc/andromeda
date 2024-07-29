@@ -6,8 +6,6 @@ import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
-import me.melontini.andromeda.modules.entities.boats.packets.StartPayload;
-import me.melontini.andromeda.modules.entities.boats.packets.StopPayload;
 import me.melontini.andromeda.modules.entities.boats.packets.sound.SoundHandler;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;

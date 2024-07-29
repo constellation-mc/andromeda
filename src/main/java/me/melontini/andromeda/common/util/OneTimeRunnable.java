@@ -2,7 +2,6 @@ package me.melontini.andromeda.common.util;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OneTimeRunnable implements Runnable {
