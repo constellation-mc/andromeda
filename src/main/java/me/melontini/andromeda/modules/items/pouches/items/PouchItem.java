@@ -46,7 +46,7 @@ public class PouchItem extends Item implements ProjectileItem {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         if (type.isAdvanced() && Debug.Keys.DISPLAY_TRACKED_VALUES.isPresent()) {
-            tooltip.add(TextUtil.literal("Loot: " + this.getType().getLootId(stack)).formatted(Formatting.GRAY));
+            tooltip.add(TextUtil.literal("Loot: " + this.getType().getLootId(stack).getValue()).formatted(Formatting.GRAY));
         }
     }
 
