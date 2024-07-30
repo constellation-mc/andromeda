@@ -26,7 +26,7 @@ abstract class BowItemMixin extends RangedWeaponItem {
               target =
                   "Lnet/minecraft/item/BowItem;shootAll(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/entity/LivingEntity;)V"),
       method = "onStoppedUsing",
-      index = 5)
+      index = 6)
   public float andromeda$setVelocity(
       float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local PlayerEntity player) {
     int a = stack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);

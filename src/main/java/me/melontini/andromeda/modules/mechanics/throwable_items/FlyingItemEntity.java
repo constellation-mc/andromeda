@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
@@ -16,7 +17,6 @@ public class FlyingItemEntity extends ThrownItemEntity {
 
   public FlyingItemEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
     super(entityType, world);
-    this.setItem(ItemStack.EMPTY);
   }
 
   public FlyingItemEntity(ItemStack stack, double d, double e, double f, World world) {
@@ -45,6 +45,6 @@ public class FlyingItemEntity extends ThrownItemEntity {
 
   @Override
   protected Item getDefaultItem() {
-    return getStack().getItem();
+    return Items.BARRIER;
   }
 }

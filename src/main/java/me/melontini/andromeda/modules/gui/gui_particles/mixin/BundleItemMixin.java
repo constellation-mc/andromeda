@@ -1,7 +1,8 @@
 package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -14,9 +15,24 @@ import net.minecraft.screen.slot.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(BundleItem.class)
 abstract class BundleItemMixin {
+
+  @ModifyArg(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/component/type/BundleContentsComponent$Builder;add(Lnet/minecraft/item/ItemStack;)I"),
+      method = "onClicked",
+      index = 0)
+  private ItemStack andromeda$spawnParticlesClicked(
+      ItemStack stack, @Share("original") LocalRef<ItemStack> ref) {
+    ref.set(stack.copy());
+    return stack;
+  }
 
   @ModifyExpressionValue(
       at =
@@ -26,9 +42,23 @@ abstract class BundleItemMixin {
                   "Lnet/minecraft/component/type/BundleContentsComponent$Builder;add(Lnet/minecraft/item/ItemStack;)I"),
       method = "onClicked")
   private int andromeda$spawnParticlesClicked(
-      int original, @Local(ordinal = 1, argsOnly = true) ItemStack other) {
-    if (original > 0) this.andromeda$renderParticles(other);
+      int original, @Share("original") LocalRef<ItemStack> other) {
+    if (original > 0) this.andromeda$renderParticles(other.get());
     return original;
+  }
+
+  @ModifyArg(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/component/type/BundleContentsComponent$Builder;add(Lnet/minecraft/screen/slot/Slot;Lnet/minecraft/entity/player/PlayerEntity;)I"),
+      method = "onStackClicked",
+      index = 0)
+  private Slot andromeda$spawnParticlesStackClicked(
+      Slot slot, @Share("original") LocalRef<ItemStack> other) {
+    other.set(slot.getStack().copy());
+    return slot;
   }
 
   @ModifyExpressionValue(
@@ -39,8 +69,8 @@ abstract class BundleItemMixin {
                   "Lnet/minecraft/component/type/BundleContentsComponent$Builder;add(Lnet/minecraft/screen/slot/Slot;Lnet/minecraft/entity/player/PlayerEntity;)I"),
       method = "onStackClicked")
   private int andromeda$spawnParticlesStackClicked(
-      int original, @Local(argsOnly = true) Slot other) {
-    if (original > 0) this.andromeda$renderParticles(other.getStack());
+      int original, @Share("original") LocalRef<ItemStack> other) {
+    if (original > 0) this.andromeda$renderParticles(other.get());
     return original;
   }
 
