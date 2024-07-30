@@ -64,10 +64,10 @@ public abstract class Module {
     return (Bus<E>) busMap.computeIfAbsent(id, aClass -> supplier == null ? null : supplier.get());
   }
 
-  public record Metadata(String name, String category, Environment environment) {
+  public record Metadata(String name, String category, Environment environment, boolean withheld) {
 
     public static Metadata fromAnnotation(ModuleInfo info) {
-      return new Metadata(info.name(), info.category(), info.environment());
+      return new Metadata(info.name(), info.category(), info.environment(), info.withheld());
     }
 
     public String id() {

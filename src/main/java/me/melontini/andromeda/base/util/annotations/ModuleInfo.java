@@ -14,4 +14,6 @@ public @interface ModuleInfo {
   String category();
 
   Environment environment() default Environment.BOTH;
+
+  boolean withheld() default false;
 }
