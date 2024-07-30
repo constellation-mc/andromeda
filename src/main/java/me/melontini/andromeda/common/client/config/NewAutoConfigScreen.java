@@ -251,6 +251,7 @@ public class NewAutoConfigScreen {
             .setSaveConsumer(b -> bootstrapConfig.enabled = b)
             .requireRestart()
             .build();
+        if (module.meta().withheld()) r.setEditable(false);
         category.addEntry(wrapSaveCallback(
             standardForModule(r, module, "enabled"),
             () -> acceptor.accept(
@@ -266,13 +267,8 @@ public class NewAutoConfigScreen {
           .setSaveConsumer(b -> bootstrapConfig.enabled = b)
           .requireRestart()
           .build();
+      if (module.meta().withheld()) enabled.setEditable(false);
 
-      if (module.meta().withheld()) {
-        enabled.setEditable(false);
-        ClothTooltipTools.appendText(
-            enabled,
-            Text.translatable("andromeda.config.tooltip.withheld").formatted(Formatting.RED));
-      }
       moduleCategory.add(
           0,
           wrapSaveCallback(
@@ -381,6 +377,13 @@ public class NewAutoConfigScreen {
     if (field == null || checkOptionManager(e, module, field)) {
       setModuleTooltip(e, module);
       appendEnvInfo(e, module.meta().environment());
+
+      if (module.meta().withheld()) {
+        if (e instanceof TooltipListEntry<?> tle)
+          ClothTooltipTools.appendText(
+              tle,
+              Text.translatable("andromeda.config.tooltip.withheld").formatted(Formatting.RED));
+      }
     }
     appendDeprecationInfo(e, module);
     return wrapTooltip(e);
