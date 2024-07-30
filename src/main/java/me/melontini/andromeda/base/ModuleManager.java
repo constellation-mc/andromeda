@@ -138,14 +138,14 @@ public final class ModuleManager {
 
     this.modules = Utilities.supply(() -> {
       var m = sorted.stream()
-          .filter(module -> getConfig(module).enabled())
+          .filter(module -> !module.meta().withheld() && getConfig(module).enabled())
           .collect(Collectors.toMap(
               Object::getClass, Function.identity(), (t, t2) -> t, LinkedHashMap::new));
       return Collections.unmodifiableMap(m);
     });
     this.moduleNames = Utilities.supply(() -> {
       var m = sorted.stream()
-          .filter(module -> getConfig(module).enabled())
+          .filter(module -> !module.meta().withheld() && getConfig(module).enabled())
           .collect(Collectors.toMap(
               module -> module.meta().id(), Function.identity(), (t, t2) -> t, HashMap::new));
       return Collections.unmodifiableMap(m);

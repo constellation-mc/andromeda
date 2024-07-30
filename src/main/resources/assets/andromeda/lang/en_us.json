@@ -29,6 +29,7 @@
   "andromeda.config.tooltip.origin": "[@] Taken from or based on %s by %s",
   "andromeda.config.tooltip.game_rule": "This option is a default for a game rule!",
   "andromeda.config.tooltip.deprecated": "[!!!] This feature is deprecated and will be removed in a future version!",
+  "andromeda.config.tooltip.withheld": "[!!!] This feature has been withheld!\nIt may be available in a future update.",
 
   "config.andromeda.category.world": "World",
 

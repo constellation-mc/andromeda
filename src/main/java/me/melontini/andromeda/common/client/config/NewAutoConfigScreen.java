@@ -38,6 +38,7 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.api.*;
 import me.shedaniel.clothconfig2.gui.entries.MultiElementListEntry;
+import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
@@ -46,6 +47,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -257,13 +259,20 @@ public class NewAutoConfigScreen {
         return;
       }
 
-      AbstractConfigListEntry<?> enabled = ENTRY_BUILDER
+      TooltipListEntry<?> enabled = ENTRY_BUILDER
           .startBooleanToggle(
               TextUtil.translatable("config.andromeda.option.enabled"), bootstrapConfig.enabled)
           .setDefaultValue(() -> false)
           .setSaveConsumer(b -> bootstrapConfig.enabled = b)
           .requireRestart()
           .build();
+
+      if (module.meta().withheld()) {
+        enabled.setEditable(false);
+        ClothTooltipTools.appendText(
+            enabled,
+            Text.translatable("andromeda.config.tooltip.withheld").formatted(Formatting.RED));
+      }
       moduleCategory.add(
           0,
           wrapSaveCallback(
