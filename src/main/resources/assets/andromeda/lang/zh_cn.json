@@ -256,6 +256,8 @@
     "config.andromeda.entities.ghast_tweaks.option.explodeOnDeath.@Tooltip": "恶魂将在死亡时爆炸。",
     "config.andromeda.entities.ghast_tweaks.option.explosionPower": "爆炸强度",
     "config.andromeda.entities.ghast_tweaks.option.explosionPower.@Tooltip": "恶魂的爆炸强度。默认等同于 TNT。",
+    "config.andromeda.entities.ghast_tweaks.option.fireBallsConvertObsidian": "黑曜石转化",
+    "config.andromeda.entities.ghast_tweaks.option.fireBallsConvertObsidian.@Tooltip": "恶魂的火球爆炸会把普通黑曜石转化为哭泣黑曜石。",
 
     "config.andromeda.entities.vehicle_unentrapment": "脱离载具",
     "config.andromeda.entities.vehicle_unentrapment.@Tooltip": "在“andromeda:escape_vehicles_on_hit”标签内的生物（默认为末影人）会在受击后脱离载具。\n载具类别需要在“andromeda:escapable_vehicle”中写入（默认为船和矿车）。",
@@ -361,7 +363,9 @@
     "config.andromeda.mechanics.trading_goat_horn.@Tooltip": "每两天，你都能使用“歌颂”号角来召唤一位流浪商人。\n值得注意的是，流浪商人仍然会自然生成。\n你可以通过禁用\"doTraderSpawning\"的游戏规则来禁用流浪商人自然生成。",
     "config.andromeda.mechanics.trading_goat_horn.option.cooldown": "冷却时间",
     "config.andromeda.mechanics.trading_goat_horn.option.cooldown.@Tooltip": "单位：刻。",
-    "config.andromeda.mechanics.trading_goat_horn.option.instrumentId": "音效 ID",
+    "config.andromeda.mechanics.trading_goat_horn.option.instrumentId": "乐器 ID",
+    "config.andromeda.mechanics.trading_goat_horn.option.highlightTrader": "高亮商人",
+    "config.andromeda.mechanics.trading_goat_horn.option.highlightTrader.@Tooltip": "被号角召唤的商人将被高亮。",
   
     "config.andromeda.category.gui": "GUI",
 
