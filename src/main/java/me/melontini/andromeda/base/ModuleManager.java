@@ -139,7 +139,7 @@ public final class ModuleManager implements ModuleApiProvider {
     bootstrapConfigs.forEach((module, config) -> {
       Bus<ConfigEvent> bus = module.getOrCreateBus("bootstrap_config_event", null);
       if (bus == null) return;
-      bus.invoker().accept(this, config);
+      bus.invokeAndDrop(e -> e.accept(this, config));
     });
 
     sorted.forEach(this::saveBootstrap);

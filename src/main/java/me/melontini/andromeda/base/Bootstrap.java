@@ -48,7 +48,7 @@ public class Bootstrap {
         () -> {
           Bus<InitEvent> event = module.getOrCreateBus(init + "_init_event", null);
           if (event == null) return;
-          event.invoker().collectInits().run();
+          event.invokeAndDrop(e -> e.collectInits().run());
         },
         (b) -> b.literal("Failed to execute %s!".formatted(init))
             .add("module", module.meta().id()));

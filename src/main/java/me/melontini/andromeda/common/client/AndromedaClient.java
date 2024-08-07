@@ -69,7 +69,7 @@ public final class AndromedaClient {
               module, "enabled", (moduleManager) -> true, blockade.andromeda("side_only_enabled"));
       });
     }
-    BlockadesEvent.BUS.invoker().explain(manager, blockade);
+    BlockadesEvent.BUS.invokeAndDrop(e -> e.explain(manager, blockade));
 
     ResourceManagerHelper.registerBuiltinResourcePack(
         id("dark"), CommonValues.mod(), ResourcePackActivationType.NORMAL);
