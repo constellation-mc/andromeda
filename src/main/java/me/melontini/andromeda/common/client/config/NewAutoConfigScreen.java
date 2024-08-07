@@ -28,6 +28,7 @@ import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.client.AndromedaClient;
 import me.melontini.andromeda.util.CommonValues;
 import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.commander.CommanderSupport;
 import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Exceptions;
@@ -190,10 +191,11 @@ public class NewAutoConfigScreen {
     boolean commander = FabricLoader.getInstance().isModLoaded("commander");
 
     ModuleManager.get().all().stream().map(Promise::get).forEach(module -> {
+      var fitsSide = ModuleManager.SIDE_ONLY_PREDICATE.test(module);
       if (AndromedaConfig.get().sideOnlyMode
           && Experiments.get().hideSidedModulesInSideOnly
-          && (module.meta().environment().isServer()
-              || module.meta().environment().isBoth())) return;
+          && !fitsSide) return;
+      if (!CommanderSupport.PREDICATE.test(module)) return;
 
       var category = builder.getOrCreateCategory(TextUtil.translatable(
           "config.andromeda.category.%s".formatted(module.meta().category())));
@@ -204,6 +206,7 @@ public class NewAutoConfigScreen {
       var moduleCategory = ENTRY_BUILDER.startSubCategory(TextUtil.translatable(moduleText));
 
       handlers.forEach((state, handler) -> {
+        if (!fitsSide) return;
         var definition = module.getConfigDefinition(state);
         if (definition == null) return;
 

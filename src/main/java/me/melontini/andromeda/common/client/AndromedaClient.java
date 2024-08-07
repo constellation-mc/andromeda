@@ -64,11 +64,9 @@ public final class AndromedaClient {
     if (!AndromedaConfig.get().sideOnlyMode) ClientSideNetworking.register(manager);
     else {
       manager.all().stream().map(Promise::get).forEach(module -> {
-        switch (module.meta().environment()) {
-          case ANY, CLIENT -> {}
-          default -> blockade.explain(
+        if (!ModuleManager.SIDE_ONLY_PREDICATE.test(module))
+          blockade.explain(
               module, "enabled", (moduleManager) -> true, blockade.andromeda("side_only_enabled"));
-        }
       });
     }
     BlockadesEvent.BUS.invoker().explain(manager, blockade);

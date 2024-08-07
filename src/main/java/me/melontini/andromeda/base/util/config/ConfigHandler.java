@@ -12,7 +12,9 @@ import lombok.CustomLog;
 import lombok.Getter;
 import lombok.ToString;
 import me.melontini.andromeda.base.Module;
+import me.melontini.andromeda.base.ModuleManager;
 import me.melontini.andromeda.base.events.ConfigGsonEvent;
+import me.melontini.andromeda.util.commander.CommanderSupport;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.loader.api.FabricLoader;
@@ -44,6 +46,8 @@ public final class ConfigHandler {
     this.state = state;
     this.root = root;
     this.modules = modules.stream()
+        .filter(ModuleManager.SIDE_ONLY_PREDICATE)
+        .filter(CommanderSupport.PREDICATE)
         .filter(module -> module.getConfigDefinition(state) != null)
         .toList();
     var builder = new GsonBuilder().setPrettyPrinting();

@@ -72,9 +72,7 @@ abstract class ServerWorldMixin extends World implements ScopedConfigs.Attachmen
         true,
         ConfigState.GAME,
         Andromeda.GAME_HANDLER,
-        manager.loaded().stream()
-            .filter(m -> m.getConfigDefinition(ConfigState.GAME) != null)
-            .toList());
+        manager.loaded());
 
     DataConfigs.get(this.getServer()).apply(this, this.getRegistryKey().getValue());
   }

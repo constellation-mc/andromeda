@@ -14,6 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.CustomLog;
@@ -43,6 +44,19 @@ import org.jetbrains.annotations.ApiStatus;
 @CustomLog
 @Accessors(fluent = true)
 public final class ModuleManager implements ModuleApiProvider {
+
+  public static final Predicate<Module> SIDE_ONLY_PREDICATE = module -> {
+    if (AndromedaConfig.get().sideOnlyMode) {
+      var env = module.meta().environment();
+      if (CommonValues.environment() == EnvType.CLIENT) {
+        if (env.isServer()) return false;
+      } else {
+        if (env.isClient()) return false;
+      }
+      return !env.isBoth();
+    }
+    return true;
+  };
 
   public static final List<String> CATEGORIES =
       List.of("world", "blocks", "entities", "items", "bugfixes", "mechanics", "gui", "misc");
@@ -91,15 +105,7 @@ public final class ModuleManager implements ModuleApiProvider {
         .toList();
 
     sorted.forEach(module -> ConfigEvent.bootstrap(module).listen((manager, config) -> {
-      if (AndromedaConfig.get().sideOnlyMode) {
-        var env = module.meta().environment();
-        if (CommonValues.environment() == EnvType.CLIENT) {
-          if (env.isServer()) config.enabled = false;
-        } else {
-          if (env.isClient()) config.enabled = false;
-        }
-        if (env.isBoth()) config.enabled = false;
-      }
+      if (!SIDE_ONLY_PREDICATE.test(module)) config.enabled = false;
     }));
 
     LOGGER.info("Loading bootstrap configs!");
@@ -400,7 +406,10 @@ public final class ModuleManager implements ModuleApiProvider {
     var opt = getDiscovered(module).map(Promise::get);
 
     if (opt.isEmpty()) {
-      LOGGER.error("'{}' requested a non-existent module '{}'!", module, route.route());
+      LOGGER.error(
+          "'{}' requested a non-existent module '{}'!",
+          Utilities.getCallerClass().getName(),
+          module);
       return;
     }
 
@@ -415,12 +424,6 @@ public final class ModuleManager implements ModuleApiProvider {
       return;
     }
 
-    if (api.get().status() == ApiRoute.Status.DEPRECATED)
-      LOGGER.warn(
-          "'{}' requested a deprecated API route '{}'!",
-          Utilities.getCallerClass().getName(),
-          route.route());
-
     if (api.get().status() == ApiRoute.Status.DEAD) {
       LOGGER.error(
           "'{}' requested a dead API route '{}'!",
@@ -428,6 +431,12 @@ public final class ModuleManager implements ModuleApiProvider {
           route.route());
       return;
     }
+
+    if (api.get().status() == ApiRoute.Status.DEPRECATED)
+      LOGGER.warn(
+          "'{}' requested a deprecated API route '{}'!",
+          Utilities.getCallerClass().getName(),
+          route.route());
 
     opt.get().apiContainer().awaitRequest(route, consumer);
   }
