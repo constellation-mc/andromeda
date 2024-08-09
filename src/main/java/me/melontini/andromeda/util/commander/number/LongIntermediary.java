@@ -2,9 +2,10 @@ package me.melontini.andromeda.util.commander.number;
 
 import java.util.function.LongFunction;
 import java.util.function.Supplier;
-import me.melontini.andromeda.util.commander.LongExpression;
+
 import me.melontini.andromeda.util.commander.number.constant.ConstantLongIntermediary;
 import me.melontini.andromeda.util.commander.number.expression.CommanderLongIntermediary;
+import me.melontini.commander.api.expression.LongExpression;
 import me.melontini.dark_matter.api.base.util.Support;
 import net.minecraft.loot.context.LootContext;
 

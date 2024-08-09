@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import me.melontini.andromeda.util.commander.LongExpression;
 import me.melontini.andromeda.util.commander.number.LongIntermediary;
+import me.melontini.commander.api.expression.LongExpression;
 import net.minecraft.loot.context.LootContext;
 
 @EqualsAndHashCode
