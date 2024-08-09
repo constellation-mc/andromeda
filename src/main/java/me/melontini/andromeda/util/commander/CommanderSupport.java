@@ -17,10 +17,11 @@ public class CommanderSupport {
 
   public static void require(Module module) {
     if (module.meta().environment().isClient()) return;
+    if (LOADED) return;
     REQUIRE.add(module);
 
     ConfigEvent.bootstrap(module).listen((moduleManager, config) -> {
-      if (!LOADED && config.enabled)
+      if (config.enabled)
         throw AndromedaException.builder()
             .report(false)
             .translatable("module_manager.requires_commander", "https://modrinth.com/project/cmd")
@@ -28,6 +29,6 @@ public class CommanderSupport {
     });
 
     BlockadesEvent.BUS.listen((manager, blockade) -> blockade.explain(
-        module, "enabled", (moduleManager) -> !LOADED, blockade.andromeda("missing_commander")));
+        module, "enabled", (moduleManager) -> true, blockade.andromeda("missing_commander")));
   }
 }
