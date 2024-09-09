@@ -2,7 +2,7 @@
 dark-matter = "4.1.0-1.20.1-build.86"
 
 [libraries]
-fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.16.0" }
+fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.16.5" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.92.1+1.20.1" }
 
 dark-matter-base = { group = "me.melontini", name = "dark-matter-base", version.ref = "dark-matter" }
