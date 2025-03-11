@@ -13,7 +13,7 @@ abstract class SpikeCacheMixin {
       method = "load(Ljava/lang/Long;)Ljava/util/List;",
       at = @At(value = "CONSTANT", args = "intValue=76"))
   private int andromeda$modifySpikeSize(int size) {
-    if (Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).shorterSpikes) return 72;
+    if (Andromeda.MAIN.get(DragonFight.CONFIG).shorterSpikes) return 72;
     return size;
   }
 
@@ -21,7 +21,7 @@ abstract class SpikeCacheMixin {
       method = "load(Ljava/lang/Long;)Ljava/util/List;",
       at = @At(value = "CONSTANT", args = "intValue=3", ordinal = 1))
   private int andromeda$modifySpikeHeight(int size) {
-    if (Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).shorterSpikes) return 2;
+    if (Andromeda.MAIN.get(DragonFight.CONFIG).shorterSpikes) return 2;
     return size;
   }
 }

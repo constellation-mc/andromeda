@@ -4,8 +4,9 @@ import static me.melontini.andromeda.common.Andromeda.id;
 
 import java.util.List;
 import java.util.Objects;
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.AndromedaItemGroup;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import me.melontini.andromeda.modules.entities.minecarts.items.AndromedaMinecartItem;
@@ -43,7 +44,10 @@ public class MinecartItems {
   public static final Keeper<NoteBlockMinecartItem> NOTE_BLOCK_MINECART = Keeper.create();
   public static final Keeper<JukeboxMinecartItem> JUKEBOX_MINECART = Keeper.create();
 
-  public static void init(Minecarts module, Minecarts.Config config) {
+  public static void init() {
+    var module = ModuleManager.get().get(Minecarts.class).orElseThrow();
+    var config = Andromeda.MAIN.get(Minecarts.MAIN_CONFIG);
+
     SPAWNER_MINECART.init(RegistryUtil.register(
         config.isSpawnerMinecartOn,
         Registries.ITEM,
@@ -67,57 +71,60 @@ public class MinecartItems {
         () -> new JukeboxMinecartItem(new FabricItemSettings().maxCount(1))));
 
     var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
-    AndromedaItemGroup.accept(
+    AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, List.copyOf(l)));
 
-    ModuleManager.get().getModule(MinecartBlockPicking.class).ifPresent(m -> {
-      SPAWNER_MINECART.ifPresent(item ->
-          PickUpBehaviorHandler.registerPickUpBehavior(Blocks.SPAWNER, (state, world, pos) -> {
-            if (world.am$get(MinecartBlockPicking.CONFIG).spawnerPicking) {
-              MobSpawnerBlockEntity mobSpawnerBlockEntity =
-                  (MobSpawnerBlockEntity) MakeSure.notNull(
-                      world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
-              ItemStack spawnerMinecart = new ItemStack(item, 1);
-              spawnerMinecart.setNbt(NbtBuilder.create()
-                  .putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity)))
-                  .build());
-              return spawnerMinecart;
-            }
-            return null;
-          }));
-
-      ANVIL_MINECART.ifPresent(item -> PickUpBehaviorHandler.registerPickUpBehavior(
-          Blocks.ANVIL, (state, world, pos) -> new ItemStack(item)));
-
-      NOTE_BLOCK_MINECART.ifPresent(item ->
-          PickUpBehaviorHandler.registerPickUpBehavior(Blocks.NOTE_BLOCK, (state, world, pos) -> {
-            NoteBlock noteBlock = (NoteBlock) state.getBlock();
-            int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
-            ItemStack noteBlockMinecart = new ItemStack(item);
-
-            noteBlockMinecart.setNbt(
-                NbtBuilder.create().putInt("Note", noteProp).build());
-            return noteBlockMinecart;
-          }));
-
-      JUKEBOX_MINECART.ifPresent(item ->
-          PickUpBehaviorHandler.registerPickUpBehavior(Blocks.JUKEBOX, (state, world, pos) -> {
-            JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(
+    if (ModuleManager.get().get(MinecartBlockPicking.class).isPresent()) {
+      if (SPAWNER_MINECART.isPresent()) {
+        PickUpBehaviorHandler.registerPickUpBehavior(Blocks.SPAWNER, (state, world, pos) -> {
+          if (world.am$get(MinecartBlockPicking.CONFIG).spawnerPicking) {
+            MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity) MakeSure.notNull(
                 world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+            ItemStack spawnerMinecart = new ItemStack(SPAWNER_MINECART.orThrow(), 1);
+            spawnerMinecart.setNbt(NbtBuilder.create()
+                .putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity)))
+                .build());
+            return spawnerMinecart;
+          }
+          return null;
+        });
+      }
 
-            ItemStack record = jukeboxBlockEntity.getStack(0);
-            ItemStack jukeboxMinecart = new ItemStack(item);
+      if (ANVIL_MINECART.isPresent()) {
+        PickUpBehaviorHandler.registerPickUpBehavior(
+            Blocks.ANVIL, (state, world, pos) -> new ItemStack(ANVIL_MINECART.orThrow()));
+      }
 
-            if (!record.isEmpty()) {
-              world.syncWorldEvent(WorldEvents.JUKEBOX_STARTS_PLAYING, pos, 0);
-              jukeboxMinecart.setNbt(NbtBuilder.create()
-                  .put("Items", record.writeNbt(new NbtCompound()))
-                  .build());
-            }
-            jukeboxBlockEntity.clear();
-            return jukeboxMinecart;
-          }));
-    });
+      if (NOTE_BLOCK_MINECART.isPresent()) {
+        PickUpBehaviorHandler.registerPickUpBehavior(Blocks.NOTE_BLOCK, (state, world, pos) -> {
+          NoteBlock noteBlock = (NoteBlock) state.getBlock();
+          int noteProp = noteBlock.getStateWithProperties(state).get(Properties.NOTE);
+          ItemStack noteBlockMinecart = new ItemStack(NOTE_BLOCK_MINECART.orThrow());
+
+          noteBlockMinecart.setNbt(NbtBuilder.create().putInt("Note", noteProp).build());
+          return noteBlockMinecart;
+        });
+      }
+
+      if (JUKEBOX_MINECART.isPresent()) {
+        PickUpBehaviorHandler.registerPickUpBehavior(Blocks.JUKEBOX, (state, world, pos) -> {
+          JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(
+              world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
+
+          ItemStack record = jukeboxBlockEntity.getStack(0);
+          ItemStack jukeboxMinecart = new ItemStack(JUKEBOX_MINECART.orThrow());
+
+          if (!record.isEmpty()) {
+            world.syncWorldEvent(WorldEvents.JUKEBOX_STARTS_PLAYING, pos, 0);
+            jukeboxMinecart.setNbt(NbtBuilder.create()
+                .put("Items", record.writeNbt(new NbtCompound()))
+                .build());
+          }
+          jukeboxBlockEntity.clear();
+          return jukeboxMinecart;
+        });
+      }
+    }
   }
 
   @Nullable @Unique private static Identifier andromeda$getEntityId(MobSpawnerBlockEntity mobSpawnerBlockEntity) {
@@ -131,17 +138,19 @@ public class MinecartItems {
           : new Identifier(identifier);
     } catch (InvalidIdentifierException e) {
       BlockPos blockPos = mobSpawnerBlockEntity.getPos();
-      ModuleManager.quick(Minecarts.class)
+      ModuleManager.get()
+          .get(Minecarts.class)
+          .orElseThrow()
           .logger()
-          .error(String.format(
-              "Invalid entity id '%s' at spawner %s:[%s,%s,%s]",
+          .error(
+              "Invalid entity id '{}' at spawner {}:[{},{},{}]",
               identifier,
               Objects.requireNonNull(mobSpawnerBlockEntity.getWorld())
                   .getRegistryKey()
                   .getValue(),
               blockPos.getX(),
               blockPos.getY(),
-              blockPos.getZ()));
+              blockPos.getZ());
       return Registries.ENTITY_TYPE.getDefaultId();
     }
   }

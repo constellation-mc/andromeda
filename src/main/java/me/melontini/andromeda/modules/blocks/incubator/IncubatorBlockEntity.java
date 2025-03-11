@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.event.EventContext;
@@ -38,7 +38,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,8 +84,9 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
   private int getTime(Arithmetica arithmetica, ItemStack stack) {
     if (arithmetica.toSource().left().isPresent()) return arithmetica.asInt(null);
 
-    var supplier =
-        LootContextUtil.block(world, Vec3d.ofCenter(getPos()), getCachedState(), stack, null, this);
+    var supplier = LootContextBuilder.block(
+        world,
+        builder -> builder.origin(pos).state(getCachedState()).tool(stack).blockEntity(this));
     return arithmetica.asInt(supplier.get());
   }
 
@@ -117,8 +117,12 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
       EggProcessingData.Entry entry, ServerWorld world, ItemStack stack, Entity entity) {
     if (entry.commands().isEmpty()) return;
 
-    var supplier = LootContextUtil.block(
-        world, Vec3d.ofCenter(getPos()), getCachedState(), stack, entity, this);
+    var supplier = LootContextBuilder.block(world, builder -> builder
+        .origin(getPos())
+        .state(getCachedState())
+        .tool(stack)
+        .thisEntity(entity)
+        .blockEntity(this));
     EventContext context = EventContext.builder(EventType.NULL)
         .addParameter(EventKey.LOOT_CONTEXT, supplier.get())
         .build();

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.wakeup;
 
 import java.util.Optional;
-import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.modules.misc.unknown.UnknownUtil;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -32,7 +32,7 @@ abstract class PlayerEntityMixin {
 
     if (!player.world.isClient)
       if (player.world.getRandom().nextInt(100000) == 0) {
-        Optional<BlockPos> optional = WorldUtil.pickRandomSpot(
+        Optional<BlockPos> optional = UnknownUtil.pickRandomSpot(
             player.world, player.getBlockPos(), 10, player.world.getRandom());
         if (optional.isPresent()) {
           BlockPos pos = optional.get();

@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.tooltips.mixin.clock;
 
 import java.util.List;
-import me.melontini.andromeda.common.client.AndromedaClient;
+import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
@@ -28,7 +28,7 @@ abstract class ItemMixin {
       List<Text> tooltip,
       TooltipContext context,
       CallbackInfo ci) {
-    if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).clock) return;
+    if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).clock) return;
 
     if (world != null && world.isClient) {
       if (stack.getItem() == Items.CLOCK) {

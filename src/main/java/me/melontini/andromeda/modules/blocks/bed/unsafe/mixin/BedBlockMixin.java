@@ -2,14 +2,13 @@ package me.melontini.andromeda.modules.blocks.bed.unsafe.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.bed.unsafe.Unsafe;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,11 +31,12 @@ abstract class BedBlockMixin {
       @Local(argsOnly = true) Hand hand) {
     if (world.isClient()) return original;
 
-    return !world
+    return original
+        && !world
             .am$get(Unsafe.CONFIG)
             .available
-            .asBoolean(LootContextUtil.block(
-                world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))
-        && original;
+            .asBoolean(LootContextBuilder.block(
+                world,
+                builder -> builder.origin(pos).state(state).tool(player, hand).thisEntity(player)));
   }
 }

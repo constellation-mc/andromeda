@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.entities.boats.entities;
 
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
@@ -69,7 +69,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     Vec3d vec3d = this.getVelocity();
     if (this.getFuel() > 0) {
       Vec3d rotationVec = this.getRotationVec(1.0F);
-      if (this.location == BoatEntity.Location.ON_LAND)
+      if (this.location == Location.ON_LAND)
         this.setVelocity(rotationVec.getX() * 0.1, vec3d.y, rotationVec.getZ() * 0.1);
       else this.setVelocity(rotationVec.getX() * 0.4, vec3d.y, rotationVec.getZ() * 0.4);
     }
@@ -82,8 +82,8 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
       int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
       if ((this.getFuel() + (itemFuel * 2.25))
           <= ModuleManager.get()
-              .getModule(BetterFurnaceMinecart.class)
-              .map(m -> Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel)
+              .get(BetterFurnaceMinecart.class)
+              .map(m -> Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel)
               .orElse(45000)) {
         if (!player.getAbilities().creativeMode) {
           ItemStack reminder = stack.getRecipeRemainder();

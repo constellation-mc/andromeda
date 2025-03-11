@@ -1,18 +1,14 @@
 package me.melontini.andromeda.common.util;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
+// My least favorite thing from this mod.
+// Consider this a mutable Optional.
 public final class Keeper<T> {
 
   private volatile boolean initialized;
-
   private @Nullable T value;
-
-  private final Set<Consumer<T>> consumers = new HashSet<>();
 
   public static <T> Keeper<T> create() {
     return new Keeper<>();
@@ -25,29 +21,16 @@ public final class Keeper<T> {
   }
 
   public boolean isPresent() {
-    return this.value != null;
-  }
-
-  public void ifPresent(Consumer<T> consumer) {
-    if (this.value != null) consumer.accept(this.value);
-  }
-
-  public Keeper<T> afterInit(Consumer<T> consumer) {
-    this.consumers.add(consumer);
-    return this;
+    return value != null;
   }
 
   public void init(@Nullable T value) {
-    if (!initialized) {
-      synchronized (this) {
-        if (!initialized) {
-          this.value = value;
-          this.initialized = true;
+    if (initialized) return;
 
-          if (isPresent()) this.consumers.forEach(c -> c.accept(this.value));
-          this.consumers.clear();
-        }
-      }
+    synchronized (this) {
+      if (initialized) return;
+      this.value = value;
+      this.initialized = true;
     }
   }
 

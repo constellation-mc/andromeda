@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.put_out_fire;
 
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.entity.Entity;
@@ -30,8 +30,9 @@ abstract class SnowballEntityMixin extends ThrownItemEntity {
     var config = result.getEntity().world.am$get(Snowballs.CONFIG);
     if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
     Entity entity = result.getEntity();
-    if (!config.extinguish.asBoolean(
-        LootContextUtil.entity(world, entity.getPos(), entity, null, this))) return;
+    if (!config.extinguish.asBoolean(LootContextBuilder.entity(
+        world,
+        builder -> builder.origin(entity).thisEntity(entity).genericSource().killer(this)))) return;
 
     if (entity.isOnFire()) {
       entity.extinguish();

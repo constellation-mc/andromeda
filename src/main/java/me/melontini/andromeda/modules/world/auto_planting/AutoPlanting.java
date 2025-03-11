@@ -2,21 +2,21 @@ package me.melontini.andromeda.modules.world.auto_planting;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.GameConfig;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
+import me.melontini.andromeda.common.config.GameConfig;
 import net.minecraft.item.Item;
 
-@ModuleInfo(name = "auto_planting", category = "world", environment = Environment.SERVER)
+@ModuleInfo(name = "auto_planting", category = "world", env = Environment.SERVER)
 public final class AutoPlanting extends Module {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   AutoPlanting() {
-    this.defineConfig(ConfigState.GAME, CONFIG);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
   }
 
   public static class Config extends GameConfig {

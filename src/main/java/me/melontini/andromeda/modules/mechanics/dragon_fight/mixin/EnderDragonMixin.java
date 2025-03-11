@@ -14,7 +14,7 @@ abstract class EnderDragonMixin {
       at = @At(value = "CONSTANT", args = "doubleValue=32"),
       method = "tickWithEndCrystals")
   private double andromeda$modConstant(double constant) {
-    if (Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).shorterCrystalTrackRange) return 24.0;
+    if (Andromeda.MAIN.get(DragonFight.CONFIG).shorterCrystalTrackRange) return 24.0;
     return constant;
   }
 }

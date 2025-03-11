@@ -2,145 +2,118 @@ package me.melontini.andromeda.common.config;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.lang.reflect.Field;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.Experiments;
-import me.melontini.andromeda.base.util.config.ConfigHandler;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.VerifiedConfig;
+import lombok.CustomLog;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.config.handler.GameConfigHandler;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
-import me.melontini.andromeda.util.exceptions.AndromedaException;
-import me.melontini.dark_matter.api.base.util.MakeSure;
+import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
+import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.World;
 
+// Loads and applies custom config overrides from data packs
+@CustomLog
 public final class DataConfigs extends IdentifiedJsonDataLoader {
 
   public static final Identifier DEFAULT = Andromeda.id("default");
   public static final ReloaderType<DataConfigs> RELOADER =
       ReloaderType.create(Andromeda.id("scoped_config"));
 
-  public DataConfigs() {
-    super(RELOADER.identifier());
-  }
-
   public static DataConfigs get(MinecraftServer server) {
-    try {
-      return server.dm$getReloader(RELOADER);
-    } catch (Exception e) {
-      throw AndromedaException.builder()
-          .cause(e)
-          .report(false)
-          .translatable("scoped_configs.no_reloader")
-          .build();
-    }
+    return server.dm$getReloader(RELOADER);
   }
 
+  private final ModuleManager moduleManager;
   public Map<Identifier, Map<Module, Set<Data>>> configs;
   public Map<Module, Set<Data>> defaultConfigs;
+
+  public DataConfigs(ModuleManager moduleManager) {
+    super(RELOADER.identifier());
+    this.moduleManager = moduleManager;
+  }
 
   @Override
   protected void apply(
       Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-    Map<Identifier, Map<Module, Set<CompletableFuture<Data>>>> configs =
-        new Object2ObjectOpenHashMap<>();
-    Maps.transformValues(data, JsonElement::getAsJsonObject).forEach((id, object) -> {
-      var m = ModuleManager.get()
-          .getModule(id.getPath())
+    Map<Identifier, Map<Module, Set<Data>>> parsed = new HashMap<>();
+
+    for (var entry : Maps.transformValues(data, JsonElement::getAsJsonObject).entrySet()) {
+      Identifier id = entry.getKey();
+      JsonObject json = entry.getValue();
+      // Modules must be loaded to apply their configs.
+      var module = this.moduleManager
+          .get(id.getPath())
           .orElseThrow(() -> new IllegalStateException(
               "Invalid module path '%s'! The module must be enabled!".formatted(id.getPath())));
-      var cls = m.getConfigDefinition(ConfigState.GAME).supplier().get();
+      var type = Andromeda.GAME.getDefinition(module).supplier().get();
 
-      object.entrySet().forEach(entry -> {
-        var map = configs.computeIfAbsent(
-            new Identifier(entry.getKey()), string -> new Reference2ObjectOpenHashMap<>());
-        map.computeIfAbsent(m, module -> new ReferenceLinkedOpenHashSet<>())
-            .add(makeFuture(m, cls, entry.getValue()));
+      Maps.transformValues(json.asMap(), JsonElement::getAsJsonObject).forEach((string, value) -> {
+        var dimension = new Identifier(string);
+        var cfg = Andromeda.GAME.gson().fromJson(value, type);
+
+        // Parse the fields that must be modified during `apply`
+        Set<Field> overrides = new ReferenceOpenHashSet<>();
+        for (String field : value.keySet()) {
+          try {
+            overrides.add(type.getField(field));
+          } catch (NoSuchFieldException e) {
+            throw Util.wrap("No such field '%s' for module %s".formatted(field, id), e);
+          }
+        }
+        // We store configs grouped by dimension.
+        parsed
+            .computeIfAbsent(dimension, i_ -> new HashMap<>())
+            .computeIfAbsent(module, m_ -> new ReferenceLinkedOpenHashSet<>())
+            .add(new Data(overrides, cfg));
       });
-    });
+    }
 
-    Map<Identifier, Map<Module, Set<Data>>> parsed = new Object2ObjectOpenHashMap<>();
-    CompletableFuture.allOf(configs.values().stream()
-            .flatMap(map -> map.values().stream())
-            .flatMap(Collection::stream)
-            .toArray(CompletableFuture[]::new))
-        .handle((unused, throwable) -> configs)
-        .join()
-        .forEach((identifier, moduleSetMap) -> {
-          var n = parsed.computeIfAbsent(identifier, id -> new Object2ObjectOpenHashMap<>());
-          moduleSetMap.forEach((module, completableFutures) -> {
-            var set = n.computeIfAbsent(module, m -> new ReferenceLinkedOpenHashSet<>());
-            completableFutures.forEach(future -> set.add(future.join()));
-          });
-        });
-    defaultConfigs = parsed.remove(DEFAULT);
+    this.defaultConfigs = parsed.remove(DEFAULT);
     this.configs = parsed;
   }
 
-  private CompletableFuture<Data> makeFuture(
-      Module m, Class<? extends VerifiedConfig> cls, JsonElement element) {
-    return CompletableFuture.supplyAsync(
-        () -> {
-          try {
-            var parsed = Andromeda.GAME_HANDLER.parse(element, m);
+  public void applyConfigs(AttachmentGetter getter, Identifier dimension) {
+    Objects.requireNonNull(configs);
 
-            ReferenceOpenHashSet<Field> config = new ReferenceOpenHashSet<>();
-
-            for (String field : element.getAsJsonObject().keySet()) {
-              try {
-                config.add(cls.getField(field));
-              } catch (NoSuchFieldException e1) {
-                throw new RuntimeException(
-                    "Failed to load config data for module '%s'"
-                        .formatted(m.meta().id()),
-                    e1);
-              }
-            }
-            return new Data(config, parsed);
-          } catch (Exception e) {
-            throw new RuntimeException(
-                "Failed to load config data for module '%s'".formatted(m.meta().id()), e);
-          }
-        },
-        Util.getMainWorkerExecutor());
+    var handler = getter.andromeda$getConfigs();
+    handler.loadAll();
+    handler.forEach((module, baseConfig) -> this.applyDataPacks(baseConfig, module, dimension));
   }
 
-  public record Data(Set<Field> cFields, VerifiedConfig config) {}
+  void applyDataPacks(BaseConfig config, Module module, Identifier dimension) {
+    if (defaultConfigs != null) {
+      var forModule = defaultConfigs.get(module);
+      if (forModule != null) for (Data data : forModule) this.apply(config, data);
+    }
+    if (dimension.equals(DEFAULT)) return;
 
-  public void apply(ScopedConfigs.AttachmentGetter getter, Identifier identifier) {
-    MakeSure.notNull(configs);
-
-    ConfigHandler attachment = getter.andromeda$getConfigs();
-    attachment.loadAll();
-    attachment.forEach((entry, module) -> applyDataPacks(entry, module, identifier));
-
-    if (Experiments.get().persistentScopedConfigs.isEmpty()) return;
-
-    var manager = ModuleManager.get();
-    for (String id : Experiments.get().persistentScopedConfigs) {
-      attachment.save(manager
-          .getModule(id)
-          .orElseThrow(() -> new RuntimeException("No such module %s!".formatted(id))));
+    var overrides = Objects.requireNonNull(configs).get(dimension);
+    if (overrides != null) {
+      var forModule = overrides.get(module);
+      if (forModule != null) for (Data data1 : forModule) apply(config, data1);
     }
   }
 
-  private void apply(VerifiedConfig config, Data data) {
-    data.cFields().forEach((field) -> {
+  private void apply(BaseConfig config, Data data) {
+    data.cFields().forEach(field -> {
       try {
         field.set(config, field.get(data.config()));
       } catch (IllegalAccessException e) {
@@ -152,21 +125,31 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
     });
   }
 
-  void applyDataPacks(VerifiedConfig config, Module m, Identifier id) {
-    if (defaultConfigs != null) {
-      var forModule = defaultConfigs.get(m);
-      if (forModule != null) {
-        for (Data data : forModule) apply(config, data);
-      }
-    }
-    if (id.equals(DEFAULT)) return;
+  public record Data(Set<Field> cFields, BaseConfig config) {}
 
-    var data = Objects.requireNonNull(configs).get(id);
-    if (data != null) {
-      var forModule = data.get(m);
-      if (forModule != null) {
-        for (Data data1 : forModule) apply(config, data1);
-      }
+  public interface WorldExtension {
+    default <T extends BaseConfig> T am$get(ConfigDefinition<T> definition) {
+      log.error(
+          "Scoped configs requested on client in world '{}'! Returning un-scoped!",
+          ((World) this).getRegistryKey().getValue());
+      return Andromeda.MAIN.get(definition); // Stub implementation. DNI
     }
+  }
+
+  public interface AttachmentGetter {
+    GameConfigHandler andromeda$getConfigs();
+  }
+
+  public static void init(ModuleManager manager) {
+    ServerReloadersEvent.EVENT.register(context -> context.register(new DataConfigs(manager)));
+
+    ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+      if (!success) return;
+
+      var configs = DataConfigs.get(server);
+      for (ServerWorld world : server.getWorlds()) {
+        configs.applyConfigs((AttachmentGetter) world, world.getRegistryKey().getValue());
+      }
+    });
   }
 }

@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.blocks.falling_propagule.mixin;
 
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.falling_propagule.FallingPropagule;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,7 +9,6 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,7 +39,8 @@ abstract class PropaguleBlockMixin {
         && world
             .am$get(FallingPropagule.CONFIG)
             .available
-            .asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) {
+            .asBoolean(
+                LootContextBuilder.block(world, builder -> builder.origin(pos).state(state)))) {
       FallingBlockEntity fallingBlock = new FallingBlockEntity(
           world,
           pos.getX() + 0.5,

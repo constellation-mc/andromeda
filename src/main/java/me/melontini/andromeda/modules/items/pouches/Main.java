@@ -4,11 +4,13 @@ import static me.melontini.andromeda.common.Andromeda.id;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import me.melontini.andromeda.common.AndromedaItemGroup;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
-import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
@@ -74,7 +76,9 @@ public final class Main {
       ItemStackUtil.spawnVelocity(pos, itemStack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
   }
 
-  static void init(Pouches module, Pouches.Config config) {
+  static void init() {
+    var module = ModuleManager.get().get(Pouches.class).orElseThrow();
+    var config = Andromeda.MAIN.get(Pouches.MAIN_CONFIG);
     SEED_POUCH.init(RegistryUtil.register(
         config.seedPouch,
         Registries.ITEM,
@@ -110,7 +114,7 @@ public final class Main {
     Trades.register();
 
     List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
-    AndromedaItemGroup.accept(
+    AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.keepers(module, ItemGroups.TOOLS, new ArrayList<>(l)));
 
     var behavior = new ProjectileDispenserBehavior() {
@@ -123,7 +127,8 @@ public final class Main {
     };
 
     for (Keeper<PouchItem> pouchItemKeeper : l) {
-      pouchItemKeeper.ifPresent(pi -> DispenserBlock.registerBehavior(pi, behavior));
+      if (pouchItemKeeper.isPresent())
+        DispenserBlock.registerBehavior(pouchItemKeeper.orThrow(), behavior);
     }
   }
 
@@ -151,7 +156,8 @@ public final class Main {
     return null;
   }
 
-  static void testBlocks(Pouches module) {
+  static void testBlocks() {
+    var module = ModuleManager.get().get(Pouches.class).orElseThrow();
     for (BlockEntityType<?> type : Registries.BLOCK_ENTITY_TYPE) {
       var o = type.blocks.stream().findAny();
       if (o.isPresent()) {
@@ -171,7 +177,7 @@ public final class Main {
       }
     }
 
-    if (Debug.Keys.PRINT_DEBUG_MESSAGES.isPresent()) {
+    if (Util.isDev()) {
       StringBuilder b = new StringBuilder();
       b.append("Viewable block entities:");
       Main.VIEWABLE_VIEW.forEach((blockEntityType, field) -> {

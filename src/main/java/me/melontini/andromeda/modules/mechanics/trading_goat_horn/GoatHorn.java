@@ -1,24 +1,29 @@
 package me.melontini.andromeda.modules.mechanics.trading_goat_horn;
 
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.GameConfig;
-import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.util.commander.number.LongIntermediary;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.InitEvents;
+import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
+import me.melontini.andromeda.common.config.GameConfig;
+import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 import net.minecraft.util.Identifier;
 
-@ModuleInfo(name = "trading_goat_horn", category = "mechanics", environment = Environment.SERVER)
-public final class GoatHorn extends Module {
+@ModuleInfo(name = "trading_goat_horn", category = "mechanics", env = Environment.SERVER)
+public final class GoatHorn extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   GoatHorn() {
-    this.defineConfig(ConfigState.GAME, CONFIG);
-    InitEvent.main(this).listen(() -> CustomTraderManager::init);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
+  }
+
+  @Override
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> CustomTraderManager::init);
   }
 
   public static class Config extends GameConfig {

@@ -13,10 +13,11 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.lang.invoke.MethodType;
 import java.util.*;
 import java.util.function.Function;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
-import me.melontini.andromeda.common.util.LootContextUtil;
-import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.common.util.LootContextBuilder;
+import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
@@ -28,7 +29,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
@@ -91,7 +91,9 @@ public final class PlantTemperatureData {
         if (!world
             .am$get(PlantTemperature.CONFIG)
             .available
-            .asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) return true;
+            .asBoolean(
+                LootContextBuilder.block(world, builder -> builder.origin(pos).state(state))))
+          return true;
 
         if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
           return MathUtil.nextInt(0, 1) != 0;
@@ -111,7 +113,8 @@ public final class PlantTemperatureData {
         || block instanceof Fertilizable;
   }
 
-  public static void init(PlantTemperature module) {
+  public static void init() {
+    var module = ModuleManager.get().get(PlantTemperature.class).orElseThrow();
     ServerReloadersEvent.EVENT.register(context -> context.register(new Reloader(module)));
   }
 
@@ -138,13 +141,15 @@ public final class PlantTemperatureData {
     if (!override.isEmpty())
       module
           .logger()
-          .warn("Missing crop temperatures: "
-              + override.stream().map(Registries.BLOCK::getId).sorted().toList());
+          .warn(
+              "Missing crop temperatures: {}",
+              override.stream().map(Registries.BLOCK::getId).sorted().toList());
     if (!blocks.isEmpty())
       module
           .logger()
-          .warn("Possible missing crop temperatures: "
-              + blocks.stream().map(Registries.BLOCK::getId).sorted().toList());
+          .warn(
+              "Possible missing crop temperatures: {}",
+              blocks.stream().map(Registries.BLOCK::getId).sorted().toList());
   }
 
   private static boolean methodInHierarchyUntil(Class<?> cls, String name, Class<?> stopClass) {
@@ -188,7 +193,7 @@ public final class PlantTemperatureData {
       result.putAll(replace);
       this.map = result;
 
-      if (Debug.Keys.PRINT_MISSING_ASSIGNED_DATA.isPresent()) verifyPostLoad(module, this);
+      if (Util.isDev()) verifyPostLoad(module, this);
     }
   }
 }

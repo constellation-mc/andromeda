@@ -1,13 +1,14 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
+import static me.melontini.andromeda.api.ModuleDeclarations.LOOT_UNLOCKER;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
-import me.melontini.andromeda.api.Routes;
-import me.melontini.andromeda.common.util.LootContextUtil;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.BlockState;
@@ -24,7 +25,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -32,11 +32,13 @@ public final class Main {
 
   private static final List<BiPredicate<BlockEntity, PlayerEntity>> UNLOCKERS = new ArrayList<>();
 
-  static void init(GuardedLoot module) {
-    module.apiContainer().propagateApi(Routes.GuardedLoot.UNLOCKER, input -> {
-      UNLOCKERS.add(input);
-      return null;
-    });
+  static void init() {
+    for (var listener : ModuleManager.get().getModuleApiListeners(LOOT_UNLOCKER)) {
+      listener.accept(lootUnlocker -> {
+        UNLOCKERS.add(lootUnlocker);
+        return null;
+      });
+    }
 
     PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
       if (player.getAbilities().creativeMode) return true;
@@ -57,8 +59,8 @@ public final class Main {
   public static List<LivingEntity> checkMonsterLock(
       World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
     var config = world.am$get(GuardedLoot.CONFIG);
-    var supplier = Memoize.supplier(
-        LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, player, be));
+    var supplier = LootContextBuilder.block(
+        world, builder -> builder.origin(pos).state(state).thisEntity(player).blockEntity(be));
     if (!config.available.asBoolean(supplier)) return Collections.emptyList();
 
     return world

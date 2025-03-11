@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.items.minecart_block_picking.mixin;
 
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import me.melontini.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
 import me.melontini.andromeda.modules.items.minecart_block_picking.PlaceBehaviorHandler;
@@ -65,7 +65,9 @@ abstract class MinecartItemMixin extends Item {
           if (!world
               .am$get(MinecartBlockPicking.CONFIG)
               .available
-              .asBoolean(LootContextUtil.fishing(world, context.getHitPos(), stack, player)))
+              .asBoolean(LootContextBuilder.fishing(
+                  world,
+                  builder -> builder.origin(context.getHitPos()).tool(stack).thisEntity(player))))
             return;
           ItemStack stack1 = b.pickUp(state, world, pos);
           if (stack1 == null || stack1.isEmpty()) return;

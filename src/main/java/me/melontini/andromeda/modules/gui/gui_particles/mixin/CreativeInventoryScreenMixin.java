@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.client.AndromedaClient;
-import me.melontini.andromeda.common.client.particles.screen.CustomItemStackParticle;
+import me.melontini.andromeda.common.AndromedaClient;
+import me.melontini.andromeda.modules.gui.gui_particles.CustomItemStackParticle;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -43,7 +43,7 @@ abstract class CreativeInventoryScreenMixin
       SlotActionType actionType,
       CallbackInfo ci,
       @Local(ordinal = 2) int index) {
-    var config = AndromedaClient.HANDLER.get(GuiParticles.CONFIG);
+    var config = AndromedaClient.CLIENT.get(GuiParticles.CONFIG);
     if (!config.creativeScreenParticles) return;
 
     if (index >= this.handler.slots.size()) return;

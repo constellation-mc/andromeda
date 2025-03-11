@@ -1,8 +1,6 @@
 package me.melontini.andromeda.util;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +10,6 @@ import java.util.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
-import me.melontini.dark_matter.api.base.util.Exceptions;
 
 @ToString
 public final class ClassPath {
@@ -20,31 +17,7 @@ public final class ClassPath {
   private final Set<Path> scanned = new HashSet<>();
   private final Set<Info> infos = new TreeSet<>(Comparator.comparing(info -> info.name));
 
-  private ClassPath() {}
-
-  public static ClassPath from(URL... urls) {
-    ClassPath classPath = new ClassPath();
-    for (URL url : urls) {
-      classPath.addUrl(url);
-    }
-    return classPath;
-  }
-
-  public static ClassPath from(ClassLoader cl) {
-    ClassPath classPath = new ClassPath();
-    classPath.scanClassLoader(cl);
-    return classPath;
-  }
-
-  public void scanClassLoader(ClassLoader cl) {
-    if (cl.getParent() != null) scanClassLoader(cl.getParent());
-
-    if (cl instanceof URLClassLoader ucl) {
-      for (URL url : ucl.getURLs()) {
-        this.addUrl(url);
-      }
-    }
-  }
+  public ClassPath() {}
 
   public Set<Info> getTopLevelRecursive(String pckg) {
     String s = pckg.replace('/', '.');
@@ -72,24 +45,6 @@ public final class ClassPath {
       synchronized (this.scanned) {
         this.scanned.add(path);
       }
-    }
-  }
-
-  public void addUrl(URL url) {
-    if (url == null) return;
-
-    Path path = Exceptions.supply(() -> Path.of(url.toURI()));
-
-    if (this.scanned.contains(path)) return;
-
-    if (Files.isDirectory(path)) {
-      scan(path);
-    } else {
-      scanJar(path);
-    }
-
-    synchronized (this.scanned) {
-      this.scanned.add(path);
     }
   }
 

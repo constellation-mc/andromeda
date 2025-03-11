@@ -1,32 +1,33 @@
 package me.melontini.andromeda.modules.items.pouches;
 
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.VerifiedConfig;
-import me.melontini.andromeda.common.Andromeda;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.InitEvents;
+import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.modules.items.pouches.client.Client;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleInfo(name = "pouches", category = "items")
-public final class Pouches extends Module {
+public final class Pouches extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> MAIN_CONFIG =
       new ConfigDefinition<>(() -> Config.class);
 
   Pouches() {
-    this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
-    InitEvent.main(this)
-        .listen((() -> () -> Main.init(this, Andromeda.ROOT_HANDLER.get(MAIN_CONFIG))));
-    InitEvent.client(this).listen(() -> Client::init);
-
-    InitEvent.client(this).listen(() -> () -> Main.testBlocks(this));
-    InitEvent.server(this).listen(() -> () -> Main.testBlocks(this));
+    RegisterConfigEvent.get(this, RegisterConfigEvent.MAIN).listen(() -> MAIN_CONFIG);
   }
 
-  public static class Config extends VerifiedConfig {
+  @Override
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> Main::init);
+    InitEvents.CLIENT.listen(() -> Client::init);
+    InitEvents.MERGED.listen(() -> Main::testBlocks);
+  }
+
+  public static class Config extends BaseConfig {
     @ConfigEntry.Gui.RequiresRestart
     public boolean seedPouch = true;
 

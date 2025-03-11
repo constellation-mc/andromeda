@@ -6,8 +6,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import java.util.*;
 import java.util.function.Function;
-import me.melontini.andromeda.base.Bootstrap;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.Keeper;
+import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -111,7 +112,8 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
     return slot.inventory != this.output && super.canInsertIntoSlot(stack, slot);
   }
 
-  static void init(BetterFletchingTable module) {
+  static void init() {
+    var module = ModuleManager.get().get(BetterFletchingTable.class).orElseThrow();
     FletchingScreenHandler.FLETCHING.init(RegistryUtil.register(
         Registries.SCREEN_HANDLER,
         id("fletching"),
@@ -119,7 +121,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
 
     Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 
-    if (Bootstrap.isModLoaded(module, "additionaladditions")) {
+    if (Debug.get().isModLoaded(module, "additionaladditions")) {
       Registries.ITEM
           .getOrEmpty(Identifier.of("additionaladditions", "crossbow_with_spyglass"))
           .ifPresent(item -> {

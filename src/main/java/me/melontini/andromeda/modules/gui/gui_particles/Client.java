@@ -1,5 +1,6 @@
 package me.melontini.andromeda.modules.gui.gui_particles;
 
+import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -8,7 +9,9 @@ import net.minecraft.particle.ParticleTypes;
 
 public class Client {
 
-  static void init(GuiParticles.Config config) {
+  static void init() {
+    var config = AndromedaClient.CLIENT.get(GuiParticles.CONFIG);
+
     ScreenEvents.BEFORE_INIT.register((client, screen1, scaledWidth, scaledHeight) -> {
       if (screen1 instanceof AbstractFurnaceScreen<?> abstractFurnaceScreen
           && config.furnaceScreenParticles) {

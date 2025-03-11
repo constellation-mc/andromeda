@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.blocks.leaf_slowdown.mixin;
 
 import java.util.UUID;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -45,7 +45,8 @@ abstract class EntityMixin extends Entity {
         && this.world
             .am$get(LeafSlowdown.CONFIG)
             .available
-            .asBoolean(LootContextUtil.command(world, this.getPos(), this))) {
+            .asBoolean(LootContextBuilder.command(
+                world, builder -> builder.origin(this).thisEntity(this)))) {
       EntityAttributeInstance attributeInstance =
           this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
       if (this.world.getBlockState(getBlockPos().down()).isIn(BlockTags.LEAVES)

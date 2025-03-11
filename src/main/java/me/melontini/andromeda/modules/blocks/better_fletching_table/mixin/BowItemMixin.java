@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.blocks.better_fletching_table.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,7 +39,8 @@ abstract class BowItemMixin extends RangedWeaponItem {
               .world
               .am$get(BetterFletchingTable.CONFIG)
               .divergenceModifier
-              .asFloat(LootContextUtil.fishing(player.world, player.getPos(), stack, player));
+              .asFloat(LootContextBuilder.fishing(
+                  player.world, builder -> builder.origin(player).tool(stack).thisEntity(player)));
     }
     return f;
   }

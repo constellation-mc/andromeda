@@ -4,6 +4,7 @@ import static me.melontini.dark_matter.api.base.util.MathUtil.threadRandom;
 
 import java.util.HashSet;
 import java.util.Set;
+import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.dark_matter.api.base.util.ColorUtil;
@@ -29,9 +30,10 @@ public final class Client {
 
   private static final Set<Item> showTooltip = new HashSet<>();
 
-  public static void init(ThrowableItems.ClientConfig config) {
-    Main.FLYING_ITEM.ifPresent(
-        e -> EntityRendererRegistry.register(e, FlyingItemEntityRenderer::new));
+  public static void init() {
+    if (Main.FLYING_ITEM.isPresent()) {
+      EntityRendererRegistry.register(Main.FLYING_ITEM.orThrow(), FlyingItemEntityRenderer::new);
+    }
 
     ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> showTooltip.clear());
     ClientPlayNetworking.registerGlobalReceiver(
@@ -45,6 +47,7 @@ public final class Client {
           });
         });
 
+    var config = AndromedaClient.CLIENT.get(ThrowableItems.CLIENT_CONFIG);
     ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
       if (config.tooltip && showTooltip.contains(stack.getItem())) {
         lines.add(

@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.blocks.bed.safe.mixin;
 
 import static net.minecraft.block.BedBlock.isBedWorking;
 
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.block.BedBlock;
@@ -13,7 +13,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,14 +38,13 @@ abstract class BedBlockMixin extends Block {
       CallbackInfoReturnable<ActionResult> cir) {
     if (world.isClient()) return;
 
-    if (!isBedWorking(world)
-        && world
-            .am$get(Safe.CONFIG)
-            .available
-            .asBoolean(LootContextUtil.block(
-                world, Vec3d.ofCenter(pos), state, player.getStackInHand(hand), player))) {
-      player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
-      cir.setReturnValue(ActionResult.SUCCESS);
+    if (!isBedWorking(world)) {
+      var context = LootContextBuilder.block(
+          world, builder -> builder.origin(pos).state(state).tool(player, hand).thisEntity(player));
+      if (world.am$get(Safe.CONFIG).available.asBoolean(context)) {
+        player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
+        cir.setReturnValue(ActionResult.SUCCESS);
+      }
     }
   }
 }

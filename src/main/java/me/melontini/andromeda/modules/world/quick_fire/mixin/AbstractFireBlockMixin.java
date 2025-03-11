@@ -2,14 +2,13 @@ package me.melontini.andromeda.modules.world.quick_fire.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.quick_fire.QuickFire;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FireBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -66,7 +65,7 @@ abstract class AbstractFireBlockMixin extends AbstractFireBlock {
     if (world
         .am$get(QuickFire.CONFIG)
         .available
-        .asBoolean(LootContextUtil.command(world, Vec3d.ofCenter(pos)))) {
+        .asBoolean(LootContextBuilder.command(world, builder -> builder.origin(pos)))) {
       try {
         LOCAL.set(Boolean.TRUE);
         for (int x = -3; x < 3; x++) {

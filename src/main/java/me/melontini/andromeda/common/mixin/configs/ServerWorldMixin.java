@@ -1,14 +1,13 @@
 package me.melontini.andromeda.common.mixin.configs;
 
 import java.util.function.Supplier;
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigHandler;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.VerifiedConfig;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.config.DataConfigs;
-import me.melontini.andromeda.common.config.ScopedConfigs;
+import me.melontini.andromeda.common.config.handler.GameConfigHandler;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -27,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerWorld.class)
-abstract class ServerWorldMixin extends World implements ScopedConfigs.AttachmentGetter {
+abstract class ServerWorldMixin extends World implements DataConfigs.AttachmentGetter {
 
   protected ServerWorldMixin(
       MutableWorldProperties properties,
@@ -54,7 +53,7 @@ abstract class ServerWorldMixin extends World implements ScopedConfigs.Attachmen
   @Shadow
   @NotNull public abstract MinecraftServer getServer();
 
-  @Unique private ConfigHandler andromeda$configs;
+  @Unique private GameConfigHandler andromeda$configs;
 
   @Inject(
       at =
@@ -67,28 +66,22 @@ abstract class ServerWorldMixin extends World implements ScopedConfigs.Attachmen
       method = "<init>")
   private void andromeda$initStates(CallbackInfo ci) {
     var manager = ModuleManager.get();
-    this.andromeda$configs = new ConfigHandler(
+    this.andromeda$configs = new GameConfigHandler(
+        manager,
+        Andromeda.GAME,
         getServer().session.getWorldDirectory(this.getRegistryKey()).resolve("world_config"),
-        true,
-        ConfigState.GAME,
-        Andromeda.GAME_HANDLER,
-        manager.loaded());
+        RegisterConfigEvent.GAME);
 
-    DataConfigs.get(this.getServer()).apply(this, this.getRegistryKey().getValue());
+    DataConfigs.get(this.getServer()).applyConfigs(this, this.getRegistryKey().getValue());
   }
 
   @Override
-  public <T extends VerifiedConfig> T am$get(ConfigDefinition<T> module) {
+  public <T extends BaseConfig> T am$get(ConfigDefinition<T> module) {
     return this.andromeda$configs.get(module);
   }
 
   @Override
-  public ConfigHandler andromeda$getConfigs() {
+  public GameConfigHandler andromeda$getConfigs() {
     return andromeda$configs;
-  }
-
-  @Override
-  public boolean am$isReady() {
-    return true;
   }
 }

@@ -1,24 +1,31 @@
 package me.melontini.andromeda.modules.mechanics.dragon_fight;
 
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.VerifiedConfig;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.InitEvents;
+import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
 
-@ModuleInfo(name = "dragon_fight", category = "mechanics", environment = Environment.SERVER)
-public final class DragonFight extends Module {
+@me.melontini.andromeda.bootstrap.ModuleInfo(
+    name = "dragon_fight",
+    category = "mechanics",
+    env = Environment.SERVER)
+public final class DragonFight extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   DragonFight() {
-    this.defineConfig(ConfigState.MAIN, CONFIG);
-    InitEvent.main(this).listen(() -> EnderDragonManager::init);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.MAIN).listen(() -> CONFIG);
   }
 
-  public static final class Config extends VerifiedConfig {
+  @Override
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> EnderDragonManager::init);
+  }
+
+  public static final class Config extends BaseConfig {
     public boolean respawnCrystals = true;
     public boolean scaleHealthByMaxPlayers = false;
     public boolean shorterCrystalTrackRange = true;

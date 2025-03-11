@@ -5,12 +5,12 @@ import static me.melontini.andromeda.common.Andromeda.id;
 
 import java.util.List;
 import java.util.Set;
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.AndromedaItemGroup;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
-import me.melontini.andromeda.util.exceptions.AndromedaException;
+import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -90,7 +90,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
   @Override
   public void appendTooltip(
       ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-    if (ModuleManager.get().getModule(Unknown.class).isPresent())
+    if (ModuleManager.get().get(Unknown.class).isPresent())
       tooltip.add(
           TextUtil.translatable("tooltip.andromeda.incubator[1]").formatted(Formatting.GRAY));
   }
@@ -158,14 +158,14 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
     BlockEntity blockEntity = world.getBlockEntity(pos);
     if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity)
       return incubatorBlockEntity;
-    throw AndromedaException.builder()
-        .literal("Invalid block entity type! Must be an instance of %s"
-            .formatted(IncubatorBlockEntity.class.getName()))
-        .add("block_entity", blockEntity)
-        .build();
+    throw Util.create(
+        "Invalid block entity type! Must be an instance of %s"
+            .formatted(IncubatorBlockEntity.class.getName()),
+        IllegalStateException::new);
   }
 
-  public static void init(Incubator module) {
+  public static void init() {
+    var module = ModuleManager.get().get(Incubator.class).orElseThrow();
     IncubatorBlock.INCUBATOR_BLOCK.init(RegistryUtil.register(
         Registries.BLOCK,
         id("incubator"),
@@ -181,7 +181,7 @@ public class IncubatorBlock extends BlockWithEntity implements InventoryProvider
         () -> new BlockEntityType<>(
             IncubatorBlockEntity::new, Set.of(IncubatorBlock.INCUBATOR_BLOCK.orThrow()), null)));
 
-    AndromedaItemGroup.accept(
+    AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.keeper(module, ItemGroups.FUNCTIONAL, IncubatorBlock.INCUBATOR));
 
     EggProcessingData.init();

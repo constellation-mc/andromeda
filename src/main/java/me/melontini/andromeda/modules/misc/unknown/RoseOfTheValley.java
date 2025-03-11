@@ -57,8 +57,8 @@ public class RoseOfTheValley extends BlockItem {
 
   @Environment(EnvType.CLIENT)
   static void onClient() {
-    ROSE_OF_THE_VALLEY_BLOCK.ifPresent(
-        b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
+    BlockRenderLayerMap.INSTANCE.putBlocks(
+        RenderLayer.getCutout(), RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow());
   }
 
   @Override

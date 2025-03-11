@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.slowness;
 
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -41,8 +41,9 @@ abstract class SlimeEntityMixin extends MobEntity {
   private void andromeda$onPlayerCollision(LivingEntity target, CallbackInfo ci) {
     var config = this.world.am$get(Slimes.CONFIG);
     if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
-    if (!config.slowness.asBoolean(
-        LootContextUtil.entity(world, target.getPos(), target, null, this))) return;
+    if (!config.slowness.asBoolean(LootContextBuilder.entity(
+        world,
+        builder -> builder.origin(target).thisEntity(target).genericSource().killer(this)))) return;
 
     StatusEffectInstance effectInstance = new StatusEffectInstance(
         StatusEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);

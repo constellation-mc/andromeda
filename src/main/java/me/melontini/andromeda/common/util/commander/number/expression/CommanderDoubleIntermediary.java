@@ -1,0 +1,33 @@
+package me.melontini.andromeda.common.util.commander.number.expression;
+
+import com.mojang.serialization.Codec;
+import java.util.function.Supplier;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
+import me.melontini.commander.api.expression.Arithmetica;
+import net.minecraft.loot.context.LootContext;
+
+@EqualsAndHashCode
+@ToString
+public final class CommanderDoubleIntermediary implements DoubleIntermediary {
+
+  public static final Codec<CommanderDoubleIntermediary> CODEC = Arithmetica.CODEC.xmap(
+      CommanderDoubleIntermediary::new, CommanderDoubleIntermediary::getArithmetica);
+
+  @Getter
+  private final Arithmetica arithmetica;
+
+  private final boolean constant;
+
+  public CommanderDoubleIntermediary(Arithmetica arithmetica) {
+    this.arithmetica = arithmetica;
+    this.constant = arithmetica.toSource().left().isPresent();
+  }
+
+  @Override
+  public double asDouble(Supplier<LootContext> supplier) {
+    return this.arithmetica.asDouble(constant ? null : supplier.get());
+  }
+}

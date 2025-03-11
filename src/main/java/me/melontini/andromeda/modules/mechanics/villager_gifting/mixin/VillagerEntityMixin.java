@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.mechanics.villager_gifting.mixin;
 
 import java.util.Map;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
 import net.minecraft.entity.EntityType;
@@ -55,7 +55,8 @@ abstract class VillagerEntityMixin extends MerchantEntity {
     if (!world
         .am$get(VillagerGifting.CONFIG)
         .available
-        .asBoolean(LootContextUtil.fishing(world, player.getPos(), stack, player))) return;
+        .asBoolean(LootContextBuilder.fishing(
+            world, builder -> builder.origin(player).tool(stack).thisEntity(player)))) return;
 
     ItemStack gift = stack.copy();
     gift.setCount(1);

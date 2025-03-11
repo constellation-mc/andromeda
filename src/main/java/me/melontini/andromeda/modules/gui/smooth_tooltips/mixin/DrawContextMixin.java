@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import java.util.List;
-import me.melontini.andromeda.common.client.AndromedaClient;
+import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -52,7 +52,7 @@ abstract class DrawContextMixin {
       @Local(argsOnly = true, ordinal = 1) int y,
       @Share("popMatrix") LocalBooleanRef popMatrix) {
     if (andromeda$makeSmooth(x, y)) {
-      var c = AndromedaClient.HANDLER.get(SmoothTooltips.CONFIG);
+      var c = AndromedaClient.CLIENT.get(SmoothTooltips.CONFIG);
       if (smoothPos == null) smoothPos = new Vector2d(x, y);
       smoothPos.x = MathHelper.clamp(
           MathHelper.lerp(c.deltaX * client.getLastFrameDuration(), smoothPos.x, vic.x()),

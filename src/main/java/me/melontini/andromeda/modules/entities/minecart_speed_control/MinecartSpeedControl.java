@@ -1,24 +1,21 @@
 package me.melontini.andromeda.modules.entities.minecart_speed_control;
 
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.GameConfig;
-import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
-import me.melontini.andromeda.util.commander.number.LongIntermediary;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
+import me.melontini.andromeda.common.config.GameConfig;
+import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
+import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 
-@ModuleInfo(
-    name = "minecart_speed_control",
-    category = "entities",
-    environment = Environment.SERVER)
+@ModuleInfo(name = "minecart_speed_control", category = "entities", env = Environment.SERVER)
 public final class MinecartSpeedControl extends Module {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   MinecartSpeedControl() {
-    this.defineConfig(ConfigState.GAME, CONFIG);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
   }
 
   public static class Config extends GameConfig {

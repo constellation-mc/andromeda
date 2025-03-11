@@ -43,7 +43,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
 
   @Inject(at = @At("HEAD"), method = "tick")
   private void andromeda$tick(CallbackInfo ci) {
-    if (!Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).takeFuelWhenLow) return;
+    if (!Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).takeFuelWhenLow) return;
 
     if (!this.world.isClient() && this.fuel < 100) {
       if (world.getTime() % 20 == 0) {
@@ -64,7 +64,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecartEntity {
             if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
               int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
               if ((this.fuel + (itemFuel * 2.25))
-                  <= Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
+                  <= Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
                 ItemStack reminder = stack.getRecipeRemainder();
                 if (!reminder.isEmpty())
                   ItemStackUtil.spawn(entity.getPos(), stack.getRecipeRemainder(), world);

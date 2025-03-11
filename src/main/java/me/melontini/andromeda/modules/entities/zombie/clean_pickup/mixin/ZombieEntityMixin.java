@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.Pickup;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
@@ -37,7 +37,7 @@ abstract class ZombieEntityMixin extends HostileEntity {
       return original
           && (stack.isIn(PickupTag.ZOMBIES_PICKUP)
               || ModuleManager.get()
-                  .getModule(ThrowableItems.class)
+                  .get(ThrowableItems.class)
                   .map(m -> handleThrowableItems(m, world, stack))
                   .orElse(false));
     }

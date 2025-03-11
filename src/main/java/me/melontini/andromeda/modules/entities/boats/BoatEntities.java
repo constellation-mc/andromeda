@@ -3,6 +3,7 @@ package me.melontini.andromeda.modules.entities.boats;
 import static me.melontini.andromeda.common.Andromeda.id;
 
 import java.util.UUID;
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import me.melontini.andromeda.modules.entities.boats.entities.HopperBoatEntity;
@@ -35,7 +36,8 @@ public class BoatEntities {
             .build());
   }
 
-  public static void init(Boats.Config config) {
+  public static void init() {
+    var config = Andromeda.MAIN.get(Boats.MAIN_CONFIG);
     BOAT_WITH_TNT.init(boatType(config.isTNTBoatOn, id("tnt_boat"), TNTBoatEntity::new));
     BOAT_WITH_FURNACE.init(
         boatType(config.isFurnaceBoatOn, id("furnace_boat"), FurnaceBoatEntity::new));
@@ -44,15 +46,18 @@ public class BoatEntities {
     BOAT_WITH_HOPPER.init(
         boatType(config.isHopperBoatOn, id("hopper_boat"), HopperBoatEntity::new));
 
-    BOAT_WITH_TNT.ifPresent(e -> ServerPlayNetworking.registerGlobalReceiver(
-        TNTBoatEntity.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {
-          UUID id = buf.readUuid();
-          server.execute(() -> {
-            Entity entity = player.world.getEntityLookup().get(id);
-            if (entity instanceof TNTBoatEntity boat
-                && boat.isAlive()
-                && player == boat.getFirstPassenger()) boat.explode();
+    if (BOAT_WITH_TNT.isPresent()) {
+      // This sucks
+      ServerPlayNetworking.registerGlobalReceiver(
+          TNTBoatEntity.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {
+            UUID id = buf.readUuid();
+            server.execute(() -> {
+              Entity entity = player.world.getEntityLookup().get(id);
+              if (entity instanceof TNTBoatEntity boat
+                  && boat.isAlive()
+                  && player == boat.getFirstPassenger()) boat.explode();
+            });
           });
-        }));
+    }
   }
 }

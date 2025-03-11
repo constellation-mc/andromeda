@@ -2,15 +2,14 @@ package me.melontini.andromeda.modules.items.lockpick;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-import me.melontini.andromeda.api.Routes;
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.api.ModuleDeclarations;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.common.AndromedaItemGroup;
+import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.guarded_loot.GuardedLoot;
 import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -36,8 +35,8 @@ public class LockpickItem extends Item {
 
   public boolean tryUse(ItemStack stack, LivingEntity user, Hand hand) {
     var c = user.world.am$get(Lockpick.CONFIG);
-    var supplier = Memoize.supplier(
-        LootContextUtil.fishing(user.world, user.getPos(), user.getStackInHand(hand), user));
+    var supplier = LootContextBuilder.fishing(
+        user.world, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
     if (c.available.asBoolean(supplier) && hand == Hand.MAIN_HAND) {
       int chance = c.chance.asInt(supplier);
 
@@ -60,7 +59,7 @@ public class LockpickItem extends Item {
     if (user.world.isClient()) return ActionResult.SUCCESS;
 
     if (entity instanceof MerchantEntity merchant
-        && Andromeda.ROOT_HANDLER.get(Lockpick.MAIN_CONFIG).villagerInventory) {
+        && Andromeda.MAIN.get(Lockpick.MAIN_CONFIG).villagerInventory) {
       if (tryUse(stack, user, hand)) {
         user.openHandledScreen(new SimpleNamedScreenHandlerFactory(
             (syncId, inv, player) ->
@@ -72,7 +71,10 @@ public class LockpickItem extends Item {
     return ActionResult.CONSUME;
   }
 
-  static void init(Lockpick module, Lockpick.MainConfig config) {
+  static void init() {
+    var module = ModuleManager.get().get(Lockpick.class).orElseThrow();
+    var config = Andromeda.MAIN.get(Lockpick.MAIN_CONFIG);
+
     LockpickItem.INSTANCE.init(RegistryUtil.register(
         Registries.ITEM,
         id("lockpick"),
@@ -83,14 +85,13 @@ public class LockpickItem extends Item {
         id("merchant_inventory"),
         RegistryUtil.screenHandlerType(MerchantInventoryScreenHandler::new)));
 
-    AndromedaItemGroup.accept(
+    AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.keeper(module, ItemGroups.TOOLS, LockpickItem.INSTANCE));
 
     ModuleManager.get()
         .whenAvailable(
-            "blocks/guarded_loot",
-            Routes.GuardedLoot.UNLOCKER,
-            api -> api.apply((blockEntity, player) -> {
+            ModuleDeclarations.LOOT_UNLOCKER,
+            function -> function.apply((be, player) -> {
               if (player.world.am$get(GuardedLoot.CONFIG).allowLockPicking) {
                 if (player.getMainHandStack().isOf(LockpickItem.INSTANCE.orThrow())) {
                   return LockpickItem.INSTANCE

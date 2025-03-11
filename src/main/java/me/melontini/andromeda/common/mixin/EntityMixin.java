@@ -3,7 +3,7 @@ package me.melontini.andromeda.common.mixin;
 import java.util.function.Supplier;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.common.util.LazyLootParameterSet;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.entity.Entity;
@@ -31,7 +31,7 @@ abstract class EntityMixin implements ConstantLootContextAccessor {
         .add(LootContextParameters.ORIGIN, this::getPos)
         .add(LootContextParameters.THIS_ENTITY, () -> (Entity) (Object) this)
         .build(LootContextTypes.COMMAND);
-    return Memoize.supplier(() -> LootContextUtil.build(c));
+    return Memoize.supplier(() -> LootContextBuilder.build(c));
   });
 
   @Override

@@ -2,17 +2,17 @@ package me.melontini.andromeda.common.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
+import me.melontini.andromeda.bootstrap.util.mixin.MixinEnvironment;
 import me.melontini.dark_matter.api.mixin.annotations.MixinPredicate;
 import me.melontini.dark_matter.api.mixin.annotations.Mod;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.gui.entries.SubCategoryListEntry;
+import net.fabricmc.api.EnvType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @MixinPredicate(mods = @Mod("cloth-config"))
-@SpecialEnvironment(Environment.CLIENT)
+@MixinEnvironment(EnvType.CLIENT)
 @Mixin(SubCategoryListEntry.class)
 abstract class SubCategoryListEntryMixin {
 

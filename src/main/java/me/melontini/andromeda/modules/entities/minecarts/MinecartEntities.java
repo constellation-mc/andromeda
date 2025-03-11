@@ -2,6 +2,7 @@ package me.melontini.andromeda.modules.entities.minecarts;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
+import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import me.melontini.andromeda.modules.entities.minecarts.entities.JukeboxMinecartEntity;
@@ -22,7 +23,9 @@ public class MinecartEntities {
   public static final Keeper<EntityType<JukeboxMinecartEntity>> JUKEBOX_MINECART_ENTITY =
       Keeper.create();
 
-  static void init(Minecarts.Config config) {
+  static void init() {
+    var config = Andromeda.MAIN.get(Minecarts.MAIN_CONFIG);
+
     ANVIL_MINECART_ENTITY.init(RegistryUtil.register(
         config.isAnvilMinecartOn,
         Registries.ENTITY_TYPE,

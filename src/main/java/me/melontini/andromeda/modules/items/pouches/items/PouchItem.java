@@ -2,10 +2,10 @@ package me.melontini.andromeda.modules.items.pouches.items;
 
 import java.util.List;
 import lombok.Getter;
-import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.items.pouches.Main;
 import me.melontini.andromeda.modules.items.pouches.entities.PouchEntity;
-import me.melontini.andromeda.util.Debug;
+import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
@@ -42,7 +42,7 @@ public class PouchItem extends Item {
   @Override
   public void appendTooltip(
       ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-    if (context.isAdvanced() && Debug.Keys.DISPLAY_TRACKED_VALUES.isPresent()) {
+    if (context.isAdvanced() && Util.isDev()) {
       tooltip.add(
           TextUtil.literal("Loot: " + this.getType().getLootId(stack)).formatted(Formatting.GRAY));
     }
@@ -81,7 +81,7 @@ public class PouchItem extends Item {
   public ActionResult useOnEntity(
       ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
     if (!user.getWorld().isClient()) {
-      var stacks = WorldUtil.prepareLoot(user.getWorld(), type.getLootId(stack));
+      var stacks = LootContextBuilder.prepareLoot(user.getWorld(), type.getLootId(stack));
 
       boolean success = false;
       if (entity instanceof PlayerEntity player) {

@@ -2,9 +2,8 @@ package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.cooldown;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -38,8 +37,8 @@ abstract class SnowballItemMixin extends Item {
     var config = world.am$get(Snowballs.CONFIG);
     if (!config.available.asBoolean(ConstantLootContextAccessor.get(par1))) return par1;
 
-    var supplier = Memoize.supplier(
-        LootContextUtil.fishing(world, user.getPos(), user.getStackInHand(hand), user));
+    var supplier = LootContextBuilder.fishing(
+        world, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
     if (!config.enableCooldown.asBoolean(supplier)) return par1;
 
     user.getItemCooldownManager().set(this, config.cooldown.asInt(supplier));

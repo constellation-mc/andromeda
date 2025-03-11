@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.misc.translations.mixin;
 
 import java.util.concurrent.CompletableFuture;
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.modules.misc.translations.Client;
 import me.melontini.andromeda.modules.misc.translations.Translations;
 import net.minecraft.client.MinecraftClient;
@@ -29,6 +29,7 @@ abstract class MinecraftClientMixin {
       method = "reloadResources(Z)Ljava/util/concurrent/CompletableFuture;")
   private void andromeda$downloadLangFiles(
       boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-    Client.onResourceReload(this.options.language, ModuleManager.quick(Translations.class));
+    Client.onResourceReload(
+        this.options.language, ModuleManager.get().get(Translations.class).orElseThrow());
   }
 }

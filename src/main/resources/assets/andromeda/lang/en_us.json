@@ -400,8 +400,6 @@
   "config.andromeda.misc.damage_backport.@Tooltip": "A backport of the /damage command. Not a 1-1 copy!",
   "config.andromeda.misc.translations": "Auto Update Translations",
   "config.andromeda.misc.translations.@Tooltip": "Try to download latest translations from GitHub.",
-  "andromeda.misc.translations.exception.no_valid_lang": "No valid language option found!",
-  "andromeda.misc.translations.failed_lang_acquire": "Couldn't determine selected language!",
 
   "config.andromeda.misc.recipe_advancements_generation": "Auto-generate Recipe Advancements",
   "config.andromeda.misc.recipe_advancements_generation.@Tooltip": "Tries to automatically generate recipe advancements for most recipes.",

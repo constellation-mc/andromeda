@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.entities.vehicle_unentrapment;
 import static me.melontini.andromeda.common.Andromeda.id;
 
 import java.util.Objects;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -25,13 +25,12 @@ public final class Main {
       if (world
           .am$get(VehicleUnentrapment.CONFIG)
           .available
-          .asBoolean(LootContextUtil.entity(
-              world,
-              Objects.requireNonNullElse(source.getPosition(), entity.getPos()),
-              entity,
-              source,
-              source.getAttacker(),
-              source.getSource()))) {
+          .asBoolean(LootContextBuilder.entity(world, builder -> builder
+              .origin(Objects.requireNonNullElse(source.getPosition(), entity.getPos()))
+              .thisEntity(entity)
+              .sourceOrGeneric(source)
+              .killer(source.getAttacker())
+              .directKiller(source.getSource())))) {
         if (source.getAttacker() == null || entity instanceof PlayerEntity) return true;
         if (!entity.getType().isIn(ESCAPE_VEHICLES_ON_HIT)) return true;
 

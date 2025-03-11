@@ -3,7 +3,7 @@ package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
@@ -48,7 +48,8 @@ abstract class LivingEntityMixin extends Entity {
         || (world
                 .am$get(InfiniteTotem.CONFIG)
                 .available
-                .asBoolean(LootContextUtil.fishing(world, this.getPos(), itemStack))
+                .asBoolean(LootContextBuilder.fishing(
+                    world, builder -> builder.origin(getPos()).tool(itemStack)))
             && itemStack.isOf(Main.INFINITE_TOTEM.orThrow()));
   }
 

@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 
-import me.melontini.andromeda.common.client.AndromedaClient;
+import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
@@ -32,7 +32,7 @@ abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentScreenHan
       method = "mouseClicked")
   private void andromeda$particles(
       double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-    if (!AndromedaClient.HANDLER.get(GuiParticles.CONFIG).enchantmentScreenParticles) return;
+    if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).enchantmentScreenParticles) return;
 
     Slot slot = this.handler.slots.get(0);
     ScreenParticleHelper.addScreenParticles(

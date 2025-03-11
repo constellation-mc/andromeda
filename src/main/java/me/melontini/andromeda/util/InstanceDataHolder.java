@@ -6,11 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import me.melontini.andromeda.util.exceptions.AndromedaException;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,9 +18,6 @@ import org.jetbrains.annotations.NotNull;
 public class InstanceDataHolder {
 
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static Supplier<InstanceDataHolder> INSTANCE = () -> {
-    throw new IllegalStateException("InstanceDataHolder requested too early!");
-  };
 
   private final JsonObject data;
 
@@ -52,22 +47,12 @@ public class InstanceDataHolder {
 
   public void save() {
     synchronized (this) {
-      try (var writer =
-          Files.newBufferedWriter(CommonValues.hiddenPath().resolve("instance_data.json"))) {
+      try (var writer = Files.newBufferedWriter(Util.HIDDEN_PATH.resolve("instance_data.json"))) {
         GSON.toJson(this.data, writer);
       } catch (IOException e) {
-        throw AndromedaException.builder()
-            .literal("Failed to save instance data!")
-            .report(false)
-            .cause(e)
-            .build();
+        throw Util.create("Failed to save instance data!");
       }
     }
-  }
-
-  public void modifyAndSave(@NotNull Runnable consumer) {
-    consumer.run();
-    this.save();
   }
 
   public @NotNull JsonElement getData(String string) {
@@ -78,23 +63,18 @@ public class InstanceDataHolder {
     return this.data.has(string);
   }
 
-  public static void load() {
+  public static InstanceDataHolder load() {
     JsonObject holder = new JsonObject();
-    Path path = CommonValues.hiddenPath().resolve("instance_data.json");
+    Path path = Util.HIDDEN_PATH.resolve("instance_data.json");
 
     if (Files.exists(path)) {
       try (var reader = Files.newBufferedReader(path)) {
         holder = GSON.fromJson(reader, JsonObject.class).getAsJsonObject();
       } catch (IOException | JsonParseException e) {
-        LOGGER.error("Failed to load instance data! resetting to default...", e);
+        log.error("Failed to load instance data! resetting to default...", e);
       }
     }
 
-    var realDeal = new InstanceDataHolder(holder);
-    INSTANCE = () -> realDeal;
-  }
-
-  public static InstanceDataHolder get() {
-    return INSTANCE.get();
+    return new InstanceDataHolder(holder);
   }
 }

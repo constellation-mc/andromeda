@@ -3,37 +3,24 @@
   "id": "andromeda",
   "version": "${version}",
   "name": "Andromeda",
-  "description": "A galaxy is a collection of things and systems. So is this mod.",
-  "authors": [
-    "melontini"
-  ],
-  "contributors": [
-    "Rad233"
-  ],
-  "contact": {
-    "sources": "https://github.com/constellation-mc/andromeda",
-    "issues": "https://github.com/constellation-mc/andromeda/issues",
-    "homepage": "https://andromeda-wiki.pages.dev/"
-  },
+  "description": "",
+  "authors": [],
+  "contact": {},
   "license": "MIT",
   "icon": "assets/andromeda/icon.png",
   "environment": "*",
-  "accessWidener" : "andromeda.accesswidener",
   "entrypoints": {
-    "client": [
-      "me.melontini.andromeda.base.Bootstrap::onClient"
+    "preLaunch": [
+      "me.melontini.andromeda.bootstrap.ModuleManager"
     ],
     "server": [
-      "me.melontini.andromeda.base.Bootstrap::onServer"
+      "me.melontini.andromeda.common.AndromedaServer"
+    ],
+    "client": [
+      "me.melontini.andromeda.common.AndromedaClient"
     ],
     "main": [
-      "me.melontini.andromeda.base.Bootstrap::onMain"
-    ],
-    "preLaunch": [
-      "me.melontini.andromeda.base.Bootstrap::onPreLaunch"
-    ],
-    "modmenu": [
-      "me.melontini.andromeda.common.client.config.ModMenuIntegration"
+      "me.melontini.andromeda.common.Andromeda"
     ]
   },
   "mixins": [
@@ -41,28 +28,13 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": ">=${fabric_version}",
-    "minecraft": ">=${minecraft_version}",
-    "dark-matter-base": "*",
-    "dark-matter-minecraft": "*"
-  },
-  "recommends": {
-    "cloth-config": ">=${cloth_version}",
-    "modmenu": ">=${modmenu_version}",
-    "commander": ">=${commander_version}"
-  },
-  "breaks": {
-    "cloth-config": "<${cloth_version}",
-    "modmenu": "<${modmenu_version}",
-    "commander": "<${commander_version}"
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
   },
   "custom": {
-    "lithium:options": {
-      "mixin.world.block_entity_ticking.sleeping.campfire": false
-    },
     "loom:injected_interfaces": {
       "net/minecraft/class_1937": [
-        "me/melontini/andromeda/common/config/ScopedConfigs\u0024WorldExtension"
+        "me/melontini/andromeda/common/config/DataConfigs\u0024WorldExtension"
       ]
     }
   }

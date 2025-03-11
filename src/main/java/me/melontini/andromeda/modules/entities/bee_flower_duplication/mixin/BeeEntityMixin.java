@@ -1,11 +1,10 @@
 package me.melontini.andromeda.modules.entities.bee_flower_duplication.mixin;
 
-import me.melontini.andromeda.base.ModuleManager;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -71,7 +70,8 @@ abstract class BeeEntityMixin extends AnimalEntity {
     if (this.flowerPos != null) {
       BlockState flowerState = world.getBlockState(flowerPos);
       var config = world.am$get(BeeFlowerDuplication.CONFIG);
-      var supplier = Memoize.supplier(LootContextUtil.block(world, this.getPos(), flowerState));
+      var supplier =
+          LootContextBuilder.block(world, builder -> builder.origin(getPos()).state(flowerState));
       if (!config.available.asBoolean(supplier)) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
@@ -84,7 +84,7 @@ abstract class BeeEntityMixin extends AnimalEntity {
               if (world.getBlockState(pos).getBlock() instanceof AirBlock
                   && flowerBlock.canPlaceAt(flowerState, world, pos)) {
                 if (world.random.nextInt(12) == 0) {
-                  if (ModuleManager.get().getModule(Unknown.class).isPresent()
+                  if (ModuleManager.get().get(Unknown.class).isPresent()
                       && world.random.nextInt(100) == 0) {
                     world.setBlockState(
                         pos, RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().getDefaultState());

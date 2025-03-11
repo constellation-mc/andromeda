@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.world.crop_temperature.mixin;
 
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperature;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
 import net.minecraft.block.BlockState;
@@ -9,7 +9,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,7 +29,8 @@ abstract class BoneMealItemMixin {
     if (world
         .am$get(PlantTemperature.CONFIG)
         .affectBoneMeal
-        .asBoolean(LootContextUtil.block(world, Vec3d.ofCenter(pos), state))) {
+        .asBoolean(
+            LootContextBuilder.block(world, builder -> builder.origin(pos).state(state)))) {
       if (!PlantTemperatureData.roll(
           pos, state, world.getBiome(pos).value().getTemperature(), (ServerWorld) world)) {
         cir.setReturnValue(ActionResult.FAIL);

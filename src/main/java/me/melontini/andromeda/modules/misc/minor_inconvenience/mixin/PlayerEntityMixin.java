@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.misc.minor_inconvenience.mixin;
 
 import java.util.Objects;
 import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -44,13 +44,12 @@ abstract class PlayerEntityMixin extends LivingEntity {
         && world
             .am$get(MinorInconvenience.CONFIG)
             .available
-            .asBoolean(LootContextUtil.entity(
-                world,
-                Objects.requireNonNullElse(source.getPosition(), this.getPos()),
-                this,
-                source,
-                source.getAttacker(),
-                source.getSource()))) {
+            .asBoolean(LootContextBuilder.entity(world, builder -> builder
+                .origin(Objects.requireNonNullElse(source.getPosition(), this.getPos()))
+                .thisEntity(this)
+                .sourceOrGeneric(source)
+                .killer(source.getAttacker())
+                .directKiller(source.getSource())))) {
       DamageSource damageSource = this.getWorld().getDamageSources().create(AGONY, this);
       super.damage(damageSource, Float.MAX_VALUE);
       this.getWorld()

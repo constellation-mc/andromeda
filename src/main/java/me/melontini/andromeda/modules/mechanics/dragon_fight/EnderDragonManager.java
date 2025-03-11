@@ -89,7 +89,7 @@ public class EnderDragonManager {
     }
     crystals.removeAll(removal);
 
-    if (!Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).scaleHealthByMaxPlayers) return;
+    if (!Andromeda.MAIN.get(DragonFight.CONFIG).scaleHealthByMaxPlayers) return;
     for (EnderDragonEntity dragon : dragons) {
       EntityAttributeInstance inst =
           dragon.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);

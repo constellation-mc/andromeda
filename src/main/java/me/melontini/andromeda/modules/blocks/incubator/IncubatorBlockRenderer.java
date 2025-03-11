@@ -88,9 +88,12 @@ public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBloc
   }
 
   public static void onClient() {
-    IncubatorBlock.INCUBATOR_BLOCK.ifPresent(
-        b -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), b));
-    IncubatorBlock.INCUBATOR_BLOCK_ENTITY.ifPresent(
-        b -> BlockEntityRendererFactories.register(b, IncubatorBlockRenderer::new));
+    if (IncubatorBlock.INCUBATOR_BLOCK.isPresent()) {
+      BlockRenderLayerMap.INSTANCE.putBlocks(
+          RenderLayer.getCutout(), IncubatorBlock.INCUBATOR_BLOCK.get());
+      // This is registered alongside the block, so no check is necessary
+      BlockEntityRendererFactories.register(
+          IncubatorBlock.INCUBATOR_BLOCK_ENTITY.get(), IncubatorBlockRenderer::new);
+    }
   }
 }

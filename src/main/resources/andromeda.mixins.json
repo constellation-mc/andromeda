@@ -1,15 +1,10 @@
 {
   "required": true,
-  "minVersion": "0.8.5",
+  "minVersion": "0.8",
   "package": "me.melontini.andromeda.common.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "me.melontini.andromeda.util.mixins.AndromedaMixinPlugin",
-  "mixins": [
-  ],
-  "client": [
-  ],
+  "plugin": "me.melontini.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin",
   "injectors": {
-    "defaultRequire": 1,
-    "maxShiftBy": 3
+    "defaultRequire": 1
   }
 }

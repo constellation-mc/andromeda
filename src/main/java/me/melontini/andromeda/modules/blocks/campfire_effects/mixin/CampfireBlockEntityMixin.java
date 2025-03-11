@@ -2,9 +2,8 @@ package me.melontini.andromeda.modules.blocks.campfire_effects.mixin;
 
 import java.util.ArrayList;
 import java.util.List;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
@@ -14,7 +13,6 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,8 +28,8 @@ abstract class CampfireBlockEntityMixin {
     if (world.getTime() % 180 == 0) {
       if (state.get(CampfireBlock.LIT)) {
         var config = world.am$get(CampfireEffects.CONFIG);
-        var supplier = Memoize.supplier(
-            LootContextUtil.block(world, Vec3d.ofCenter(pos), state, null, null, campfire));
+        var supplier = LootContextBuilder.block(
+            world, builder -> builder.origin(pos).state(state).blockEntity(campfire));
         if (!config.available.asBoolean(supplier)) return;
 
         List<LivingEntity> entities = new ArrayList<>();

@@ -9,9 +9,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import me.melontini.andromeda.common.AndromedaItemGroup;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -165,8 +166,9 @@ public class MagnetItem extends Item {
                       * world
                           .am$get(Magnet.CONFIG)
                           .rangeMultiplier
-                          .asDouble(
-                              LootContextUtil.fishing(world, entity.getPos(), stack, entity))),
+                          .asDouble(LootContextBuilder.fishing(
+                              world,
+                              builder -> builder.origin(entity).tool(stack).thisEntity(entity)))),
               ie ->
                   magnetables.contains(ie.getDataTracker().get(ItemEntity.STACK).getItem()))
           .forEach(ie -> {
@@ -264,10 +266,13 @@ public class MagnetItem extends Item {
         0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
   }
 
-  static void init(Magnet module) {
+  static void init() {
+    var module = ModuleManager.get().get(Magnet.class).orElseThrow();
+
     MagnetItem.MAGNET.init(RegistryUtil.register(
         Registries.ITEM, id("magnet"), () -> new MagnetItem(new FabricItemSettings().maxCount(1))));
 
-    AndromedaItemGroup.accept(a -> a.keeper(module, ItemGroups.TOOLS, MagnetItem.MAGNET));
+    AndromedaItemGroup.BUS.listen(
+        acceptor -> acceptor.keeper(module, ItemGroups.TOOLS, MagnetItem.MAGNET));
   }
 }

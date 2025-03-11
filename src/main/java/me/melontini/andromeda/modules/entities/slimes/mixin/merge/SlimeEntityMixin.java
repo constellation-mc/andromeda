@@ -1,10 +1,9 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.merge;
 
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -44,8 +43,11 @@ abstract class SlimeEntityMixin extends MobEntity {
         new ActiveTargetGoal<>(
             (SlimeEntity) (Object) this, SlimeEntity.class, 5, true, false, livingEntity -> {
               if (!config.available.asBoolean(supplier)) return false;
-              var supplier1 = Memoize.supplier(
-                  LootContextUtil.entity(world, livingEntity.getPos(), livingEntity, null, this));
+              var supplier1 = LootContextBuilder.entity(world, builder -> builder
+                  .origin(livingEntity)
+                  .thisEntity(livingEntity)
+                  .killer(this)
+                  .genericSource());
               if (!config.merge.asBoolean(supplier1)) return false;
               if (this.andromeda$mergeCD > 0) return false;
               float d = livingEntity.distanceTo(this);
@@ -61,8 +63,9 @@ abstract class SlimeEntityMixin extends MobEntity {
     var supplier = ConstantLootContextAccessor.get(this);
     if (!config.available.asBoolean(supplier)) return;
 
-    if (!config.merge.asBoolean(LootContextUtil.entity(world, entity.getPos(), entity, null, this)))
-      return;
+    if (!config.merge.asBoolean(LootContextBuilder.entity(
+        world,
+        builder -> builder.origin(entity).thisEntity(entity).genericSource().killer(this)))) return;
 
     if (getTarget() instanceof SlimeEntity slime
         && slime == entity

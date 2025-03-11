@@ -1,32 +1,35 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.GameConfig;
-import me.melontini.andromeda.base.util.config.VerifiedConfig;
-import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.util.commander.number.LongIntermediary;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.InitEvents;
+import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.common.config.GameConfig;
+import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
+import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "lockpick", category = "items")
-public final class Lockpick extends Module {
+public final class Lockpick extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<MainConfig> MAIN_CONFIG =
       new ConfigDefinition<>(() -> MainConfig.class);
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   Lockpick() {
-    this.defineConfig(ConfigState.MAIN, MAIN_CONFIG);
-    this.defineConfig(ConfigState.GAME, CONFIG);
-    InitEvent.main(this)
-        .listen(() -> () -> LockpickItem.init(this, Andromeda.ROOT_HANDLER.get(MAIN_CONFIG)));
-    InitEvent.client(this).listen(() -> MerchantInventoryScreen::onClient);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.MAIN).listen(() -> MAIN_CONFIG);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
   }
 
-  public static class MainConfig extends VerifiedConfig {
+  @Override
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> LockpickItem::init);
+    InitEvents.CLIENT.listen(() -> MerchantInventoryScreen::onClient);
+  }
+
+  public static class MainConfig extends BaseConfig {
     public boolean villagerInventory = true;
   }
 

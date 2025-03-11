@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Objects;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.Keeper;
-import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.items.pouches.Main;
 import me.melontini.andromeda.modules.items.pouches.items.PouchItem;
 import me.melontini.dark_matter.api.base.util.Utilities;
@@ -98,7 +98,7 @@ public class PouchEntity extends ThrownItemEntity {
   @Override
   protected void onEntityHit(EntityHitResult entityHitResult) {
     if (!world.isClient()) {
-      var stacks = WorldUtil.prepareLoot(world, this.getPouchType().getLootId(getStack()));
+      var stacks = LootContextBuilder.prepareLoot(world, this.getPouchType().getLootId(getStack()));
 
       Entity entity = entityHitResult.getEntity();
       if (entity instanceof PlayerEntity pe) {
@@ -121,7 +121,7 @@ public class PouchEntity extends ThrownItemEntity {
   @Override
   protected void onBlockHit(BlockHitResult blockHitResult) {
     if (!world.isClient()) {
-      var stacks = WorldUtil.prepareLoot(world, this.getPouchType().getLootId(getStack()));
+      var stacks = LootContextBuilder.prepareLoot(world, this.getPouchType().getLootId(getStack()));
 
       var be = world.getBlockEntity(blockHitResult.getBlockPos());
       if ((be != null && Main.getViewCount(be) > 0)) {

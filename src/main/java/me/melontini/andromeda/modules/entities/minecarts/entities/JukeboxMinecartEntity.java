@@ -8,7 +8,6 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -103,7 +102,7 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
   @Override
   public void kill() {
     this.stopPlaying();
-    this.remove(Entity.RemovalReason.KILLED);
+    this.remove(RemovalReason.KILLED);
   }
 
   @Override

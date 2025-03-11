@@ -8,7 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.*;
 import lombok.Getter;
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
@@ -134,7 +134,9 @@ public class ItemBehaviorManager extends IdentifiedJsonDataLoader {
 
           for (Item item : behaviorData.parameters().items()) {
             if (item == null || item == Items.AIR) {
-              ModuleManager.quick(ThrowableItems.class)
+              ModuleManager.get()
+                  .get(ThrowableItems.class)
+                  .orElseThrow()
                   .logger()
                   .error("{} contains invalid item IDs!", id);
               continue;

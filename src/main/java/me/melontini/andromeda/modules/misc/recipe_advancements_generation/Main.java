@@ -1,5 +1,7 @@
 package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
+import static me.melontini.andromeda.api.ModuleDeclarations.ADVANCEMENT_RECIPE_FILTER;
+
 import com.google.gson.JsonElement;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -7,8 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import me.melontini.andromeda.api.Routes;
-import me.melontini.andromeda.common.util.Keeper;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.advancement.Advancement;
@@ -29,7 +30,6 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 
 public final class Main {
-  private static final Keeper<AdvancementGeneration> MODULE = Keeper.create();
   private static final Map<RecipeType<?>, Function<Context, Return>> RECIPE_TYPE_HANDLERS =
       new HashMap<>();
   private static final List<BiPredicate<Identifier, Recipe<?>>> FILTERS =
@@ -53,8 +53,7 @@ public final class Main {
   }
 
   public static void generateRecipeAdvancements(
-      MinecraftServer server, AdvancementGeneration.Config config) {
-    AdvancementGeneration module = MODULE.orThrow();
+      MinecraftServer server, AdvancementGeneration module, AdvancementGeneration.Config config) {
     Map<Identifier, Advancement.Builder> advancementBuilders = new ConcurrentHashMap<>();
     AtomicInteger count = new AtomicInteger();
 
@@ -163,20 +162,21 @@ public final class Main {
   }
 
   static void init(AdvancementGeneration module, AdvancementGeneration.Config config) {
-    Main.MODULE.init(module);
-
     FILTERS.add((id, recipe) -> config.namespaceBlacklist.contains(id.getNamespace()));
     FILTERS.add((id, recipe) -> config.recipeBlacklist.contains(id));
     FILTERS.add((id, recipe) ->
         recipe.isIgnoredInRecipeBook() && config.ignoreRecipesHiddenInTheRecipeBook);
-    module.apiContainer().propagateApi(Routes.AdvancementGeneration.RECIPE_FILTER, input -> {
-      FILTERS.add(input);
-      return null;
-    });
+    ModuleManager.get()
+        .getModuleApiListeners(ADVANCEMENT_RECIPE_FILTER)
+        .forEach(listener -> listener.accept(recipeFilter -> {
+          FILTERS.add(recipeFilter);
+          return null;
+        }));
 
     ServerLifecycleEvents.SERVER_STARTING.register(
-        server -> generateRecipeAdvancements(server, config));
-    BeforeDataPackSyncEvent.EVENT.register(server -> generateRecipeAdvancements(server, config));
+        server -> generateRecipeAdvancements(server, module, config));
+    BeforeDataPackSyncEvent.EVENT.register(
+        server -> generateRecipeAdvancements(server, module, config));
 
     addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting", config));
     addRecipeTypeHandler(RecipeType.SMOKING, basicConsumer("smoking", config));

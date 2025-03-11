@@ -8,7 +8,7 @@ import java.util.Optional;
 import lombok.Getter;
 import lombok.NonNull;
 import me.melontini.andromeda.common.util.Keeper;
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
@@ -93,7 +93,8 @@ public class CustomTraderManager {
     var tCooldown = world
         .am$get(GoatHorn.CONFIG)
         .cooldown
-        .asInt(LootContextUtil.fishing(world, player.getPos(), stackInHand, player));
+        .asInt(LootContextBuilder.fishing(
+            world, builder -> builder.origin(player).tool(stackInHand).thisEntity(player)));
 
     cooldown = tCooldown;
     for (int j = 0; j < 2; ++j) {

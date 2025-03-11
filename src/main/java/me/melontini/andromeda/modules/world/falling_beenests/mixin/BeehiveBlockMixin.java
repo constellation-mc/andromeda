@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
-import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
@@ -31,7 +31,7 @@ abstract class BeehiveBlockMixin {
         return;
       }
     }
-    WorldUtil.trySpawnFallingBeeNest(
+    BeeUtil.trySpawnFallingBeeNest(
         (World) world, pos, state, (BeehiveBlockEntity) world.getBlockEntity(pos));
     cir.setReturnValue(state.getFluidState().getBlockState());
   }

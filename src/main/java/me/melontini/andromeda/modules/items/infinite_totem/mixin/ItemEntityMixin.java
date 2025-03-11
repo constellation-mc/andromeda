@@ -1,12 +1,11 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
 import java.util.Optional;
-import me.melontini.andromeda.common.util.LootContextUtil;
-import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
+import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.BeaconUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import me.melontini.dark_matter.api.base.util.tuple.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -69,7 +68,8 @@ abstract class ItemEntityMixin extends Entity {
     if (this.world.isClient()) return;
     if (!this.getStack().isOf(Items.TOTEM_OF_UNDYING)) return;
     var c = world.am$get(InfiniteTotem.CONFIG);
-    var supplier = Memoize.supplier(LootContextUtil.fishing(world, getPos(), getStack()));
+    var supplier =
+        LootContextBuilder.fishing(world, builder -> builder.origin(getPos()).tool(getStack()));
     if (!c.available.asBoolean(supplier) || !c.enableAscension.asBoolean(supplier)) return;
 
     if (age % 35 == 0 && andromeda$ascensionTicks == 0) {
@@ -130,8 +130,8 @@ abstract class ItemEntityMixin extends Entity {
         if (andromeda$beaconCheck()) {
           andromeda$ascensionTicks++;
 
-          WorldUtil.crudeSetVelocity(this, 0, 0.07, 0);
-          WorldUtil.crudeSetVelocity(andromeda$itemEntity, 0, 0.07, 0);
+          MiscUtil.crudeSetVelocity(this, 0, 0.07, 0);
+          MiscUtil.crudeSetVelocity(andromeda$itemEntity, 0, 0.07, 0);
 
           if (andromeda$ascensionTicks == 180) {
             andromeda$ascensionTicks = 0;

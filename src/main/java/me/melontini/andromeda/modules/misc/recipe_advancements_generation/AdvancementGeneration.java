@@ -1,40 +1,38 @@
 package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
+import static me.melontini.andromeda.api.ModuleDeclarations.ADVANCEMENT_RECIPE_FILTER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import me.melontini.andromeda.api.ApiRoute;
-import me.melontini.andromeda.api.Routes;
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.VerifiedConfig;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.DeclareApiEvent;
+import me.melontini.andromeda.bootstrap.event.InitEvents;
+import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.Andromeda;
 import net.minecraft.util.Identifier;
 
-@ModuleInfo(
-    name = "recipe_advancements_generation",
-    category = "misc",
-    environment = Environment.SERVER)
-public final class AdvancementGeneration extends Module {
+@ModuleInfo(name = "recipe_advancements_generation", category = "misc", env = Environment.SERVER)
+public final class AdvancementGeneration extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   AdvancementGeneration() {
-    this.defineConfig(ConfigState.MAIN, CONFIG);
-    InitEvent.main(this).listen(() -> () -> Main.init(this, Andromeda.ROOT_HANDLER.get(CONFIG)));
+    RegisterConfigEvent.get(this, RegisterConfigEvent.MAIN).listen(() -> CONFIG);
+    DeclareApiEvent.BUS.listen(consumer -> consumer.accept(ADVANCEMENT_RECIPE_FILTER));
   }
 
   @Override
-  public Set<ApiRoute<?, ?>> apiRoutes() {
-    return Set.of(Routes.AdvancementGeneration.RECIPE_FILTER);
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> () -> Main.init(this, Andromeda.MAIN.get(CONFIG)));
   }
 
-  public static final class Config extends VerifiedConfig {
+  public static final class Config extends BaseConfig {
     public boolean requireAllItems = true;
     public boolean ignoreRecipesHiddenInTheRecipeBook = true;
     public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");

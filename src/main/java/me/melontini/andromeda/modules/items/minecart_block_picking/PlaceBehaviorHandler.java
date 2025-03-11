@@ -2,7 +2,7 @@ package me.melontini.andromeda.modules.items.minecart_block_picking;
 
 import java.util.IdentityHashMap;
 import java.util.Optional;
-import me.melontini.andromeda.base.ModuleManager;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
@@ -57,8 +57,8 @@ public class PlaceBehaviorHandler {
           "Fuel",
           0,
           ModuleManager.get()
-              .getModule(BetterFurnaceMinecart.class)
-              .map(m -> Andromeda.ROOT_HANDLER.get(BetterFurnaceMinecart.CONFIG).maxFuel)
+              .get(BetterFurnaceMinecart.class)
+              .map(m -> Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel)
               .orElse(32000));
       if (furnaceMinecart.fuel > 0) {
         furnaceMinecart.pushX = furnaceMinecart.getX() - pos.getX();

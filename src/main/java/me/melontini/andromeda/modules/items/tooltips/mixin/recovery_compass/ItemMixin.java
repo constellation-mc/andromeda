@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.items.tooltips.mixin.recovery_compass;
 
 import java.util.List;
-import me.melontini.andromeda.common.client.AndromedaClient;
+import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -32,7 +32,7 @@ abstract class ItemMixin {
       List<Text> tooltip,
       TooltipContext context,
       CallbackInfo ci) {
-    if (!AndromedaClient.HANDLER.get(Tooltips.CONFIG).recoveryCompass) return;
+    if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).recoveryCompass) return;
 
     if (world != null)
       if (world.isClient) {

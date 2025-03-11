@@ -37,7 +37,7 @@ abstract class EndCrystalMixin extends Entity {
       method = "damage")
   private void andromeda$damage(
       DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-    if (!Andromeda.ROOT_HANDLER.get(DragonFight.CONFIG).respawnCrystals) return;
+    if (!Andromeda.MAIN.get(DragonFight.CONFIG).respawnCrystals) return;
 
     if (world.getRegistryKey() == World.END
         && !((ServerWorld) world).getAliveEnderDragons().isEmpty()

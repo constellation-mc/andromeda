@@ -1,31 +1,30 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
 import java.util.Optional;
-import java.util.Set;
-import me.melontini.andromeda.api.ApiRoute;
-import me.melontini.andromeda.api.Routes;
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.GameConfig;
-import me.melontini.andromeda.common.util.TranslationKeyProvider;
-import me.melontini.andromeda.util.commander.number.DoubleIntermediary;
+import me.melontini.andromeda.api.ModuleDeclarations;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.DeclareApiEvent;
+import me.melontini.andromeda.bootstrap.event.InitEvents;
+import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.common.config.GameConfig;
+import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
 
 @ModuleInfo(name = "guarded_loot", category = "blocks")
-public final class GuardedLoot extends Module {
+public final class GuardedLoot extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   GuardedLoot() {
-    this.defineConfig(ConfigState.GAME, CONFIG);
-    InitEvent.main(this).listen(() -> () -> Main.init(this));
+    RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
+    DeclareApiEvent.BUS.listen(consumer -> consumer.accept(ModuleDeclarations.LOOT_UNLOCKER));
   }
 
   @Override
-  public Set<ApiRoute<?, ?>> apiRoutes() {
-    return Set.of(Routes.GuardedLoot.UNLOCKER);
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> Main::init);
   }
 
   public static class Config extends GameConfig {
@@ -34,11 +33,11 @@ public final class GuardedLoot extends Module {
     public BreakingHandler breakingHandler = BreakingHandler.UNBREAKABLE;
   }
 
-  public enum BreakingHandler implements TranslationKeyProvider {
+  public enum BreakingHandler /*implements TranslationKeyProvider*/ {
     NONE,
     UNBREAKABLE;
 
-    @Override
+    // @Override
     public Optional<String> getTranslationKey() {
       return Optional.of("config.andromeda.blocks.guarded_loot.option.BreakingHandler." + name());
     }

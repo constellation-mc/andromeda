@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
 import java.util.Optional;
-import me.melontini.andromeda.common.util.LootContextUtil;
-import me.melontini.andromeda.common.util.WorldUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
+import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
@@ -58,7 +58,8 @@ abstract class FallingBlockMixin extends Entity {
         && this.world
             .am$get(CanBeeNestsFall.CONFIG)
             .available
-            .asBoolean(LootContextUtil.block(world, getPos(), block, null, null, blockEntity))) {
+            .asBoolean(LootContextBuilder.block(
+                world, builder -> builder.origin(this).state(block).blockEntity(blockEntity)))) {
       if (this.block.getBlock() != Blocks.BEE_NEST) return;
       if (blockEntityData == null || !blockEntityData.getBoolean("AM-FromFallenBlock")) return;
 
@@ -85,7 +86,7 @@ abstract class FallingBlockMixin extends Entity {
           .getNonSpectatingEntities(BeeEntity.class, new Box(getBlockPos()).expand(50))
           .forEach(bee -> bee.setTarget(player)));
 
-      for (ItemStack stack : WorldUtil.prepareLoot(world, WorldUtil.BEE_LOOT_ID)) {
+      for (ItemStack stack : BeeUtil.prepareLoot(world, BeeUtil.BEE_LOOT_ID)) {
         ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
       }
     }

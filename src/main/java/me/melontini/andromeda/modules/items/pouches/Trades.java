@@ -9,22 +9,40 @@ import net.minecraft.village.VillagerProfession;
 public class Trades {
 
   public static void register() {
-    Main.SAPLING_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(
-        VillagerProfession.FARMER,
-        2,
-        factories -> factories.add((entity, random) -> new TradeOffer(
-            new ItemStack(Items.EMERALD, 5), new ItemStack(pouch, 1), 12, 4, 0.06f))));
+    if (Main.SAPLING_POUCH.isPresent()) {
+      TradeOfferHelper.registerVillagerOffers(
+          VillagerProfession.FARMER,
+          2,
+          factories -> factories.add((entity, random) -> new TradeOffer(
+              new ItemStack(Items.EMERALD, 5),
+              new ItemStack(Main.SAPLING_POUCH.orThrow(), 1),
+              12,
+              4,
+              0.06f)));
+    }
 
-    Main.FLOWER_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(
-        VillagerProfession.FARMER,
-        2,
-        factories -> factories.add((entity, random) -> new TradeOffer(
-            new ItemStack(Items.EMERALD, 4), new ItemStack(pouch, 1), 12, 4, 0.06f))));
+    if (Main.FLOWER_POUCH.isPresent()) {
+      TradeOfferHelper.registerVillagerOffers(
+          VillagerProfession.FARMER,
+          2,
+          factories -> factories.add((entity, random) -> new TradeOffer(
+              new ItemStack(Items.EMERALD, 4),
+              new ItemStack(Main.FLOWER_POUCH.orThrow(), 1),
+              12,
+              4,
+              0.06f)));
+    }
 
-    Main.SEED_POUCH.ifPresent(pouch -> TradeOfferHelper.registerVillagerOffers(
-        VillagerProfession.FARMER,
-        2,
-        factories -> factories.add((entity, random) -> new TradeOffer(
-            new ItemStack(Items.EMERALD, 3), new ItemStack(pouch, 1), 12, 4, 0.06f))));
+    if (Main.SEED_POUCH.isPresent()) {
+      TradeOfferHelper.registerVillagerOffers(
+          VillagerProfession.FARMER,
+          2,
+          factories -> factories.add((entity, random) -> new TradeOffer(
+              new ItemStack(Items.EMERALD, 3),
+              new ItemStack(Main.SEED_POUCH.orThrow(), 1),
+              12,
+              4,
+              0.06f)));
+    }
   }
 }

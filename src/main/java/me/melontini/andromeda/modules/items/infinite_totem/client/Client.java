@@ -52,7 +52,9 @@ public class Client {
           });
         });
 
-    Main.KNOCKOFF_TOTEM_PARTICLE.ifPresent(
-        t -> ParticleFactoryRegistry.getInstance().register(t, KnockoffTotemParticle.Factory::new));
+    if (Main.KNOCKOFF_TOTEM_PARTICLE.isPresent()) {
+      ParticleFactoryRegistry.getInstance()
+          .register(Main.KNOCKOFF_TOTEM_PARTICLE.orThrow(), KnockoffTotemParticle.Factory::new);
+    }
   }
 }

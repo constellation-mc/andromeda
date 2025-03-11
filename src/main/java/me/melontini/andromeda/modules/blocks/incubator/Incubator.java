@@ -1,31 +1,34 @@
 package me.melontini.andromeda.modules.blocks.incubator;
 
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.events.InitEvent;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.VerifiedConfig;
-import me.melontini.andromeda.util.commander.CommanderSupport;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.InitEvents;
+import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.common.util.commander.CommanderSupport;
 
 @ModuleInfo(name = "incubator", category = "blocks")
-public final class Incubator extends Module {
+public final class Incubator extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
   Incubator() {
-    this.defineConfig(ConfigState.GAME, CONFIG);
-    InitEvent.main(this).listen(() -> () -> IncubatorBlock.init(this));
-    InitEvent.client(this).listen(() -> IncubatorBlockRenderer::onClient);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
 
     CommanderSupport.require(this);
   }
 
-  public static class Config extends VerifiedConfig {
+  @Override
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> IncubatorBlock::init);
+    InitEvents.CLIENT.listen(() -> IncubatorBlockRenderer::onClient);
+  }
 
-    @SpecialEnvironment(Environment.SERVER)
+  public static class Config extends BaseConfig {
+
+    // TODO @SpecialEnvironment(Environment.SERVER)
     public boolean randomness = true;
   }
 }

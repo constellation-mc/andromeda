@@ -43,8 +43,9 @@ public class FletchingScreen extends ForgingScreen<FletchingScreenHandler> {
   }
 
   public static void onClient() {
-    FletchingScreenHandler.FLETCHING.ifPresent(
-        s -> HandledScreens.register(s, FletchingScreen::new));
+    if (FletchingScreenHandler.FLETCHING.isPresent()) {
+      HandledScreens.register(FletchingScreenHandler.FLETCHING.get(), FletchingScreen::new);
+    }
 
     ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
       NbtCompound nbt = stack.getNbt();

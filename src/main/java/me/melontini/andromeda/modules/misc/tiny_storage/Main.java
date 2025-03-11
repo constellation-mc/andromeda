@@ -9,7 +9,7 @@ public final class Main {
   static void init() {
     ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
       if (alive
-          || Andromeda.ROOT_HANDLER.get(TinyStorage.CONFIG).transferMode
+          || Andromeda.MAIN.get(TinyStorage.CONFIG).transferMode
               == TinyStorage.TransferMode.ALWAYS_TRANSFER
           || newPlayer.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)
           || oldPlayer.isSpectator()) {

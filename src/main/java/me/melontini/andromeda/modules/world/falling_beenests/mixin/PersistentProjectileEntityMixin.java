@@ -1,8 +1,7 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
-import static me.melontini.andromeda.common.util.WorldUtil.trySpawnFallingBeeNest;
-
-import me.melontini.andromeda.common.util.LootContextUtil;
+import me.melontini.andromeda.common.util.LootContextBuilder;
+import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,7 +12,6 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,11 +38,12 @@ abstract class PersistentProjectileEntityMixin extends ProjectileEntity {
       if (!world
           .am$get(CanBeeNestsFall.CONFIG)
           .available
-          .asBoolean(LootContextUtil.block(
-              world, Vec3d.ofCenter(pos), state, null, null, beehiveBlockEntity))) return;
+          .asBoolean(LootContextBuilder.block(
+              world, builder -> builder.origin(pos).state(state).blockEntity(beehiveBlockEntity))))
+        return;
 
       if (world.getBlockState(pos.offset(Direction.DOWN)).isAir()) {
-        trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
+        BeeUtil.trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
       }
     }
   }

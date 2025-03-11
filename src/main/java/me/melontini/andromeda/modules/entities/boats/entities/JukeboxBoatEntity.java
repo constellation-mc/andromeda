@@ -6,7 +6,6 @@ import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -73,7 +72,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
   @Override
   public void kill() {
     this.stopPlaying();
-    this.remove(Entity.RemovalReason.KILLED);
+    this.remove(RemovalReason.KILLED);
   }
 
   @Override

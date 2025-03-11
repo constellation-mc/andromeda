@@ -40,7 +40,9 @@ public class MerchantInventoryScreen extends HandledScreen<MerchantInventoryScre
   }
 
   public static void onClient() {
-    MerchantInventoryScreenHandler.INSTANCE.ifPresent(
-        s -> HandledScreens.register(s, MerchantInventoryScreen::new));
+    if (MerchantInventoryScreenHandler.INSTANCE.isPresent()) {
+      HandledScreens.register(
+          MerchantInventoryScreenHandler.INSTANCE.orThrow(), MerchantInventoryScreen::new);
+    }
   }
 }

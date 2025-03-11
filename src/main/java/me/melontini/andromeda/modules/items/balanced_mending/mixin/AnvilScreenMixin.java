@@ -1,8 +1,8 @@
 package me.melontini.andromeda.modules.items.balanced_mending.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.SpecialEnvironment;
+import me.melontini.andromeda.bootstrap.util.mixin.MixinEnvironment;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -14,7 +14,7 @@ import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@SpecialEnvironment(Environment.CLIENT)
+@MixinEnvironment(EnvType.CLIENT)
 @Mixin(AnvilScreen.class)
 abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler> {
 

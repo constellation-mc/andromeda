@@ -1,20 +1,19 @@
 package me.melontini.andromeda.modules.world.quick_fire;
 
-import me.melontini.andromeda.base.Module;
-import me.melontini.andromeda.base.util.Environment;
-import me.melontini.andromeda.base.util.annotations.ModuleInfo;
-import me.melontini.andromeda.base.util.config.ConfigDefinition;
-import me.melontini.andromeda.base.util.config.ConfigState;
-import me.melontini.andromeda.base.util.config.GameConfig;
+import me.melontini.andromeda.bootstrap.Module;
+import me.melontini.andromeda.bootstrap.ModuleInfo;
+import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
+import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
+import me.melontini.andromeda.common.config.GameConfig;
 
 @Deprecated
-@ModuleInfo(name = "quick_fire", category = "world", environment = Environment.SERVER)
+@ModuleInfo(name = "quick_fire", category = "world", env = Environment.SERVER)
 public final class QuickFire extends Module {
 
-  public static final ConfigDefinition<GameConfig> CONFIG =
-      new ConfigDefinition<>(() -> GameConfig.class);
+  public static final ConfigDefinition<GameConfig> CONFIG = ConfigDefinition.game();
 
   QuickFire() {
-    this.defineConfig(ConfigState.GAME, CONFIG);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
   }
 }
