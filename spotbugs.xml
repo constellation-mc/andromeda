@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <!-- Must be a full match -->
+        <Class name="~.*\.mixin\..*Mixin" />
+        <Bug pattern="BC_IMPOSSIBLE_CAST, MS_SHOULD_BE_FINAL" />
+    </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP, EI_EXPOSE_REP2, PA_PUBLIC_PRIMITIVE_ATTRIBUTE, BC_UNCONFIRMED_CAST" />
+    </Match>
+</FindBugsFilter>
