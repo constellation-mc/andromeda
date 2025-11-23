@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.zombie.all_pick_up.mixin;
 
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.zombie.all_pick_up.Pickup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.DifficultyInstance;
@@ -39,10 +38,6 @@ abstract class ZombieEntityMixin extends Monster {
       CallbackInfoReturnable<SpawnGroupData> cir) {
     if (world.isClientSide()) return;
 
-    if (world
-        .getLevel()
-        .am$get(Pickup.CONFIG)
-        .available
-        .asBoolean(ConstantLootContextAccessor.get(this))) this.setCanPickUpLoot(true);
+    if (world.getLevel().am$get(Pickup.CONFIG).available) this.setCanPickUpLoot(true);
   }
 }

@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import net.minecraft.core.BlockPos;
@@ -34,12 +33,7 @@ abstract class PersistentProjectileEntityMixin extends Projectile {
       BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) level.getBlockEntity(pos);
       if (beehiveBlockEntity == null) return;
 
-      if (!level
-          .am$get(CanBeeNestsFall.CONFIG)
-          .available
-          .asBoolean(LootContextBuilder.block(
-              level, builder -> builder.origin(pos).state(state).blockEntity(beehiveBlockEntity))))
-        return;
+      if (!level.am$get(CanBeeNestsFall.CONFIG).available) return;
 
       if (level.getBlockState(pos.relative(Direction.DOWN)).isAir()) {
         BeeUtil.trySpawnFallingBeeNest(level, pos, state, beehiveBlockEntity);

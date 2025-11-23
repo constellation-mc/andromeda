@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.entities.minecart_speed_control.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -21,8 +20,7 @@ abstract class AbstractMinecartEntityMixin extends Entity {
   private double andromeda$getMaxSpeed(double original) {
     if (!this.level().isClientSide()) {
       var c = this.level().am$get(MinecartSpeedControl.CONFIG);
-      var supplier = ConstantLootContextAccessor.get(this);
-      return c.available.asBoolean(supplier) ? original * c.modifier.asDouble(supplier) : original;
+      return c.available ? original * c.modifier : original;
     }
     return original;
   }

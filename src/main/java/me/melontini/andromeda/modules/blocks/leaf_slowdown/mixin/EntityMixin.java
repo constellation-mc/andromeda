@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.blocks.leaf_slowdown.mixin;
 
 import java.util.UUID;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -41,12 +40,7 @@ abstract class EntityMixin extends Entity {
 
   @Inject(at = @At("HEAD"), method = "baseTick")
   public void andromeda$tick(CallbackInfo ci) {
-    if (!this.level.isClientSide
-        && this.level
-            .am$get(LeafSlowdown.CONFIG)
-            .available
-            .asBoolean(LootContextBuilder.command(
-                level, builder -> builder.origin(this).thisEntity(this)))) {
+    if (!this.level.isClientSide && this.level.am$get(LeafSlowdown.CONFIG).available) {
       AttributeInstance attributeInstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
       if (this.level.getBlockState(blockPosition().below()).is(BlockTags.LEAVES)
           || (this.level.getBlockState(new BlockPos(blockPosition().below(2))).is(BlockTags.LEAVES)

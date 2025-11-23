@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
 import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.Main;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
@@ -51,16 +50,7 @@ abstract class AbstractBlockMixin {
           }
         }
 
-        BlockState finalState = state;
-        if (!world.isClientSide()
-            && world
-                .am$get(CactusFiller.CONFIG)
-                .available
-                .asBoolean(LootContextBuilder.block(world, builder -> builder
-                    .origin(pos)
-                    .state(finalState)
-                    .tool(player, hand)
-                    .thisEntity(player)))) {
+        if (!world.isClientSide() && world.am$get(CactusFiller.CONFIG).available) {
           player.setItemInHand(
               hand,
               ItemUtils.createFilledResult(

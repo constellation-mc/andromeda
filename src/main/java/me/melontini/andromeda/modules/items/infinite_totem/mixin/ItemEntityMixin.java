@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 
 import java.util.Optional;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.BeaconUtil;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
@@ -68,9 +67,7 @@ abstract class ItemEntityMixin extends Entity {
     if (this.level.isClientSide()) return;
     if (!this.getItem().is(Items.TOTEM_OF_UNDYING)) return;
     var c = level.am$get(InfiniteTotem.CONFIG);
-    var supplier =
-        LootContextBuilder.fishing(level, builder -> builder.origin(position()).tool(getItem()));
-    if (!c.available.asBoolean(supplier) || !c.enableAscension.asBoolean(supplier)) return;
+    if (!c.available || !c.enableAscension) return;
 
     if (tickCount % 35 == 0 && andromeda$ascensionTicks == 0) {
       if (!andromeda$beaconCheck()) {

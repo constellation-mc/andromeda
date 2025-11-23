@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.villager_gifting.mixin;
 
 import java.util.Map;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
 import net.minecraft.tags.TagKey;
@@ -52,11 +51,7 @@ abstract class VillagerEntityMixin extends AbstractVillager {
     if (hand != InteractionHand.MAIN_HAND || level.isClientSide()) return;
     ItemStack stack = player.getItemInHand(hand);
 
-    if (!level
-        .am$get(VillagerGifting.CONFIG)
-        .available
-        .asBoolean(LootContextBuilder.fishing(
-            level, builder -> builder.origin(player).tool(stack).thisEntity(player)))) return;
+    if (!level.am$get(VillagerGifting.CONFIG).available) return;
 
     ItemStack gift = stack.copy();
     gift.setCount(1);

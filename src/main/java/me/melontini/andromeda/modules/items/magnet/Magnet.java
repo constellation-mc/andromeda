@@ -7,7 +7,6 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
-import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
 
 @ModuleInfo(name = "magnet", category = "items")
 public final class Magnet extends Module implements PostBootstrapEvent {
@@ -24,6 +23,6 @@ public final class Magnet extends Module implements PostBootstrapEvent {
   }
 
   public static class Config extends BaseConfig {
-    public DoubleIntermediary rangeMultiplier = DoubleIntermediary.of(5);
+    public double rangeMultiplier = 5;
   }
 }

@@ -8,8 +8,6 @@ import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "lockpick", category = "items")
 public final class Lockpick extends Module implements PostBootstrapEvent {
@@ -35,8 +33,8 @@ public final class Lockpick extends Module implements PostBootstrapEvent {
 
   public static class Config extends GameConfig {
 
-    public LongIntermediary chance = LongIntermediary.of(3);
+    public int chance = 3;
 
-    public BooleanIntermediary breakAfterUse = BooleanIntermediary.of(true);
+    public boolean breakAfterUse = true;
   }
 }

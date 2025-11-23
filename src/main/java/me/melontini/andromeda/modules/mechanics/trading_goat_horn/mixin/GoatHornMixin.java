@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.mechanics.trading_goat_horn.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import java.util.Objects;
 import java.util.Optional;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.mechanics.trading_goat_horn.CustomTraderManager;
 import me.melontini.andromeda.modules.mechanics.trading_goat_horn.GoatHorn;
 import net.minecraft.core.Holder;
@@ -48,9 +47,7 @@ abstract class GoatHornMixin {
     ServerLevel sw = (ServerLevel) world;
     if (!sw.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) return;
     var cfg = world.am$get(GoatHorn.CONFIG);
-    var context = LootContextBuilder.fishing(
-        user.level, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
-    if (!cfg.available.asBoolean(context)) return;
+    if (!cfg.available) return;
 
     sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get())
         .trySpawn(
@@ -58,6 +55,6 @@ abstract class GoatHornMixin {
             sw.getServer().getWorldData().overworldData(),
             user.getItemInHand(hand),
             user,
-            cfg.highlightTrader.asBoolean(context));
+            cfg.highlightTrader);
   }
 }

@@ -16,7 +16,6 @@ import java.util.function.Function;
 import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.IdentifiedJsonDataLoader;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.base.util.Mapper;
 import me.melontini.dark_matter.api.base.util.MathUtil;
@@ -93,12 +92,7 @@ public final class PlantTemperatureData {
     if (isPlant(state.getBlock())) {
       float[] data = world.getServer().dm$getReloader(RELOADER).get(state.getBlock());
       if (data != null) {
-        if (!world
-            .am$get(PlantTemperature.CONFIG)
-            .available
-            .asBoolean(
-                LootContextBuilder.block(world, builder -> builder.origin(pos).state(state))))
-          return true;
+        if (!world.am$get(PlantTemperature.CONFIG).available) return true;
 
         if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
           return MathUtil.nextInt(0, 1) != 0;

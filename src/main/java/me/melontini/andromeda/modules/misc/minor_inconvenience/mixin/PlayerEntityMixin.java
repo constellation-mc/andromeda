@@ -1,8 +1,6 @@
 package me.melontini.andromeda.modules.misc.minor_inconvenience.mixin;
 
-import java.util.Objects;
 import me.melontini.andromeda.common.Andromeda;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -41,15 +39,7 @@ abstract class PlayerEntityMixin extends LivingEntity {
       DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
     if (!level.isClientSide
         && !source.is(AGONY)
-        && level
-            .am$get(MinorInconvenience.CONFIG)
-            .available
-            .asBoolean(LootContextBuilder.entity(level, builder -> builder
-                .origin(Objects.requireNonNullElse(source.getSourcePosition(), this.position()))
-                .thisEntity(this)
-                .sourceOrGeneric(source)
-                .killer(source.getEntity())
-                .directKiller(source.getDirectEntity())))) {
+        && level.am$get(MinorInconvenience.CONFIG).available) {
       DamageSource damageSource = this.level().damageSources().source(AGONY, this);
       super.hurt(damageSource, Float.MAX_VALUE);
       this.level()

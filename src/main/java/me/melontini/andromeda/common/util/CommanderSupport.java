@@ -1,4 +1,4 @@
-package me.melontini.andromeda.common.util.commander;
+package me.melontini.andromeda.common.util;
 
 import me.melontini.andromeda.bootstrap.Module;
 import me.melontini.andromeda.bootstrap.ModuleHelper;

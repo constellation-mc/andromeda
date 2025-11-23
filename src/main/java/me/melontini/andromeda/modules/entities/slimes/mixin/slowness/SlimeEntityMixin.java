@@ -1,7 +1,5 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.slowness;
 
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
@@ -40,10 +38,8 @@ abstract class SlimeEntityMixin extends Mob {
       method = "dealDamage")
   private void andromeda$onPlayerCollision(LivingEntity target, CallbackInfo ci) {
     var config = this.level.am$get(Slimes.CONFIG);
-    if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
-    if (!config.slowness.asBoolean(LootContextBuilder.entity(
-        level,
-        builder -> builder.origin(target).thisEntity(target).genericSource().killer(this)))) return;
+    if (!config.available) return;
+    if (!config.slowness) return;
 
     MobEffectInstance effectInstance = new MobEffectInstance(
         MobEffects.MOVEMENT_SLOWDOWN, 20 * this.getSize(), 1, true, false, false);

@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
 import java.util.EnumSet;
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -115,9 +114,6 @@ public class ThrowableItemAttackGoal<T extends Mob> extends Goal {
   }
 
   public double getInterval() {
-    return mob.level
-        .am$get(ThrowableItems.CONFIG)
-        .zombieThrowInterval
-        .asDouble(ConstantLootContextAccessor.get(mob));
+    return mob.level.am$get(ThrowableItems.CONFIG).zombieThrowInterval;
   }
 }

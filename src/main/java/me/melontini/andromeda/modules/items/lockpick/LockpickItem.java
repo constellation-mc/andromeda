@@ -7,7 +7,6 @@ import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.guarded_loot.GuardedLoot;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
@@ -35,20 +34,16 @@ public class LockpickItem extends Item {
 
   public boolean tryUse(ItemStack stack, LivingEntity user, InteractionHand hand) {
     var c = user.level.am$get(Lockpick.CONFIG);
-    var supplier = LootContextBuilder.fishing(
-        user.level, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
-    if (c.available.asBoolean(supplier) && hand == InteractionHand.MAIN_HAND) {
-      int chance = c.chance.asInt(supplier);
-
+    if (c.available && hand == InteractionHand.MAIN_HAND) {
       if (!(user instanceof Player p && p.getAbilities().instabuild)) {
-        if (c.breakAfterUse.asBoolean(supplier)) {
+        if (c.breakAfterUse) {
           if (!user.level.isClientSide()) user.broadcastBreakEvent(EquipmentSlot.MAINHAND);
 
           stack.shrink(1);
         }
       }
 
-      return chance - 1 == 0 || MathUtil.threadRandom().nextInt(chance - 1) == 0;
+      return c.chance - 1 == 0 || MathUtil.threadRandom().nextInt(c.chance - 1) == 0;
     }
     return false;
   }

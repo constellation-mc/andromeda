@@ -6,8 +6,6 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
-import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "minecart_speed_control", category = "entities", env = Environment.SERVER)
 public final class MinecartSpeedControl extends Module {
@@ -19,8 +17,8 @@ public final class MinecartSpeedControl extends Module {
   }
 
   public static class Config extends GameConfig {
-    public DoubleIntermediary modifier = DoubleIntermediary.of(1d);
-    public DoubleIntermediary furnaceModifier = DoubleIntermediary.of(1d);
-    public LongIntermediary additionalFurnaceFuel = LongIntermediary.of(0);
+    public double modifier = 1d;
+    public double furnaceModifier = 1d;
+    public int additionalFurnaceFuel = 0;
   }
 }

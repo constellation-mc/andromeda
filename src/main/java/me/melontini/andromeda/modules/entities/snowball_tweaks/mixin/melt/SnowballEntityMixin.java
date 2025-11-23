@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.melt;
 
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
 import net.minecraft.core.particles.ParticleTypes;
@@ -30,8 +29,7 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
     if (level.isClientSide() || !this.isOnFire()) return;
 
     var config = level.am$get(Snowballs.CONFIG);
-    var supplier = ConstantLootContextAccessor.get(this);
-    if (!config.available.asBoolean(supplier) || !config.melt.asBoolean(supplier)) return;
+    if (!config.available || !config.melt) return;
 
     ((ServerLevel) level)
         .sendParticles(

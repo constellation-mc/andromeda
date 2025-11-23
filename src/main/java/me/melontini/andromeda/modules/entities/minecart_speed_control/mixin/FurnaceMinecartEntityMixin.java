@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.entities.minecart_speed_control.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
@@ -28,9 +27,7 @@ abstract class FurnaceMinecartEntityMixin extends AbstractMinecart {
     if (!this.level().isClientSide()) {
       if (fuel > 0) {
         var c = this.level().am$get(MinecartSpeedControl.CONFIG);
-        var supplier = ConstantLootContextAccessor.get(this);
-        if (c.available.asBoolean(supplier))
-          fuel = Math.max(fuel - c.additionalFurnaceFuel.asInt(supplier), 0);
+        if (c.available) fuel = Math.max(fuel - c.additionalFurnaceFuel, 0);
       }
     }
   }
@@ -39,10 +36,7 @@ abstract class FurnaceMinecartEntityMixin extends AbstractMinecart {
   private double andromeda$getMaxSpeed(double original) {
     if (!this.level().isClientSide()) {
       var c = this.level().am$get(MinecartSpeedControl.CONFIG);
-      var supplier = ConstantLootContextAccessor.get(this);
-      return c.available.asBoolean(supplier)
-          ? original * c.furnaceModifier.asDouble(supplier)
-          : original;
+      return c.available ? original * c.furnaceModifier : original;
     }
     return original;
   }

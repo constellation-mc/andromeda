@@ -1,8 +1,6 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.flee;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -32,10 +30,9 @@ abstract class MobEntityMixin extends Entity {
       var config = level.am$get(Slimes.CONFIG);
 
       if (!slime.isTiny()) return original;
-      if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return original;
+      if (!config.available) return original;
 
-      if (config.flee.asBoolean(LootContextBuilder.entity(
-          level, builder -> builder.origin(target).thisEntity(target).genericSource()))) return 270;
+      if (config.flee) return 270;
     }
     return original;
   }

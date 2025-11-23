@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.world.auto_planting.mixin;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.auto_planting.AutoPlanting;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.core.BlockPos;
@@ -38,8 +37,7 @@ abstract class ItemEntityMixin {
 
     if (entity.tickCount % MathUtil.nextInt(20, 101) != 0) return;
     var config = world.am$get(AutoPlanting.CONFIG);
-    if (!config.available.asBoolean(LootContextBuilder.fishing(
-        world, builder -> builder.origin(entity).tool(stack).thisEntity(entity)))) return;
+    if (!config.available) return;
     if (!world.getFluidState(pos).isEmpty()) return;
     if (config.blacklistMode == config.idList.contains(stack.getItem())) return;
 

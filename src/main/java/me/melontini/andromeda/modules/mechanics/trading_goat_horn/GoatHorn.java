@@ -8,8 +8,6 @@ import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 import net.minecraft.resources.ResourceLocation;
 
 @ModuleInfo(name = "trading_goat_horn", category = "mechanics", env = Environment.SERVER)
@@ -27,8 +25,8 @@ public final class GoatHorn extends Module implements PostBootstrapEvent {
   }
 
   public static class Config extends GameConfig {
-    public LongIntermediary cooldown = LongIntermediary.of(48000);
+    public int cooldown = 48000;
     public ResourceLocation instrumentId = ResourceLocation.tryBuild("minecraft", "sing_goat_horn");
-    public BooleanIntermediary highlightTrader = BooleanIntermediary.of(false);
+    public boolean highlightTrader = false;
   }
 }

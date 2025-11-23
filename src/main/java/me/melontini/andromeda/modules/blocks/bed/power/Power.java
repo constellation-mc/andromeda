@@ -6,7 +6,6 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
 
 @ModuleInfo(name = "bed/power", category = "blocks", env = Environment.SERVER)
 public final class Power extends Module {
@@ -18,6 +17,6 @@ public final class Power extends Module {
   }
 
   public static class Config extends GameConfig {
-    public DoubleIntermediary power = DoubleIntermediary.of(5);
+    public double power = 5;
   }
 }

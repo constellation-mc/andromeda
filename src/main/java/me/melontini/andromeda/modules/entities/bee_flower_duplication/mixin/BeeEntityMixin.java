@@ -76,7 +76,7 @@ abstract class BeeEntityMixin extends Animal {
       var config = level.am$get(BeeFlowerDuplication.CONFIG);
       var supplier =
           LootContextBuilder.block(level, builder -> builder.origin(position()).state(flowerState));
-      if (!config.available.asBoolean(supplier)) return;
+      if (!config.available) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
         andromeda$plantingCoolDown = level.random.nextIntBetweenInclusive(3600, 6490);
@@ -102,7 +102,7 @@ abstract class BeeEntityMixin extends Animal {
           }
         }
       } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock
-          && config.tallFlowers.asBoolean(supplier)) {
+          && config.tallFlowers) {
         andromeda$plantingCoolDown = level.random.nextIntBetweenInclusive(3600, 8000);
         for (int i = -1; i <= 1; i++) {
           for (int b = -2; b <= 2; b++) {

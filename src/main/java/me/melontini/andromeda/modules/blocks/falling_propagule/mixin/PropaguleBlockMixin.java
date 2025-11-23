@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.blocks.falling_propagule.mixin;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.falling_propagule.FallingPropagule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -36,11 +35,7 @@ abstract class PropaguleBlockMixin {
       BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo ci) {
     if (isFullyGrown(state)
         && random.nextInt(40) == 0
-        && world
-            .am$get(FallingPropagule.CONFIG)
-            .available
-            .asBoolean(
-                LootContextBuilder.block(world, builder -> builder.origin(pos).state(state)))) {
+        && world.am$get(FallingPropagule.CONFIG).available) {
       FallingBlockEntity fallingBlock = new FallingBlockEntity(
           world,
           pos.getX() + 0.5,

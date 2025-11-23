@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.entities.minecarts.entities;
 
 import java.util.Optional;
 import me.melontini.andromeda.bootstrap.ModuleManager;
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
@@ -74,8 +73,7 @@ public class AnvilMinecartEntity extends AbstractMinecart {
     return optional
         .map(ms -> {
           var c = level.am$get(MinecartSpeedControl.CONFIG);
-          var supplier = ConstantLootContextAccessor.get(this);
-          return c.available.asBoolean(supplier) ? d * c.modifier.asDouble(supplier) : d;
+          return c.available ? d * c.modifier : d;
         })
         .orElse(d);
   }

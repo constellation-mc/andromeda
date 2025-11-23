@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 import me.melontini.andromeda.bootstrap.ModuleManager;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.ChatFormatting;
@@ -59,15 +58,11 @@ public final class Main {
   public static List<LivingEntity> checkMonsterLock(
       Level world, BlockState state, Player player, BlockPos pos, BlockEntity be) {
     var config = world.am$get(GuardedLoot.CONFIG);
-    var supplier = LootContextBuilder.block(
-        world, builder -> builder.origin(pos).state(state).thisEntity(player).blockEntity(be));
-    if (!config.available.asBoolean(supplier)) return Collections.emptyList();
+    if (!config.available) return Collections.emptyList();
 
     return world
         .getEntitiesOfClass(
-            LivingEntity.class,
-            new AABB(pos).inflate(config.range.asDouble(supplier)),
-            Entity::isAlive)
+            LivingEntity.class, new AABB(pos).inflate(config.range), Entity::isAlive)
         .stream()
         .filter(Enemy.class::isInstance)
         .toList();

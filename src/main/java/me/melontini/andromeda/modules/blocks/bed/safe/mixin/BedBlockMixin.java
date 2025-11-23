@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.blocks.bed.safe.mixin;
 
 import static net.minecraft.world.level.block.BedBlock.canSetSpawn;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.core.BlockPos;
@@ -39,9 +38,7 @@ abstract class BedBlockMixin extends Block {
     if (world.isClientSide()) return;
 
     if (!canSetSpawn(world)) {
-      var context = LootContextBuilder.block(
-          world, builder -> builder.origin(pos).state(state).tool(player, hand).thisEntity(player));
-      if (world.am$get(Safe.CONFIG).available.asBoolean(context)) {
+      if (world.am$get(Safe.CONFIG).available) {
         player.displayClientMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
         cir.setReturnValue(InteractionResult.SUCCESS);
       }

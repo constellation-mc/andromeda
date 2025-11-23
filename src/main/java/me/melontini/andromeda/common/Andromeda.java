@@ -15,7 +15,6 @@ import me.melontini.andromeda.common.config.handler.MultiConfigHandler;
 import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.GsonCodecContext;
 import me.melontini.andromeda.common.util.Keeper;
-import me.melontini.andromeda.common.util.commander.IntermediaryTypes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
@@ -122,8 +121,6 @@ public class Andromeda implements ModInitializer {
   }
 
   public static void appendCommonGsonTypes(GsonBuilder builder) {
-    IntermediaryTypes.initialize(builder); // Commander support
-
     builder.registerTypeHierarchyAdapter(
         ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
     builder.registerTypeHierarchyAdapter(

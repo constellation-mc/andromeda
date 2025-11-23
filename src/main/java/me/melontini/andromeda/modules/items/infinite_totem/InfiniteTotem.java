@@ -7,7 +7,6 @@ import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.modules.items.infinite_totem.client.Client;
 
 @ModuleInfo(name = "infinite_totem", category = "items")
@@ -26,6 +25,6 @@ public final class InfiniteTotem extends Module implements PostBootstrapEvent {
   }
 
   public static final class Config extends GameConfig {
-    public BooleanIntermediary enableAscension = BooleanIntermediary.of(true);
+    public boolean enableAscension = true;
   }
 }

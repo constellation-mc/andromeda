@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.world.moist_control.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.moist_control.MoistControl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -24,9 +23,7 @@ abstract class FarmlandMixin {
       CallbackInfoReturnable<Boolean> cir,
       @Share("value") LocalIntRef ref) {
     if (world instanceof ServerLevel sw) {
-      ref.set(sw.am$get(MoistControl.CONFIG)
-          .customMoisture
-          .asInt(LootContextBuilder.command(sw, builder -> builder.origin(pos))));
+      ref.set(sw.am$get(MoistControl.CONFIG).customMoisture);
     }
   }
 

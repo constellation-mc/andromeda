@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.world.quick_fire.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.quick_fire.QuickFire;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -62,10 +61,7 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
       CallbackInfo ci,
       @Local(index = 7) int i,
       @Local(index = 10) int k) {
-    if (world
-        .am$get(QuickFire.CONFIG)
-        .available
-        .asBoolean(LootContextBuilder.command(world, builder -> builder.origin(pos)))) {
+    if (world.am$get(QuickFire.CONFIG).available) {
       try {
         LOCAL.set(Boolean.TRUE);
         for (int x = -3; x < 3; x++) {

@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.layers;
 
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
 import net.minecraft.core.BlockPos;
@@ -39,8 +38,7 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
     if (level.isClientSide()) return;
 
     var config = level.am$get(Snowballs.CONFIG);
-    var supplier = ConstantLootContextAccessor.get(this);
-    if (!config.available.asBoolean(supplier) || !config.layers.asBoolean(supplier)) return;
+    if (!config.available || !config.layers) return;
 
     Vec3 pos = this.position();
     Vec3 vec3d = pos.add(this.getDeltaMovement());

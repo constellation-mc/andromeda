@@ -7,8 +7,7 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
-import me.melontini.andromeda.common.util.commander.CommanderSupport;
-import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
+import me.melontini.andromeda.common.util.CommanderSupport;
 import me.melontini.andromeda.modules.mechanics.throwable_items.client.Client;
 
 @ModuleInfo(name = "throwable_items", category = "mechanics")
@@ -37,6 +36,6 @@ public final class ThrowableItems extends Module implements PostBootstrapEvent {
 
   public static class Config extends BaseConfig {
     public boolean canZombiesThrowItems = true;
-    public DoubleIntermediary zombieThrowInterval = DoubleIntermediary.of(40);
+    public double zombieThrowInterval = 40;
   }
 }

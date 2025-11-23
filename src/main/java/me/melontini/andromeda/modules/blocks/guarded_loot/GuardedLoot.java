@@ -10,7 +10,6 @@ import me.melontini.andromeda.bootstrap.event.DeclareApiEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
 
 @ModuleInfo(name = "guarded_loot", category = "blocks")
 public final class GuardedLoot extends Module implements PostBootstrapEvent {
@@ -28,7 +27,7 @@ public final class GuardedLoot extends Module implements PostBootstrapEvent {
   }
 
   public static class Config extends GameConfig {
-    public DoubleIntermediary range = DoubleIntermediary.of(4);
+    public double range = 4;
     public boolean allowLockPicking = true;
     public BreakingHandler breakingHandler = BreakingHandler.UNBREAKABLE;
   }

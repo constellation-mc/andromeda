@@ -1,8 +1,6 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.cooldown;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -36,13 +34,11 @@ abstract class SnowballItemMixin extends Item {
     if (world.isClientSide()) return null;
 
     var config = world.am$get(Snowballs.CONFIG);
-    if (!config.available.asBoolean(ConstantLootContextAccessor.get(par1))) return par1;
+    if (!config.available) return par1;
 
-    var supplier = LootContextBuilder.fishing(
-        world, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
-    if (!config.enableCooldown.asBoolean(supplier)) return par1;
+    if (!config.enableCooldown) return par1;
 
-    user.getCooldowns().addCooldown(this, config.cooldown.asInt(supplier));
+    user.getCooldowns().addCooldown(this, config.cooldown);
     return par1;
   }
 }

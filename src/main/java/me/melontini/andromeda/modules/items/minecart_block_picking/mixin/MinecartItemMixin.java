@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.items.minecart_block_picking.mixin;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import me.melontini.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
 import me.melontini.andromeda.modules.items.minecart_block_picking.PlaceBehaviorHandler;
@@ -63,25 +62,18 @@ abstract class MinecartItemMixin extends Item {
     if (player.isShiftKeyDown()) {
       if (stack.getItem() != Items.MINECART) return;
 
-      PickUpBehaviorHandler.getPickUpBehavior(state.getBlock())
-          .ifPresent(b -> {
-            if (!world.isClientSide()) {
-              if (!world
-                  .am$get(MinecartBlockPicking.CONFIG)
-                  .available
-                  .asBoolean(LootContextBuilder.fishing(world, builder -> builder
-                      .origin(context.getClickLocation())
-                      .tool(stack)
-                      .thisEntity(player)))) return;
-              ItemStack stack1 = b.pickUp(state, world, pos);
-              if (stack1 == null || stack1.isEmpty()) return;
+      PickUpBehaviorHandler.getPickUpBehavior(state.getBlock()).ifPresent(b -> {
+        if (!world.isClientSide()) {
+          if (!world.am$get(MinecartBlockPicking.CONFIG).available) return;
+          ItemStack stack1 = b.pickUp(state, world, pos);
+          if (stack1 == null || stack1.isEmpty()) return;
 
-              if (!player.isCreative()) stack.shrink(1);
-              player.getInventory().placeItemBackInInventory(stack1);
-              world.destroyBlock(pos, false);
-            }
-            cir.setReturnValue(InteractionResult.sidedSuccess(world.isClientSide()));
-          });
+          if (!player.isCreative()) stack.shrink(1);
+          player.getInventory().placeItemBackInInventory(stack1);
+          world.destroyBlock(pos, false);
+        }
+        cir.setReturnValue(InteractionResult.sidedSuccess(world.isClientSide()));
+      });
     }
   }
 }

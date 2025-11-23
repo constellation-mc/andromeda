@@ -11,9 +11,6 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
-import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 
@@ -27,8 +24,8 @@ public final class CampfireEffects extends Module {
   }
 
   public static final class Config extends GameConfig {
-    public BooleanIntermediary affectsPassive = BooleanIntermediary.of(true);
-    public DoubleIntermediary effectsRange = DoubleIntermediary.of(10);
+    public boolean affectsPassive = true;
+    public double effectsRange = 10;
     public List<Effect> effectList = Lists.newArrayList(new Effect());
 
     @ToString
@@ -36,7 +33,7 @@ public final class CampfireEffects extends Module {
     @NoArgsConstructor
     public static final class Effect {
       public MobEffect identifier = MobEffects.REGENERATION;
-      public LongIntermediary amplifier = LongIntermediary.of(0);
+      public int amplifier = 0;
     }
   }
 }

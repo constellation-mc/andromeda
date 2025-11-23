@@ -6,8 +6,6 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
-import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
 
 @ModuleInfo(name = "snowball_tweaks", category = "entities", env = Environment.SERVER)
 public final class Snowballs extends Module {
@@ -20,16 +18,16 @@ public final class Snowballs extends Module {
 
   public static final class Config extends GameConfig {
 
-    public BooleanIntermediary freeze = BooleanIntermediary.of(true);
+    public boolean freeze = true;
 
-    public BooleanIntermediary extinguish = BooleanIntermediary.of(true);
+    public boolean extinguish = true;
 
-    public BooleanIntermediary melt = BooleanIntermediary.of(true);
+    public boolean melt = true;
 
-    public BooleanIntermediary layers = BooleanIntermediary.of(false);
+    public boolean layers = false;
 
-    public BooleanIntermediary enableCooldown = BooleanIntermediary.of(true);
+    public boolean enableCooldown = true;
 
-    public LongIntermediary cooldown = LongIntermediary.of(10);
+    public int cooldown = 10;
   }
 }

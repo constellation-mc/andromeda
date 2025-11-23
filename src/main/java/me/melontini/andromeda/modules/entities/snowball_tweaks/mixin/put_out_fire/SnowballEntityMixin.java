@@ -1,7 +1,5 @@
 package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.put_out_fire;
 
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.sounds.SoundEvents;
@@ -29,11 +27,9 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
     if (result.getEntity().level.isClientSide()) return;
 
     var config = result.getEntity().level.am$get(Snowballs.CONFIG);
-    if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
+    if (!config.available) return;
     Entity entity = result.getEntity();
-    if (!config.extinguish.asBoolean(LootContextBuilder.entity(
-        level,
-        builder -> builder.origin(entity).thisEntity(entity).genericSource().killer(this)))) return;
+    if (!config.extinguish) return;
 
     if (entity.isOnFire()) {
       entity.clearFire();

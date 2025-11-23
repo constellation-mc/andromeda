@@ -8,7 +8,6 @@ import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
-import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
 
 @ModuleInfo(name = "crop_temperature", category = "world", env = Environment.SERVER)
 public final class PlantTemperature extends Module implements PostBootstrapEvent {
@@ -25,6 +24,6 @@ public final class PlantTemperature extends Module implements PostBootstrapEvent
   }
 
   public static class Config extends GameConfig {
-    public BooleanIntermediary affectBoneMeal = BooleanIntermediary.of(true);
+    public boolean affectBoneMeal = true;
   }
 }

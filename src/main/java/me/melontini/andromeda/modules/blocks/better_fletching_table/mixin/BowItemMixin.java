@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.blocks.better_fletching_table.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.nbt.CompoundTag;
@@ -34,13 +33,7 @@ abstract class BowItemMixin extends ProjectileWeaponItem {
     int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);
     if (a > 0) {
       stackNbt.putInt("AM-Tightened", a - 1);
-      return f
-          * player
-              .level
-              .am$get(BetterFletchingTable.CONFIG)
-              .divergenceModifier
-              .asFloat(LootContextBuilder.fishing(
-                  player.level, builder -> builder.origin(player).tool(stack).thisEntity(player)));
+      return f * player.level.am$get(BetterFletchingTable.CONFIG).divergenceModifier;
     }
     return f;
   }

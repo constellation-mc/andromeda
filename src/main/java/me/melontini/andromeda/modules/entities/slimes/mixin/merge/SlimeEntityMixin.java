@@ -1,7 +1,5 @@
 package me.melontini.andromeda.modules.entities.slimes.mixin.merge;
 
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
@@ -37,35 +35,25 @@ abstract class SlimeEntityMixin extends Mob {
   @Inject(at = @At("TAIL"), method = "registerGoals")
   private void andromeda$newGoal(CallbackInfo ci) {
     var config = this.level.am$get(Slimes.CONFIG);
-    var supplier = ConstantLootContextAccessor.get(this);
     this.targetSelector.addGoal(
         2,
         new NearestAttackableTargetGoal<>(
             (Slime) (Object) this, Slime.class, 5, true, false, livingEntity -> {
-              if (!config.available.asBoolean(supplier)) return false;
-              var supplier1 = LootContextBuilder.entity(level, builder -> builder
-                  .origin(livingEntity)
-                  .thisEntity(livingEntity)
-                  .killer(this)
-                  .genericSource());
-              if (!config.merge.asBoolean(supplier1)) return false;
+              if (!config.available) return false;
+              if (!config.merge) return false;
               if (this.andromeda$mergeCD > 0) return false;
               float d = livingEntity.distanceTo(this);
               return d <= 6
-                  && (getSize() <= config.maxMerge.asInt(supplier1)
-                      && ((Slime) livingEntity).getSize() < getSize());
+                  && (getSize() <= config.maxMerge && ((Slime) livingEntity).getSize() < getSize());
             }));
   }
 
   @Inject(at = @At("TAIL"), method = "push")
   private void andromeda$push(Entity entity, CallbackInfo ci) {
     var config = this.level.am$get(Slimes.CONFIG);
-    var supplier = ConstantLootContextAccessor.get(this);
-    if (!config.available.asBoolean(supplier)) return;
+    if (!config.available) return;
 
-    if (!config.merge.asBoolean(LootContextBuilder.entity(
-        level,
-        builder -> builder.origin(entity).thisEntity(entity).genericSource().killer(this)))) return;
+    if (!config.merge) return;
 
     if (getTarget() instanceof Slime slime && slime == entity && this.andromeda$mergeCD == 0) {
       int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);

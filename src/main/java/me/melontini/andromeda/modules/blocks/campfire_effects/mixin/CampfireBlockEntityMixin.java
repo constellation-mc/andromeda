@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.blocks.campfire_effects.mixin;
 
 import java.util.ArrayList;
 import java.util.List;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -28,13 +27,11 @@ abstract class CampfireBlockEntityMixin {
     if (world.getGameTime() % 180 == 0) {
       if (state.getValue(CampfireBlock.LIT)) {
         var config = world.am$get(CampfireEffects.CONFIG);
-        var supplier = LootContextBuilder.block(
-            world, builder -> builder.origin(pos).state(state).blockEntity(campfire));
-        if (!config.available.asBoolean(supplier)) return;
+        if (!config.available) return;
 
         List<LivingEntity> entities = new ArrayList<>();
-        double rad = config.effectsRange.asDouble(supplier);
-        boolean affectsPassive = config.affectsPassive.asBoolean(supplier);
+        double rad = config.effectsRange;
+        boolean affectsPassive = config.affectsPassive;
         world.getEntities().get(new AABB(pos).inflate(rad), entity -> {
           if ((entity instanceof AgeableMob && affectsPassive) || entity instanceof Player) {
             entities.add((LivingEntity) entity);
@@ -44,8 +41,8 @@ abstract class CampfireBlockEntityMixin {
 
         for (LivingEntity player : entities) {
           for (CampfireEffects.Config.Effect effect : effects) {
-            MobEffectInstance effectInstance = new MobEffectInstance(
-                effect.identifier, 200, effect.amplifier.asInt(supplier), true, false, true);
+            MobEffectInstance effectInstance =
+                new MobEffectInstance(effect.identifier, 200, effect.amplifier, true, false, true);
             player.addEffect(effectInstance);
           }
         }

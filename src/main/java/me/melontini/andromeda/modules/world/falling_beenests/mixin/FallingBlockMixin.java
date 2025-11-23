@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
 import java.util.Optional;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
@@ -55,12 +54,7 @@ abstract class FallingBlockMixin extends Entity {
     if (blockEntity == null) return;
 
     if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity
-        && this.level
-            .am$get(CanBeeNestsFall.CONFIG)
-            .available
-            .asBoolean(LootContextBuilder.block(
-                level,
-                builder -> builder.origin(this).state(blockState).blockEntity(blockEntity)))) {
+        && this.level.am$get(CanBeeNestsFall.CONFIG).available) {
       if (this.blockState.getBlock() != Blocks.BEE_NEST) return;
       if (blockData == null || !blockData.getBoolean("AM-FromFallenBlock")) return;
 

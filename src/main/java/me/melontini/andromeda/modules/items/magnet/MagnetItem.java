@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.Keeper;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
@@ -162,13 +161,7 @@ public class MagnetItem extends Item {
           .getEntitiesOfClass(
               ItemEntity.class,
               new AABB(entity.blockPosition())
-                  .inflate(level
-                      * world
-                          .am$get(Magnet.CONFIG)
-                          .rangeMultiplier
-                          .asDouble(LootContextBuilder.fishing(
-                              world,
-                              builder -> builder.origin(entity).tool(stack).thisEntity(entity)))),
+                  .inflate(level * world.am$get(Magnet.CONFIG).rangeMultiplier),
               ie -> magnetables.contains(
                   ie.getEntityData().get(ItemEntity.DATA_ITEM).getItem()))
           .forEach(ie -> {

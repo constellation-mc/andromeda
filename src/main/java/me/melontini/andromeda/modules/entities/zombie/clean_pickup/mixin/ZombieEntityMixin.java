@@ -5,7 +5,6 @@ import static me.melontini.andromeda.modules.mechanics.throwable_items.data.Item
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.bootstrap.ModuleManager;
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.Pickup;
 import me.melontini.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
@@ -33,7 +32,7 @@ abstract class ZombieEntityMixin extends Monster {
                   "Lnet/minecraft/world/entity/monster/Monster;canHoldItem(Lnet/minecraft/world/item/ItemStack;)Z"),
       method = "canHoldItem")
   public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
-    if (level.am$get(Pickup.CONFIG).available.asBoolean(ConstantLootContextAccessor.get(this))) {
+    if (level.am$get(Pickup.CONFIG).available) {
       return original
           && (stack.is(PickupTag.ZOMBIES_PICKUP)
               || ModuleManager.get()

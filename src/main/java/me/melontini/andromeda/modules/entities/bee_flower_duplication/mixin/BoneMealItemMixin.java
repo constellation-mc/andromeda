@@ -1,7 +1,6 @@
 package me.melontini.andromeda.modules.entities.bee_flower_duplication.mixin;
 
 import me.melontini.andromeda.bootstrap.ModuleManager;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BoneMealItem;
@@ -24,9 +23,7 @@ abstract class BoneMealItemMixin {
 
     BlockState blockState = world.getBlockState(pos);
     var config = world.am$get(BeeFlowerDuplication.CONFIG);
-    var supplier = LootContextBuilder.block(
-        world, builder -> builder.origin(pos).state(blockState).tool(stack));
-    if (!config.available.asBoolean(supplier) || !config.tallFlowers.asBoolean(supplier)) return;
+    if (!config.available || !config.tallFlowers) return;
 
     if (blockState.getBlock() instanceof TallFlowerBlock) {
       if (ModuleManager.get().get("misc.unknown").isPresent() && world.random.nextInt(100) == 0) {

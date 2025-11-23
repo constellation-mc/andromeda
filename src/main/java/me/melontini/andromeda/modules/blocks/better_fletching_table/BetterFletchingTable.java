@@ -7,7 +7,6 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
-import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
 
 @ModuleInfo(name = "better_fletching_table", category = "blocks")
 public final class BetterFletchingTable extends Module implements PostBootstrapEvent {
@@ -25,6 +24,6 @@ public final class BetterFletchingTable extends Module implements PostBootstrapE
   }
 
   public static final class Config extends BaseConfig {
-    public DoubleIntermediary divergenceModifier = DoubleIntermediary.of(0.2);
+    public float divergenceModifier = 0.2f;
   }
 }

@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import net.minecraft.core.BlockPos;
@@ -38,12 +37,7 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
       CallbackInfo ci) {
     if (state.getBlock() != Blocks.BEE_NEST) return;
 
-    if (world
-            .am$get(CanBeeNestsFall.CONFIG)
-            .available
-            .asBoolean(LootContextBuilder.block(
-                world, builder -> builder.origin(pos).state(state).blockEntity(beehiveBlockEntity)))
-        && world.random.nextInt(32000) == 0) {
+    if (world.am$get(CanBeeNestsFall.CONFIG).available && world.random.nextInt(32000) == 0) {
       if (!world.getBlockState(pos.relative(Direction.DOWN)).isAir()) return;
 
       BlockState up = world.getBlockState(pos.relative(Direction.UP));

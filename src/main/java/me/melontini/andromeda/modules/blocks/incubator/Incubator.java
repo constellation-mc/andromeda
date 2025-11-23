@@ -7,7 +7,7 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
-import me.melontini.andromeda.common.util.commander.CommanderSupport;
+import me.melontini.andromeda.common.util.CommanderSupport;
 
 @ModuleInfo(name = "incubator", category = "blocks")
 public final class Incubator extends Module implements PostBootstrapEvent {

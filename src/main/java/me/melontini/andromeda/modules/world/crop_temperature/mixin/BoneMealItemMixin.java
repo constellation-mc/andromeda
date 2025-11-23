@@ -1,6 +1,5 @@
 package me.melontini.andromeda.modules.world.crop_temperature.mixin;
 
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperature;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
 import net.minecraft.core.BlockPos;
@@ -26,11 +25,7 @@ abstract class BoneMealItemMixin {
     if (world.isClientSide()) return;
 
     BlockState state = world.getBlockState(pos);
-    if (world
-        .am$get(PlantTemperature.CONFIG)
-        .affectBoneMeal
-        .asBoolean(
-            LootContextBuilder.block(world, builder -> builder.origin(pos).state(state)))) {
+    if (world.am$get(PlantTemperature.CONFIG).affectBoneMeal) {
       if (!PlantTemperatureData.roll(
           pos, state, world.getBiome(pos).value().getBaseTemperature(), (ServerLevel) world)) {
         cir.setReturnValue(InteractionResult.FAIL);

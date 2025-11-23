@@ -3,7 +3,6 @@ package me.melontini.andromeda.modules.items.infinite_totem.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
@@ -45,11 +44,7 @@ abstract class LivingEntityMixin extends Entity {
   private boolean andromeda$infiniteFallback(
       boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
     return original
-        || (level
-                .am$get(InfiniteTotem.CONFIG)
-                .available
-                .asBoolean(LootContextBuilder.fishing(
-                    level, builder -> builder.origin(position()).tool(itemStack)))
+        || (level.am$get(InfiniteTotem.CONFIG).available
             && itemStack.is(Main.INFINITE_TOTEM.orThrow()));
   }
 

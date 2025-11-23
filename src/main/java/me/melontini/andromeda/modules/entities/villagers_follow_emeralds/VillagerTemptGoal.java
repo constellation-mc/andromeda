@@ -2,7 +2,6 @@ package me.melontini.andromeda.modules.entities.villagers_follow_emeralds;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
@@ -23,11 +22,7 @@ public class VillagerTemptGoal extends TemptGoal {
   @Override
   public boolean canUse() {
     if (this.mob.level.isClientSide()) return false;
-    if (!this.mob
-        .level
-        .am$get(VillagersFollowEmeralds.CONFIG)
-        .available
-        .asBoolean(ConstantLootContextAccessor.get(mob))) return false;
+    if (!this.mob.level.am$get(VillagersFollowEmeralds.CONFIG).available) return false;
 
     if (this.calmDown > 0) {
       --this.calmDown;
