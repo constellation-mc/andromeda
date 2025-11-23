@@ -1,14 +1,5 @@
 package me.melontini.andromeda.modules.items.lava_disintegrator.mixin;
 
-import java.util.Objects;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
@@ -19,7 +10,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -36,35 +26,15 @@ abstract class ItemMixin {
       Player player,
       SlotAccess cursorStackReference,
       CallbackInfoReturnable<Boolean> cir) {
+    if (player.level.isClientSide) return;
+
     if (clickType == ClickAction.SECONDARY && stack.is(Items.LAVA_BUCKET)) {
       if (otherStack.getItem().isFireResistant()
           || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION, otherStack)
               > 0) return;
 
       cursorStackReference.set(ItemStack.EMPTY);
-      if (player.level.isClientSide)
-        spawnLavaParticles((int) Math.max(2, Math.sqrt(otherStack.getCount())));
       cir.setReturnValue(true);
     }
-  }
-
-  @Unique @Environment(EnvType.CLIENT)
-  private static void spawnLavaParticles(int count) {
-    var client = Minecraft.getInstance();
-    int x = (int) (client.mouseHandler.xpos()
-        * (double) client.getWindow().getGuiScaledWidth()
-        / (double) client.getWindow().getScreenWidth());
-    int y = (int) (client.mouseHandler.ypos()
-        * (double) client.getWindow().getGuiScaledHeight()
-        / (double) client.getWindow().getScreenHeight());
-    for (int i = 0; i < count; i++) {
-      ScreenParticleHelper.addParticle(ParticleTypes.LAVA, x, y, 0.0, 0.0);
-    }
-    Objects.requireNonNull(client.player)
-        .playNotifySound(
-            SoundEvents.LAVA_EXTINGUISH,
-            SoundSource.AMBIENT,
-            0.8f,
-            0.8F + MathUtil.threadRandom().nextFloat() * 0.4F);
   }
 }
