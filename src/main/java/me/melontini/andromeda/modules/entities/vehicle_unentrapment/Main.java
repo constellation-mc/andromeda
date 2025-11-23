@@ -5,11 +5,11 @@ import static me.melontini.andromeda.common.Andromeda.id;
 import java.util.Objects;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 
 public final class Main {

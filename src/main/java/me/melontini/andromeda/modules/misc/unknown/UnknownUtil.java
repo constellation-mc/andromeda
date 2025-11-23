@@ -29,7 +29,7 @@ public class UnknownUtil {
   }
 
   public static Optional<BlockPos> pickRandomSpot(
-          @NonNull Level world, @NonNull BlockPos blockPos, int range, @NonNull RandomSource random) {
+      @NonNull Level world, @NonNull BlockPos blockPos, int range, @NonNull RandomSource random) {
     MakeSure.isTrue(range > 0, "range can't be negative or zero!");
     double j = (range * range * range) * 0.75;
 

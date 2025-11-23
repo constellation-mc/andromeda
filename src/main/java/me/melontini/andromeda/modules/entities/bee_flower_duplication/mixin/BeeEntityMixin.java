@@ -5,11 +5,11 @@ import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Bee;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
@@ -83,15 +83,16 @@ abstract class BeeEntityMixin extends Animal {
         for (int i = -2; i <= 2; i++) {
           for (int b = -2; b <= 2; b++) {
             for (int c = -2; c <= 2; c++) {
-              BlockPos pos =
-                  new BlockPos(savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
+              BlockPos pos = new BlockPos(
+                  savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
               if (level.getBlockState(pos).getBlock() instanceof AirBlock
                   && flowerBlock.canSurvive(flowerState, level, pos)) {
                 if (level.random.nextInt(12) == 0) {
                   if (ModuleManager.get().get(Unknown.class).isPresent()
                       && level.random.nextInt(100) == 0) {
                     level.setBlockAndUpdate(
-                        pos, RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().defaultBlockState());
+                        pos,
+                        RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().defaultBlockState());
                   } else {
                     level.setBlockAndUpdate(pos, flowerState);
                   }
@@ -106,8 +107,8 @@ abstract class BeeEntityMixin extends Animal {
         for (int i = -1; i <= 1; i++) {
           for (int b = -2; b <= 2; b++) {
             for (int c = -1; c <= 1; c++) {
-              BlockPos pos =
-                  new BlockPos(savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
+              BlockPos pos = new BlockPos(
+                  savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
               if (level.getBlockState(pos).getBlock() instanceof AirBlock
                   && flowerBlock.canSurvive(flowerState, level, pos)) {
                 if (level.random.nextInt(6) == 0) {

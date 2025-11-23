@@ -1,20 +1,20 @@
 package me.melontini.andromeda.modules.entities.boats.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.state.BlockState;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.model.ListModel;
+import net.minecraft.client.model.RaftModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.model.ListModel;
-import net.minecraft.client.model.RaftModel;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import com.mojang.math.Axis;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Quaternionf;
 
 public class BoatWithBlockRenderer extends BoatRenderer {
@@ -28,12 +28,12 @@ public class BoatWithBlockRenderer extends BoatRenderer {
 
   @Override
   public void render(
-          Boat boatEntity,
-          float f,
-          float g,
-          PoseStack matrixStack,
-          MultiBufferSource vertexConsumerProvider,
-          int i) {
+      Boat boatEntity,
+      float f,
+      float g,
+      PoseStack matrixStack,
+      MultiBufferSource vertexConsumerProvider,
+      int i) {
     super.render(boatEntity, f, g, matrixStack, vertexConsumerProvider, i);
     if (blockState != null)
       if (blockState.getRenderShape() != RenderShape.INVISIBLE) {
@@ -51,10 +51,7 @@ public class BoatWithBlockRenderer extends BoatRenderer {
         if (!Mth.equal(k, 0.0F)) {
           matrixStack.mulPose(new Quaternionf()
               .setAngleAxis(
-                  boatEntity.getBubbleAngle(g) * (float) (Math.PI / 180.0),
-                  1.0F,
-                  0.0F,
-                  1.0F));
+                  boatEntity.getBubbleAngle(g) * (float) (Math.PI / 180.0), 1.0F, 0.0F, 1.0F));
         }
 
         Pair<ResourceLocation, ListModel<Boat>> pair =

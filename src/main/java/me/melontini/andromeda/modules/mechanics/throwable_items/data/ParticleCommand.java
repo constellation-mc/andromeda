@@ -13,12 +13,12 @@ import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
 public record ParticleCommand(Selector.Conditioned selector, boolean item, Optional<Integer> colors)
@@ -55,8 +55,7 @@ public record ParticleCommand(Selector.Conditioned selector, boolean item, Optio
     byteBuf.writeItem(stack);
     byteBuf.writeBoolean(colors.isPresent());
     byteBuf.writeVarInt(colors.orElse(-1));
-    for (ServerPlayer serverPlayerEntity :
-        PlayerLookup.tracking(world, BlockPos.containing(pos))) {
+    for (ServerPlayer serverPlayerEntity : PlayerLookup.tracking(world, BlockPos.containing(pos))) {
       ServerPlayNetworking.send(serverPlayerEntity, Main.FLYING_STACK_LANDED, byteBuf);
     }
   }

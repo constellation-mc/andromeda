@@ -18,27 +18,27 @@ import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.CampfireBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -53,7 +53,7 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
 
   @SuppressWarnings("unused")
   public static void tick(
-          Level world, BlockPos pos, BlockState state, IncubatorBlockEntity incubatorBlockEntity) {
+      Level world, BlockPos pos, BlockState state, IncubatorBlockEntity incubatorBlockEntity) {
     incubatorBlockEntity.tick(world, state);
   }
 
@@ -85,8 +85,9 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
     if (arithmetica.toSource().left().isPresent()) return arithmetica.asInt(null);
 
     var supplier = LootContextBuilder.block(
-            level,
-        builder -> builder.origin(worldPosition).state(getBlockState()).tool(stack).blockEntity(this));
+        level,
+        builder ->
+            builder.origin(worldPosition).state(getBlockState()).tool(stack).blockEntity(this));
     return arithmetica.asInt(supplier.get());
   }
 
@@ -114,7 +115,7 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
   }
 
   private void executeCommands(
-          EggProcessingData.Entry entry, ServerLevel world, ItemStack stack, Entity entity) {
+      EggProcessingData.Entry entry, ServerLevel world, ItemStack stack, Entity entity) {
     if (entry.commands().isEmpty()) return;
 
     var supplier = LootContextBuilder.block(world, builder -> builder
@@ -273,7 +274,10 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
 
   @Override
   public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction dir) {
-    return dir != MakeSure.notNull(level).getBlockState(this.worldPosition).getValue(IncubatorBlock.FACING)
+    return dir
+            != MakeSure.notNull(level)
+                .getBlockState(this.worldPosition)
+                .getValue(IncubatorBlock.FACING)
         && requireNonNull(Andromeda.get().getCurrentServer())
                 .dm$getReloader(EggProcessingData.RELOADER)
                 .get(stack.getItem())
@@ -282,6 +286,9 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
 
   @Override
   public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
-    return dir != Objects.requireNonNull(level).getBlockState(this.worldPosition).getValue(IncubatorBlock.FACING);
+    return dir
+        != Objects.requireNonNull(level)
+            .getBlockState(this.worldPosition)
+            .getValue(IncubatorBlock.FACING);
   }
 }

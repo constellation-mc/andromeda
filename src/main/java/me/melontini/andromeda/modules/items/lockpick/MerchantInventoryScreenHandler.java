@@ -1,19 +1,18 @@
 package me.melontini.andromeda.modules.items.lockpick;
 
 import me.melontini.andromeda.common.util.Keeper;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class MerchantInventoryScreenHandler extends AbstractContainerMenu {
 
-  public static final Keeper<MenuType<MerchantInventoryScreenHandler>> INSTANCE =
-      Keeper.create();
+  public static final Keeper<MenuType<MerchantInventoryScreenHandler>> INSTANCE = Keeper.create();
   private final Container inventory;
 
   public MerchantInventoryScreenHandler(int syncId, Inventory playerInventory) {
@@ -21,7 +20,7 @@ public class MerchantInventoryScreenHandler extends AbstractContainerMenu {
   }
 
   public MerchantInventoryScreenHandler(
-          int syncId, Inventory playerInventory, Container inventory) {
+      int syncId, Inventory playerInventory, Container inventory) {
     super(INSTANCE.orThrow(), syncId);
     this.inventory = inventory;
     inventory.startOpen(playerInventory.player);

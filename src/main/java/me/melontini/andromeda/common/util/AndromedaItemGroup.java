@@ -10,11 +10,11 @@ import me.melontini.andromeda.bootstrap.event.bus.Bus;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.item_group.ItemGroupBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.ItemLike;
 
 public interface AndromedaItemGroup {
 
@@ -85,19 +85,19 @@ public interface AndromedaItemGroup {
     }
 
     default <T extends ItemLike> void items(
-            Module module, ResourceKey<CreativeModeTab> main, List<T> items) {
+        Module module, ResourceKey<CreativeModeTab> main, List<T> items) {
       stacks(module, main, items.stream().map(ItemStack::new).toList());
     }
 
     default <T extends ItemLike> void item(
-            Module module, ResourceKey<CreativeModeTab> main, T item) {
+        Module module, ResourceKey<CreativeModeTab> main, T item) {
       stack(module, main, new ItemStack(item));
     }
 
     default <T extends ItemLike> void keepers(
-            Module module,
-            ResourceKey<CreativeModeTab> main,
-            List<Keeper<? extends ItemLike>> keepers) {
+        Module module,
+        ResourceKey<CreativeModeTab> main,
+        List<Keeper<? extends ItemLike>> keepers) {
       stacks(
           module,
           main,
@@ -109,7 +109,7 @@ public interface AndromedaItemGroup {
     }
 
     default <T extends ItemLike> void keeper(
-            Module module, ResourceKey<CreativeModeTab> main, Keeper<T> keeper) {
+        Module module, ResourceKey<CreativeModeTab> main, Keeper<T> keeper) {
       if (keeper.isPresent()) stack(module, main, new ItemStack(keeper.orThrow()));
     }
   }

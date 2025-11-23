@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import org.joml.Vector2d;
 import org.joml.Vector2i;
@@ -43,9 +43,9 @@ abstract class DrawContextMixin {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"),
+                  "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"),
       method =
-              "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
+          "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
   private Vector2ic andromeda$smoothTooltip(
       Vector2ic vic,
       @Local(argsOnly = true, ordinal = 0) int x,
@@ -85,15 +85,15 @@ abstract class DrawContextMixin {
   @Inject(
       at = @At(value = "TAIL"),
       method =
-              "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
+          "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
   private void andromeda$popMatrix(
-          Font textRenderer,
-          List<ClientTooltipComponent> components,
-          int x,
-          int y,
-          ClientTooltipPositioner positioner,
-          CallbackInfo ci,
-          @Share("popMatrix") LocalBooleanRef popMatrix) {
+      Font textRenderer,
+      List<ClientTooltipComponent> components,
+      int x,
+      int y,
+      ClientTooltipPositioner positioner,
+      CallbackInfo ci,
+      @Share("popMatrix") LocalBooleanRef popMatrix) {
     if (popMatrix.get()) this.pose.popPose();
   }
 }

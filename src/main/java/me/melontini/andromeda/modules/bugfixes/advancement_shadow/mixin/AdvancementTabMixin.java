@@ -19,11 +19,7 @@ abstract class AdvancementTabMixin {
   private Minecraft minecraft;
 
   @ModifyArg(
-      at =
-          @At(
-              value = "INVOKE",
-              target = "Lnet/minecraft/util/Mth;clamp(FFF)F",
-              ordinal = 0),
+      at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F", ordinal = 0),
       index = 0,
       method = "drawTooltips")
   private float andromeda$draw(float value) {
@@ -31,11 +27,7 @@ abstract class AdvancementTabMixin {
   }
 
   @ModifyArg(
-      at =
-          @At(
-              value = "INVOKE",
-              target = "Lnet/minecraft/util/Mth;clamp(FFF)F",
-              ordinal = 1),
+      at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F", ordinal = 1),
       index = 0,
       method = "drawTooltips")
   private float andromeda$draw1(float value) {

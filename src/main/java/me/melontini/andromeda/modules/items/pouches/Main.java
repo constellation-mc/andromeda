@@ -20,22 +20,22 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Position;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public final class Main {
@@ -61,7 +61,7 @@ public final class Main {
 
   @SuppressWarnings("UnstableApiUsage")
   public static void tryInsertItem(
-          Level world, Vec3 pos, ItemStack stack, Storage<ItemVariant> storage) {
+      Level world, Vec3 pos, ItemStack stack, Storage<ItemVariant> storage) {
     if (stack.isEmpty()) return;
     ItemStack itemStack = stack.copy();
     try (Transaction transaction = Transaction.openOuter()) {
@@ -104,8 +104,9 @@ public final class Main {
         () -> new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().stacksTo(16))));
 
     POUCH.init(RegistryUtil.register(
-        BuiltInRegistries.ENTITY_TYPE, id("pouch"), () -> FabricEntityTypeBuilder.<PouchEntity>create(
-                MobCategory.MISC, PouchEntity::new)
+        BuiltInRegistries.ENTITY_TYPE,
+        id("pouch"),
+        () -> FabricEntityTypeBuilder.<PouchEntity>create(MobCategory.MISC, PouchEntity::new)
             .dimensions(new EntityDimensions(0.25F, 0.25F, true))
             .trackRangeChunks(4)
             .trackedUpdateRate(10)
@@ -114,8 +115,8 @@ public final class Main {
     Trades.register();
 
     List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
-    AndromedaItemGroup.BUS.listen(
-        acceptor -> acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, new ArrayList<>(l)));
+    AndromedaItemGroup.BUS.listen(acceptor ->
+        acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, new ArrayList<>(l)));
 
     var behavior = new AbstractProjectileDispenseBehavior() {
       @Override

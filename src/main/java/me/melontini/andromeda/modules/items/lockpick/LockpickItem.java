@@ -13,17 +13,17 @@ import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
 
 public class LockpickItem extends Item {
 
@@ -55,7 +55,7 @@ public class LockpickItem extends Item {
 
   @Override
   public InteractionResult interactLivingEntity(
-          ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+      ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
     if (user.level.isClientSide()) return InteractionResult.SUCCESS;
 
     if (entity instanceof AbstractVillager merchant
@@ -85,8 +85,8 @@ public class LockpickItem extends Item {
         id("merchant_inventory"),
         RegistryUtil.screenHandlerType(MerchantInventoryScreenHandler::new)));
 
-    AndromedaItemGroup.BUS.listen(
-        acceptor -> acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, LockpickItem.INSTANCE));
+    AndromedaItemGroup.BUS.listen(acceptor ->
+        acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, LockpickItem.INSTANCE));
 
     ModuleManager.get()
         .whenAvailable(

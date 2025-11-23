@@ -5,12 +5,12 @@ import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Slime;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,12 +64,10 @@ abstract class SlimeEntityMixin extends Mob {
     if (!config.available.asBoolean(supplier)) return;
 
     if (!config.merge.asBoolean(LootContextBuilder.entity(
-            level,
+        level,
         builder -> builder.origin(entity).thisEntity(entity).genericSource().killer(this)))) return;
 
-    if (getTarget() instanceof Slime slime
-        && slime == entity
-        && this.andromeda$mergeCD == 0) {
+    if (getTarget() instanceof Slime slime && slime == entity && this.andromeda$mergeCD == 0) {
       int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);
 
       slime.discard();

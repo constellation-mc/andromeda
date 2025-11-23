@@ -3,20 +3,20 @@ package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.layers;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Snowball.class)
 abstract class SnowballEntityMixin extends ThrowableItemProjectile {
 
-  public SnowballEntityMixin(EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
+  public SnowballEntityMixin(
+      EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
     super(entityType, world);
   }
 
@@ -44,8 +45,8 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
     Vec3 pos = this.position();
     Vec3 vec3d = pos.add(this.getDeltaMovement());
     // We need to recast, since vanilla ignores fluids.
-    BlockHitResult hitResult = this.level.clip(new ClipContext(
-        pos, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.WATER, this));
+    BlockHitResult hitResult = this.level.clip(
+        new ClipContext(pos, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.WATER, this));
 
     if (hitResult.getType() == HitResult.Type.BLOCK) {
       BlockPos blockPos = hitResult.getBlockPos();

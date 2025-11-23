@@ -14,27 +14,27 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.world.*;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.animal.horse.TraderLlama;
 import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.tags.BiomeTags;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.*;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
-import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -61,18 +61,17 @@ public class CustomTraderManager {
   }
 
   public void trySpawn(
-          ServerLevel world,
-          ServerLevelData properties,
-          ItemStack stackInHand,
-          Player player,
-          boolean highlight) {
+      ServerLevel world,
+      ServerLevelData properties,
+      ItemStack stackInHand,
+      Player player,
+      boolean highlight) {
     if (player == null) return;
 
     if (cooldown > 0) {
       if (!highlight || this.trader == null || this.trader.isRemoved()) return;
 
-      this.trader.addEffect(
-          new MobEffectInstance(MobEffects.GLOWING, 20 * 5, 0, true, false));
+      this.trader.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 5, 0, true, false));
       return;
     }
     BlockPos blockPos = player.blockPosition();
@@ -110,12 +109,10 @@ public class CustomTraderManager {
     this.trader.setDespawnDelay(tCooldown);
     this.trader.setWanderTarget(blockPos2);
     this.trader.restrictTo(blockPos2, 16);
-    this.trader.addEffect(
-        new MobEffectInstance(MobEffects.GLOWING, 20 * 8, 0, true, false));
+    this.trader.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 8, 0, true, false));
   }
 
-  private void spawnLlama(
-          @NonNull ServerLevel world, @NonNull WanderingTrader wanderingTrader) {
+  private void spawnLlama(@NonNull ServerLevel world, @NonNull WanderingTrader wanderingTrader) {
     BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.blockPosition(), 4);
     if (blockPos == null) return;
 

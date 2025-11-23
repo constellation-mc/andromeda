@@ -3,13 +3,13 @@ package me.melontini.andromeda.modules.entities.better_furnace_minecart.mixin;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.MinecartFurnace;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +26,7 @@ abstract class FurnaceMinecartMixin {
 
   @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
   public void andromeda$interact(
-          Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+      Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
     ItemStack stack = player.getItemInHand(hand);
     Item item = stack.getItem();
 
@@ -37,7 +37,8 @@ abstract class FurnaceMinecartMixin {
           <= Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
         if (!player.getAbilities().instabuild) {
           ItemStack reminder = stack.getRecipeRemainder();
-          if (!reminder.isEmpty()) player.getInventory().placeItemBackInInventory(stack.getRecipeRemainder());
+          if (!reminder.isEmpty())
+            player.getInventory().placeItemBackInInventory(stack.getRecipeRemainder());
           stack.shrink(1);
         }
 

@@ -8,24 +8,24 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.stats.Stats;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class AndromedaBoatItem<T extends Boat> extends Item {
@@ -65,7 +65,8 @@ public class AndromedaBoatItem<T extends Boat> extends Item {
 
       if (hitResult.getType() == HitResult.Type.BLOCK) {
         T furnace = MakeSure.notNull(this.keeper.orThrow().create(world));
-        furnace.setPos(hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z);
+        furnace.setPos(
+            hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z);
 
         furnace.setVariant(this.type);
         furnace.setYRot(user.getYRot());

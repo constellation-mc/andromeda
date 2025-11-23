@@ -4,20 +4,20 @@ import java.util.List;
 import lombok.NonNull;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
-import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class BeeUtil {
 
@@ -25,13 +25,14 @@ public class BeeUtil {
       List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
   public static final ResourceLocation BEE_LOOT_ID = Andromeda.id("bee_nest/bee_nest_broken");
 
-  public static List<ItemStack> prepareLoot(@NonNull Level world, @NonNull ResourceLocation lootId) {
+  public static List<ItemStack> prepareLoot(
+      @NonNull Level world, @NonNull ResourceLocation lootId) {
     return ((ServerLevel) world)
         .getServer()
         .getLootData()
         .getLootTable(lootId)
-        .getRandomItems(new LootParams.Builder(((ServerLevel) world))
-            .create(LootContextParamSets.EMPTY));
+        .getRandomItems(
+            new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY));
   }
 
   public static void trySpawnFallingBeeNest(

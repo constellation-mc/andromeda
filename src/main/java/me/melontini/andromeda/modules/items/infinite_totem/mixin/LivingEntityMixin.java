@@ -9,16 +9,16 @@ import me.melontini.andromeda.modules.items.infinite_totem.Main;
 import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -43,13 +43,13 @@ abstract class LivingEntityMixin extends Entity {
               value = "INVOKE",
               target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"))
   private boolean andromeda$infiniteFallback(
-          boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
+      boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
     return original
         || (level
                 .am$get(InfiniteTotem.CONFIG)
                 .available
                 .asBoolean(LootContextBuilder.fishing(
-                        level, builder -> builder.origin(position()).tool(itemStack)))
+                    level, builder -> builder.origin(position()).tool(itemStack)))
             && itemStack.is(Main.INFINITE_TOTEM.orThrow()));
   }
 
@@ -65,14 +65,14 @@ abstract class LivingEntityMixin extends Entity {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/world/level/Level;broadcastEntityEvent(Lnet/minecraft/world/entity/Entity;B)V",
+                  "Lnet/minecraft/world/level/Level;broadcastEntityEvent(Lnet/minecraft/world/entity/Entity;B)V",
               shift = At.Shift.BEFORE),
       method = "checkTotemDeathProtection",
       cancellable = true)
   private void andromeda$useInfiniteTotem(
-          DamageSource source,
-          CallbackInfoReturnable<Boolean> cir,
-          @Local(ordinal = 0) ItemStack itemStack) {
+      DamageSource source,
+      CallbackInfoReturnable<Boolean> cir,
+      @Local(ordinal = 0) ItemStack itemStack) {
     if (itemStack.is(Main.INFINITE_TOTEM.orThrow())) {
       if (!level.isClientSide()) {
         FriendlyByteBuf buf = PacketByteBufs.create()

@@ -4,17 +4,17 @@ import java.util.Map;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.gossip.GossipContainer;
+import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.ai.gossip.GossipType;
-import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,12 +43,12 @@ abstract class VillagerEntityMixin extends AbstractVillager {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/world/entity/npc/Villager;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;",
+                  "Lnet/minecraft/world/entity/npc/Villager;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;",
               shift = At.Shift.BEFORE),
       cancellable = true,
       method = "mobInteract")
   private void andromeda$useGifts(
-          Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+      Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
     if (hand != InteractionHand.MAIN_HAND || level.isClientSide()) return;
     ItemStack stack = player.getItemInHand(hand);
 
@@ -56,7 +56,7 @@ abstract class VillagerEntityMixin extends AbstractVillager {
         .am$get(VillagerGifting.CONFIG)
         .available
         .asBoolean(LootContextBuilder.fishing(
-                level, builder -> builder.origin(player).tool(stack).thisEntity(player)))) return;
+            level, builder -> builder.origin(player).tool(stack).thisEntity(player)))) return;
 
     ItemStack gift = stack.copy();
     gift.setCount(1);
@@ -73,10 +73,10 @@ abstract class VillagerEntityMixin extends AbstractVillager {
   }
 
   @Unique private boolean andromeda$tryInsertGift(
-          CallbackInfoReturnable<InteractionResult> cir,
-          Player player,
-          ItemStack stack,
-          GossipType type) {
+      CallbackInfoReturnable<InteractionResult> cir,
+      Player player,
+      ItemStack stack,
+      GossipType type) {
     if (this.getInventory().canAddItem(stack)) {
       this.getInventory().addItem(stack);
       this.gossips.add(player.getUUID(), type, 3);

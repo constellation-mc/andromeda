@@ -7,22 +7,22 @@ import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSp
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.dark_matter.api.base.util.MathUtil;
-import net.minecraft.world.level.block.AnvilBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class AnvilMinecartEntity extends AbstractMinecart {
   public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, Level world) {
@@ -45,7 +45,7 @@ public class AnvilMinecartEntity extends AbstractMinecart {
 
   @Override
   public boolean causeFallDamage(
-          float fallDistance, float damageMultiplier, DamageSource damageSource) {
+      float fallDistance, float damageMultiplier, DamageSource damageSource) {
     int i = Mth.ceil(fallDistance - 1.0F);
     if (i >= 0) {
       float f = (float) Math.min(MathUtil.fastFloor(i * 2), 40);

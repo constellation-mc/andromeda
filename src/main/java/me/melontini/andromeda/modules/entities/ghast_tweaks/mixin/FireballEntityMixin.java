@@ -9,9 +9,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.entity.projectile.LargeFireball;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.Explosion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -28,17 +28,17 @@ abstract class FireballEntityMixin extends Fireball {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;"))
+                  "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;"))
   private Explosion redirectExplosionType(
-          Level instance,
-          Entity entity,
-          double x,
-          double y,
-          double z,
-          float power,
-          boolean createFire,
-          Level.ExplosionInteraction explosionSourceType,
-          Operation<Explosion> original) {
+      Level instance,
+      Entity entity,
+      double x,
+      double y,
+      double z,
+      float power,
+      boolean createFire,
+      Level.ExplosionInteraction explosionSourceType,
+      Operation<Explosion> original) {
     if (this.getOwner() instanceof Ghast
         && instance.am$get(GhastTweaks.CONFIG).fireBallsConvertObsidian) {
       Explosion.BlockInteraction destructionType =

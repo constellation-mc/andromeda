@@ -8,15 +8,15 @@ import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.config.handler.GameConfigHandler;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.Holder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.WritableLevelData;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,15 +29,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class ServerWorldMixin extends Level implements DataConfigs.AttachmentGetter {
 
   protected ServerWorldMixin(
-          WritableLevelData properties,
-          ResourceKey<Level> registryRef,
-          RegistryAccess registryManager,
-          Holder<DimensionType> dimensionEntry,
-          Supplier<ProfilerFiller> profiler,
-          boolean isClient,
-          boolean debugWorld,
-          long biomeAccess,
-          int maxChainedNeighborUpdates) {
+      WritableLevelData properties,
+      ResourceKey<Level> registryRef,
+      RegistryAccess registryManager,
+      Holder<DimensionType> dimensionEntry,
+      Supplier<ProfilerFiller> profiler,
+      boolean isClient,
+      boolean debugWorld,
+      long biomeAccess,
+      int maxChainedNeighborUpdates) {
     super(
         properties,
         registryRef,
@@ -60,7 +60,7 @@ abstract class ServerWorldMixin extends Level implements DataConfigs.AttachmentG
           @At(
               value = "FIELD",
               target =
-                      "Lnet/minecraft/server/level/ServerLevel;chunkSource:Lnet/minecraft/server/level/ServerChunkCache;",
+                  "Lnet/minecraft/server/level/ServerLevel;chunkSource:Lnet/minecraft/server/level/ServerChunkCache;",
               ordinal = 0,
               shift = At.Shift.AFTER),
       method = "<init>")

@@ -25,20 +25,17 @@ abstract class MobEntityMixin extends Entity {
     super(type, world);
   }
 
-  @ModifyExpressionValue(
-      at = @At(value = "CONSTANT", args = "floatValue=90"),
-      method = "lookAt")
+  @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=90"), method = "lookAt")
   private float andromeda$rotateSlime(
-          float original, Entity target, float maxYawChange, float maxPitchChange) {
-    if ((Mob) (Object) this instanceof Slime slime
-        && !(target instanceof Slime)) {
+      float original, Entity target, float maxYawChange, float maxPitchChange) {
+    if ((Mob) (Object) this instanceof Slime slime && !(target instanceof Slime)) {
       var config = level.am$get(Slimes.CONFIG);
 
       if (!slime.isTiny()) return original;
       if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return original;
 
       if (config.flee.asBoolean(LootContextBuilder.entity(
-              level, builder -> builder.origin(target).thisEntity(target).genericSource()))) return 270;
+          level, builder -> builder.origin(target).thisEntity(target).genericSource()))) return 270;
     }
     return original;
   }

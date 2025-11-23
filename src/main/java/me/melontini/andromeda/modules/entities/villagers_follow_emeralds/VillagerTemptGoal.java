@@ -3,21 +3,20 @@ package me.melontini.andromeda.modules.entities.villagers_follow_emeralds;
 import static me.melontini.andromeda.common.Andromeda.id;
 
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import net.minecraft.world.entity.schedule.Activity;
-import net.minecraft.world.entity.ai.goal.TemptGoal;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class VillagerTemptGoal extends TemptGoal {
 
   public static final TagKey<Item> TEMPTING =
       TagKey.create(BuiltInRegistries.ITEM.key(), id("tempting_for_villagers"));
 
-  public VillagerTemptGoal(
-          Villager entity, double speed, Ingredient food, boolean canBeScared) {
+  public VillagerTemptGoal(Villager entity, double speed, Ingredient food, boolean canBeScared) {
     super(entity, speed, food, canBeScared);
   }
 

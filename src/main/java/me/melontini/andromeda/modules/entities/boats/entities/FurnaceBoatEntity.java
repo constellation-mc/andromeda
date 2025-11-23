@@ -6,21 +6,21 @@ import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFur
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class FurnaceBoatEntity extends BoatEntityWithBlock {
   private static final EntityDataAccessor<Integer> FUEL =
@@ -87,7 +87,8 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
               .orElse(45000)) {
         if (!player.getAbilities().instabuild) {
           ItemStack reminder = stack.getRecipeRemainder();
-          if (!reminder.isEmpty()) player.getInventory().placeItemBackInInventory(stack.getRecipeRemainder());
+          if (!reminder.isEmpty())
+            player.getInventory().placeItemBackInInventory(stack.getRecipeRemainder());
           stack.shrink(1);
         }
 

@@ -15,16 +15,16 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public final class Client {
 
@@ -50,8 +50,8 @@ public final class Client {
     var config = AndromedaClient.CLIENT.get(ThrowableItems.CLIENT_CONFIG);
     ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
       if (config.tooltip && showTooltip.contains(stack.getItem())) {
-        lines.add(
-            TextUtil.translatable("tooltip.andromeda.throwable_item").withStyle(ChatFormatting.GRAY));
+        lines.add(TextUtil.translatable("tooltip.andromeda.throwable_item")
+            .withStyle(ChatFormatting.GRAY));
       }
     });
 

@@ -15,12 +15,12 @@ import me.melontini.andromeda.modules.mechanics.throwable_items.ThrowableItems;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.profiling.ProfilerFiller;
 
 public class ItemBehaviorManager extends IdentifiedJsonDataLoader {
 
@@ -123,7 +123,7 @@ public class ItemBehaviorManager extends IdentifiedJsonDataLoader {
 
   @Override
   protected void apply(
-          Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
+      Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
     this.clear();
     itemBehaviors.putAll(STATIC);
     this.disable(Items.AIR);

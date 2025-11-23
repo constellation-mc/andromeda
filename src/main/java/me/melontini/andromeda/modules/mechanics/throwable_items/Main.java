@@ -18,25 +18,25 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.Position;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public final class Main {
 
@@ -50,14 +50,15 @@ public final class Main {
   public static final ResourceLocation COLORED_FLYING_STACK_LANDED =
       Andromeda.id("colored_flying_stack_landed");
 
-  public static final AbstractProjectileDispenseBehavior BEHAVIOR = new AbstractProjectileDispenseBehavior() {
-    @Override
-    protected Projectile getProjectile(Level world, Position position, ItemStack stack) {
-      ItemStack stack1 = stack.copy();
-      stack1.setCount(1);
-      return new FlyingItemEntity(stack1, position.x(), position.y(), position.z(), world);
-    }
-  };
+  public static final AbstractProjectileDispenseBehavior BEHAVIOR =
+      new AbstractProjectileDispenseBehavior() {
+        @Override
+        protected Projectile getProjectile(Level world, Position position, ItemStack stack) {
+          ItemStack stack1 = stack.copy();
+          stack1.setCount(1);
+          return new FlyingItemEntity(stack1, position.x(), position.y(), position.z(), world);
+        }
+      };
 
   public static final Keeper<LootContextParamSet> CONTEXT_TYPE = Keeper.create();
   public static final Keeper<CommandType> PARTICLE_COMMAND = Keeper.create();

@@ -12,8 +12,8 @@ import com.mojang.serialization.Lifecycle;
 import java.util.function.Consumer;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.core.WritableRegistry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.RegistryDataLoader;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +23,7 @@ abstract class RegistryLoaderMixin {
 
   @WrapOperation(
       method =
-              "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
+          "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
       at =
           @At(
               value = "INVOKE",
@@ -47,7 +47,7 @@ abstract class RegistryLoaderMixin {
 
   @WrapOperation(
       method =
-              "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
+          "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
       at =
           @At(
               value = "INVOKE",
@@ -64,14 +64,14 @@ abstract class RegistryLoaderMixin {
 
   @WrapWithCondition(
       method =
-              "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
+          "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
       at =
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/core/WritableRegistry;register(Lnet/minecraft/resources/ResourceKey;Ljava/lang/Object;Lcom/mojang/serialization/Lifecycle;)Lnet/minecraft/core/Holder$Reference;"))
+                  "Lnet/minecraft/core/WritableRegistry;register(Lnet/minecraft/resources/ResourceKey;Ljava/lang/Object;Lcom/mojang/serialization/Lifecycle;)Lnet/minecraft/core/Holder$Reference;"))
   private static boolean andromeda$cancelEntryAddition(
-          WritableRegistry<?> instance, ResourceKey<?> tRegistryKey, Object t, Lifecycle lifecycle) {
+      WritableRegistry<?> instance, ResourceKey<?> tRegistryKey, Object t, Lifecycle lifecycle) {
     return t != null;
   }
 }

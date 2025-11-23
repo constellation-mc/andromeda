@@ -23,11 +23,11 @@ import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
@@ -182,7 +182,7 @@ public final class PlantTemperatureData {
 
     @Override
     protected void apply(
-            Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
+        Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
       IdentityHashMap<Block, float[]> replace = new IdentityHashMap<>();
       IdentityHashMap<Block, float[]> result = new IdentityHashMap<>();
       Maps.transformValues(

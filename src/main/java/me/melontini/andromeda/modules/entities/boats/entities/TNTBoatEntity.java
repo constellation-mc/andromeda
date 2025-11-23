@@ -7,31 +7,32 @@ import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 
 public class TNTBoatEntity extends BoatEntityWithBlock {
-  public static final ResourceLocation EXPLODE_BOAT_ON_SERVER = Andromeda.id("explode_boat_on_server");
+  public static final ResourceLocation EXPLODE_BOAT_ON_SERVER =
+      Andromeda.id("explode_boat_on_server");
   public int fuseTicks = -1;
 
   public TNTBoatEntity(EntityType<? extends Boat> entityType, Level world) {
@@ -108,8 +109,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
       this.setDamage(this.getDamage() + amount * 10.0F);
       this.markHurt();
       this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
-      boolean bl =
-          source.getEntity() instanceof Player player && player.getAbilities().instabuild;
+      boolean bl = source.getEntity() instanceof Player player && player.getAbilities().instabuild;
       if (bl) {
         this.discard();
         return false;
@@ -162,8 +162,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     if (this.fuseTicks == -1) {
       this.fuseTicks = 50 + level.getRandom().nextInt(20);
       if (!level.isClientSide) {
-        level.playSound(
-            null, this, SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1F, 1F);
+        level.playSound(null, this, SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1F, 1F);
       }
     }
   }

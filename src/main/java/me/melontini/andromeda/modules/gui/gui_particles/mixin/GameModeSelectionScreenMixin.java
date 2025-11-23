@@ -10,14 +10,14 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -75,12 +75,12 @@ abstract class GameModeSelectionScreenMixin extends Screen {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/client/multiplayer/ClientPacketListener;sendUnsignedCommand(Ljava/lang/String;)Z",
+                  "Lnet/minecraft/client/multiplayer/ClientPacketListener;sendUnsignedCommand(Ljava/lang/String;)Z",
               shift = At.Shift.BEFORE),
       method =
-              "switchToHoveredGameMode(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;)V")
+          "switchToHoveredGameMode(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;)V")
   private static void andromeda$gmSwitchParticles(
-          Minecraft client, GameModeSwitcherScreen.GameModeIcon gameMode, CallbackInfo ci) {
+      Minecraft client, GameModeSwitcherScreen.GameModeIcon gameMode, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).gameModeSwitcherParticles) return;
 
     if (client.screen instanceof GameModeSwitcherScreen gameModeSelectionScreen) {

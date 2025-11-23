@@ -12,12 +12,12 @@ import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class BoatEntities {
@@ -28,7 +28,7 @@ public class BoatEntities {
   public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.create();
 
   private static @Nullable <T extends Entity> EntityType<T> boatType(
-          boolean register, ResourceLocation id, EntityType.EntityFactory<T> factory) {
+      boolean register, ResourceLocation id, EntityType.EntityFactory<T> factory) {
     return RegistryUtil.register(
         register, BuiltInRegistries.ENTITY_TYPE, id, () -> FabricEntityTypeBuilder.create(
                 MobCategory.MISC, factory)

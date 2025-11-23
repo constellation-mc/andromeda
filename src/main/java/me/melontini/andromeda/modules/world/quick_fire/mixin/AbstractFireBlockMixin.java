@@ -4,13 +4,13 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.quick_fire.QuickFire;
-import net.minecraft.world.level.block.BaseFireBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.FireBlock;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,7 +24,7 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
 
   @Shadow
   protected abstract void checkBurnOut(
-          Level world, BlockPos pos, int spreadFactor, RandomSource random, int currentAge);
+      Level world, BlockPos pos, int spreadFactor, RandomSource random, int currentAge);
 
   @Unique private static final ThreadLocal<Boolean> LOCAL = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
@@ -34,7 +34,7 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
 
   @ModifyVariable(method = "checkBurnOut", at = @At("LOAD"), index = 3, argsOnly = true)
   public int andromeda$spreadFire0(
-          int value, @Local(argsOnly = true) Level world, @Local(argsOnly = true) BlockPos pos) {
+      int value, @Local(argsOnly = true) Level world, @Local(argsOnly = true) BlockPos pos) {
     return Boolean.TRUE.equals(LOCAL.get()) ? (int) (value * 0.8) : value;
   }
 
@@ -55,13 +55,13 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
               shift = At.Shift.BEFORE),
       method = "tick")
   public void andromeda$trySpreadBlocks(
-          BlockState state,
-          ServerLevel world,
-          BlockPos pos,
-          RandomSource random,
-          CallbackInfo ci,
-          @Local(index = 7) int i,
-          @Local(index = 10) int k) {
+      BlockState state,
+      ServerLevel world,
+      BlockPos pos,
+      RandomSource random,
+      CallbackInfo ci,
+      @Local(index = 7) int i,
+      @Local(index = 10) int k) {
     if (world
         .am$get(QuickFire.CONFIG)
         .available

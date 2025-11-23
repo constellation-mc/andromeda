@@ -9,10 +9,10 @@ import me.melontini.andromeda.modules.entities.minecarts.entities.JukeboxMinecar
 import me.melontini.andromeda.modules.entities.minecarts.entities.NoteBlockMinecartEntity;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.core.registries.BuiltInRegistries;
 
 public class MinecartEntities {
 

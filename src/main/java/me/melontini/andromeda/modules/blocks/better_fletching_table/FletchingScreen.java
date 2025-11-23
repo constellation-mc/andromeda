@@ -6,14 +6,14 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 @Environment(EnvType.CLIENT)
 public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> {
@@ -21,7 +21,7 @@ public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> 
   private static final ResourceLocation TEXTURE = Andromeda.id("textures/gui/fletching.png");
 
   public FletchingScreen(
-          FletchingScreenHandler handler, Inventory playerInventory, Component title) {
+      FletchingScreenHandler handler, Inventory playerInventory, Component title) {
     super(handler, playerInventory, title, TEXTURE);
     this.titleLabelX = 60;
     this.titleLabelY = 18;

@@ -4,11 +4,11 @@ import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight;
 import me.melontini.andromeda.modules.mechanics.dragon_fight.EnderDragonManager;
 import me.melontini.dark_matter.api.base.util.MathUtil;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,11 +32,11 @@ abstract class EndCrystalMixin extends Entity {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/world/entity/boss/enderdragon/EndCrystal;remove(Lnet/minecraft/world/entity/Entity$RemovalReason;)V",
+                  "Lnet/minecraft/world/entity/boss/enderdragon/EndCrystal;remove(Lnet/minecraft/world/entity/Entity$RemovalReason;)V",
               shift = At.Shift.BEFORE),
       method = "hurt")
   private void andromeda$damage(
-          DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+      DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
     if (!Andromeda.MAIN.get(DragonFight.CONFIG).respawnCrystals) return;
 
     if (level.dimension() == Level.END

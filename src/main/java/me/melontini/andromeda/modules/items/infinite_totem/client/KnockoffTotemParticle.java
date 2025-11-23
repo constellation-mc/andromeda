@@ -2,24 +2,24 @@ package me.melontini.andromeda.modules.items.infinite_totem.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.particle.SimpleAnimatedParticle;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.SimpleParticleType;
 
 public class KnockoffTotemParticle extends SimpleAnimatedParticle {
 
   KnockoffTotemParticle(
-          ClientLevel world,
-          double x,
-          double y,
-          double z,
-          double velocityX,
-          double velocityY,
-          double velocityZ,
-          SpriteSet spriteProvider) {
+      ClientLevel world,
+      double x,
+      double y,
+      double z,
+      double velocityX,
+      double velocityY,
+      double velocityZ,
+      SpriteSet spriteProvider) {
     super(world, x, y, z, spriteProvider, 1.25F);
     this.friction = 0.6F;
     this.xd = velocityX;
@@ -37,19 +37,18 @@ public class KnockoffTotemParticle extends SimpleAnimatedParticle {
   }
 
   @Environment(EnvType.CLIENT)
-  public record Factory(SpriteSet spriteProvider)
-      implements ParticleProvider<SimpleParticleType> {
+  public record Factory(SpriteSet spriteProvider) implements ParticleProvider<SimpleParticleType> {
 
     @Override
     public Particle createParticle(
-            SimpleParticleType defaultParticleType,
-            ClientLevel clientWorld,
-            double d,
-            double e,
-            double f,
-            double g,
-            double h,
-            double i) {
+        SimpleParticleType defaultParticleType,
+        ClientLevel clientWorld,
+        double d,
+        double e,
+        double f,
+        double g,
+        double h,
+        double i) {
       return new KnockoffTotemParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
     }
   }

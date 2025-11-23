@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.CampfireBlock;
-import net.minecraft.world.level.block.entity.CampfireBlockEntity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.entity.CampfireBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,7 +24,7 @@ abstract class CampfireBlockEntityMixin {
 
   @Inject(at = @At("HEAD"), method = "cookTick")
   private static void andromeda$litServerTick(
-          Level world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
+      Level world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
     if (world.getGameTime() % 180 == 0) {
       if (state.getValue(CampfireBlock.LIT)) {
         var config = world.am$get(CampfireEffects.CONFIG);
@@ -36,8 +36,7 @@ abstract class CampfireBlockEntityMixin {
         double rad = config.effectsRange.asDouble(supplier);
         boolean affectsPassive = config.affectsPassive.asBoolean(supplier);
         world.getEntities().get(new AABB(pos).inflate(rad), entity -> {
-          if ((entity instanceof AgeableMob && affectsPassive)
-              || entity instanceof Player) {
+          if ((entity instanceof AgeableMob && affectsPassive) || entity instanceof Player) {
             entities.add((LivingEntity) entity);
           }
         });

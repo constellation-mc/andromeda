@@ -5,23 +5,23 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import lombok.NonNull;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 // Wrapper for a LootContextParameterSet.Builder to add our utility methods.
@@ -34,7 +34,7 @@ public class LootContextBuilder {
   }
 
   public static Supplier<LootContext> builder(
-          LootContextParamSet type, Level world, BuilderFunction function) {
+      LootContextParamSet type, Level world, BuilderFunction function) {
     return Memoize.supplier(
         () -> build(function.apply(new LootContextBuilder(world)).builder.create(type)));
   }
@@ -59,13 +59,14 @@ public class LootContextBuilder {
     return new LootContext.Builder(set).create(null);
   }
 
-  public static List<ItemStack> prepareLoot(@NonNull Level world, @NonNull ResourceLocation lootId) {
+  public static List<ItemStack> prepareLoot(
+      @NonNull Level world, @NonNull ResourceLocation lootId) {
     return ((ServerLevel) world)
         .getServer()
         .getLootData()
         .getLootTable(lootId)
-        .getRandomItems(new LootParams.Builder(((ServerLevel) world))
-            .create(LootContextParamSets.EMPTY));
+        .getRandomItems(
+            new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY));
   }
 
   public LootContextBuilder origin(BlockPos pos) {

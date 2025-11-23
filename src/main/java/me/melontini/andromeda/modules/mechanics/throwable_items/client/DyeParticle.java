@@ -1,12 +1,12 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.melontini.dark_matter.api.glitter.particles.AbstractScreenParticle;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.model.BakedModel;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 
 public class DyeParticle extends AbstractScreenParticle {
 

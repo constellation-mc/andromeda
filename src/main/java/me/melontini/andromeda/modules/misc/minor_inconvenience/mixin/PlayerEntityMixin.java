@@ -4,13 +4,13 @@ import java.util.Objects;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,7 +38,7 @@ abstract class PlayerEntityMixin extends LivingEntity {
       method = "hurt",
       cancellable = true)
   private void andromeda$damage(
-          DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+      DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
     if (!level.isClientSide
         && !source.is(AGONY)
         && level

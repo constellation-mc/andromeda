@@ -1,10 +1,10 @@
 package me.melontini.andromeda.api;
 
 import java.util.function.BiPredicate;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class ModuleDeclarations {
 

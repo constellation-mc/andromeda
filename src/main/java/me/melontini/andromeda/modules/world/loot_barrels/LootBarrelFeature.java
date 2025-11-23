@@ -6,25 +6,25 @@ import java.util.Arrays;
 import java.util.Comparator;
 import me.melontini.andromeda.common.Andromeda;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.minecraft.Util;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.Util;
-import net.minecraft.world.entity.ai.behavior.ShufflingList;
-import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfiguration> {
 
@@ -62,7 +62,8 @@ public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfi
     return true;
   }
 
-  public record LootBarrelConfiguration(ResourceLocation loot, ShufflingList<BlockState> decorations)
+  public record LootBarrelConfiguration(
+      ResourceLocation loot, ShufflingList<BlockState> decorations)
       implements FeatureConfiguration {
 
     public static final Codec<LootBarrelConfiguration> CODEC =
@@ -75,7 +76,8 @@ public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfi
   }
 
   public static void init() {
-    Registry.register(BuiltInRegistries.FEATURE, Andromeda.id("loot_barrel"), new LootBarrelFeature());
+    Registry.register(
+        BuiltInRegistries.FEATURE, Andromeda.id("loot_barrel"), new LootBarrelFeature());
 
     ResourceKey<PlacedFeature> key = Andromeda.key(Registries.PLACED_FEATURE, "loot_barrel");
     BiomeModifications.addFeature(

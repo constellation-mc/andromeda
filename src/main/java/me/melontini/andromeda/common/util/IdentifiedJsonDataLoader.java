@@ -4,7 +4,8 @@ import com.google.gson.Gson;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resources.ResourceLocation;
 
-public abstract class IdentifiedJsonDataLoader extends net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener
+public abstract class IdentifiedJsonDataLoader
+    extends net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener
     implements IdentifiableResourceReloadListener {
 
   protected final Gson gson;

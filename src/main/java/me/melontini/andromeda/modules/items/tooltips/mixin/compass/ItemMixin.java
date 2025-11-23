@@ -6,17 +6,17 @@ import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CompassItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.GlobalPos;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,11 +28,11 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "appendHoverText")
   public void andromeda$tooltip(
-          ItemStack stack,
-          @Nullable Level world,
-          List<Component> tooltip,
-          TooltipFlag context,
-          CallbackInfo ci) {
+      ItemStack stack,
+      @Nullable Level world,
+      List<Component> tooltip,
+      TooltipFlag context,
+      CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).compass) return;
 
     if (world != null)

@@ -1,10 +1,10 @@
 package me.melontini.andromeda.modules.items.pouches;
 
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraft.world.entity.npc.VillagerProfession;
 
 public class Trades {
 

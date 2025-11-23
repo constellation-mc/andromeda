@@ -5,12 +5,12 @@ import static me.melontini.andromeda.modules.mechanics.throwable_items.data.Item
 
 import java.util.EnumSet;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 public class ThrowableItemAttackGoal<T extends Mob> extends Goal {

@@ -10,23 +10,23 @@ import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.ItemCombinerMenu;
+import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.inventory.ItemCombinerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class FletchingScreenHandler extends ItemCombinerMenu {
 
@@ -37,7 +37,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
   }
 
   public FletchingScreenHandler(
-          int syncId, Inventory playerInventory, ContainerLevelAccess context) {
+      int syncId, Inventory playerInventory, ContainerLevelAccess context) {
     super(FLETCHING.orThrow(), syncId, playerInventory, context);
   }
 
@@ -49,7 +49,8 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
   @Override
   protected void onTake(Player player, ItemStack stack) {
     stack.onCraftedBy(player.level(), player, stack.getCount());
-    this.resultSlots.awardUsedRecipes(player, List.of(this.inputSlots.getItem(0), this.inputSlots.getItem(1)));
+    this.resultSlots.awardUsedRecipes(
+        player, List.of(this.inputSlots.getItem(0), this.inputSlots.getItem(1)));
     this.decrementStack(0);
     this.decrementStack(1);
     this.access.execute((world, pos) -> world.levelEvent(1044, pos, 0));
@@ -66,7 +67,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
       new HashMap<>();
 
   public static void addRecipe(
-          Function<ItemStack, ItemStack> consumer, Ingredient ingredient, Ingredient input) {
+      Function<ItemStack, ItemStack> consumer, Ingredient ingredient, Ingredient input) {
     RECIPES.computeIfAbsent(input, i -> new IdentityHashMap<>()).put(ingredient, consumer);
   }
 

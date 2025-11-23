@@ -3,14 +3,14 @@ package me.melontini.andromeda.modules.entities.slimes.mixin.slowness;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,7 +42,7 @@ abstract class SlimeEntityMixin extends Mob {
     var config = this.level.am$get(Slimes.CONFIG);
     if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
     if (!config.slowness.asBoolean(LootContextBuilder.entity(
-            level,
+        level,
         builder -> builder.origin(target).thisEntity(target).genericSource().killer(this)))) return;
 
     MobEffectInstance effectInstance = new MobEffectInstance(

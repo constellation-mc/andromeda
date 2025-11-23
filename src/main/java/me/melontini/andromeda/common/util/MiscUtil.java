@@ -1,11 +1,11 @@
 package me.melontini.andromeda.common.util;
 
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 public class MiscUtil {
@@ -17,8 +17,7 @@ public class MiscUtil {
   }
 
   public static BlockPos vec3dAsBlockPos(Vec3 vec3d) {
-    return new BlockPos(
-        Mth.floor(vec3d.x), Mth.floor(vec3d.y), Mth.floor(vec3d.z));
+    return new BlockPos(Mth.floor(vec3d.x), Mth.floor(vec3d.y), Mth.floor(vec3d.z));
   }
 
   public static void crudeSetVelocity(Entity entity, double x, double y, double z) {

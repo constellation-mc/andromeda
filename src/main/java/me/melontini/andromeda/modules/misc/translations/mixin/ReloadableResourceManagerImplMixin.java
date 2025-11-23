@@ -41,13 +41,11 @@ abstract class ReloadableResourceManagerImplMixin {
     packs.set(new ArrayList<>(packs.get()));
     packs
         .get()
-        .add(
-            new PathPackResources(
-                "Andromeda Translations", Translations.TRANSLATION_PACK, true) {
-              @Nullable @Override
-              public <T> T getMetadataSection(MetadataSectionSerializer<T> metaReader) {
-                return null;
-              }
-            });
+        .add(new PathPackResources("Andromeda Translations", Translations.TRANSLATION_PACK, true) {
+          @Nullable @Override
+          public <T> T getMetadataSection(MetadataSectionSerializer<T> metaReader) {
+            return null;
+          }
+        });
   }
 }

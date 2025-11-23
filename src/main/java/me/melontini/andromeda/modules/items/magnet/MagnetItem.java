@@ -21,37 +21,37 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.inventory.tooltip.BundleTooltip;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.SlotAccess;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.ClickAction;
-import net.minecraft.ChatFormatting;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.NonNullList;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.BundleTooltip;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public class MagnetItem extends Item {
@@ -70,7 +70,7 @@ public class MagnetItem extends Item {
 
   @Override
   public boolean overrideStackedOnOther(
-          ItemStack stack, Slot slot, ClickAction clickType, Player player) {
+      ItemStack stack, Slot slot, ClickAction clickType, Player player) {
     if (clickType == ClickAction.SECONDARY) {
       ItemStack itemStack = slot.getItem();
       if (itemStack.isEmpty()) {
@@ -88,12 +88,12 @@ public class MagnetItem extends Item {
 
   @Override
   public boolean overrideOtherStackedOnMe(
-          ItemStack stack,
-          ItemStack otherStack,
-          Slot slot,
-          ClickAction clickType,
-          Player player,
-          SlotAccess cursorStackReference) {
+      ItemStack stack,
+      ItemStack otherStack,
+      Slot slot,
+      ClickAction clickType,
+      Player player,
+      SlotAccess cursorStackReference) {
     if (clickType == ClickAction.SECONDARY) {
       if (otherStack.isEmpty()) {
         removeFirst(stack);
@@ -149,7 +149,7 @@ public class MagnetItem extends Item {
 
   @Override
   public void inventoryTick(
-          ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
+      ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
     if (!world.isClientSide()) {
       if (entity instanceof LivingEntity pe) { // selected doesn't account for offhand
         if (!ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.MAIN_HAND))
@@ -169,8 +169,8 @@ public class MagnetItem extends Item {
                           .asDouble(LootContextBuilder.fishing(
                               world,
                               builder -> builder.origin(entity).tool(stack).thisEntity(entity)))),
-              ie ->
-                  magnetables.contains(ie.getEntityData().get(ItemEntity.DATA_ITEM).getItem()))
+              ie -> magnetables.contains(
+                  ie.getEntityData().get(ItemEntity.DATA_ITEM).getItem()))
           .forEach(ie -> {
             Vec3 vel = ie.position().vectorTo(entity.position()).normalize().scale(0.05f * level);
             ie.push(vel.x, vel.y, vel.z);
@@ -187,7 +187,7 @@ public class MagnetItem extends Item {
 
   @Override
   public void appendHoverText(
-          ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+      ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
     tooltip.add(TextUtil.translatable("tooltip.andromeda.magnet.level", getLevel(stack))
         .withStyle(ChatFormatting.GRAY));
   }
@@ -216,7 +216,8 @@ public class MagnetItem extends Item {
     }
 
     ListTag list = nbt.getList("Items", Tag.TAG_STRING);
-    StringTag id = StringTag.valueOf(BuiltInRegistries.ITEM.getKey(other.getItem()).toString());
+    StringTag id =
+        StringTag.valueOf(BuiltInRegistries.ITEM.getKey(other.getItem()).toString());
     if (list.contains(id)) return;
     list.add(0, id);
   }
@@ -254,25 +255,23 @@ public class MagnetItem extends Item {
 
   private void playRemoveOneSound(Entity entity) {
     entity.playSound(
-        SoundEvents.BUNDLE_REMOVE_ONE,
-        0.8F,
-        0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+        SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
   }
 
   private void playInsertSound(Entity entity) {
     entity.playSound(
-        SoundEvents.BUNDLE_INSERT,
-        0.8F,
-        0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+        SoundEvents.BUNDLE_INSERT, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
   }
 
   static void init() {
     var module = ModuleManager.get().get(Magnet.class).orElseThrow();
 
     MagnetItem.MAGNET.init(RegistryUtil.register(
-        BuiltInRegistries.ITEM, id("magnet"), () -> new MagnetItem(new FabricItemSettings().stacksTo(1))));
+        BuiltInRegistries.ITEM,
+        id("magnet"),
+        () -> new MagnetItem(new FabricItemSettings().stacksTo(1))));
 
-    AndromedaItemGroup.BUS.listen(
-        acceptor -> acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, MagnetItem.MAGNET));
+    AndromedaItemGroup.BUS.listen(acceptor ->
+        acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, MagnetItem.MAGNET));
   }
 }

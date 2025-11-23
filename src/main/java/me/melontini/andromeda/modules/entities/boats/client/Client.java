@@ -3,9 +3,9 @@ package me.melontini.andromeda.modules.entities.boats.client;
 import java.util.Map;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FurnaceBlock;
-import net.minecraft.core.Direction;
 
 public class Client {
 

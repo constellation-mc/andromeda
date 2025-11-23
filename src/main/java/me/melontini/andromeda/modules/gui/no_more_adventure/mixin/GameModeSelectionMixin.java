@@ -13,9 +13,9 @@ abstract class GameModeSelectionMixin {
           @At(
               value = "FIELD",
               target =
-                      "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;ADVENTURE:Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;"))
+                  "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;ADVENTURE:Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;"))
   private GameModeSwitcherScreen.GameModeIcon andromeda$next(
-          GameModeSwitcherScreen.GameModeIcon original) {
+      GameModeSwitcherScreen.GameModeIcon original) {
     return GameModeSwitcherScreen.GameModeIcon.SPECTATOR;
   }
 }

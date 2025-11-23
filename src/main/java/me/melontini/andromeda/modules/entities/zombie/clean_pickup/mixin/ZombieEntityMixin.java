@@ -30,7 +30,7 @@ abstract class ZombieEntityMixin extends Monster {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/world/entity/monster/Monster;canHoldItem(Lnet/minecraft/world/item/ItemStack;)Z"),
+                  "Lnet/minecraft/world/entity/monster/Monster;canHoldItem(Lnet/minecraft/world/item/ItemStack;)Z"),
       method = "canHoldItem")
   public boolean andromeda$canPickupItem(boolean original, ItemStack stack) {
     if (level.am$get(Pickup.CONFIG).available.asBoolean(ConstantLootContextAccessor.get(this))) {

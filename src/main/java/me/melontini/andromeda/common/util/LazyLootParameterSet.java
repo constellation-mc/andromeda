@@ -7,11 +7,11 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Supplier;
 import lombok.Getter;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import org.jetbrains.annotations.Nullable;
 
 public class LazyLootParameterSet extends LootParams {
@@ -57,8 +57,7 @@ public class LazyLootParameterSet extends LootParams {
     @Getter
     private final Supplier<ServerLevel> world;
 
-    private final Map<LootContextParam<?>, Supplier<Object>> parameters =
-        Maps.newIdentityHashMap();
+    private final Map<LootContextParam<?>, Supplier<Object>> parameters = Maps.newIdentityHashMap();
     private final Map<ResourceLocation, DynamicDrop> dynamicDrops = Maps.newHashMap();
     private float luck;
 

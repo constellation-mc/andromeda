@@ -3,20 +3,20 @@ package me.melontini.andromeda.modules.gui.gui_particles.mixin;
 import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.gui.gui_particles.GuiParticles;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,10 +27,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
 
   public AnvilScreenHandlerMixin(
-          @Nullable MenuType<?> type,
-          int syncId,
-          Inventory playerInventory,
-          ContainerLevelAccess context) {
+      @Nullable MenuType<?> type,
+      int syncId,
+      Inventory playerInventory,
+      ContainerLevelAccess context) {
     super(type, syncId, playerInventory, context);
   }
 
@@ -39,7 +39,7 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/world/Container;setItem(ILnet/minecraft/world/item/ItemStack;)V",
+                  "Lnet/minecraft/world/Container;setItem(ILnet/minecraft/world/item/ItemStack;)V",
               ordinal = 0),
       method = "onTake")
   private void andromeda$particles(Player player, ItemStack stack, CallbackInfo ci) {
@@ -51,9 +51,7 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
       var slot = this.slots.get(2);
       boolean enchant = this.slots.get(1).getItem().is(Items.ENCHANTED_BOOK);
       ScreenParticleHelper.addScreenParticles(
-          !enchant
-              ? new BlockParticleOption(ParticleTypes.BLOCK, state)
-              : ParticleTypes.END_ROD,
+          !enchant ? new BlockParticleOption(ParticleTypes.BLOCK, state) : ParticleTypes.END_ROD,
           anvilScreen.leftPos + slot.x + 8,
           anvilScreen.topPos + slot.y + 8,
           0.5,

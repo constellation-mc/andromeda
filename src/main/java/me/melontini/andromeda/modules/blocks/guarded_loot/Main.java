@@ -11,22 +11,22 @@ import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.AABB;
 
 public final class Main {
 
@@ -57,7 +57,7 @@ public final class Main {
 
   // TODO fix igloos. Maybe check reach?
   public static List<LivingEntity> checkMonsterLock(
-          Level world, BlockState state, Player player, BlockPos pos, BlockEntity be) {
+      Level world, BlockState state, Player player, BlockPos pos, BlockEntity be) {
     var config = world.am$get(GuardedLoot.CONFIG);
     var supplier = LootContextBuilder.block(
         world, builder -> builder.origin(pos).state(state).thisEntity(player).blockEntity(be));
@@ -89,8 +89,7 @@ public final class Main {
     player.gameEvent(GameEvent.CONTAINER_OPEN);
 
     for (LivingEntity livingEntity : monsters) {
-      livingEntity.addEffect(
-          new MobEffectInstance(MobEffects.GLOWING, 5 * 20, 0, false, false));
+      livingEntity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 5 * 20, 0, false, false));
     }
   }
 }

@@ -13,18 +13,18 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -82,8 +82,7 @@ public class EnderDragonManager {
             serverPlayerEntity, true, pair.pos().x, pair.pos().y, pair.pos().z, particleS2CPacket);
       }
 
-      EndCrystal endCrystalEntity =
-          new EndCrystal(world, pair.pos().x, pair.pos().y, pair.pos().z);
+      EndCrystal endCrystalEntity = new EndCrystal(world, pair.pos().x, pair.pos().y, pair.pos().z);
       world.addFreshEntity(endCrystalEntity);
       removal.add(pair);
     }
@@ -91,8 +90,7 @@ public class EnderDragonManager {
 
     if (!Andromeda.MAIN.get(DragonFight.CONFIG).scaleHealthByMaxPlayers) return;
     for (EnderDragon dragon : dragons) {
-      AttributeInstance inst =
-          dragon.getAttribute(Attributes.MAX_HEALTH);
+      AttributeInstance inst = dragon.getAttribute(Attributes.MAX_HEALTH);
       MakeSure.notNull(inst, "Ender Dragon has no attributes?")
           .setBaseValue(Math.floor(Math.sqrt(500 * maxPlayers) * 10));
     }

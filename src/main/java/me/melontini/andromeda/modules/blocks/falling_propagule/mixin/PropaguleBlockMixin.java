@@ -2,14 +2,14 @@ package me.melontini.andromeda.modules.blocks.falling_propagule.mixin;
 
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.falling_propagule.FallingPropagule;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.MangrovePropaguleBlock;
-import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.MangrovePropaguleBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,11 +29,11 @@ abstract class PropaguleBlockMixin {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/world/level/block/MangrovePropaguleBlock;isFullyGrown(Lnet/minecraft/world/level/block/state/BlockState;)Z",
+                  "Lnet/minecraft/world/level/block/MangrovePropaguleBlock;isFullyGrown(Lnet/minecraft/world/level/block/state/BlockState;)Z",
               shift = At.Shift.BEFORE),
       method = "randomTick")
   private void andromeda$randomTick(
-          BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo ci) {
+      BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo ci) {
     if (isFullyGrown(state)
         && random.nextInt(40) == 0
         && world

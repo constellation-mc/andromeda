@@ -22,10 +22,10 @@ import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 
@@ -52,7 +52,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
 
   @Override
   protected void apply(
-          Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
+      Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
     Map<ResourceLocation, Map<Module, Set<Data>>> parsed = new HashMap<>();
 
     for (var entry : Maps.transformValues(data, JsonElement::getAsJsonObject).entrySet()) {

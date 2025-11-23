@@ -6,22 +6,22 @@ import static me.melontini.andromeda.modules.entities.boats.entities.BoatEntityW
 import java.util.List;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
-import net.minecraft.world.level.block.entity.Hopper;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.ChestBoat;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.inventory.HopperMenu;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.inventory.HopperMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.Hopper;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class HopperBoatEntity extends ChestBoat implements Hopper {
@@ -42,8 +42,7 @@ public class HopperBoatEntity extends ChestBoat implements Hopper {
   }
 
   @Nullable @Override
-  public AbstractContainerMenu createMenu(
-          int i, Inventory playerInventory, Player playerEntity) {
+  public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
     return new HopperMenu(i, playerInventory, this);
   }
 

@@ -3,12 +3,12 @@ package me.melontini.andromeda.modules.misc.tiny_storage.mixin;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.misc.tiny_storage.TinyStorage;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,21 +25,18 @@ abstract class PlayerEntityMixin {
   public InventoryMenu inventoryMenu;
 
   @Shadow
-  @Nullable public abstract ItemEntity drop(
-          ItemStack stack, boolean throwRandomly, boolean retainOwnership);
+  @Nullable public abstract ItemEntity drop(ItemStack stack, boolean throwRandomly, boolean retainOwnership);
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
   private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
-    NbtUtil.writeInventoryToNbt(
-        "AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
+    NbtUtil.writeInventoryToNbt("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
   private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
     try {
       TinyStorage.LOADING.set(true); // We have to skip sending handler updates.
-      NbtUtil.readInventoryFromNbt(
-          "AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
+      NbtUtil.readInventoryFromNbt("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
     } finally {
       TinyStorage.LOADING.remove();
     }

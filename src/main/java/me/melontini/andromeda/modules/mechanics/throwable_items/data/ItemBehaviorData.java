@@ -16,14 +16,14 @@ import me.melontini.commander.api.event.EventKey;
 import me.melontini.commander.api.event.EventType;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -35,11 +35,11 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
 
   @Override
   public void onCollision(
-          ItemStack stack,
-          FlyingItemEntity fie,
-          ServerLevel world,
-          @Nullable Entity user,
-          HitResult hitResult) {
+      ItemStack stack,
+      FlyingItemEntity fie,
+      ServerLevel world,
+      @Nullable Entity user,
+      HitResult hitResult) {
     Stream<Subscription> stream = null;
     switch (hitResult.getType()) {
       case BLOCK -> stream = subscriptions.stream().filter(s -> s.event == Main.Event.BLOCK);
@@ -58,7 +58,8 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
       case BLOCK -> {
         BlockHitResult result = (BlockHitResult) hitResult;
         builder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(result.getBlockPos()));
-        builder.withParameter(LootContextParams.BLOCK_STATE, world.getBlockState(result.getBlockPos()));
+        builder.withParameter(
+            LootContextParams.BLOCK_STATE, world.getBlockState(result.getBlockPos()));
         builder.withOptionalParameter(
             LootContextParams.BLOCK_ENTITY, world.getBlockEntity(result.getBlockPos()));
       }

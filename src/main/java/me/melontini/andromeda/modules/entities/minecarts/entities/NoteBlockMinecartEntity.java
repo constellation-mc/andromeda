@@ -2,36 +2,36 @@ package me.melontini.andromeda.modules.entities.minecarts.entities;
 
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
-import net.minecraft.world.level.block.BaseRailBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.PoweredRailBlock;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.PoweredRailBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.phys.Vec3;
 
 public class NoteBlockMinecartEntity extends AbstractMinecart {
   public int note = 0;
   public boolean isPowered = false;
 
   public NoteBlockMinecartEntity(
-          EntityType<? extends NoteBlockMinecartEntity> entityType, Level world) {
+      EntityType<? extends NoteBlockMinecartEntity> entityType, Level world) {
     super(entityType, world);
   }
 
@@ -131,8 +131,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   }
 
   public void playNote(Level world, Vec3 pos) {
-    BlockPos blockPos = new BlockPos(
-        Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z()));
+    BlockPos blockPos = new BlockPos(Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z()));
     // BlockState state = world.getBlockState(blockPos);
 
     NoteBlockInstrument instrument = world.getBlockState(blockPos.above()).instrument();
@@ -145,15 +144,11 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
     float f = (float) Math.pow(2.0, (i - 12) / 12.0);
     this.level.playSound(
         null,
-        new BlockPos(
-            Mth.floor(pos.x()),
-            Mth.floor(pos.y()),
-            Mth.floor(pos.z())),
+        new BlockPos(Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z())),
         instrument.getSoundEvent().value(),
         SoundSource.RECORDS,
         3.0F,
         f);
-    this.level.addParticle(
-        ParticleTypes.NOTE, pos.x(), pos.y() + 1.2, pos.z(), i / 24.0, 0.0, 0.0);
+    this.level.addParticle(ParticleTypes.NOTE, pos.x(), pos.y() + 1.2, pos.z(), i / 24.0, 0.0, 0.0);
   }
 }

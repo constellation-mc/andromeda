@@ -2,12 +2,12 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,14 +15,14 @@ import org.jetbrains.annotations.Nullable;
 public interface ItemBehavior {
 
   void onCollision(
-          ItemStack stack,
-          FlyingItemEntity fie,
-          ServerLevel world,
-          @Nullable Entity user,
-          HitResult hitResult);
+      ItemStack stack,
+      FlyingItemEntity fie,
+      ServerLevel world,
+      @Nullable Entity user,
+      HitResult hitResult);
 
   static int getCooldown(
-          ServerLevel world, @Nullable Entity user, FlyingItemEntity fie, ItemStack stack) {
+      ServerLevel world, @Nullable Entity user, FlyingItemEntity fie, ItemStack stack) {
     var cd = world.getServer().dm$getReloader(RELOADER).getCooldown(stack.getItem());
     if (cd.toSource().left().isPresent()) return cd.asInt(null); // constant, can pass null.
 

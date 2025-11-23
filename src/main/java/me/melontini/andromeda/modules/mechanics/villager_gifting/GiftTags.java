@@ -3,10 +3,10 @@ package me.melontini.andromeda.modules.mechanics.villager_gifting;
 import static me.melontini.andromeda.common.Andromeda.id;
 
 import java.util.Map;
-import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ai.gossip.GossipType;
+import net.minecraft.world.item.Item;
 
 public class GiftTags {
   public static final TagKey<Item> MAJOR_POSITIVE =

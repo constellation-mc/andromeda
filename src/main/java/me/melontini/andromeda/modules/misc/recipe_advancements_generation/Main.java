@@ -12,21 +12,21 @@ import java.util.function.Function;
 import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementList;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.Util;
 import org.jetbrains.annotations.NotNull;
 
 public final class Main {
@@ -118,7 +118,7 @@ public final class Main {
   }
 
   public static @NotNull Advancement.Builder createAdvBuilder(
-          AdvancementGeneration.Config config, ResourceLocation id, Ingredient... ingredients) {
+      AdvancementGeneration.Config config, ResourceLocation id, Ingredient... ingredients) {
     MakeSure.notEmpty(ingredients); // shouldn't really happen
     var builder = Advancement.Builder.recipeAdvancement();
     builder.parent(ResourceLocation.tryBuild("minecraft", "recipes/root"));
@@ -137,7 +137,8 @@ public final class Main {
           name, InventoryChangeTrigger.TriggerInstance.hasItems(new CustomPredicate(ingredient)));
     }
     builder.addCriterion(
-        "has_recipe", new RecipeUnlockedTrigger.TriggerInstance(ContextAwarePredicate.create(), id));
+        "has_recipe",
+        new RecipeUnlockedTrigger.TriggerInstance(ContextAwarePredicate.create(), id));
 
     String[][] reqs;
     if (config.requireAllItems) {
@@ -164,8 +165,7 @@ public final class Main {
   static void init(AdvancementGeneration module, AdvancementGeneration.Config config) {
     FILTERS.add((id, recipe) -> config.namespaceBlacklist.contains(id.getNamespace()));
     FILTERS.add((id, recipe) -> config.recipeBlacklist.contains(id));
-    FILTERS.add((id, recipe) ->
-        recipe.isSpecial() && config.ignoreRecipesHiddenInTheRecipeBook);
+    FILTERS.add((id, recipe) -> recipe.isSpecial() && config.ignoreRecipesHiddenInTheRecipeBook);
     ModuleManager.get()
         .getModuleApiListeners(ADVANCEMENT_RECIPE_FILTER)
         .forEach(listener -> listener.accept(recipeFilter -> {

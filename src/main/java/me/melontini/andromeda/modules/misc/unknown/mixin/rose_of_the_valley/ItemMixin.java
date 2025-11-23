@@ -1,13 +1,13 @@
 package me.melontini.andromeda.modules.misc.unknown.mixin.rose_of_the_valley;
 
 import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickAction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,13 +18,13 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "overrideOtherStackedOnMe", cancellable = true)
   private void andromeda$onClicked(
-          ItemStack stack,
-          ItemStack otherStack,
-          Slot slot,
-          ClickAction clickType,
-          Player player,
-          SlotAccess cursorStackReference,
-          CallbackInfoReturnable<Boolean> cir) {
+      ItemStack stack,
+      ItemStack otherStack,
+      Slot slot,
+      ClickAction clickType,
+      Player player,
+      SlotAccess cursorStackReference,
+      CallbackInfoReturnable<Boolean> cir) {
     if (clickType == ClickAction.SECONDARY
         && stack.is(Items.LILY_OF_THE_VALLEY)
         && otherStack.is(Items.DIAMOND)) {

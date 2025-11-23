@@ -11,8 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 abstract class ExperienceOrbMixin {
 
   @Inject(at = @At("HEAD"), method = "repairPlayerItems", cancellable = true)
-  private void andromeda$repair(
-          Player player, int amount, CallbackInfoReturnable<Integer> cir) {
+  private void andromeda$repair(Player player, int amount, CallbackInfoReturnable<Integer> cir) {
     cir.setReturnValue(amount);
   }
 }

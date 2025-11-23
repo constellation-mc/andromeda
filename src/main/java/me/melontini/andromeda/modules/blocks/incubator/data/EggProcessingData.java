@@ -16,23 +16,26 @@ import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.ai.behavior.ShufflingList;
-import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.Nullable;
 
 public record EggProcessingData(
-        boolean replace, Item item, ShufflingList<Entry> entity, Arithmetica time) {
+    boolean replace, Item item, ShufflingList<Entry> entity, Arithmetica time) {
 
   public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
           ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(EggProcessingData::replace),
-          BuiltInRegistries.ITEM.byNameCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
+          BuiltInRegistries.ITEM
+              .byNameCodec()
+              .fieldOf("identifier")
+              .forGetter(EggProcessingData::item),
           ExtraCodecs.weightedList(Entry.CODEC)
               .fieldOf("entries")
               .forGetter(EggProcessingData::entity),
@@ -70,7 +73,7 @@ public record EggProcessingData(
 
     @Override
     protected void apply(
-            Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
+        Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
       IdentityHashMap<Item, EggProcessingData> replace = new IdentityHashMap<>();
       IdentityHashMap<Item, EggProcessingData> result = new IdentityHashMap<>();
 
@@ -78,8 +81,7 @@ public record EggProcessingData(
         if (item instanceof SpawnEggItem egg) {
           ShufflingList<Entry> list = new ShufflingList<>();
           list.add(
-              new Entry(
-                  egg.getType(new CompoundTag()), new CompoundTag(), Collections.emptyList()),
+              new Entry(egg.getType(new CompoundTag()), new CompoundTag(), Collections.emptyList()),
               1);
           result.put(egg, new EggProcessingData(false, egg, list, Arithmetica.constant(8000)));
         }

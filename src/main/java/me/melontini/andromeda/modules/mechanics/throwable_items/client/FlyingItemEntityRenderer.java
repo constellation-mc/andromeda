@@ -1,17 +1,17 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
-import com.mojang.math.Axis;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Quaternionf;
 
 public class FlyingItemEntityRenderer extends EntityRenderer<FlyingItemEntity> {
@@ -39,21 +39,21 @@ public class FlyingItemEntityRenderer extends EntityRenderer<FlyingItemEntity> {
 
   @Override
   public void render(
-          FlyingItemEntity entity,
-          float yaw,
-          float tickDelta,
-          PoseStack matrices,
-          MultiBufferSource vertexConsumers,
-          int light) {
+      FlyingItemEntity entity,
+      float yaw,
+      float tickDelta,
+      PoseStack matrices,
+      MultiBufferSource vertexConsumers,
+      int light) {
     if (entity.tickCount >= 2
         || !(this.entityRenderDispatcher.camera.getEntity().distanceToSqr(entity) < MIN_DISTANCE)) {
       matrices.pushPose();
       matrices.scale(this.scale, this.scale, this.scale);
       var quaternion = new Quaternionf(0, 0, 0, 1);
-      quaternion = hamiltonProduct(
-          quaternion, Axis.YP.rotationDegrees(entity.getViewYRot(tickDelta)));
-      quaternion = hamiltonProduct(
-          quaternion, Axis.XP.rotationDegrees(entity.getViewXRot(tickDelta)));
+      quaternion =
+          hamiltonProduct(quaternion, Axis.YP.rotationDegrees(entity.getViewYRot(tickDelta)));
+      quaternion =
+          hamiltonProduct(quaternion, Axis.XP.rotationDegrees(entity.getViewXRot(tickDelta)));
       matrices.mulPose(quaternion);
       this.itemRenderer.renderStatic(
           entity.getItem(),

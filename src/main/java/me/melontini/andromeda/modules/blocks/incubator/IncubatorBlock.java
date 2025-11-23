@@ -16,33 +16,33 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.*;
 import net.minecraft.world.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.*;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
@@ -63,18 +63,18 @@ public class IncubatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
   @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-          Level world, BlockState state, BlockEntityType<T> type) {
+      Level world, BlockState state, BlockEntityType<T> type) {
     return createTickerHelper(type, INCUBATOR_BLOCK_ENTITY.orThrow(), IncubatorBlockEntity::tick);
   }
 
   @Override
   public InteractionResult use(
-          BlockState state,
-          Level world,
-          BlockPos pos,
-          Player player,
-          InteractionHand hand,
-          BlockHitResult hit) {
+      BlockState state,
+      Level world,
+      BlockPos pos,
+      Player player,
+      InteractionHand hand,
+      BlockHitResult hit) {
     ItemStack stack = player.getItemInHand(hand);
     IncubatorBlockEntity entity = (IncubatorBlockEntity) world.getBlockEntity(pos);
     if (world.isClientSide || entity == null || !hand.equals(InteractionHand.MAIN_HAND))
@@ -91,7 +91,7 @@ public class IncubatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
   @Override
   public void appendHoverText(
-          ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+      ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
     if (ModuleManager.get().get(Unknown.class).isPresent())
       tooltip.add(
           TextUtil.translatable("tooltip.andromeda.incubator[1]").withStyle(ChatFormatting.GRAY));
@@ -99,12 +99,13 @@ public class IncubatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
   @Override
   public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-    return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+    return this.defaultBlockState()
+        .setValue(FACING, ctx.getHorizontalDirection().getOpposite());
   }
 
   @Override
   public void onRemove(
-          BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+      BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
     if (!state.is(newState.getBlock())) {
       BlockEntity blockEntity = world.getBlockEntity(pos);
       if (blockEntity instanceof IncubatorBlockEntity incubatorBlockEntity) {
@@ -140,7 +141,7 @@ public class IncubatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
   @Override
   public VoxelShape getShape(
-          BlockState state, BlockGetter view, BlockPos pos, CollisionContext context) {
+      BlockState state, BlockGetter view, BlockPos pos, CollisionContext context) {
     return Shapes.or(BASE_SHAPE, GLASS_SHAPE);
   }
 
@@ -151,7 +152,7 @@ public class IncubatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
   @Override
   public boolean isPathfindable(
-          BlockState state, BlockGetter world, BlockPos pos, PathComputationType type) {
+      BlockState state, BlockGetter world, BlockPos pos, PathComputationType type) {
     return false;
   }
 
@@ -183,8 +184,8 @@ public class IncubatorBlock extends BaseEntityBlock implements WorldlyContainerH
         () -> new BlockEntityType<>(
             IncubatorBlockEntity::new, Set.of(IncubatorBlock.INCUBATOR_BLOCK.orThrow()), null)));
 
-    AndromedaItemGroup.BUS.listen(
-        acceptor -> acceptor.keeper(module, CreativeModeTabs.FUNCTIONAL_BLOCKS, IncubatorBlock.INCUBATOR));
+    AndromedaItemGroup.BUS.listen(acceptor ->
+        acceptor.keeper(module, CreativeModeTabs.FUNCTIONAL_BLOCKS, IncubatorBlock.INCUBATOR));
 
     EggProcessingData.init();
   }

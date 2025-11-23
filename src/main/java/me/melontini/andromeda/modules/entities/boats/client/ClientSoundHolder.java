@@ -6,20 +6,21 @@ import java.util.UUID;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
 
 public class ClientSoundHolder {
 
-  public static final ResourceLocation JUKEBOX_START_PLAYING = Andromeda.id("jukebox_start_playing");
+  public static final ResourceLocation JUKEBOX_START_PLAYING =
+      Andromeda.id("jukebox_start_playing");
   public static final ResourceLocation JUKEBOX_STOP_PLAYING = Andromeda.id("jukebox_stop_playing");
 
   private static volatile boolean done = false;
@@ -72,11 +73,11 @@ public class ClientSoundHolder {
     private final UUID entityId;
 
     public PersistentMovingSoundInstance(
-            SoundEvent soundEvent,
-            SoundSource soundCategory,
-            UUID entityId,
-            ClientLevel world,
-            RandomSource random) {
+        SoundEvent soundEvent,
+        SoundSource soundCategory,
+        UUID entityId,
+        ClientLevel world,
+        RandomSource random) {
       super(soundEvent, soundCategory, random);
       this.volume = 3;
       this.pitch = 1;

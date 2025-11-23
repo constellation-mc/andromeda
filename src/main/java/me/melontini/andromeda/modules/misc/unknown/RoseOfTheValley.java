@@ -11,23 +11,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.jetbrains.annotations.Nullable;
 
 public class RoseOfTheValley extends BlockItem {
@@ -63,9 +63,9 @@ public class RoseOfTheValley extends BlockItem {
 
   @Override
   public void appendHoverText(
-          ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-    tooltip.add(
-        TextUtil.translatable("tooltip.andromeda.rose_of_the_valley").withStyle(ChatFormatting.GRAY));
+      ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+    tooltip.add(TextUtil.translatable("tooltip.andromeda.rose_of_the_valley")
+        .withStyle(ChatFormatting.GRAY));
   }
 
   public static void handleClick(ItemStack stack, ItemStack otherStack, Player player) {

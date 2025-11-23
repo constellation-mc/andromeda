@@ -3,12 +3,12 @@ package me.melontini.andromeda.modules.entities.bee_flower_duplication.mixin;
 import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.TallFlowerBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.TallFlowerBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +19,7 @@ abstract class BoneMealItemMixin {
 
   @Inject(at = @At("HEAD"), method = "growCrop", cancellable = true)
   private static void andromeda$useOnFertilizable(
-          ItemStack stack, Level world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+      ItemStack stack, Level world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
     if (world.isClientSide()) return;
 
     BlockState blockState = world.getBlockState(pos);

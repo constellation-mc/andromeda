@@ -11,11 +11,11 @@ import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.modules.entities.boats.items.AndromedaBoatItem;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 
 public class BoatItems {
 
@@ -57,7 +57,8 @@ public class BoatItems {
                   BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().stacksTo(1))))
           .ifPresent(list::add);
     }
-    AndromedaItemGroup.BUS.listen(acceptor -> acceptor.items(module, CreativeModeTabs.TOOLS_AND_UTILITIES, list));
+    AndromedaItemGroup.BUS.listen(
+        acceptor -> acceptor.items(module, CreativeModeTabs.TOOLS_AND_UTILITIES, list));
   }
 
   public static ResourceLocation boatId(Boat.Type type, String boat) {

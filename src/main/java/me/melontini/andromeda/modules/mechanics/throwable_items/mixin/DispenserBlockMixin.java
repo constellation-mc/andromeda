@@ -5,10 +5,10 @@ import static me.melontini.andromeda.modules.mechanics.throwable_items.data.Item
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.mechanics.throwable_items.Main;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.DispenserBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,7 +20,7 @@ abstract class DispenserBlockMixin {
 
   @Inject(at = @At("TAIL"), method = "method_10008")
   private static void andromeda$throwItem(
-          Object2ObjectOpenHashMap<Item, DispenseItemBehavior> map, CallbackInfo ci) {
+      Object2ObjectOpenHashMap<Item, DispenseItemBehavior> map, CallbackInfo ci) {
     var b = map.defaultReturnValue();
     map.defaultReturnValue((pointer, stack) ->
         pointer.getLevel().getServer().dm$getReloader(RELOADER).hasBehaviors(stack)
@@ -30,7 +30,7 @@ abstract class DispenserBlockMixin {
 
   @Inject(at = @At("HEAD"), method = "getDispenseMethod", cancellable = true)
   private void andromeda$overrideBehavior(
-          ItemStack stack, CallbackInfoReturnable<DispenseItemBehavior> cir) {
+      ItemStack stack, CallbackInfoReturnable<DispenseItemBehavior> cir) {
     var server = Andromeda.get().getCurrentServer();
     if (server == null) return;
 

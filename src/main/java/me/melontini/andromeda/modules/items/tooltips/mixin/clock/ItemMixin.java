@@ -5,12 +5,12 @@ import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.items.tooltips.Tooltips;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,11 +23,11 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "appendHoverText")
   public void andromeda$tooltip(
-          ItemStack stack,
-          @Nullable Level world,
-          List<Component> tooltip,
-          TooltipFlag context,
-          CallbackInfo ci) {
+      ItemStack stack,
+      @Nullable Level world,
+      List<Component> tooltip,
+      TooltipFlag context,
+      CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).clock) return;
 
     if (world != null && world.isClientSide) {

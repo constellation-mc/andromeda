@@ -2,8 +2,8 @@ package me.melontini.andromeda.modules.entities.minecarts.items;
 
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.entities.NoteBlockMinecartEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 public class NoteBlockMinecartItem extends AndromedaMinecartItem<NoteBlockMinecartEntity> {
 

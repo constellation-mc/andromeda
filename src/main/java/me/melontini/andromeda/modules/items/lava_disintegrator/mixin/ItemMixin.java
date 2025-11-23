@@ -6,18 +6,18 @@ import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,16 +29,17 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "overrideOtherStackedOnMe", cancellable = true)
   private void andromeda$onLavaClick(
-          ItemStack stack,
-          ItemStack otherStack,
-          Slot slot,
-          ClickAction clickType,
-          Player player,
-          SlotAccess cursorStackReference,
-          CallbackInfoReturnable<Boolean> cir) {
+      ItemStack stack,
+      ItemStack otherStack,
+      Slot slot,
+      ClickAction clickType,
+      Player player,
+      SlotAccess cursorStackReference,
+      CallbackInfoReturnable<Boolean> cir) {
     if (clickType == ClickAction.SECONDARY && stack.is(Items.LAVA_BUCKET)) {
       if (otherStack.getItem().isFireResistant()
-          || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION, otherStack) > 0) return;
+          || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION, otherStack)
+              > 0) return;
 
       cursorStackReference.set(ItemStack.EMPTY);
       if (player.level.isClientSide)

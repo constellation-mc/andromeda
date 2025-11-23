@@ -3,15 +3,15 @@ package me.melontini.andromeda.modules.entities.minecarts.items;
 import java.util.List;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<MinecartSpawner> 
 
   @Override
   public void appendHoverText(
-          ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+      ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
     CompoundTag nbt = stack.getTag();
     if (nbt != null)
       if (nbt.getString("Entity") != null) {

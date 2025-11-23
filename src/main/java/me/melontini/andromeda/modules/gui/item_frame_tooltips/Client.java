@@ -1,6 +1,7 @@
 package me.melontini.andromeda.modules.gui.item_frame_tooltips;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,12 +19,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.util.Mth;
 import org.joml.Vector2i;
 
 public class Client {
@@ -39,9 +39,8 @@ public class Client {
       var cast = client.hitResult;
       getCast(cast);
       oldTooltipFlow = tooltipFlow;
-      tooltipFlow = action != null
-          ? Mth.lerp(0.25f, tooltipFlow, 1)
-          : Mth.lerp(0.1f, tooltipFlow, 0);
+      tooltipFlow =
+          action != null ? Mth.lerp(0.25f, tooltipFlow, 1) : Mth.lerp(0.1f, tooltipFlow, 0);
       if (Math.abs(tooltipFlow) < 1.0E-5F) tooltipFlow = 0;
     });
   }
@@ -108,7 +107,7 @@ public class Client {
   }
 
   private void renderFromComponents(
-          Minecraft client, GuiGraphics context, List<ClientTooltipComponent> components) {
+      Minecraft client, GuiGraphics context, List<ClientTooltipComponent> components) {
     if (components.isEmpty()) return;
 
     float flow = Mth.lerp(client.getFrameTime(), oldTooltipFlow, tooltipFlow);
@@ -122,11 +121,7 @@ public class Client {
     RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
 
     context.renderTooltipInternal(
-        client.font,
-        components,
-        0,
-        0,
-        (screenWidth, screenHeight, sameX, sameY, width, height) -> {
+        client.font, components, 0, 0, (screenWidth, screenHeight, sameX, sameY, width, height) -> {
           float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
           float smoothY = ((client.getWindow().getGuiScaledHeight() - height) / 2f);
           matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY, 1);

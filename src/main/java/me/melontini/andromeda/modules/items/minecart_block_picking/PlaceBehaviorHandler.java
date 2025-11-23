@@ -6,6 +6,7 @@ import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.entity.vehicle.MinecartFurnace;
@@ -13,7 +14,6 @@ import net.minecraft.world.entity.vehicle.MinecartHopper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 public class PlaceBehaviorHandler {
@@ -72,6 +72,6 @@ public class PlaceBehaviorHandler {
 
   public interface PlaceBehavior {
     AbstractMinecart dispense(
-            ItemStack stack, Level world, double d, double e, double f, double g, BlockPos pos);
+        ItemStack stack, Level world, double d, double e, double f, double g, BlockPos pos);
   }
 }

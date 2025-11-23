@@ -6,16 +6,16 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
 import me.melontini.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,10 +35,10 @@ abstract class ItemStackMixin {
 
   @Inject(at = @At("HEAD"), method = "use", cancellable = true)
   private void andromeda$throwableBehavior(
-          Level world,
-          Player user,
-          InteractionHand hand,
-          CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
+      Level world,
+      Player user,
+      InteractionHand hand,
+      CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
     if (world.isClientSide()) return;
     ItemStack stack = (ItemStack) (Object) this;
 
@@ -52,7 +52,7 @@ abstract class ItemStackMixin {
 
   @ModifyReturnValue(at = @At("RETURN"), method = "use")
   private InteractionResultHolder<ItemStack> andromeda$throwableBehavior(
-          InteractionResultHolder<ItemStack> original, Level world, Player user, InteractionHand hand) {
+      InteractionResultHolder<ItemStack> original, Level world, Player user, InteractionHand hand) {
     if (world.isClientSide()) return original;
     ItemStack stack = (ItemStack) (Object) this;
 
@@ -67,8 +67,7 @@ abstract class ItemStackMixin {
     return original;
   }
 
-  @Unique private boolean andromeda$runBehaviors(
-          Level world, ItemBehaviorManager manager, Player user) {
+  @Unique private boolean andromeda$runBehaviors(Level world, ItemBehaviorManager manager, Player user) {
     world.playSound(
         null,
         user.getX(),
@@ -85,8 +84,9 @@ abstract class ItemStackMixin {
     world.addFreshEntity(entity);
 
     user.getCooldowns()
-        .addCooldown(getItem(), ItemBehavior.getCooldown((ServerLevel) world, user, entity, (ItemStack)
-            (Object) this));
+        .addCooldown(
+            getItem(),
+            ItemBehavior.getCooldown((ServerLevel) world, user, entity, (ItemStack) (Object) this));
     user.awardStat(Stats.ITEM_USED.get(getItem()));
 
     if (!user.getAbilities().instabuild) {

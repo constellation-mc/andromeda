@@ -28,7 +28,7 @@ abstract class DebugHudMixin {
           @At(
               value = "INVOKE",
               target =
-                      "Lnet/minecraft/client/gui/components/DebugScreenOverlay;getServerChunkStats()Ljava/lang/String;",
+                  "Lnet/minecraft/client/gui/components/DebugScreenOverlay;getServerChunkStats()Ljava/lang/String;",
               shift = At.Shift.BEFORE),
       method = "getGameInformation")
   private void andromeda$leftText(

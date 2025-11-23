@@ -6,25 +6,25 @@ import me.melontini.andromeda.modules.entities.boats.client.ClientSoundHolder;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.Clearable;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 
 public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable {
 
@@ -52,8 +52,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
       this.setDamage(this.getDamage() + amount * 10.0F);
       this.markHurt();
       this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
-      boolean bl =
-          source.getEntity() instanceof Player player && player.getAbilities().instabuild;
+      boolean bl = source.getEntity() instanceof Player player && player.getAbilities().instabuild;
       if (bl || this.getDamage() > 40.0F) {
         this.stopPlaying();
         if (!bl && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {

@@ -2,9 +2,9 @@ package me.melontini.andromeda.modules.entities.zombie.clean_pickup;
 
 import static me.melontini.andromeda.common.Andromeda.id;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 
 public class PickupTag {
 

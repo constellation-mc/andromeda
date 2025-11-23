@@ -17,8 +17,7 @@ public class Client {
           && config.furnaceScreenParticles) {
         ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
           AbstractFurnaceScreen<?> furnaceScreen = (AbstractFurnaceScreen<?>) screen;
-          if (furnaceScreen.getMenu().isLit()
-              && MathUtil.threadRandom().nextInt(10) == 0) {
+          if (furnaceScreen.getMenu().isLit() && MathUtil.threadRandom().nextInt(10) == 0) {
             ScreenParticleHelper.addScreenParticle(
                 screen,
                 ParticleTypes.FLAME,

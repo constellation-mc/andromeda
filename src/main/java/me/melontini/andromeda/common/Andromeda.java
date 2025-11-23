@@ -20,16 +20,16 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 public class Andromeda implements ModInitializer {
@@ -86,12 +86,15 @@ public class Andromeda implements ModInitializer {
     InitEvents.MAIN.invoker().onModuleMainInit().runEntrypoint();
 
     ResourceConditions.register(
-        id("items_registered"), object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
+        id("items_registered"),
+        object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
             .filter(JsonElement::isJsonPrimitive)
-            .allMatch(e -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(e.getAsString()))));
+            .allMatch(
+                e -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(e.getAsString()))));
 
     ResourceConditions.register(
-        id("modules_loaded"), object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
+        id("modules_loaded"),
+        object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
             .filter(JsonElement::isJsonPrimitive)
             .allMatch(e -> ModuleManager.get().get(e.getAsString()).isPresent()));
 
@@ -121,8 +124,10 @@ public class Andromeda implements ModInitializer {
   public static void appendCommonGsonTypes(GsonBuilder builder) {
     IntermediaryTypes.initialize(builder); // Commander support
 
-    builder.registerTypeHierarchyAdapter(ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
-    builder.registerTypeHierarchyAdapter(ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
+    builder.registerTypeHierarchyAdapter(
+        ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
+    builder.registerTypeHierarchyAdapter(
+        ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
     builder.registerTypeHierarchyAdapter(
         MobEffect.class, GsonCodecContext.of(BuiltInRegistries.MOB_EFFECT.byNameCodec()));
     builder.registerTypeHierarchyAdapter(

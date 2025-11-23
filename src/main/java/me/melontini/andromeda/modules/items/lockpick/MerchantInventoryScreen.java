@@ -4,19 +4,21 @@ import me.melontini.andromeda.common.Andromeda;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 @Environment(EnvType.CLIENT)
-public class MerchantInventoryScreen extends AbstractContainerScreen<MerchantInventoryScreenHandler> {
+public class MerchantInventoryScreen
+    extends AbstractContainerScreen<MerchantInventoryScreenHandler> {
 
-  private static final ResourceLocation TEXTURE = Andromeda.id("textures/gui/merchant_inventory.png");
+  private static final ResourceLocation TEXTURE =
+      Andromeda.id("textures/gui/merchant_inventory.png");
 
   public MerchantInventoryScreen(
-          MerchantInventoryScreenHandler handler, Inventory inventory, Component title) {
+      MerchantInventoryScreenHandler handler, Inventory inventory, Component title) {
     super(handler, inventory, title);
   }
 

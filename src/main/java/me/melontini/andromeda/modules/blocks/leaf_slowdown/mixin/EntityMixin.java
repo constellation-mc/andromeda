@@ -3,7 +3,8 @@ package me.melontini.andromeda.modules.blocks.leaf_slowdown.mixin;
 import java.util.UUID;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,9 +13,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -46,9 +46,8 @@ abstract class EntityMixin extends Entity {
             .am$get(LeafSlowdown.CONFIG)
             .available
             .asBoolean(LootContextBuilder.command(
-                    level, builder -> builder.origin(this).thisEntity(this)))) {
-      AttributeInstance attributeInstance =
-          this.getAttribute(Attributes.MOVEMENT_SPEED);
+                level, builder -> builder.origin(this).thisEntity(this)))) {
+      AttributeInstance attributeInstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
       if (this.level.getBlockState(blockPosition().below()).is(BlockTags.LEAVES)
           || (this.level.getBlockState(new BlockPos(blockPosition().below(2))).is(BlockTags.LEAVES)
               && this.level.getBlockState(new BlockPos(blockPosition().below())).is(Blocks.AIR))) {
@@ -60,7 +59,9 @@ abstract class EntityMixin extends Entity {
           }
         /*Does this even work?*/
         setDeltaMovement(
-            getDeltaMovement().x(), getDeltaMovement().y() * 0.7, getDeltaMovement().z());
+            getDeltaMovement().x(),
+            getDeltaMovement().y() * 0.7,
+            getDeltaMovement().z());
       } else {
         if (attributeInstance != null)
           if (attributeInstance.hasModifier(LEAF_SLOWNESS)) {

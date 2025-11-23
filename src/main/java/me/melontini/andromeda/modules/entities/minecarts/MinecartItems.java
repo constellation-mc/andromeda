@@ -19,19 +19,19 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.LevelEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Unique;
@@ -116,9 +116,8 @@ public class MinecartItems {
 
           if (!record.isEmpty()) {
             world.levelEvent(LevelEvent.SOUND_PLAY_JUKEBOX_SONG, pos, 0);
-            jukeboxMinecart.setTag(NbtBuilder.create()
-                .put("Items", record.save(new CompoundTag()))
-                .build());
+            jukeboxMinecart.setTag(
+                NbtBuilder.create().put("Items", record.save(new CompoundTag())).build());
           }
           jukeboxBlockEntity.clearContent();
           return jukeboxMinecart;

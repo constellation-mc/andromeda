@@ -4,23 +4,23 @@ import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
 import me.melontini.andromeda.modules.blocks.cactus_bottle_filling.Main;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.CactusBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CactusBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,13 +31,13 @@ abstract class AbstractBlockMixin {
 
   @Inject(at = @At("HEAD"), method = "use", cancellable = true)
   private void andromeda$onUse(
-          BlockState state,
-          Level world,
-          BlockPos pos,
-          Player player,
-          InteractionHand hand,
-          BlockHitResult hit,
-          CallbackInfoReturnable<InteractionResult> cir) {
+      BlockState state,
+      Level world,
+      BlockPos pos,
+      Player player,
+      InteractionHand hand,
+      BlockHitResult hit,
+      CallbackInfoReturnable<InteractionResult> cir) {
     if (state.getBlock() instanceof CactusBlock) {
       ItemStack stack = player.getItemInHand(hand);
       if (stack.is(Items.GLASS_BOTTLE)) {
@@ -64,7 +64,9 @@ abstract class AbstractBlockMixin {
           player.setItemInHand(
               hand,
               ItemUtils.createFilledResult(
-                  stack, player, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                  stack,
+                  player,
+                  PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
           player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 
           if (state.getValue(Main.WATER_LEVEL_3) == 3) {

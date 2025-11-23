@@ -3,15 +3,15 @@ package me.melontini.andromeda.modules.misc.unknown.mixin.wakeup;
 import java.util.Optional;
 import me.melontini.andromeda.modules.misc.unknown.UnknownUtil;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +23,7 @@ abstract class PlayerEntityMixin {
 
   @Shadow
   public abstract void playNotifySound(
-          SoundEvent event, SoundSource category, float volume, float pitch);
+      SoundEvent event, SoundSource category, float volume, float pitch);
 
   @Inject(at = @At("HEAD"), method = "stopSleepInBed(ZZ)V")
   private void andromeda$wakeUp(
@@ -36,8 +36,7 @@ abstract class PlayerEntityMixin {
             player.level, player.blockPosition(), 10, player.level.getRandom());
         if (optional.isPresent()) {
           BlockPos pos = optional.get();
-          ArmorStand stand =
-              new ArmorStand(player.level, pos.getX(), pos.getY(), pos.getZ());
+          ArmorStand stand = new ArmorStand(player.level, pos.getX(), pos.getY(), pos.getZ());
           ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
           stack.setTag(NbtBuilder.create()

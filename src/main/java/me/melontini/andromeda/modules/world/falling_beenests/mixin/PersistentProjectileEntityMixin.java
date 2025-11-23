@@ -3,16 +3,16 @@ package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,8 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractArrow.class)
 abstract class PersistentProjectileEntityMixin extends Projectile {
 
-  public PersistentProjectileEntityMixin(
-          EntityType<? extends Projectile> entityType, Level world) {
+  public PersistentProjectileEntityMixin(EntityType<? extends Projectile> entityType, Level world) {
     super(entityType, world);
   }
 
@@ -39,7 +38,7 @@ abstract class PersistentProjectileEntityMixin extends Projectile {
           .am$get(CanBeeNestsFall.CONFIG)
           .available
           .asBoolean(LootContextBuilder.block(
-                  level, builder -> builder.origin(pos).state(state).blockEntity(beehiveBlockEntity))))
+              level, builder -> builder.origin(pos).state(state).blockEntity(beehiveBlockEntity))))
         return;
 
       if (level.getBlockState(pos.relative(Direction.DOWN)).isAir()) {

@@ -9,23 +9,23 @@ import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.npc.InventoryCarrier;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.ChatFormatting;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,10 +41,10 @@ public class PouchItem extends Item {
 
   @Override
   public void appendHoverText(
-          ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+      ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
     if (context.isAdvanced() && Util.isDev()) {
-      tooltip.add(
-          TextUtil.literal("Loot: " + this.getType().getLootId(stack)).withStyle(ChatFormatting.GRAY));
+      tooltip.add(TextUtil.literal("Loot: " + this.getType().getLootId(stack))
+          .withStyle(ChatFormatting.GRAY));
     }
   }
 
@@ -79,7 +79,7 @@ public class PouchItem extends Item {
 
   @Override
   public InteractionResult interactLivingEntity(
-          ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+      ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
     if (!user.level().isClientSide()) {
       var stacks = LootContextBuilder.prepareLoot(user.level(), type.getLootId(stack));
 
@@ -91,8 +91,8 @@ public class PouchItem extends Item {
         success = true;
       } else if (entity instanceof InventoryCarrier io) {
         var storage = InventoryStorage.of(io.getInventory(), null);
-        stacks.forEach(itemStack ->
-            Main.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
+        stacks.forEach(
+            itemStack -> Main.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
         success = true;
       }
 

@@ -8,13 +8,13 @@ import me.melontini.commander.api.command.Selector;
 import me.melontini.commander.api.event.EventContext;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public record ItemPlopEffect(Selector.Conditioned selector) implements Command {
 
@@ -31,8 +31,7 @@ public record ItemPlopEffect(Selector.Conditioned selector) implements Command {
       buf.writeItem(context.lootContext().getParamOrNull(LootContextParams.TOOL));
       ServerPlayNetworking.send(player, Main.COLORED_FLYING_STACK_LANDED, buf);
     } else if (entity instanceof LivingEntity living) {
-      living.addEffect(
-          new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false, true));
+      living.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false, true));
     }
     return true;
   }
