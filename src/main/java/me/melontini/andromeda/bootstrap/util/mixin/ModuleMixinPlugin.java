@@ -10,9 +10,6 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class ModuleMixinPlugin extends ExtendablePlugin {
 
-  private static final String MIXIN_ENVIRONMENT_ANNOTATION =
-      "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
-
   private String mixinPackage;
   private final MixinHandler processor = ModuleManager.get().mixinHandler();
 
@@ -34,10 +31,5 @@ public class ModuleMixinPlugin extends ExtendablePlugin {
   @Override
   protected void afterApply(
       String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-    if (targetClass.visibleAnnotations != null
-        && !targetClass.visibleAnnotations.isEmpty()) { // strip our annotation from the class
-      targetClass.visibleAnnotations.removeIf(
-          node -> MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
-    }
   }
 }

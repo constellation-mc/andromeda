@@ -5,9 +5,8 @@ import me.melontini.andromeda.bootstrap.ModuleInfo;
 import me.melontini.andromeda.bootstrap.config.BaseConfig;
 import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
-import me.melontini.andromeda.bootstrap.util.Environment;
 
-@ModuleInfo(name = "moist_control", category = "world", env = Environment.SERVER)
+@ModuleInfo(name = "moist_control", category = "world")
 public final class MoistControl extends Module {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);

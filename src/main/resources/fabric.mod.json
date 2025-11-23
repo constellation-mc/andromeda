@@ -16,9 +16,6 @@
     "server": [
       "me.melontini.andromeda.common.AndromedaServer"
     ],
-    "client": [
-      "me.melontini.andromeda.common.AndromedaClient"
-    ],
     "main": [
       "me.melontini.andromeda.common.Andromeda"
     ]

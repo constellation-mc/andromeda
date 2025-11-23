@@ -6,11 +6,10 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
-import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
 import net.minecraft.resources.ResourceLocation;
 
-@ModuleInfo(name = "trading_goat_horn", category = "mechanics", env = Environment.SERVER)
+@ModuleInfo(name = "trading_goat_horn", category = "mechanics")
 public final class GoatHorn extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);

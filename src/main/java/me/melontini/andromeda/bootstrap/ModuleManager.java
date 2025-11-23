@@ -10,12 +10,10 @@ import me.melontini.andromeda.bootstrap.config.handler.ModConfigHandler;
 import me.melontini.andromeda.bootstrap.event.BootstrapConfigEvent;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.bootstrap.event.PostModuleInitEvent;
-import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.bootstrap.util.mixin.MixinHandler;
 import me.melontini.andromeda.modules.ModuleDiscovery;
 import me.melontini.andromeda.util.*;
 import me.melontini.dark_matter.api.base.util.Utilities;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
@@ -59,11 +57,6 @@ public class ModuleManager implements PreLaunchEntrypoint {
             .peek(cls -> {
               if (ModuleHelper.getMeta(cls) == null)
                 throw Util.create("%s has no ModuleInfo annotation", IllegalStateException::new);
-            })
-            .filter(cls -> {
-              if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
-                return true; // Every module is allowed on client.
-              return ModuleHelper.getMeta(cls).env().allows(Environment.SERVER);
             })
             .toList();
 

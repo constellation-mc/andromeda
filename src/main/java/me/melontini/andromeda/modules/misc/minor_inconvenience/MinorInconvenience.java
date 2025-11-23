@@ -4,10 +4,9 @@ import me.melontini.andromeda.bootstrap.Module;
 import me.melontini.andromeda.bootstrap.ModuleInfo;
 import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
-import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
 
-@ModuleInfo(name = "minor_inconvenience", category = "misc", env = Environment.SERVER)
+@ModuleInfo(name = "minor_inconvenience", category = "misc")
 public final class MinorInconvenience extends Module {
 
   public static final ConfigDefinition<GameConfig> CONFIG = ConfigDefinition.game();
