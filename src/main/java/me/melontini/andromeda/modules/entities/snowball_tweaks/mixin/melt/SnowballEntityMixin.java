@@ -29,7 +29,7 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
     if (level.isClientSide() || !this.isOnFire()) return;
 
     var config = level.am$get(Snowballs.CONFIG);
-    if (!config.available || !config.melt) return;
+    if (!config.active || !config.melt) return;
 
     ((ServerLevel) level)
         .sendParticles(

@@ -61,7 +61,7 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
       CallbackInfo ci,
       @Local(index = 7) int i,
       @Local(index = 10) int k) {
-    if (world.am$get(QuickFire.CONFIG).available) {
+    if (world.am$get(QuickFire.CONFIG).active) {
       try {
         LOCAL.set(Boolean.TRUE);
         for (int x = -3; x < 3; x++) {

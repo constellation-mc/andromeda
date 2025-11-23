@@ -54,7 +54,7 @@ abstract class FallingBlockMixin extends Entity {
     if (blockEntity == null) return;
 
     if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity
-        && this.level.am$get(CanBeeNestsFall.CONFIG).available) {
+        && this.level.am$get(CanBeeNestsFall.CONFIG).active) {
       if (this.blockState.getBlock() != Blocks.BEE_NEST) return;
       if (blockData == null || !blockData.getBoolean("AM-FromFallenBlock")) return;
 

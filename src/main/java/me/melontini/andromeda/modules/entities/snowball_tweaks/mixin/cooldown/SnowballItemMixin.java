@@ -34,7 +34,7 @@ abstract class SnowballItemMixin extends Item {
     if (world.isClientSide()) return null;
 
     var config = world.am$get(Snowballs.CONFIG);
-    if (!config.available) return par1;
+    if (!config.active) return par1;
 
     if (!config.enableCooldown) return par1;
 

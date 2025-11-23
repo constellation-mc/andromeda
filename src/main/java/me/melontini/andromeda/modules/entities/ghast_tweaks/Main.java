@@ -10,7 +10,7 @@ public final class Main {
     ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
       if (entity instanceof Ghast) {
         var c = entity.level.am$get(GhastTweaks.CONFIG);
-        if (!c.available) return;
+        if (!c.active) return;
 
         if (c.explodeOnDeath)
           entity.level.explode(

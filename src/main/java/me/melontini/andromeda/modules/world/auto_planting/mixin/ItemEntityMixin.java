@@ -37,7 +37,7 @@ abstract class ItemEntityMixin {
 
     if (entity.tickCount % MathUtil.nextInt(20, 101) != 0) return;
     var config = world.am$get(AutoPlanting.CONFIG);
-    if (!config.available) return;
+    if (!config.active) return;
     if (!world.getFluidState(pos).isEmpty()) return;
     if (config.blacklistMode == config.idList.contains(stack.getItem())) return;
 

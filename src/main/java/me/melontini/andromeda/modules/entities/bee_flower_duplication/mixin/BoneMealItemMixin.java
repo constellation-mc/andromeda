@@ -23,7 +23,7 @@ abstract class BoneMealItemMixin {
 
     BlockState blockState = world.getBlockState(pos);
     var config = world.am$get(BeeFlowerDuplication.CONFIG);
-    if (!config.available || !config.tallFlowers) return;
+    if (!config.active || !config.tallFlowers) return;
 
     if (blockState.getBlock() instanceof TallFlowerBlock) {
       if (ModuleManager.get().get("misc.unknown").isPresent() && world.random.nextInt(100) == 0) {

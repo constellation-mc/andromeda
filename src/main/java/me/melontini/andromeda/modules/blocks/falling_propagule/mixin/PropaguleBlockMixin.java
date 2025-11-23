@@ -35,7 +35,7 @@ abstract class PropaguleBlockMixin {
       BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo ci) {
     if (isFullyGrown(state)
         && random.nextInt(40) == 0
-        && world.am$get(FallingPropagule.CONFIG).available) {
+        && world.am$get(FallingPropagule.CONFIG).active) {
       FallingBlockEntity fallingBlock = new FallingBlockEntity(
           world,
           pos.getX() + 0.5,

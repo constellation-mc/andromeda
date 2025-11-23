@@ -37,7 +37,7 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
       CallbackInfo ci) {
     if (state.getBlock() != Blocks.BEE_NEST) return;
 
-    if (world.am$get(CanBeeNestsFall.CONFIG).available && world.random.nextInt(32000) == 0) {
+    if (world.am$get(CanBeeNestsFall.CONFIG).active && world.random.nextInt(32000) == 0) {
       if (!world.getBlockState(pos.relative(Direction.DOWN)).isAir()) return;
 
       BlockState up = world.getBlockState(pos.relative(Direction.UP));

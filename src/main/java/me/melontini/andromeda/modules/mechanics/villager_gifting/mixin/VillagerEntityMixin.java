@@ -51,7 +51,7 @@ abstract class VillagerEntityMixin extends AbstractVillager {
     if (hand != InteractionHand.MAIN_HAND || level.isClientSide()) return;
     ItemStack stack = player.getItemInHand(hand);
 
-    if (!level.am$get(VillagerGifting.CONFIG).available) return;
+    if (!level.am$get(VillagerGifting.CONFIG).active) return;
 
     ItemStack gift = stack.copy();
     gift.setCount(1);

@@ -33,7 +33,7 @@ abstract class PersistentProjectileEntityMixin extends Projectile {
       BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) level.getBlockEntity(pos);
       if (beehiveBlockEntity == null) return;
 
-      if (!level.am$get(CanBeeNestsFall.CONFIG).available) return;
+      if (!level.am$get(CanBeeNestsFall.CONFIG).active) return;
 
       if (level.getBlockState(pos.relative(Direction.DOWN)).isAir()) {
         BeeUtil.trySpawnFallingBeeNest(level, pos, state, beehiveBlockEntity);

@@ -38,7 +38,7 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
     if (level.isClientSide()) return;
 
     var config = level.am$get(Snowballs.CONFIG);
-    if (!config.available || !config.layers) return;
+    if (!config.active || !config.layers) return;
 
     Vec3 pos = this.position();
     Vec3 vec3d = pos.add(this.getDeltaMovement());

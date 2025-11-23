@@ -20,7 +20,7 @@ abstract class AbstractMinecartEntityMixin extends Entity {
   private double andromeda$getMaxSpeed(double original) {
     if (!this.level().isClientSide()) {
       var c = this.level().am$get(MinecartSpeedControl.CONFIG);
-      return c.available ? original * c.modifier : original;
+      return c.active ? original * c.modifier : original;
     }
     return original;
   }
