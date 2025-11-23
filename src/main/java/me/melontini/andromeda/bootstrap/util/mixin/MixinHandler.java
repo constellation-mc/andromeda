@@ -4,9 +4,12 @@ import static me.melontini.andromeda.util.AndromedaConstants.MODID;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import lombok.CustomLog;
 import me.melontini.andromeda.bootstrap.Module;
@@ -22,10 +25,6 @@ import org.spongepowered.asm.mixin.transformer.Config;
 
 @CustomLog
 public class MixinHandler {
-
-  public static final String NOTICE = "mixin_processor.config_notice";
-  public static final String JAVA_VERSION = "JAVA_17";
-  public static final String MIXIN_VERSION = "0.8.5";
 
   private final ModuleManager manager;
   private final Map<String, Module> mixinConfigs = new HashMap<>();
@@ -46,7 +45,42 @@ public class MixinHandler {
     return mixinClasses.getOrDefault(pkg, Collections.emptyList());
   }
 
+  public Set<Config> getMixins() {
+    var set = Mixins.getConfigs();
+    if (set instanceof HashSet<Config> hs)
+      set = ((HashSet<Config>) hs.clone()); // Maybe, hopefully will help avoid CMEs
+    else {
+      log.warn("Mixins.getConfigs() is not a HashSet?");
+      set = ImmutableSet.copyOf(set);
+    }
+    return set;
+  }
+
+  public JsonObject getOriginConfig() {
+    return this.manager
+        .modContainer()
+        .findPath("andromeda.mixins.json")
+        .map(path -> {
+          try {
+            return JsonParser.parseReader(Files.newBufferedReader(path)).getAsJsonObject();
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .orElseGet(() -> {
+          try (var stream =
+                  this.getClass().getClassLoader().getResourceAsStream("andromeda.mixins.json");
+              var reader = new InputStreamReader(stream)) {
+            return JsonParser.parseReader(reader).getAsJsonObject();
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
+
   public void addMixins() {
+    var originConfig = this.getOriginConfig();
+
     for (Module module : manager.loaded()) {
       String pkg = ModuleHelper.mixinPackage(module);
       var list = AndromedaMixinPlugin.discoverInPackage(pkg);
@@ -57,7 +91,7 @@ public class MixinHandler {
       for (Module module : this.manager.loaded()) {
         if (!this.mixinClasses.containsKey(ModuleHelper.mixinPackage(module))) continue;
 
-        JsonObject config = createConfig(module);
+        JsonObject config = createConfig(module, originConfig);
         String cfg = "andromeda_dynamic$$" + ModuleHelper.dotted(module);
         try (ByteArrayInputStream bais =
             new ByteArrayInputStream(config.toString().getBytes(StandardCharsets.UTF_8))) {
@@ -69,14 +103,7 @@ public class MixinHandler {
       }
     });
 
-    var set = Mixins.getConfigs();
-    if (set instanceof HashSet<Config> hs)
-      set = ((HashSet<Config>) hs.clone()); // Maybe, hopefully will help avoid CMEs
-    else {
-      log.warn("Mixins.getConfigs() is not a HashSet?");
-      set = ImmutableSet.copyOf(set);
-    }
-    set.forEach(config -> {
+    this.getMixins().forEach(config -> {
       if (this.mixinConfigs.containsKey(config.getName())) {
         // Decorate mixin configs to allow Fabric's fork to blame Andromeda.
         config.getConfig().decorate(FabricUtil.KEY_MOD_ID, MODID);
@@ -84,12 +111,15 @@ public class MixinHandler {
     });
   }
 
-  public JsonObject createConfig(Module module) {
+  public JsonObject createConfig(Module module, JsonObject origin) {
+    var javaVersion = origin.getAsJsonPrimitive("compatibilityLevel").getAsString();
+    var minVersion = origin.getAsJsonPrimitive("minVersion").getAsString();
+
     JsonObject object = new JsonObject();
     object.addProperty("required", true);
-    object.addProperty("minVersion", MIXIN_VERSION);
+    object.addProperty("minVersion", minVersion);
     object.addProperty("package", module.getClass().getPackageName() + ".mixin");
-    object.addProperty("compatibilityLevel", JAVA_VERSION);
+    object.addProperty("compatibilityLevel", javaVersion);
     object.addProperty("plugin", ModuleMixinPlugin.class.getName());
     object.addProperty("refmap", "andromeda-refmap.json");
     JsonObject injectors = new JsonObject();

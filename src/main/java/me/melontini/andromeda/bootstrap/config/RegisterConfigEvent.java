@@ -6,7 +6,6 @@ import me.melontini.andromeda.bootstrap.event.bus.Bus;
 
 public interface RegisterConfigEvent {
 
-  EventMarker<RegisterConfigEvent> CLIENT = new EventMarker<>();
   EventMarker<RegisterConfigEvent> MAIN = new EventMarker<>();
   // The Game
   EventMarker<RegisterConfigEvent> GAME = new EventMarker<>();
@@ -24,8 +23,4 @@ public interface RegisterConfigEvent {
   }
 
   ConfigDefinition<?> onRegisterConfigs();
-
-  interface ConfigRegistrar {
-    void accept(ConfigDefinition<?> definition);
-  }
 }

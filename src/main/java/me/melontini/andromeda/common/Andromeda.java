@@ -12,9 +12,7 @@ import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.common.config.DataConfigs;
 import me.melontini.andromeda.common.config.GsonBuilderEvent;
 import me.melontini.andromeda.common.config.handler.MultiConfigHandler;
-import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.common.util.GsonCodecContext;
-import me.melontini.andromeda.common.util.Keeper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
@@ -26,7 +24,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -37,8 +34,6 @@ public class Andromeda implements ModInitializer {
 
   public static final MultiConfigHandler MAIN;
   public static final MultiConfigHandler GAME;
-
-  public static final Keeper<CreativeModeTab> GROUP = Keeper.create();
 
   @Getter
   private @Nullable MinecraftServer currentServer;
@@ -97,23 +92,12 @@ public class Andromeda implements ModInitializer {
             .filter(JsonElement::isJsonPrimitive)
             .allMatch(e -> ModuleManager.get().get(e.getAsString()).isPresent()));
 
-    GROUP.init(AndromedaItemGroup.create());
-
     // Keep a reference to the currently running server.
     ServerLifecycleEvents.SERVER_STARTING.register(server -> this.currentServer = server);
     ServerLifecycleEvents.SERVER_STOPPING.register(server -> this.currentServer = null);
 
     // Init the data pack config system
     DataConfigs.init(manager);
-  }
-
-  void onMergedEntryPoint() {
-    var manager = ModuleManager.get();
-
-    GAME.loadAll();
-    GAME.saveAll();
-
-    InitEvents.MERGED.invoker().onModuleMergedInit().runEntrypoint();
   }
 
   public static Andromeda get() {

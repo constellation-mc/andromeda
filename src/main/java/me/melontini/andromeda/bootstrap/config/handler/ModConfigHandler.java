@@ -14,7 +14,6 @@ import lombok.CustomLog;
 import me.melontini.andromeda.bootstrap.config.BaseConfig;
 import me.melontini.andromeda.bootstrap.config.ModInitConfig;
 import me.melontini.andromeda.util.Debug;
-import me.melontini.andromeda.util.NetUtils;
 import me.melontini.andromeda.util.Util;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -28,7 +27,6 @@ public class ModConfigHandler {
 
   static {
     KEYS.add(ModInitConfig.KEY);
-    KEYS.add(NetUtils.KEY);
 
     KEYS.add(Debug.KEY);
   }
