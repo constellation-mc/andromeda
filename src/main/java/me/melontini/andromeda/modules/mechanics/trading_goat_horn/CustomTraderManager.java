@@ -14,22 +14,27 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.TraderLlamaEntity;
-import net.minecraft.entity.passive.WanderingTraderEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.BiomeTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.animal.horse.TraderLlama;
+import net.minecraft.world.entity.npc.WanderingTrader;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.*;
-import net.minecraft.world.level.ServerWorldProperties;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestTypes;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.NaturalSpawner;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -44,7 +49,7 @@ public class CustomTraderManager {
   @Getter
   public int cooldown;
 
-  private WanderingTraderEntity trader;
+  private WanderingTrader trader;
 
   public CustomTraderManager(int cooldown) {
     this.cooldown = cooldown;
@@ -56,37 +61,37 @@ public class CustomTraderManager {
   }
 
   public void trySpawn(
-      ServerWorld world,
-      ServerWorldProperties properties,
-      ItemStack stackInHand,
-      PlayerEntity player,
-      boolean highlight) {
+          ServerLevel world,
+          ServerLevelData properties,
+          ItemStack stackInHand,
+          Player player,
+          boolean highlight) {
     if (player == null) return;
 
     if (cooldown > 0) {
       if (!highlight || this.trader == null || this.trader.isRemoved()) return;
 
-      this.trader.addStatusEffect(
-          new StatusEffectInstance(StatusEffects.GLOWING, 20 * 5, 0, true, false));
+      this.trader.addEffect(
+          new MobEffectInstance(MobEffects.GLOWING, 20 * 5, 0, true, false));
       return;
     }
-    BlockPos blockPos = player.getBlockPos();
+    BlockPos blockPos = player.blockPosition();
 
-    PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-    Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
-        registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.MEETING),
+    PoiManager pointOfInterestStorage = world.getPoiManager();
+    Optional<BlockPos> optional = pointOfInterestStorage.find(
+        registryEntry -> registryEntry.is(PoiTypes.MEETING),
         pos -> true,
         blockPos,
         48,
-        PointOfInterestStorage.OccupationStatus.ANY);
+        PoiManager.Occupancy.ANY);
     BlockPos blockPos2 = optional.orElse(blockPos);
     BlockPos blockPos3 = getNearbySpawnPos(world, blockPos2, 48);
 
     if (blockPos3 == null || !doesNotSuffocateAt(world, blockPos3)) return;
-    if (world.getBiome(blockPos3).isIn(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) return;
+    if (world.getBiome(blockPos3).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) return;
 
-    WanderingTraderEntity wanderingTraderEntity =
-        EntityType.WANDERING_TRADER.spawn(world, blockPos3, SpawnReason.EVENT);
+    WanderingTrader wanderingTraderEntity =
+        EntityType.WANDERING_TRADER.spawn(world, blockPos3, MobSpawnType.EVENT);
     if (wanderingTraderEntity == null) return;
     this.trader = wanderingTraderEntity;
 
@@ -101,36 +106,36 @@ public class CustomTraderManager {
       spawnLlama(world, this.trader);
     }
 
-    properties.setWanderingTraderId(this.trader.getUuid());
+    properties.setWanderingTraderId(this.trader.getUUID());
     this.trader.setDespawnDelay(tCooldown);
     this.trader.setWanderTarget(blockPos2);
-    this.trader.setPositionTarget(blockPos2, 16);
-    this.trader.addStatusEffect(
-        new StatusEffectInstance(StatusEffects.GLOWING, 20 * 8, 0, true, false));
+    this.trader.restrictTo(blockPos2, 16);
+    this.trader.addEffect(
+        new MobEffectInstance(MobEffects.GLOWING, 20 * 8, 0, true, false));
   }
 
   private void spawnLlama(
-      @NonNull ServerWorld world, @NonNull WanderingTraderEntity wanderingTrader) {
-    BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.getBlockPos(), 4);
+          @NonNull ServerLevel world, @NonNull WanderingTrader wanderingTrader) {
+    BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.blockPosition(), 4);
     if (blockPos == null) return;
 
-    TraderLlamaEntity traderLlamaEntity =
-        EntityType.TRADER_LLAMA.spawn(world, blockPos, SpawnReason.EVENT);
+    TraderLlama traderLlamaEntity =
+        EntityType.TRADER_LLAMA.spawn(world, blockPos, MobSpawnType.EVENT);
     if (traderLlamaEntity == null) return;
 
-    traderLlamaEntity.attachLeash(wanderingTrader, true);
+    traderLlamaEntity.setLeashedTo(wanderingTrader, true);
   }
 
-  @Nullable private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
+  @Nullable private BlockPos getNearbySpawnPos(LevelReader world, BlockPos pos, int range) {
     BlockPos blockPos = null;
 
     for (int i = 0; i < 10; ++i) {
       int x = pos.getX() + MathUtil.threadRandom().nextInt(range * 2) - range;
       int z = pos.getZ() + MathUtil.threadRandom().nextInt(range * 2) - range;
-      int y = world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z);
+      int y = world.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
       BlockPos blockPos2 = new BlockPos(x, y, z);
-      if (SpawnHelper.canSpawn(
-          SpawnRestriction.Location.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) {
+      if (NaturalSpawner.isSpawnPositionOk(
+          SpawnPlacements.Type.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) {
         blockPos = blockPos2;
         break;
       }
@@ -139,8 +144,8 @@ public class CustomTraderManager {
     return blockPos;
   }
 
-  private boolean doesNotSuffocateAt(BlockView world, BlockPos pos) {
-    for (BlockPos blockPos : BlockPos.iterate(pos, pos.add(1, 2, 1))) {
+  private boolean doesNotSuffocateAt(BlockGetter world, BlockPos pos) {
+    for (BlockPos blockPos : BlockPos.betweenClosed(pos, pos.offset(1, 2, 1))) {
       if (!world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty()) {
         return false;
       }
@@ -156,12 +161,12 @@ public class CustomTraderManager {
         .buildAndRegister(id("trader_state_manager")));
 
     ServerWorldEvents.LOAD.register((server, world) -> {
-      if (World.OVERWORLD.equals(world.getRegistryKey()))
+      if (Level.OVERWORLD.equals(world.dimension()))
         world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get());
     });
 
     ServerTickEvents.END_WORLD_TICK.register(world -> {
-      if (World.OVERWORLD.equals(world.getRegistryKey()))
+      if (Level.OVERWORLD.equals(world.dimension()))
         world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).tick();
     });
   }

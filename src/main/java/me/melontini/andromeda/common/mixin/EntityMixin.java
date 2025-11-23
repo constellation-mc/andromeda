@@ -6,13 +6,13 @@ import me.melontini.andromeda.common.util.LazyLootParameterSet;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
-import net.minecraft.entity.Entity;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,16 +21,16 @@ import org.spongepowered.asm.mixin.Unique;
 abstract class EntityMixin implements ConstantLootContextAccessor {
 
   @Shadow
-  public abstract Vec3d getPos();
+  public abstract Vec3 position();
 
   @Shadow
-  public abstract World getWorld();
+  public abstract Level level();
 
   @Unique private final Supplier<LootContext> andromeda$context = Utilities.supply(() -> {
-    var c = new LazyLootParameterSet.Builder(() -> (ServerWorld) getWorld())
-        .add(LootContextParameters.ORIGIN, this::getPos)
-        .add(LootContextParameters.THIS_ENTITY, () -> (Entity) (Object) this)
-        .build(LootContextTypes.COMMAND);
+    var c = new LazyLootParameterSet.Builder(() -> (ServerLevel) level())
+        .add(LootContextParams.ORIGIN, this::position)
+        .add(LootContextParams.THIS_ENTITY, () -> (Entity) (Object) this)
+        .build(LootContextParamSets.COMMAND);
     return Memoize.supplier(() -> LootContextBuilder.build(c));
   });
 

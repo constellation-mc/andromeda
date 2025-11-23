@@ -5,25 +5,25 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.moist_control.MoistControl;
-import net.minecraft.block.FarmlandBlock;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldView;
+import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(FarmlandBlock.class)
+@Mixin(FarmBlock.class)
 abstract class FarmlandMixin {
 
-  @Inject(at = @At("HEAD"), method = "isWaterNearby")
+  @Inject(at = @At("HEAD"), method = "isNearWater")
   private static void andromeda$prepareRule(
-      WorldView world,
-      BlockPos pos,
-      CallbackInfoReturnable<Boolean> cir,
-      @Share("value") LocalIntRef ref) {
-    if (world instanceof ServerWorld sw) {
+          LevelReader world,
+          BlockPos pos,
+          CallbackInfoReturnable<Boolean> cir,
+          @Share("value") LocalIntRef ref) {
+    if (world instanceof ServerLevel sw) {
       ref.set(sw.am$get(MoistControl.CONFIG)
           .customMoisture
           .asInt(LootContextBuilder.command(sw, builder -> builder.origin(pos))));
@@ -32,14 +32,14 @@ abstract class FarmlandMixin {
 
   @ModifyExpressionValue(
       at = @At(value = "CONSTANT", args = "intValue=4"),
-      method = "isWaterNearby")
+      method = "isNearWater")
   private static int andromeda$modifyMoisture(int original, @Share("value") LocalIntRef ref) {
     return ref.get();
   }
 
   @ModifyExpressionValue(
       at = @At(value = "CONSTANT", args = "intValue=-4"),
-      method = "isWaterNearby")
+      method = "isNearWater")
   private static int andromeda$modifyMoistureNegative(
       int original, @Share("value") LocalIntRef ref) {
     return -ref.get();

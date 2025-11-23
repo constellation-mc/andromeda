@@ -6,55 +6,55 @@ import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.ForgingScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
 
 @Environment(EnvType.CLIENT)
-public class FletchingScreen extends ForgingScreen<FletchingScreenHandler> {
+public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> {
 
-  private static final Identifier TEXTURE = Andromeda.id("textures/gui/fletching.png");
+  private static final ResourceLocation TEXTURE = Andromeda.id("textures/gui/fletching.png");
 
   public FletchingScreen(
-      FletchingScreenHandler handler, PlayerInventory playerInventory, Text title) {
+          FletchingScreenHandler handler, Inventory playerInventory, Component title) {
     super(handler, playerInventory, title, TEXTURE);
-    this.titleX = 60;
-    this.titleY = 18;
+    this.titleLabelX = 60;
+    this.titleLabelY = 18;
   }
 
   @Override
-  protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+  protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
     RenderSystem.disableBlend();
-    super.drawForeground(context, mouseX, mouseY);
+    super.renderLabels(context, mouseX, mouseY);
   }
 
   @Override
-  protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
-    if (handler.getSlot(0).hasStack()
-        && handler.getSlot(1).hasStack()
-        && !handler.getSlot(2).hasStack()) {
-      context.drawTexture(TEXTURE, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
+  protected void renderErrorIcon(GuiGraphics context, int x, int y) {
+    if (menu.getSlot(0).hasItem()
+        && menu.getSlot(1).hasItem()
+        && !menu.getSlot(2).hasItem()) {
+      context.blit(TEXTURE, x + 99, y + 45, this.imageWidth, 0, 28, 21);
     }
   }
 
   public static void onClient() {
     if (FletchingScreenHandler.FLETCHING.isPresent()) {
-      HandledScreens.register(FletchingScreenHandler.FLETCHING.get(), FletchingScreen::new);
+      MenuScreens.register(FletchingScreenHandler.FLETCHING.get(), FletchingScreen::new);
     }
 
     ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
-      NbtCompound nbt = stack.getNbt();
+      CompoundTag nbt = stack.getTag();
       if (nbt == null) return;
 
       int i = nbt.getInt("AM-Tightened");
       if (i > 0)
         lines.add(
-            TextUtil.translatable("tooltip.andromeda.bow.tight", i).formatted(Formatting.GRAY));
+            TextUtil.translatable("tooltip.andromeda.bow.tight", i).withStyle(ChatFormatting.GRAY));
     });
   }
 }

@@ -8,13 +8,13 @@ import me.melontini.commander.api.command.Selector;
 import me.melontini.commander.api.event.EventContext;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 
 public record ItemPlopEffect(Selector.Conditioned selector) implements Command {
 
@@ -26,13 +26,13 @@ public record ItemPlopEffect(Selector.Conditioned selector) implements Command {
     var opt = selector.select(context);
     if (opt.isEmpty()) return false;
     Entity entity = opt.get().getEntity();
-    if (entity instanceof ServerPlayerEntity player) {
-      PacketByteBuf buf = PacketByteBufs.create();
-      buf.writeItemStack(context.lootContext().get(LootContextParameters.TOOL));
+    if (entity instanceof ServerPlayer player) {
+      FriendlyByteBuf buf = PacketByteBufs.create();
+      buf.writeItem(context.lootContext().getParamOrNull(LootContextParams.TOOL));
       ServerPlayNetworking.send(player, Main.COLORED_FLYING_STACK_LANDED, buf);
     } else if (entity instanceof LivingEntity living) {
-      living.addStatusEffect(
-          new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0, false, false, true));
+      living.addEffect(
+          new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false, true));
     }
     return true;
   }

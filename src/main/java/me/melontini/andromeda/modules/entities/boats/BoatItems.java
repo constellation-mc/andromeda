@@ -11,11 +11,11 @@ import me.melontini.andromeda.common.util.AndromedaItemGroup;
 import me.melontini.andromeda.modules.entities.boats.items.AndromedaBoatItem;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 
 public class BoatItems {
 
@@ -24,43 +24,43 @@ public class BoatItems {
     var config = Andromeda.MAIN.get(Boats.MAIN_CONFIG);
 
     List<Item> list = new ArrayList<>();
-    for (BoatEntity.Type value : BoatEntity.Type.values()) {
+    for (Boat.Type value : Boat.Type.values()) {
       Optional.ofNullable(RegistryUtil.register(
               config.isFurnaceBoatOn,
-              Registries.ITEM,
+              BuiltInRegistries.ITEM,
               boatId(value, "furnace"),
               () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_FURNACE, value, new FabricItemSettings().maxCount(1))))
+                  BoatEntities.BOAT_WITH_FURNACE, value, new FabricItemSettings().stacksTo(1))))
           .ifPresent(list::add);
 
       Optional.ofNullable(RegistryUtil.register(
               config.isJukeboxBoatOn,
-              Registries.ITEM,
+              BuiltInRegistries.ITEM,
               boatId(value, "jukebox"),
               () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_JUKEBOX, value, new FabricItemSettings().maxCount(1))))
+                  BoatEntities.BOAT_WITH_JUKEBOX, value, new FabricItemSettings().stacksTo(1))))
           .ifPresent(list::add);
 
       Optional.ofNullable(RegistryUtil.register(
               config.isTNTBoatOn,
-              Registries.ITEM,
+              BuiltInRegistries.ITEM,
               boatId(value, "tnt"),
               () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_TNT, value, new FabricItemSettings().maxCount(1))))
+                  BoatEntities.BOAT_WITH_TNT, value, new FabricItemSettings().stacksTo(1))))
           .ifPresent(list::add);
 
       Optional.ofNullable(RegistryUtil.register(
               config.isHopperBoatOn,
-              Registries.ITEM,
+              BuiltInRegistries.ITEM,
               boatId(value, "hopper"),
               () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().maxCount(1))))
+                  BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().stacksTo(1))))
           .ifPresent(list::add);
     }
-    AndromedaItemGroup.BUS.listen(acceptor -> acceptor.items(module, ItemGroups.TOOLS, list));
+    AndromedaItemGroup.BUS.listen(acceptor -> acceptor.items(module, CreativeModeTabs.TOOLS_AND_UTILITIES, list));
   }
 
-  public static Identifier boatId(BoatEntity.Type type, String boat) {
+  public static ResourceLocation boatId(Boat.Type type, String boat) {
     return id(type.getName().replace(":", "_") + "_boat_with_" + boat);
   }
 }

@@ -2,7 +2,7 @@ package me.melontini.andromeda.common.util.commander.bool;
 
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 public record ConstantBooleanIntermediary(boolean value) implements BooleanIntermediary {
 

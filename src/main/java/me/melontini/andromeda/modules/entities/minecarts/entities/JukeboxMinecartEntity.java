@@ -6,37 +6,37 @@ import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.MusicDiscItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Clearable;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.RecordItem;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 
-public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Clearable {
+public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable {
 
   public ItemStack record = ItemStack.EMPTY;
 
   public JukeboxMinecartEntity(
-      EntityType<? extends JukeboxMinecartEntity> entityType, World world) {
+          EntityType<? extends JukeboxMinecartEntity> entityType, Level world) {
     super(entityType, world);
   }
 
-  public JukeboxMinecartEntity(World world, double x, double y, double z) {
+  public JukeboxMinecartEntity(Level world, double x, double y, double z) {
     super(MinecartEntities.JUKEBOX_MINECART_ENTITY.orThrow(), world, x, y, z);
   }
 
@@ -46,44 +46,44 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
   }
 
   @Override
-  public void onActivatorRail(int x, int y, int z, boolean powered) {
+  public void activateMinecart(int x, int y, int z, boolean powered) {
     if (powered && !this.record.isEmpty()) {
       ItemStackUtil.spawnVelocity(
-          new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()),
+          new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
           this.record,
-          this.world,
+          this.level,
           -0.2,
           0.2,
           0.1,
           0.2,
           -0.2,
           0.2);
-      this.clear();
+      this.clearContent();
       this.stopPlaying();
     }
   }
 
   @Override
-  public boolean damage(DamageSource source, float amount) {
-    if (this.world.isClient || this.isRemoved()) {
+  public boolean hurt(DamageSource source, float amount) {
+    if (this.level.isClientSide || this.isRemoved()) {
       return true;
     } else if (this.isInvulnerableTo(source)) {
       return false;
     } else {
-      this.setDamageWobbleSide(-this.getDamageWobbleSide());
-      this.setDamageWobbleTicks(10);
-      this.scheduleVelocityUpdate();
-      this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
-      this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+      this.setHurtDir(-this.getHurtDir());
+      this.setHurtTime(10);
+      this.markHurt();
+      this.setDamage(this.getDamage() + amount * 10.0F);
+      this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
       boolean isCreativePlayer =
-          source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode;
-      if (isCreativePlayer || this.getDamageWobbleStrength() > 40.0F) {
-        this.removeAllPassengers();
+          source.getEntity() instanceof Player player && player.getAbilities().instabuild;
+      if (isCreativePlayer || this.getDamage() > 40.0F) {
+        this.ejectPassengers();
         this.stopPlaying();
         if (isCreativePlayer && !this.hasCustomName()) {
           this.discard();
         } else {
-          this.dropItems(source);
+          this.destroy(source);
         }
       }
 
@@ -92,10 +92,10 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
   }
 
   @Override
-  public void dropItems(DamageSource damageSource) {
-    super.dropItems(damageSource);
-    if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-      this.dropItem(record.getItem());
+  public void destroy(DamageSource damageSource) {
+    super.destroy(damageSource);
+    if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+      this.spawnAtLocation(record.getItem());
     }
   }
 
@@ -106,14 +106,14 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
   }
 
   @Override
-  public ActionResult interact(PlayerEntity player, Hand hand) {
-    ItemStack stackInHand = player.getStackInHand(hand);
-    if (!world.isClient())
+  public InteractionResult interact(Player player, InteractionHand hand) {
+    ItemStack stackInHand = player.getItemInHand(hand);
+    if (!level.isClientSide())
       if (!this.record.isEmpty()) {
         ItemStackUtil.spawnVelocity(
-            new Vec3d(this.getX(), this.getY() + 0.5, this.getZ()),
+            new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
             this.record,
-            this.world,
+            this.level,
             -0.2,
             0.2,
             0.1,
@@ -121,65 +121,65 @@ public class JukeboxMinecartEntity extends AbstractMinecartEntity implements Cle
             -0.2,
             0.2);
         this.stopPlaying();
-        this.clear();
-      } else if (stackInHand.getItem() instanceof MusicDiscItem) {
+        this.clearContent();
+      } else if (stackInHand.getItem() instanceof RecordItem) {
         this.record = stackInHand.copy();
         this.startPlaying();
-        stackInHand.decrement(1);
-        player.incrementStat(Stats.PLAY_RECORD);
+        stackInHand.shrink(1);
+        player.awardStat(Stats.PLAY_RECORD);
       }
-    return ActionResult.success(this.world.isClient);
+    return InteractionResult.sidedSuccess(this.level.isClientSide);
   }
 
   public void stopPlaying() {
-    PacketByteBuf buf = PacketByteBufs.create().writeUuid(this.getUuid());
+    FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());
 
-    for (PlayerEntity player1 : world.getPlayers()) {
+    for (Player player1 : level.players()) {
       ServerPlayNetworking.send(
-          (ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
+          (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
     }
   }
 
   public void startPlaying() {
-    PacketByteBuf buf = PacketByteBufs.create().writeUuid(this.uuid).writeItemStack(this.record);
+    FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.uuid).writeItem(this.record);
 
-    for (PlayerEntity player1 : world.getPlayers()) {
+    for (Player player1 : level.players()) {
       ServerPlayNetworking.send(
-          (ServerPlayerEntity) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
+          (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
     }
   }
 
   @Override
-  public void readCustomDataFromNbt(NbtCompound nbt) {
-    super.readCustomDataFromNbt(nbt);
+  public void readAdditionalSaveData(CompoundTag nbt) {
+    super.readAdditionalSaveData(nbt);
     if (nbt.contains("Items", 10)) {
-      this.record = ItemStack.fromNbt(nbt.getCompound("Items"));
+      this.record = ItemStack.of(nbt.getCompound("Items"));
     }
   }
 
   @Override
-  public void writeCustomDataToNbt(NbtCompound nbt) {
-    super.writeCustomDataToNbt(nbt);
-    if (!this.record.isEmpty()) nbt.put("Items", this.record.writeNbt(new NbtCompound()));
+  public void addAdditionalSaveData(CompoundTag nbt) {
+    super.addAdditionalSaveData(nbt);
+    if (!this.record.isEmpty()) nbt.put("Items", this.record.save(new CompoundTag()));
   }
 
   @Override
-  public Item getItem() {
+  public Item getDropItem() {
     return MinecartItems.JUKEBOX_MINECART.orThrow();
   }
 
   @Override
-  public BlockState getDefaultContainedBlock() {
-    return Blocks.JUKEBOX.getDefaultState();
+  public BlockState getDefaultDisplayBlockState() {
+    return Blocks.JUKEBOX.defaultBlockState();
   }
 
   @Override
-  public ItemStack getPickBlockStack() {
+  public ItemStack getPickResult() {
     return new ItemStack(MinecartItems.JUKEBOX_MINECART.orThrow());
   }
 
   @Override
-  public void clear() {
+  public void clearContent() {
     this.record = ItemStack.EMPTY;
   }
 }

@@ -3,13 +3,13 @@ package me.melontini.andromeda.modules.world.crop_temperature.mixin;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperature;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BoneMealItem;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.BoneMealItem;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,12 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BoneMealItem.class)
 abstract class BoneMealItemMixin {
 
-  @Inject(at = @At("HEAD"), method = "useOnBlock", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "useOn", cancellable = true)
   private void andromeda$useOnFertilizable(
-      ItemUsageContext ctx, CallbackInfoReturnable<ActionResult> cir) {
-    World world = ctx.getWorld();
-    BlockPos pos = ctx.getBlockPos();
-    if (world.isClient()) return;
+          UseOnContext ctx, CallbackInfoReturnable<InteractionResult> cir) {
+    Level world = ctx.getLevel();
+    BlockPos pos = ctx.getClickedPos();
+    if (world.isClientSide()) return;
 
     BlockState state = world.getBlockState(pos);
     if (world
@@ -32,8 +32,8 @@ abstract class BoneMealItemMixin {
         .asBoolean(
             LootContextBuilder.block(world, builder -> builder.origin(pos).state(state)))) {
       if (!PlantTemperatureData.roll(
-          pos, state, world.getBiome(pos).value().getTemperature(), (ServerWorld) world)) {
-        cir.setReturnValue(ActionResult.FAIL);
+          pos, state, world.getBiome(pos).value().getBaseTemperature(), (ServerLevel) world)) {
+        cir.setReturnValue(InteractionResult.FAIL);
       }
     }
   }

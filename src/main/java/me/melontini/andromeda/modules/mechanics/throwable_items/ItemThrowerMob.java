@@ -1,6 +1,6 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public interface ItemThrowerMob<T extends LivingEntity> {
 

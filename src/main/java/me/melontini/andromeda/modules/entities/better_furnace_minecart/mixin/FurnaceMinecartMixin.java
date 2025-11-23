@@ -3,13 +3,13 @@ package me.melontini.andromeda.modules.entities.better_furnace_minecart.mixin;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.MinecartFurnace;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(FurnaceMinecartEntity.class)
+@Mixin(MinecartFurnace.class)
 abstract class FurnaceMinecartMixin {
 
   @Shadow
@@ -26,19 +26,19 @@ abstract class FurnaceMinecartMixin {
 
   @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
   public void andromeda$interact(
-      PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-    ItemStack stack = player.getStackInHand(hand);
+          Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    ItemStack stack = player.getItemInHand(hand);
     Item item = stack.getItem();
 
-    FurnaceMinecartEntity furnaceMinecart = (FurnaceMinecartEntity) (Object) this;
+    MinecartFurnace furnaceMinecart = (MinecartFurnace) (Object) this;
     if (FuelRegistry.INSTANCE.get(item) != null) {
       int itemFuel = FuelRegistry.INSTANCE.get(item);
       if ((this.fuel + (itemFuel * 2.25))
           <= Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
-        if (!player.getAbilities().creativeMode) {
+        if (!player.getAbilities().instabuild) {
           ItemStack reminder = stack.getRecipeRemainder();
-          if (!reminder.isEmpty()) player.getInventory().offerOrDrop(stack.getRecipeRemainder());
-          stack.decrement(1);
+          if (!reminder.isEmpty()) player.getInventory().placeItemBackInInventory(stack.getRecipeRemainder());
+          stack.shrink(1);
         }
 
         this.fuel += (int) (itemFuel * 2.25);
@@ -46,25 +46,25 @@ abstract class FurnaceMinecartMixin {
     }
 
     if (this.fuel > 0) {
-      furnaceMinecart.pushX = furnaceMinecart.getX() - player.getX();
-      furnaceMinecart.pushZ = furnaceMinecart.getZ() - player.getZ();
+      furnaceMinecart.xPush = furnaceMinecart.getX() - player.getX();
+      furnaceMinecart.zPush = furnaceMinecart.getZ() - player.getZ();
     }
 
-    cir.setReturnValue(ActionResult.success(furnaceMinecart.world.isClient));
+    cir.setReturnValue(InteractionResult.sidedSuccess(furnaceMinecart.level.isClientSide));
   }
 
   @Redirect(
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/nbt/NbtCompound;putShort(Ljava/lang/String;S)V"),
-      method = "writeCustomDataToNbt")
-  private void andromeda$fuelIntToNbt(NbtCompound nbt, String key, short value /* short */) {
+              target = "Lnet/minecraft/nbt/CompoundTag;putShort(Ljava/lang/String;S)V"),
+      method = "addAdditionalSaveData")
+  private void andromeda$fuelIntToNbt(CompoundTag nbt, String key, short value /* short */) {
     nbt.putInt(key, this.fuel);
   }
 
-  @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
-  public void andromeda$fuelIntFromNbt(NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
+  public void andromeda$fuelIntFromNbt(CompoundTag nbt, CallbackInfo ci) {
     this.fuel = nbt.getInt("Fuel");
   }
 }

@@ -1,17 +1,17 @@
 package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
 import me.melontini.andromeda.modules.mechanics.throwable_items.FlyingItemEntity;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import com.mojang.math.Axis;
 import org.joml.Quaternionf;
 
 public class FlyingItemEntityRenderer extends EntityRenderer<FlyingItemEntity> {
@@ -21,50 +21,50 @@ public class FlyingItemEntityRenderer extends EntityRenderer<FlyingItemEntity> {
   private final float scale;
   private final boolean lit;
 
-  public FlyingItemEntityRenderer(EntityRendererFactory.Context ctx, float scale, boolean lit) {
+  public FlyingItemEntityRenderer(EntityRendererProvider.Context ctx, float scale, boolean lit) {
     super(ctx);
     this.itemRenderer = ctx.getItemRenderer();
     this.scale = scale;
     this.lit = lit;
   }
 
-  public FlyingItemEntityRenderer(EntityRendererFactory.Context context) {
+  public FlyingItemEntityRenderer(EntityRendererProvider.Context context) {
     this(context, 1.0F, false);
   }
 
   @Override
-  protected int getBlockLight(FlyingItemEntity entity, BlockPos pos) {
-    return this.lit ? 15 : super.getBlockLight(entity, pos);
+  protected int getBlockLightLevel(FlyingItemEntity entity, BlockPos pos) {
+    return this.lit ? 15 : super.getBlockLightLevel(entity, pos);
   }
 
   @Override
   public void render(
-      FlyingItemEntity entity,
-      float yaw,
-      float tickDelta,
-      MatrixStack matrices,
-      VertexConsumerProvider vertexConsumers,
-      int light) {
-    if (entity.age >= 2
-        || !(this.dispatcher.camera.getFocusedEntity().squaredDistanceTo(entity) < MIN_DISTANCE)) {
-      matrices.push();
+          FlyingItemEntity entity,
+          float yaw,
+          float tickDelta,
+          PoseStack matrices,
+          MultiBufferSource vertexConsumers,
+          int light) {
+    if (entity.tickCount >= 2
+        || !(this.entityRenderDispatcher.camera.getEntity().distanceToSqr(entity) < MIN_DISTANCE)) {
+      matrices.pushPose();
       matrices.scale(this.scale, this.scale, this.scale);
       var quaternion = new Quaternionf(0, 0, 0, 1);
       quaternion = hamiltonProduct(
-          quaternion, RotationAxis.POSITIVE_Y.rotationDegrees(entity.getYaw(tickDelta)));
+          quaternion, Axis.YP.rotationDegrees(entity.getViewYRot(tickDelta)));
       quaternion = hamiltonProduct(
-          quaternion, RotationAxis.POSITIVE_X.rotationDegrees(entity.getPitch(tickDelta)));
-      matrices.multiply(quaternion);
-      this.itemRenderer.renderItem(
-          entity.getStack(),
-          ModelTransformationMode.GROUND,
+          quaternion, Axis.XP.rotationDegrees(entity.getViewXRot(tickDelta)));
+      matrices.mulPose(quaternion);
+      this.itemRenderer.renderStatic(
+          entity.getItem(),
+          ItemDisplayContext.GROUND,
           light,
-          OverlayTexture.DEFAULT_UV,
+          OverlayTexture.NO_OVERLAY,
           matrices,
           vertexConsumers,
-          entity.getWorld(),
+          entity.level(),
           entity.getId());
-      matrices.pop();
+      matrices.popPose();
       super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
   }
@@ -86,7 +86,7 @@ public class FlyingItemEntityRenderer extends EntityRenderer<FlyingItemEntity> {
   }
 
   @Override
-  public Identifier getTexture(FlyingItemEntity entity) {
-    return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+  public ResourceLocation getTextureLocation(FlyingItemEntity entity) {
+    return TextureAtlas.LOCATION_BLOCKS;
   }
 }

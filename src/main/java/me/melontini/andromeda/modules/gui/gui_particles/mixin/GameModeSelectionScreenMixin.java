@@ -9,15 +9,15 @@ import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.GameModeSelectionScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,48 +25,48 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GameModeSelectionScreen.class)
+@Mixin(GameModeSwitcherScreen.class)
 abstract class GameModeSelectionScreenMixin extends Screen {
 
   @Shadow
   protected abstract void init();
 
   @Unique private static final List<ItemStack> ANDROMEDA$ADVENTURE = Lists.newArrayList(
-      Items.COMPASS.getDefaultStack(),
-      Items.MAP.getDefaultStack(),
-      Items.FILLED_MAP.getDefaultStack());
+      Items.COMPASS.getDefaultInstance(),
+      Items.MAP.getDefaultInstance(),
+      Items.FILLED_MAP.getDefaultInstance());
 
   @Unique private static final List<ItemStack> ANDROMEDA$SURVIVAL = Lists.newArrayList(
-      Items.IRON_SWORD.getDefaultStack(),
-      Items.APPLE.getDefaultStack(),
-      Items.DIAMOND.getDefaultStack(),
-      Items.LEATHER_BOOTS.getDefaultStack(),
-      Items.ROTTEN_FLESH.getDefaultStack(),
-      Items.ENDER_PEARL.getDefaultStack());
+      Items.IRON_SWORD.getDefaultInstance(),
+      Items.APPLE.getDefaultInstance(),
+      Items.DIAMOND.getDefaultInstance(),
+      Items.LEATHER_BOOTS.getDefaultInstance(),
+      Items.ROTTEN_FLESH.getDefaultInstance(),
+      Items.ENDER_PEARL.getDefaultInstance());
 
   @Unique private static final List<ItemStack> ANDROMEDA$SPECTATOR =
-      Lists.newArrayList(Items.ENDER_EYE.getDefaultStack());
+      Lists.newArrayList(Items.ENDER_EYE.getDefaultInstance());
 
-  @Unique private static final Map<GameModeSelectionScreen.GameModeSelection, Supplier<ItemStack>>
+  @Unique private static final Map<GameModeSwitcherScreen.GameModeIcon, Supplier<ItemStack>>
       ANDROMEDA$GAME_MODE_STACKS =
-          Utilities.supply(new EnumMap<>(GameModeSelectionScreen.GameModeSelection.class), map -> {
-            map.put(GameModeSelectionScreen.GameModeSelection.CREATIVE, () -> Registries.ITEM
-                .getRandom(Random.create())
+          Utilities.supply(new EnumMap<>(GameModeSwitcherScreen.GameModeIcon.class), map -> {
+            map.put(GameModeSwitcherScreen.GameModeIcon.CREATIVE, () -> BuiltInRegistries.ITEM
+                .getRandom(RandomSource.create())
                 .orElseThrow()
                 .value()
-                .getDefaultStack());
+                .getDefaultInstance());
             map.put(
-                GameModeSelectionScreen.GameModeSelection.ADVENTURE,
+                GameModeSwitcherScreen.GameModeIcon.ADVENTURE,
                 () -> Utilities.pickAtRandom(ANDROMEDA$ADVENTURE));
             map.put(
-                GameModeSelectionScreen.GameModeSelection.SURVIVAL,
+                GameModeSwitcherScreen.GameModeIcon.SURVIVAL,
                 () -> Utilities.pickAtRandom(ANDROMEDA$SURVIVAL));
             map.put(
-                GameModeSelectionScreen.GameModeSelection.SPECTATOR,
+                GameModeSwitcherScreen.GameModeIcon.SPECTATOR,
                 () -> Utilities.pickAtRandom(ANDROMEDA$SPECTATOR));
           });
 
-  protected GameModeSelectionScreenMixin(Text title) {
+  protected GameModeSelectionScreenMixin(Component title) {
     super(title);
   }
 
@@ -75,23 +75,23 @@ abstract class GameModeSelectionScreenMixin extends Screen {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendCommand(Ljava/lang/String;)Z",
+                      "Lnet/minecraft/client/multiplayer/ClientPacketListener;sendUnsignedCommand(Ljava/lang/String;)Z",
               shift = At.Shift.BEFORE),
       method =
-          "apply(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;)V")
+              "switchToHoveredGameMode(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;)V")
   private static void andromeda$gmSwitchParticles(
-      MinecraftClient client, GameModeSelectionScreen.GameModeSelection gameMode, CallbackInfo ci) {
+          Minecraft client, GameModeSwitcherScreen.GameModeIcon gameMode, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).gameModeSwitcherParticles) return;
 
-    if (client.currentScreen instanceof GameModeSelectionScreen gameModeSelectionScreen) {
-      List<GameModeSelectionScreen.ButtonWidget> buttonWidgets =
-          new ArrayList<>(gameModeSelectionScreen.gameModeButtons);
-      buttonWidgets.removeIf(buttonWidget -> buttonWidget.gameMode != gameMode);
-      Optional<GameModeSelectionScreen.ButtonWidget> optional =
+    if (client.screen instanceof GameModeSwitcherScreen gameModeSelectionScreen) {
+      List<GameModeSwitcherScreen.GameModeSlot> buttonWidgets =
+          new ArrayList<>(gameModeSelectionScreen.slots);
+      buttonWidgets.removeIf(buttonWidget -> buttonWidget.icon != gameMode);
+      Optional<GameModeSwitcherScreen.GameModeSlot> optional =
           buttonWidgets.stream().findFirst();
 
       if (optional.isPresent()) {
-        GameModeSelectionScreen.ButtonWidget widget = optional.get();
+        GameModeSwitcherScreen.GameModeSlot widget = optional.get();
         double x = widget.getX() + widget.getWidth() / 2d;
         double y = widget.getY() + widget.getHeight() / 2d;
 

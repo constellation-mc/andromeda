@@ -6,7 +6,7 @@ import me.melontini.andromeda.common.util.commander.number.constant.ConstantLong
 import me.melontini.andromeda.common.util.commander.number.expression.CommanderLongIntermediary;
 import me.melontini.commander.api.expression.LongExpression;
 import me.melontini.dark_matter.api.base.util.Support;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 public interface LongIntermediary {
 

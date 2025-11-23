@@ -23,21 +23,26 @@ import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
-import net.minecraft.block.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.GrowingPlantBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public final class PlantTemperatureData {
 
   private static final Codec<OldHolder> OLD_CODEC = RecordCodecBuilder.create(data -> data.group(
           ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(OldHolder::replace),
-          ExtraCodecs.list(Registries.BLOCK.getCodec())
+          ExtraCodecs.list(BuiltInRegistries.BLOCK.byNameCodec())
               .fieldOf("identifier")
               .forGetter(OldHolder::blocks),
           Codec.FLOAT.fieldOf("min").forGetter(o -> o.temperatures()[1]),
@@ -60,7 +65,7 @@ public final class PlantTemperatureData {
 
   private static final Codec<NewHolder> BASE_HOLDER = RecordCodecBuilder.create(data -> data.group(
           ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(NewHolder::replace),
-          Codec.unboundedMap(Registries.BLOCK.getCodec(), FLOAT_ARRAY_CODEC)
+          Codec.unboundedMap(BuiltInRegistries.BLOCK.byNameCodec(), FLOAT_ARRAY_CODEC)
               .fieldOf("entries")
               .forGetter(NewHolder::temperatures))
       .apply(data, NewHolder::new));
@@ -84,7 +89,7 @@ public final class PlantTemperatureData {
   public static final ReloaderType<Reloader> RELOADER =
       ReloaderType.create(Andromeda.id("crop_temperatures"));
 
-  public static boolean roll(BlockPos pos, BlockState state, float temp, ServerWorld world) {
+  public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
     if (isPlant(state.getBlock())) {
       float[] data = world.getServer().dm$getReloader(RELOADER).get(state.getBlock());
       if (data != null) {
@@ -108,9 +113,9 @@ public final class PlantTemperatureData {
   record NewHolder(boolean replace, Map<Block, float[]> temperatures) {}
 
   public static boolean isPlant(Block block) {
-    return block instanceof PlantBlock
-        || block instanceof AbstractPlantPartBlock
-        || block instanceof Fertilizable;
+    return block instanceof BushBlock
+        || block instanceof GrowingPlantBlock
+        || block instanceof BonemealableBlock;
   }
 
   public static void init() {
@@ -120,15 +125,15 @@ public final class PlantTemperatureData {
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
     String mapped = Mapper.mapMethod(
-        AbstractBlock.class,
+        BlockBehaviour.class,
         "method_9514",
         MethodType.methodType(
-            void.class, BlockState.class, ServerWorld.class, BlockPos.class, Random.class));
+            void.class, BlockState.class, ServerLevel.class, BlockPos.class, RandomSource.class));
 
     List<Block> override = new ArrayList<>();
     List<Block> blocks = new ArrayList<>();
 
-    Registries.BLOCK.forEach(block -> {
+    BuiltInRegistries.BLOCK.forEach(block -> {
       if (isPlant(block) && reloader.get(block) == null) {
         if (methodInHierarchyUntil(block.getClass(), mapped, Block.class)) {
           override.add(block);
@@ -143,13 +148,13 @@ public final class PlantTemperatureData {
           .logger()
           .warn(
               "Missing crop temperatures: {}",
-              override.stream().map(Registries.BLOCK::getId).sorted().toList());
+              override.stream().map(BuiltInRegistries.BLOCK::getKey).sorted().toList());
     if (!blocks.isEmpty())
       module
           .logger()
           .warn(
               "Possible missing crop temperatures: {}",
-              blocks.stream().map(Registries.BLOCK::getId).sorted().toList());
+              blocks.stream().map(BuiltInRegistries.BLOCK::getKey).sorted().toList());
   }
 
   private static boolean methodInHierarchyUntil(Class<?> cls, String name, Class<?> stopClass) {
@@ -177,7 +182,7 @@ public final class PlantTemperatureData {
 
     @Override
     protected void apply(
-        Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
+            Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
       IdentityHashMap<Block, float[]> replace = new IdentityHashMap<>();
       IdentityHashMap<Block, float[]> result = new IdentityHashMap<>();
       Maps.transformValues(

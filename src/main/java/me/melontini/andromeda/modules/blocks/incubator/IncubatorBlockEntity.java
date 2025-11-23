@@ -18,33 +18,33 @@ import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
-public class IncubatorBlockEntity extends BlockEntity implements SidedInventory {
+public class IncubatorBlockEntity extends BlockEntity implements WorldlyContainer {
 
-  public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
+  public NonNullList<ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
   public int processingTime = -1;
 
   public IncubatorBlockEntity(BlockPos pos, BlockState state) {
@@ -53,14 +53,14 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
 
   @SuppressWarnings("unused")
   public static void tick(
-      World world, BlockPos pos, BlockState state, IncubatorBlockEntity incubatorBlockEntity) {
+          Level world, BlockPos pos, BlockState state, IncubatorBlockEntity incubatorBlockEntity) {
     incubatorBlockEntity.tick(world, state);
   }
 
-  public void tick(World world, BlockState state) {
+  public void tick(Level world, BlockState state) {
     if (this.processingTime > 0) this.tickProcessingTime(world);
 
-    if (world.isClient()) return;
+    if (world.isClientSide()) return;
     ItemStack stack = this.inventory.get(0);
     if (!stack.isEmpty() && this.processingTime == -1) {
       EggProcessingData data = requireNonNull(world.getServer())
@@ -78,19 +78,19 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
       this.update(state);
     }
 
-    if (this.processingTime == 0) this.spawnResult(stack, (ServerWorld) world, state);
+    if (this.processingTime == 0) this.spawnResult(stack, (ServerLevel) world, state);
   }
 
   private int getTime(Arithmetica arithmetica, ItemStack stack) {
     if (arithmetica.toSource().left().isPresent()) return arithmetica.asInt(null);
 
     var supplier = LootContextBuilder.block(
-        world,
-        builder -> builder.origin(pos).state(getCachedState()).tool(stack).blockEntity(this));
+            level,
+        builder -> builder.origin(worldPosition).state(getBlockState()).tool(stack).blockEntity(this));
     return arithmetica.asInt(supplier.get());
   }
 
-  private void spawnResult(ItemStack stack, ServerWorld world, BlockState state) {
+  private void spawnResult(ItemStack stack, ServerLevel world, BlockState state) {
     EggProcessingData data =
         world.getServer().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
     if (data != null) {
@@ -98,15 +98,15 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
           data.entity().shuffle().stream().findFirst().orElseThrow();
       Entity entity = entry.type().create(world);
       if (entity != null) {
-        entity.readNbt(entry.nbt());
-        BlockPos entityPos = pos.offset(state.get(IncubatorBlock.FACING));
-        entity.setPos(entityPos.getX() + 0.5, entityPos.getY() + 0.5, entityPos.getZ() + 0.5);
-        if (entity instanceof PassiveEntity passive) passive.setBaby(true);
+        entity.load(entry.nbt());
+        BlockPos entityPos = worldPosition.relative(state.getValue(IncubatorBlock.FACING));
+        entity.setPosRaw(entityPos.getX() + 0.5, entityPos.getY() + 0.5, entityPos.getZ() + 0.5);
+        if (entity instanceof AgeableMob passive) passive.setBaby(true);
 
-        world.spawnEntity(entity);
+        world.addFreshEntity(entity);
         executeCommands(entry, world, stack, entity);
 
-        stack.decrement(1);
+        stack.shrink(1);
       }
     }
     this.processingTime = -1;
@@ -114,12 +114,12 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
   }
 
   private void executeCommands(
-      EggProcessingData.Entry entry, ServerWorld world, ItemStack stack, Entity entity) {
+          EggProcessingData.Entry entry, ServerLevel world, ItemStack stack, Entity entity) {
     if (entry.commands().isEmpty()) return;
 
     var supplier = LootContextBuilder.block(world, builder -> builder
-        .origin(getPos())
-        .state(getCachedState())
+        .origin(getBlockPos())
+        .state(getBlockState())
         .tool(stack)
         .thisEntity(entity)
         .blockEntity(this));
@@ -133,93 +133,93 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
 
   private boolean isLitCampfire(BlockState state) {
     if (!(state.getBlock() instanceof CampfireBlock)) return false;
-    return state.get(CampfireBlock.LIT);
+    return state.getValue(CampfireBlock.LIT);
   }
 
-  private void tickProcessingTime(World world) {
-    BlockState state = world.getBlockState(pos.down());
-    if (!isLitCampfire(state)) state = world.getBlockState(pos.down().down());
+  private void tickProcessingTime(Level world) {
+    BlockState state = world.getBlockState(worldPosition.below());
+    if (!isLitCampfire(state)) state = world.getBlockState(worldPosition.below().below());
     if (!isLitCampfire(state)) return;
 
-    if (world.isClient && world.random.nextInt(4) == 0) {
+    if (world.isClientSide && world.random.nextInt(4) == 0) {
       double i = MathUtil.threadRandom().nextDouble(0.6) - 0.3;
       double j = MathUtil.threadRandom().nextDouble(0.6) - 0.3;
       world.addParticle(
           ParticleTypes.SMOKE,
-          (pos.getX() + 0.5) + i,
-          pos.getY() + 0.5,
-          (pos.getZ() + 0.5) + j,
+          (worldPosition.getX() + 0.5) + i,
+          worldPosition.getY() + 0.5,
+          (worldPosition.getZ() + 0.5) + j,
           0F,
           0.07F,
           0F);
       return;
     }
-    if (!world.isClient) this.processingTime--;
+    if (!world.isClientSide) this.processingTime--;
   }
 
   private void update(BlockState state) {
-    MakeSure.notNull(world).updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
-    markDirty();
+    MakeSure.notNull(level).sendBlockUpdated(worldPosition, state, state, Block.UPDATE_CLIENTS);
+    setChanged();
   }
 
   @Override
-  public Packet<ClientPlayPacketListener> toUpdatePacket() {
-    return BlockEntityUpdateS2CPacket.create(this);
+  public Packet<ClientGamePacketListener> getUpdatePacket() {
+    return ClientboundBlockEntityDataPacket.create(this);
   }
 
   @Override
-  public NbtCompound toInitialChunkDataNbt() {
-    NbtCompound nbt = new NbtCompound();
-    this.writeNbt(nbt);
+  public CompoundTag getUpdateTag() {
+    CompoundTag nbt = new CompoundTag();
+    this.saveAdditional(nbt);
     return nbt;
   }
 
-  public ActionResult insertEgg(ItemStack stack) {
+  public InteractionResult insertEgg(ItemStack stack) {
     try (Transaction transaction = Transaction.openOuter()) {
       var storage = InventoryStorage.of(this, null);
       long i = StorageUtil.tryInsertStacking(
           storage, ItemVariant.of(stack), stack.getCount(), transaction);
       if (i > 0) {
         transaction.commit();
-        this.markDirty();
+        this.setChanged();
         stack.setCount((int) (stack.getCount() - i));
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
       }
-      return ActionResult.CONSUME;
+      return InteractionResult.CONSUME;
     }
   }
 
-  public ActionResult extractEgg(PlayerEntity player) {
+  public InteractionResult extractEgg(Player player) {
     try (Transaction transaction = Transaction.openOuter()) {
       var storage = InventoryStorage.of(this, null);
       var ra = StorageUtil.extractAny(storage, Long.MAX_VALUE, transaction);
       if (ra != null && ra.amount() > 0) {
         transaction.commit();
-        this.markDirty();
-        player.getInventory().offerOrDrop(ra.resource().toStack((int) ra.amount()));
-        return ActionResult.SUCCESS;
+        this.setChanged();
+        player.getInventory().placeItemBackInInventory(ra.resource().toStack((int) ra.amount()));
+        return InteractionResult.SUCCESS;
       }
-      return ActionResult.CONSUME;
+      return InteractionResult.CONSUME;
     }
   }
 
   @Override
-  public void readNbt(NbtCompound nbt) {
-    super.readNbt(nbt);
+  public void load(CompoundTag nbt) {
+    super.load(nbt);
     this.processingTime = nbt.getInt("ProcessingTime");
-    this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+    this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
     NbtUtil.readInventoryFromNbt(nbt, this);
   }
 
   @Override
-  public void writeNbt(NbtCompound nbt) {
-    super.writeNbt(nbt);
+  public void saveAdditional(CompoundTag nbt) {
+    super.saveAdditional(nbt);
     nbt.putInt("ProcessingTime", this.processingTime);
     NbtUtil.writeInventoryToNbt(nbt, this);
   }
 
   @Override
-  public int size() {
+  public int getContainerSize() {
     return 1;
   }
 
@@ -229,51 +229,51 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
   }
 
   @Override
-  public ItemStack getStack(int slot) {
+  public ItemStack getItem(int slot) {
     return inventory.get(slot);
   }
 
   @Override
-  public ItemStack removeStack(int slot, int amount) {
-    ItemStack itemStack = Inventories.splitStack(this.inventory, slot, amount);
+  public ItemStack removeItem(int slot, int amount) {
+    ItemStack itemStack = ContainerHelper.removeItem(this.inventory, slot, amount);
     if (!itemStack.isEmpty()) {
-      this.markDirty();
+      this.setChanged();
     }
 
     return itemStack;
   }
 
   @Override
-  public ItemStack removeStack(int slot) {
-    return Inventories.removeStack(this.inventory, slot);
+  public ItemStack removeItemNoUpdate(int slot) {
+    return ContainerHelper.takeItem(this.inventory, slot);
   }
 
   @Override
-  public void setStack(int slot, ItemStack stack) {
+  public void setItem(int slot, ItemStack stack) {
     this.inventory.set(slot, stack);
-    if (stack.getCount() > this.getMaxCountPerStack()) {
-      stack.setCount(this.getMaxCountPerStack());
+    if (stack.getCount() > this.getMaxStackSize()) {
+      stack.setCount(this.getMaxStackSize());
     }
   }
 
   @Override
-  public boolean canPlayerUse(PlayerEntity player) {
+  public boolean stillValid(Player player) {
     return false;
   }
 
   @Override
-  public void clear() {
+  public void clearContent() {
     inventory.clear();
   }
 
   @Override
-  public int[] getAvailableSlots(Direction side) {
+  public int[] getSlotsForFace(Direction side) {
     return new int[] {0};
   }
 
   @Override
-  public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-    return dir != MakeSure.notNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING)
+  public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction dir) {
+    return dir != MakeSure.notNull(level).getBlockState(this.worldPosition).getValue(IncubatorBlock.FACING)
         && requireNonNull(Andromeda.get().getCurrentServer())
                 .dm$getReloader(EggProcessingData.RELOADER)
                 .get(stack.getItem())
@@ -281,7 +281,7 @@ public class IncubatorBlockEntity extends BlockEntity implements SidedInventory 
   }
 
   @Override
-  public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-    return dir != Objects.requireNonNull(world).getBlockState(this.pos).get(IncubatorBlock.FACING);
+  public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
+    return dir != Objects.requireNonNull(level).getBlockState(this.worldPosition).getValue(IncubatorBlock.FACING);
   }
 }

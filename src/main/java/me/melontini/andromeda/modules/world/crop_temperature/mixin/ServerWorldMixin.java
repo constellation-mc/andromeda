@@ -2,14 +2,14 @@ package me.melontini.andromeda.modules.world.crop_temperature.mixin;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import me.melontini.andromeda.modules.world.crop_temperature.PlantTemperatureData;
-import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(ServerWorld.class)
+@Mixin(ServerLevel.class)
 abstract class ServerWorldMixin {
 
   @WrapWithCondition(
@@ -17,11 +17,11 @@ abstract class ServerWorldMixin {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;)V"),
+                      "Lnet/minecraft/world/level/block/state/BlockState;randomTick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V"),
       method = "tickChunk")
   private boolean andromeda$tickPlants(
-      BlockState state, ServerWorld world, BlockPos pos, Random random) {
+          BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
     return PlantTemperatureData.roll(
-        pos, state, world.getBiome(pos).value().getTemperature(), world);
+        pos, state, world.getBiome(pos).value().getBaseTemperature(), world);
   }
 }

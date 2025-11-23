@@ -5,13 +5,17 @@ import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
 import me.melontini.andromeda.modules.misc.unknown.Unknown;
-import net.minecraft.block.*;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.TallFlowerBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,18 +24,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(BeeEntity.class)
-abstract class BeeEntityMixin extends AnimalEntity {
+@Mixin(Bee.class)
+abstract class BeeEntityMixin extends Animal {
 
   @Shadow
-  @Nullable BlockPos flowerPos;
+  @Nullable BlockPos savedFlowerPos;
 
   @Shadow
-  BeeEntity.PollinateGoal pollinateGoal;
+  Bee.BeePollinateGoal beePollinateGoal;
 
   @Unique private int andromeda$plantingCoolDown;
 
-  protected BeeEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
+  protected BeeEntityMixin(EntityType<? extends Animal> entityType, Level world) {
     super(entityType, world);
   }
 
@@ -39,57 +43,57 @@ abstract class BeeEntityMixin extends AnimalEntity {
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/entity/passive/AnimalEntity;tick()V",
+              target = "Lnet/minecraft/world/entity/animal/Animal;tick()V",
               shift = At.Shift.AFTER),
       method = "tick")
   private void andromeda$tick(CallbackInfo ci) {
     if (this.andromeda$plantingCoolDown > 0) this.andromeda$plantingCoolDown--;
 
-    if (this.pollinateGoal != null) {
-      if (this.pollinateGoal.isRunning()
-          && this.pollinateGoal.completedPollination()
+    if (this.beePollinateGoal != null) {
+      if (this.beePollinateGoal.isPollinating()
+          && this.beePollinateGoal.hasPollinatedLongEnough()
           && this.andromeda$canPlant()) {
         this.andromeda$growFlower();
       }
     }
   }
 
-  @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
-  private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
+  private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
     if (this.andromeda$plantingCoolDown != 0)
       nbt.putInt("AM-plantingCoolDown", this.andromeda$plantingCoolDown);
   }
 
-  @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
-  private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
+  private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
     if (nbt.contains("AM-plantingCoolDown"))
       this.andromeda$plantingCoolDown = nbt.getInt("AM-plantingCoolDown");
   }
 
   @Unique private void andromeda$growFlower() {
-    if (this.flowerPos != null) {
-      BlockState flowerState = world.getBlockState(flowerPos);
-      var config = world.am$get(BeeFlowerDuplication.CONFIG);
+    if (this.savedFlowerPos != null) {
+      BlockState flowerState = level.getBlockState(savedFlowerPos);
+      var config = level.am$get(BeeFlowerDuplication.CONFIG);
       var supplier =
-          LootContextBuilder.block(world, builder -> builder.origin(getPos()).state(flowerState));
+          LootContextBuilder.block(level, builder -> builder.origin(position()).state(flowerState));
       if (!config.available.asBoolean(supplier)) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
-        andromeda$plantingCoolDown = world.random.nextBetween(3600, 6490);
+        andromeda$plantingCoolDown = level.random.nextIntBetweenInclusive(3600, 6490);
         for (int i = -2; i <= 2; i++) {
           for (int b = -2; b <= 2; b++) {
             for (int c = -2; c <= 2; c++) {
               BlockPos pos =
-                  new BlockPos(flowerPos.getX() + i, flowerPos.getY() + b, flowerPos.getZ() + c);
-              if (world.getBlockState(pos).getBlock() instanceof AirBlock
-                  && flowerBlock.canPlaceAt(flowerState, world, pos)) {
-                if (world.random.nextInt(12) == 0) {
+                  new BlockPos(savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
+              if (level.getBlockState(pos).getBlock() instanceof AirBlock
+                  && flowerBlock.canSurvive(flowerState, level, pos)) {
+                if (level.random.nextInt(12) == 0) {
                   if (ModuleManager.get().get(Unknown.class).isPresent()
-                      && world.random.nextInt(100) == 0) {
-                    world.setBlockState(
-                        pos, RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().getDefaultState());
+                      && level.random.nextInt(100) == 0) {
+                    level.setBlockAndUpdate(
+                        pos, RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().defaultBlockState());
                   } else {
-                    world.setBlockState(pos, flowerState);
+                    level.setBlockAndUpdate(pos, flowerState);
                   }
                 }
               }
@@ -98,16 +102,16 @@ abstract class BeeEntityMixin extends AnimalEntity {
         }
       } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock
           && config.tallFlowers.asBoolean(supplier)) {
-        andromeda$plantingCoolDown = world.random.nextBetween(3600, 8000);
+        andromeda$plantingCoolDown = level.random.nextIntBetweenInclusive(3600, 8000);
         for (int i = -1; i <= 1; i++) {
           for (int b = -2; b <= 2; b++) {
             for (int c = -1; c <= 1; c++) {
               BlockPos pos =
-                  new BlockPos(flowerPos.getX() + i, flowerPos.getY() + b, flowerPos.getZ() + c);
-              if (world.getBlockState(pos).getBlock() instanceof AirBlock
-                  && flowerBlock.canPlaceAt(flowerState, world, pos)) {
-                if (world.random.nextInt(6) == 0) {
-                  TallFlowerBlock.placeAt(world, flowerState, pos, Block.NOTIFY_LISTENERS);
+                  new BlockPos(savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
+              if (level.getBlockState(pos).getBlock() instanceof AirBlock
+                  && flowerBlock.canSurvive(flowerState, level, pos)) {
+                if (level.random.nextInt(6) == 0) {
+                  TallFlowerBlock.placeAt(level, flowerState, pos, Block.UPDATE_CLIENTS);
                 }
               }
             }

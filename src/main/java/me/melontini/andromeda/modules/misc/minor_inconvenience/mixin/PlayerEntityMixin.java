@@ -4,27 +4,27 @@ import java.util.Objects;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.misc.minor_inconvenience.MinorInconvenience;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 abstract class PlayerEntityMixin extends LivingEntity {
 
-  @Unique private static final RegistryKey<DamageType> AGONY =
-      Andromeda.key(RegistryKeys.DAMAGE_TYPE, "agony");
+  @Unique private static final ResourceKey<DamageType> AGONY =
+      Andromeda.key(Registries.DAMAGE_TYPE, "agony");
 
-  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
     super(entityType, world);
   }
 
@@ -33,27 +33,27 @@ abstract class PlayerEntityMixin extends LivingEntity {
           @At(
               value = "INVOKE",
               target =
-                  "net/minecraft/entity/LivingEntity.damage (Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                  "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
               shift = At.Shift.BEFORE),
-      method = "damage",
+      method = "hurt",
       cancellable = true)
   private void andromeda$damage(
-      DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-    if (!world.isClient
-        && !source.isOf(AGONY)
-        && world
+          DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    if (!level.isClientSide
+        && !source.is(AGONY)
+        && level
             .am$get(MinorInconvenience.CONFIG)
             .available
-            .asBoolean(LootContextBuilder.entity(world, builder -> builder
-                .origin(Objects.requireNonNullElse(source.getPosition(), this.getPos()))
+            .asBoolean(LootContextBuilder.entity(level, builder -> builder
+                .origin(Objects.requireNonNullElse(source.getSourcePosition(), this.position()))
                 .thisEntity(this)
                 .sourceOrGeneric(source)
-                .killer(source.getAttacker())
-                .directKiller(source.getSource())))) {
-      DamageSource damageSource = this.getWorld().getDamageSources().create(AGONY, this);
-      super.damage(damageSource, Float.MAX_VALUE);
-      this.getWorld()
-          .createExplosion(
+                .killer(source.getEntity())
+                .directKiller(source.getDirectEntity())))) {
+      DamageSource damageSource = this.level().damageSources().source(AGONY, this);
+      super.hurt(damageSource, Float.MAX_VALUE);
+      this.level()
+          .explode(
               null,
               damageSource,
               null,
@@ -62,7 +62,7 @@ abstract class PlayerEntityMixin extends LivingEntity {
               this.getBlockZ() + 0.5,
               5.0F,
               true,
-              World.ExplosionSourceType.MOB);
+              Level.ExplosionInteraction.MOB);
       cir.setReturnValue(false);
     }
   }

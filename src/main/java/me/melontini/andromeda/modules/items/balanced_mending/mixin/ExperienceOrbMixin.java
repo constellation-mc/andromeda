@@ -1,18 +1,18 @@
 package me.melontini.andromeda.modules.items.balanced_mending.mixin;
 
-import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ExperienceOrbEntity.class)
+@Mixin(ExperienceOrb.class)
 abstract class ExperienceOrbMixin {
 
-  @Inject(at = @At("HEAD"), method = "repairPlayerGears", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "repairPlayerItems", cancellable = true)
   private void andromeda$repair(
-      PlayerEntity player, int amount, CallbackInfoReturnable<Integer> cir) {
+          Player player, int amount, CallbackInfoReturnable<Integer> cir) {
     cir.setReturnValue(amount);
   }
 }

@@ -3,18 +3,18 @@ package me.melontini.andromeda.modules.blocks.leaf_slowdown.mixin;
 import java.util.UUID;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,41 +26,41 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 abstract class EntityMixin extends Entity {
 
-  @Unique private static final EntityAttributeModifier LEAF_SLOWNESS = new EntityAttributeModifier(
+  @Unique private static final AttributeModifier LEAF_SLOWNESS = new AttributeModifier(
       UUID.fromString("f72625eb-d4c4-4e1d-8e5c-1736b9bab349"),
       "Leaf Slowness",
       -0.3,
-      EntityAttributeModifier.Operation.MULTIPLY_BASE);
+      AttributeModifier.Operation.MULTIPLY_BASE);
 
-  public EntityMixin(EntityType<?> type, World world) {
+  public EntityMixin(EntityType<?> type, Level world) {
     super(type, world);
   }
 
   @Shadow
-  public abstract @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
+  public abstract @Nullable AttributeInstance getAttribute(Attribute attribute);
 
   @Inject(at = @At("HEAD"), method = "baseTick")
   public void andromeda$tick(CallbackInfo ci) {
-    if (!this.world.isClient
-        && this.world
+    if (!this.level.isClientSide
+        && this.level
             .am$get(LeafSlowdown.CONFIG)
             .available
             .asBoolean(LootContextBuilder.command(
-                world, builder -> builder.origin(this).thisEntity(this)))) {
-      EntityAttributeInstance attributeInstance =
-          this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-      if (this.world.getBlockState(getBlockPos().down()).isIn(BlockTags.LEAVES)
-          || (this.world.getBlockState(new BlockPos(getBlockPos().down(2))).isIn(BlockTags.LEAVES)
-              && this.world.getBlockState(new BlockPos(getBlockPos().down())).isOf(Blocks.AIR))) {
-        if (((LivingEntity) (Object) this) instanceof PlayerEntity player
+                    level, builder -> builder.origin(this).thisEntity(this)))) {
+      AttributeInstance attributeInstance =
+          this.getAttribute(Attributes.MOVEMENT_SPEED);
+      if (this.level.getBlockState(blockPosition().below()).is(BlockTags.LEAVES)
+          || (this.level.getBlockState(new BlockPos(blockPosition().below(2))).is(BlockTags.LEAVES)
+              && this.level.getBlockState(new BlockPos(blockPosition().below())).is(Blocks.AIR))) {
+        if (((LivingEntity) (Object) this) instanceof Player player
             && (player.isCreative() || player.isSpectator())) return;
         if (attributeInstance != null)
           if (!attributeInstance.hasModifier(LEAF_SLOWNESS)) {
-            attributeInstance.addTemporaryModifier(LEAF_SLOWNESS);
+            attributeInstance.addTransientModifier(LEAF_SLOWNESS);
           }
         /*Does this even work?*/
-        setVelocity(
-            getVelocity().getX(), getVelocity().getY() * 0.7, getVelocity().getZ());
+        setDeltaMovement(
+            getDeltaMovement().x(), getDeltaMovement().y() * 0.7, getDeltaMovement().z());
       } else {
         if (attributeInstance != null)
           if (attributeInstance.hasModifier(LEAF_SLOWNESS)) {

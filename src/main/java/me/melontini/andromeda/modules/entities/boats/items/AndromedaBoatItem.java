@@ -5,33 +5,37 @@ import java.util.function.Predicate;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.common.util.MiscUtil;
 import me.melontini.dark_matter.api.base.util.MakeSure;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.dispenser.ItemDispenserBehavior;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 
-public class AndromedaBoatItem<T extends BoatEntity> extends Item {
+public class AndromedaBoatItem<T extends Boat> extends Item {
 
   private static final Predicate<Entity> RIDERS =
-      EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
-  private final BoatEntity.Type type;
+      EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
+  private final Boat.Type type;
   private final Keeper<EntityType<T>> keeper;
 
-  public AndromedaBoatItem(Keeper<EntityType<T>> keeper, BoatEntity.Type type, Settings settings) {
+  public AndromedaBoatItem(Keeper<EntityType<T>> keeper, Boat.Type type, Properties settings) {
     super(settings);
     this.keeper = keeper;
     this.type = type;
@@ -39,89 +43,89 @@ public class AndromedaBoatItem<T extends BoatEntity> extends Item {
   }
 
   @Override
-  public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-    ItemStack itemStack = user.getStackInHand(hand);
-    HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.ANY);
+  public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    ItemStack itemStack = user.getItemInHand(hand);
+    HitResult hitResult = getPlayerPOVHitResult(world, user, ClipContext.Fluid.ANY);
     if (hitResult.getType() == HitResult.Type.MISS) {
-      return TypedActionResult.pass(itemStack);
+      return InteractionResultHolder.pass(itemStack);
     } else {
-      Vec3d vec3d = user.getRotationVec(1.0F);
-      List<Entity> list = world.getOtherEntities(
-          user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
+      Vec3 vec3d = user.getViewVector(1.0F);
+      List<Entity> list = world.getEntities(
+          user, user.getBoundingBox().expandTowards(vec3d.scale(5.0)).inflate(1.0), RIDERS);
       if (!list.isEmpty()) {
-        Vec3d vec3d2 = user.getEyePos();
+        Vec3 vec3d2 = user.getEyePosition();
 
         for (Entity entity : list) {
-          Box box = entity.getBoundingBox().expand(entity.getTargetingMargin());
+          AABB box = entity.getBoundingBox().inflate(entity.getPickRadius());
           if (box.contains(vec3d2)) {
-            return TypedActionResult.pass(itemStack);
+            return InteractionResultHolder.pass(itemStack);
           }
         }
       }
 
       if (hitResult.getType() == HitResult.Type.BLOCK) {
         T furnace = MakeSure.notNull(this.keeper.orThrow().create(world));
-        furnace.setPosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+        furnace.setPos(hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z);
 
         furnace.setVariant(this.type);
-        furnace.setYaw(user.getYaw());
-        if (!world.isSpaceEmpty(furnace, furnace.getBoundingBox())) {
-          return TypedActionResult.fail(itemStack);
+        furnace.setYRot(user.getYRot());
+        if (!world.noCollision(furnace, furnace.getBoundingBox())) {
+          return InteractionResultHolder.fail(itemStack);
         } else {
-          if (!world.isClient) {
-            world.spawnEntity(furnace);
-            world.emitGameEvent(
-                user, GameEvent.ENTITY_PLACE, MiscUtil.vec3dAsBlockPos(hitResult.getPos()));
-            if (!user.getAbilities().creativeMode) {
-              itemStack.decrement(1);
+          if (!world.isClientSide) {
+            world.addFreshEntity(furnace);
+            world.gameEvent(
+                user, GameEvent.ENTITY_PLACE, MiscUtil.vec3dAsBlockPos(hitResult.getLocation()));
+            if (!user.getAbilities().instabuild) {
+              itemStack.shrink(1);
             }
           }
 
-          user.incrementStat(Stats.USED.getOrCreateStat(this));
-          return TypedActionResult.success(itemStack, world.isClient());
+          user.awardStat(Stats.ITEM_USED.get(this));
+          return InteractionResultHolder.sidedSuccess(itemStack, world.isClientSide());
         }
       } else {
-        return TypedActionResult.pass(itemStack);
+        return InteractionResultHolder.pass(itemStack);
       }
     }
   }
 
-  private class BoatDispenseBehavior extends ItemDispenserBehavior {
+  private class BoatDispenseBehavior extends DefaultDispenseItemBehavior {
 
-    private final ItemDispenserBehavior itemDispenser;
+    private final DefaultDispenseItemBehavior itemDispenser;
 
     public BoatDispenseBehavior() {
-      this.itemDispenser = new ItemDispenserBehavior();
+      this.itemDispenser = new DefaultDispenseItemBehavior();
     }
 
     @Override
-    protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-      Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-      World world = pointer.getWorld();
+    protected ItemStack execute(BlockSource pointer, ItemStack stack) {
+      Direction direction = pointer.getBlockState().getValue(DispenserBlock.FACING);
+      Level world = pointer.getLevel();
       double d = 0.5625 + EntityType.BOAT.getWidth() / 2.0;
-      double e = pointer.getX() + direction.getOffsetX() * d;
-      double f = pointer.getY() + direction.getOffsetY() * 1.125F;
-      double g = pointer.getZ() + direction.getOffsetZ() * d;
-      BlockPos blockPos = pointer.getPos().offset(direction);
+      double e = pointer.x() + direction.getStepX() * d;
+      double f = pointer.y() + direction.getStepY() * 1.125F;
+      double g = pointer.z() + direction.getStepZ() * d;
+      BlockPos blockPos = pointer.getPos().relative(direction);
       double h;
-      if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+      if (world.getFluidState(blockPos).is(FluidTags.WATER)) {
         h = 1.0;
       } else {
         if (!world.getBlockState(blockPos).isAir()
-            || !world.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
+            || !world.getFluidState(blockPos.below()).is(FluidTags.WATER)) {
           return this.itemDispenser.dispense(pointer, stack);
         }
         h = 0.0;
       }
 
       T boatEntity = MakeSure.notNull(AndromedaBoatItem.this.keeper.orThrow().create(world));
-      boatEntity.setPosition(e, f + h, g);
+      boatEntity.setPos(e, f + h, g);
 
       boatEntity.setVariant(AndromedaBoatItem.this.type);
-      boatEntity.setYaw(direction.asRotation());
+      boatEntity.setYRot(direction.toYRot());
 
-      world.spawnEntity(boatEntity);
-      stack.decrement(1);
+      world.addFreshEntity(boatEntity);
+      stack.shrink(1);
       return stack;
     }
   }

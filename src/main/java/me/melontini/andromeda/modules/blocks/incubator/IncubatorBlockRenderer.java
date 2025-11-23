@@ -4,95 +4,95 @@ import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.item.ItemDisplayContext;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.world.level.Level;
 
 @Environment(EnvType.CLIENT)
 public class IncubatorBlockRenderer implements BlockEntityRenderer<IncubatorBlockEntity> {
 
-  public IncubatorBlockRenderer(BlockEntityRendererFactory.Context context) {}
+  public IncubatorBlockRenderer(BlockEntityRendererProvider.Context context) {}
 
   @Override
   public void render(
-      IncubatorBlockEntity entity,
-      float tickDelta,
-      MatrixStack matrices,
-      VertexConsumerProvider vertexConsumers,
-      int light,
-      int overlay) {
+          IncubatorBlockEntity entity,
+          float tickDelta,
+          PoseStack matrices,
+          MultiBufferSource vertexConsumers,
+          int light,
+          int overlay) {
     renderHay(matrices, vertexConsumers, light, overlay);
     renderItem(entity, matrices, vertexConsumers, light, overlay);
   }
 
   private void renderItem(
-      IncubatorBlockEntity entity,
-      MatrixStack matrices,
-      VertexConsumerProvider vertexConsumers,
-      int light,
-      int overlay) {
-    matrices.push();
+          IncubatorBlockEntity entity,
+          PoseStack matrices,
+          MultiBufferSource vertexConsumers,
+          int light,
+          int overlay) {
+    matrices.pushPose();
     matrices.translate(0.5, 0.7, 0.5);
-    World world = MakeSure.notNull(entity.getWorld());
-    BlockState state = world.getBlockState(entity.getPos());
+    Level world = MakeSure.notNull(entity.getLevel());
+    BlockState state = world.getBlockState(entity.getBlockPos());
     if (state.getBlock() instanceof IncubatorBlock) {
-      switch (state.get(IncubatorBlock.FACING)) {
-        case NORTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-        case WEST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270));
-        case EAST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-        case SOUTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0));
+      switch (state.getValue(IncubatorBlock.FACING)) {
+        case NORTH -> matrices.mulPose(Axis.YP.rotationDegrees(180));
+        case WEST -> matrices.mulPose(Axis.YP.rotationDegrees(270));
+        case EAST -> matrices.mulPose(Axis.YP.rotationDegrees(90));
+        case SOUTH -> matrices.mulPose(Axis.YP.rotationDegrees(0));
         default -> throw new IllegalStateException(
-            String.valueOf(state.get(IncubatorBlock.FACING)));
+            String.valueOf(state.getValue(IncubatorBlock.FACING)));
       }
-      matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-45));
+      matrices.mulPose(Axis.XP.rotationDegrees(-45));
       if (entity.processingTime > -1 && !entity.inventory.get(0).isEmpty()) {
-        MinecraftClient.getInstance()
+        Minecraft.getInstance()
             .getItemRenderer()
-            .renderItem(
+            .renderStatic(
                 entity.inventory.get(0),
-                ModelTransformationMode.GROUND,
+                ItemDisplayContext.GROUND,
                 light,
                 overlay,
                 matrices,
                 vertexConsumers,
-                entity.getWorld(),
+                entity.getLevel(),
                 0);
       }
     }
-    matrices.pop();
+    matrices.popPose();
   }
 
   private void renderHay(
-      MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-    matrices.push();
+          PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+    matrices.pushPose();
     matrices.scale(0.5F, 0.5F, 0.5F);
     matrices.translate(0.5, 1.4, 0.5);
-    MinecraftClient.getInstance()
-        .getBlockRenderManager()
-        .renderBlockAsEntity(
-            Blocks.HORN_CORAL_FAN.getDefaultState(/*very comfy*/ ),
+    Minecraft.getInstance()
+        .getBlockRenderer()
+        .renderSingleBlock(
+            Blocks.HORN_CORAL_FAN.defaultBlockState(/*very comfy*/ ),
             matrices,
             vertexConsumers,
             light,
             overlay);
-    matrices.pop();
+    matrices.popPose();
   }
 
   public static void onClient() {
     if (IncubatorBlock.INCUBATOR_BLOCK.isPresent()) {
       BlockRenderLayerMap.INSTANCE.putBlocks(
-          RenderLayer.getCutout(), IncubatorBlock.INCUBATOR_BLOCK.get());
+          RenderType.cutout(), IncubatorBlock.INCUBATOR_BLOCK.get());
       // This is registered alongside the block, so no check is necessary
-      BlockEntityRendererFactories.register(
+      BlockEntityRenderers.register(
           IncubatorBlock.INCUBATOR_BLOCK_ENTITY.get(), IncubatorBlockRenderer::new);
     }
   }

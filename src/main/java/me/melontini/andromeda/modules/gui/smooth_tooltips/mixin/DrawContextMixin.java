@@ -7,13 +7,13 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import java.util.List;
 import me.melontini.andromeda.common.AndromedaClient;
 import me.melontini.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.util.Mth;
 import org.joml.Vector2d;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
@@ -25,16 +25,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(DrawContext.class)
+@Mixin(GuiGraphics.class)
 abstract class DrawContextMixin {
 
   @Shadow
   @Final
-  private MinecraftClient client;
+  private Minecraft minecraft;
 
   @Shadow
   @Final
-  private MatrixStack matrices;
+  private PoseStack pose;
 
   @Unique private static Vector2d smoothPos;
 
@@ -43,9 +43,9 @@ abstract class DrawContextMixin {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/client/gui/tooltip/TooltipPositioner;getPosition(IIIIII)Lorg/joml/Vector2ic;"),
+                      "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"),
       method =
-          "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V")
+              "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
   private Vector2ic andromeda$smoothTooltip(
       Vector2ic vic,
       @Local(argsOnly = true, ordinal = 0) int x,
@@ -54,46 +54,46 @@ abstract class DrawContextMixin {
     if (andromeda$makeSmooth(x, y)) {
       var c = AndromedaClient.CLIENT.get(SmoothTooltips.CONFIG);
       if (smoothPos == null) smoothPos = new Vector2d(x, y);
-      smoothPos.x = MathHelper.clamp(
-          MathHelper.lerp(c.deltaX * client.getLastFrameDuration(), smoothPos.x, vic.x()),
+      smoothPos.x = Mth.clamp(
+          Mth.lerp(c.deltaX * minecraft.getDeltaFrameTime(), smoothPos.x, vic.x()),
           vic.x() - c.clampX,
           vic.x() + c.clampX);
-      smoothPos.y = MathHelper.clamp(
-          MathHelper.lerp(c.deltaY * client.getLastFrameDuration(), smoothPos.y, vic.y()),
+      smoothPos.y = Mth.clamp(
+          Mth.lerp(c.deltaY * minecraft.getDeltaFrameTime(), smoothPos.y, vic.y()),
           vic.y() - c.clampY,
           vic.y() + c.clampY);
 
       popMatrix.set(true);
-      this.matrices.push();
-      this.matrices.translate(smoothPos.x - (int) smoothPos.x, smoothPos.y - (int) smoothPos.y, 1);
+      this.pose.pushPose();
+      this.pose.translate(smoothPos.x - (int) smoothPos.x, smoothPos.y - (int) smoothPos.y, 1);
       return new Vector2i((int) smoothPos.x, (int) smoothPos.y);
     }
     return vic;
   }
 
   @Unique private boolean andromeda$makeSmooth(int x, int y) {
-    double mX = (this.client.mouse.getX()
-        * this.client.getWindow().getScaledWidth()
-        / this.client.getWindow().getWidth());
+    double mX = (this.minecraft.mouseHandler.xpos()
+        * this.minecraft.getWindow().getGuiScaledWidth()
+        / this.minecraft.getWindow().getScreenWidth());
     if ((int) mX != x) return false;
-    double mY = (this.client.mouse.getY()
-        * this.client.getWindow().getScaledHeight()
-        / this.client.getWindow().getHeight());
+    double mY = (this.minecraft.mouseHandler.ypos()
+        * this.minecraft.getWindow().getGuiScaledHeight()
+        / this.minecraft.getWindow().getScreenHeight());
     return (int) mY == y;
   }
 
   @Inject(
       at = @At(value = "TAIL"),
       method =
-          "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V")
+              "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
   private void andromeda$popMatrix(
-      TextRenderer textRenderer,
-      List<TooltipComponent> components,
-      int x,
-      int y,
-      TooltipPositioner positioner,
-      CallbackInfo ci,
-      @Share("popMatrix") LocalBooleanRef popMatrix) {
-    if (popMatrix.get()) this.matrices.pop();
+          Font textRenderer,
+          List<ClientTooltipComponent> components,
+          int x,
+          int y,
+          ClientTooltipPositioner positioner,
+          CallbackInfo ci,
+          @Share("popMatrix") LocalBooleanRef popMatrix) {
+    if (popMatrix.get()) this.pose.popPose();
   }
 }

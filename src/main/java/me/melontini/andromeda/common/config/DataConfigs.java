@@ -22,18 +22,18 @@ import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.level.Level;
 
 // Loads and applies custom config overrides from data packs
 @CustomLog
 public final class DataConfigs extends IdentifiedJsonDataLoader {
 
-  public static final Identifier DEFAULT = Andromeda.id("default");
+  public static final ResourceLocation DEFAULT = Andromeda.id("default");
   public static final ReloaderType<DataConfigs> RELOADER =
       ReloaderType.create(Andromeda.id("scoped_config"));
 
@@ -42,7 +42,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
   }
 
   private final ModuleManager moduleManager;
-  public Map<Identifier, Map<Module, Set<Data>>> configs;
+  public Map<ResourceLocation, Map<Module, Set<Data>>> configs;
   public Map<Module, Set<Data>> defaultConfigs;
 
   public DataConfigs(ModuleManager moduleManager) {
@@ -52,11 +52,11 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
 
   @Override
   protected void apply(
-      Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-    Map<Identifier, Map<Module, Set<Data>>> parsed = new HashMap<>();
+          Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
+    Map<ResourceLocation, Map<Module, Set<Data>>> parsed = new HashMap<>();
 
     for (var entry : Maps.transformValues(data, JsonElement::getAsJsonObject).entrySet()) {
-      Identifier id = entry.getKey();
+      ResourceLocation id = entry.getKey();
       JsonObject json = entry.getValue();
       // Modules must be loaded to apply their configs.
       var module = this.moduleManager
@@ -66,7 +66,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
       var type = Andromeda.GAME.getDefinition(module).supplier().get();
 
       Maps.transformValues(json.asMap(), JsonElement::getAsJsonObject).forEach((string, value) -> {
-        var dimension = new Identifier(string);
+        var dimension = new ResourceLocation(string);
         var cfg = Andromeda.GAME.gson().fromJson(value, type);
 
         // Parse the fields that must be modified during `apply`
@@ -90,7 +90,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
     this.configs = parsed;
   }
 
-  public void applyConfigs(AttachmentGetter getter, Identifier dimension) {
+  public void applyConfigs(AttachmentGetter getter, ResourceLocation dimension) {
     Objects.requireNonNull(configs);
 
     var handler = getter.andromeda$getConfigs();
@@ -98,7 +98,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
     handler.forEach((module, baseConfig) -> this.applyDataPacks(baseConfig, module, dimension));
   }
 
-  void applyDataPacks(BaseConfig config, Module module, Identifier dimension) {
+  void applyDataPacks(BaseConfig config, Module module, ResourceLocation dimension) {
     if (defaultConfigs != null) {
       var forModule = defaultConfigs.get(module);
       if (forModule != null) for (Data data : forModule) this.apply(config, data);
@@ -131,7 +131,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
     default <T extends BaseConfig> T am$get(ConfigDefinition<T> definition) {
       log.error(
           "Scoped configs requested on client in world '{}'! Returning un-scoped!",
-          ((World) this).getRegistryKey().getValue());
+          ((Level) this).dimension().location());
       return Andromeda.MAIN.get(definition); // Stub implementation. DNI
     }
   }
@@ -147,8 +147,8 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
       if (!success) return;
 
       var configs = DataConfigs.get(server);
-      for (ServerWorld world : server.getWorlds()) {
-        configs.applyConfigs((AttachmentGetter) world, world.getRegistryKey().getValue());
+      for (ServerLevel world : server.getAllLevels()) {
+        configs.applyConfigs((AttachmentGetter) world, world.dimension().location());
       }
     });
   }

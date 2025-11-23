@@ -4,18 +4,18 @@ import java.util.Map;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import me.melontini.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.village.VillageGossipType;
-import net.minecraft.village.VillagerGossips;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ai.gossip.GossipType;
+import net.minecraft.world.entity.ai.gossip.GossipContainer;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,17 +24,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(VillagerEntity.class)
-abstract class VillagerEntityMixin extends MerchantEntity {
+@Mixin(Villager.class)
+abstract class VillagerEntityMixin extends AbstractVillager {
 
   @Shadow
   @Final
-  private VillagerGossips gossip;
+  private GossipContainer gossips;
 
   @Shadow
-  protected abstract void sayNo();
+  protected abstract void setUnhappy();
 
-  public VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
+  public VillagerEntityMixin(EntityType<? extends AbstractVillager> entityType, Level world) {
     super(entityType, world);
   }
 
@@ -43,29 +43,29 @@ abstract class VillagerEntityMixin extends MerchantEntity {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/entity/passive/VillagerEntity;getOffers()Lnet/minecraft/village/TradeOfferList;",
+                      "Lnet/minecraft/world/entity/npc/Villager;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;",
               shift = At.Shift.BEFORE),
       cancellable = true,
-      method = "interactMob")
+      method = "mobInteract")
   private void andromeda$useGifts(
-      PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-    if (hand != Hand.MAIN_HAND || world.isClient()) return;
-    ItemStack stack = player.getStackInHand(hand);
+          Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    if (hand != InteractionHand.MAIN_HAND || level.isClientSide()) return;
+    ItemStack stack = player.getItemInHand(hand);
 
-    if (!world
+    if (!level
         .am$get(VillagerGifting.CONFIG)
         .available
         .asBoolean(LootContextBuilder.fishing(
-            world, builder -> builder.origin(player).tool(stack).thisEntity(player)))) return;
+                level, builder -> builder.origin(player).tool(stack).thisEntity(player)))) return;
 
     ItemStack gift = stack.copy();
     gift.setCount(1);
 
     for (Map.Entry<TagKey<Item>, GiftTags.Action> entry : GiftTags.ACTION_MAP.entrySet()) {
-      if (stack.isIn(entry.getKey())) {
+      if (stack.is(entry.getKey())) {
         if (andromeda$tryInsertGift(cir, player, gift, entry.getValue().type())) {
-          this.world.sendEntityStatus(this, entry.getValue().status());
-          if (!player.isCreative()) stack.decrement(1);
+          this.level.broadcastEntityEvent(this, entry.getValue().status());
+          if (!player.isCreative()) stack.shrink(1);
           break;
         }
       }
@@ -73,18 +73,18 @@ abstract class VillagerEntityMixin extends MerchantEntity {
   }
 
   @Unique private boolean andromeda$tryInsertGift(
-      CallbackInfoReturnable<ActionResult> cir,
-      PlayerEntity player,
-      ItemStack stack,
-      VillageGossipType type) {
-    if (this.getInventory().canInsert(stack)) {
-      this.getInventory().addStack(stack);
-      this.gossip.startGossip(player.getUuid(), type, 3);
-      cir.setReturnValue(ActionResult.success(this.world.isClient));
+          CallbackInfoReturnable<InteractionResult> cir,
+          Player player,
+          ItemStack stack,
+          GossipType type) {
+    if (this.getInventory().canAddItem(stack)) {
+      this.getInventory().addItem(stack);
+      this.gossips.add(player.getUUID(), type, 3);
+      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide));
       return true;
     } else {
-      this.sayNo();
-      cir.setReturnValue(ActionResult.success(this.world.isClient));
+      this.setUnhappy();
+      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide));
       return false;
     }
   }

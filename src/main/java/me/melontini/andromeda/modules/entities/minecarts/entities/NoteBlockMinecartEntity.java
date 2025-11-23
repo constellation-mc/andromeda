@@ -2,80 +2,80 @@ package me.melontini.andromeda.modules.entities.minecarts.entities;
 
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
-import net.minecraft.block.AbstractRailBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.PoweredRailBlock;
-import net.minecraft.block.enums.Instrument;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.stat.Stats;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.PoweredRailBlock;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
-public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
+public class NoteBlockMinecartEntity extends AbstractMinecart {
   public int note = 0;
   public boolean isPowered = false;
 
   public NoteBlockMinecartEntity(
-      EntityType<? extends NoteBlockMinecartEntity> entityType, World world) {
+          EntityType<? extends NoteBlockMinecartEntity> entityType, Level world) {
     super(entityType, world);
   }
 
-  public NoteBlockMinecartEntity(World world, double x, double y, double z) {
+  public NoteBlockMinecartEntity(Level world, double x, double y, double z) {
     super(MinecartEntities.NOTEBLOCK_MINECART_ENTITY.orThrow(), world, x, y, z);
   }
 
   @Override
-  public boolean damage(DamageSource source, float amount) {
-    this.playNote(world, new Vec3d(getX(), getY() - 1, getZ()));
-    super.damage(source, amount);
+  public boolean hurt(DamageSource source, float amount) {
+    this.playNote(level, new Vec3(getX(), getY() - 1, getZ()));
+    super.hurt(source, amount);
     return true;
   }
 
   @Override
-  public ActionResult interact(PlayerEntity player, Hand hand) {
+  public InteractionResult interact(Player player, InteractionHand hand) {
     this.cycleNote();
-    this.playNote(world, new Vec3d(getX(), getY() - 1, getZ()));
-    player.incrementStat(Stats.TUNE_NOTEBLOCK);
-    return ActionResult.success(world.isClient);
+    this.playNote(level, new Vec3(getX(), getY() - 1, getZ()));
+    player.awardStat(Stats.TUNE_NOTEBLOCK);
+    return InteractionResult.sidedSuccess(level.isClientSide);
   }
 
   @Override
-  public void onActivatorRail(int x, int y, int z, boolean powered) {
+  public void activateMinecart(int x, int y, int z, boolean powered) {
     if (powered && !this.isPowered) {
-      playNote(this.world, new Vec3d(getX(), getY() - 1, getZ()));
+      playNote(this.level, new Vec3(getX(), getY() - 1, getZ()));
     }
   }
 
   @Override
   public void tick() {
-    int i = MathHelper.floor(this.getX());
-    int j = MathHelper.floor(this.getY());
-    int k = MathHelper.floor(this.getZ());
-    if (this.world.getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
+    int i = Mth.floor(this.getX());
+    int j = Mth.floor(this.getY());
+    int k = Mth.floor(this.getZ());
+    if (this.level.getBlockState(new BlockPos(i, j - 1, k)).is(BlockTags.RAILS)) {
       --j;
     }
 
     BlockPos blockPos = new BlockPos(i, j, k);
-    BlockState blockState = this.world.getBlockState(blockPos);
-    if (AbstractRailBlock.isRail(blockState)) {
-      if (blockState.isOf(Blocks.ACTIVATOR_RAIL)) {
-        if (blockState.get(PoweredRailBlock.POWERED)) {
-          this.onActivatorRail(i, j, k, true);
+    BlockState blockState = this.level.getBlockState(blockPos);
+    if (BaseRailBlock.isRail(blockState)) {
+      if (blockState.is(Blocks.ACTIVATOR_RAIL)) {
+        if (blockState.getValue(PoweredRailBlock.POWERED)) {
+          this.activateMinecart(i, j, k, true);
           this.isPowered = true;
         } else {
           this.isPowered = false;
@@ -93,67 +93,67 @@ public class NoteBlockMinecartEntity extends AbstractMinecartEntity {
   }
 
   @Override
-  public void readCustomDataFromNbt(NbtCompound nbt) {
-    super.readCustomDataFromNbt(nbt);
+  public void readAdditionalSaveData(CompoundTag nbt) {
+    super.readAdditionalSaveData(nbt);
     this.note = nbt.getInt("Note");
     this.isPowered = nbt.getBoolean("Powered");
   }
 
   @Override
-  public void writeCustomDataToNbt(NbtCompound nbt) {
-    super.writeCustomDataToNbt(nbt);
+  public void addAdditionalSaveData(CompoundTag nbt) {
+    super.addAdditionalSaveData(nbt);
     nbt.putInt("Note", this.note);
     nbt.putBoolean("Powered", this.isPowered);
   }
 
   @Override
-  public Item getItem() {
+  public Item getDropItem() {
     return MinecartItems.NOTE_BLOCK_MINECART.orThrow();
   }
 
   @Override
-  public BlockState getDefaultContainedBlock() {
-    return Blocks.NOTE_BLOCK.getDefaultState();
+  public BlockState getDefaultDisplayBlockState() {
+    return Blocks.NOTE_BLOCK.defaultBlockState();
   }
 
   @Override
-  public ItemStack getPickBlockStack() {
+  public ItemStack getPickResult() {
     return new ItemStack(MinecartItems.NOTE_BLOCK_MINECART.orThrow());
   }
 
   public void cycleNote() {
     int nextNote = this.note + 1;
-    if (nextNote < Properties.NOTE.stream().toList().size()) {
+    if (nextNote < BlockStateProperties.NOTE.getAllValues().toList().size()) {
       this.note = nextNote;
     } else {
       this.note = 0;
     }
   }
 
-  public void playNote(World world, Vec3d pos) {
+  public void playNote(Level world, Vec3 pos) {
     BlockPos blockPos = new BlockPos(
-        MathHelper.floor(pos.getX()), MathHelper.floor(pos.getY()), MathHelper.floor(pos.getZ()));
+        Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z()));
     // BlockState state = world.getBlockState(blockPos);
 
-    Instrument instrument = world.getBlockState(blockPos.up()).getInstrument();
-    if (!instrument.isNotBaseBlock()) {
-      Instrument instrument2 = world.getBlockState(blockPos.down()).getInstrument();
-      instrument = instrument2.isNotBaseBlock() ? Instrument.HARP : instrument2;
+    NoteBlockInstrument instrument = world.getBlockState(blockPos.above()).instrument();
+    if (!instrument.worksAboveNoteBlock()) {
+      NoteBlockInstrument instrument2 = world.getBlockState(blockPos.below()).instrument();
+      instrument = instrument2.worksAboveNoteBlock() ? NoteBlockInstrument.HARP : instrument2;
     }
 
     int i = this.note;
     float f = (float) Math.pow(2.0, (i - 12) / 12.0);
-    this.world.playSound(
+    this.level.playSound(
         null,
         new BlockPos(
-            MathHelper.floor(pos.getX()),
-            MathHelper.floor(pos.getY()),
-            MathHelper.floor(pos.getZ())),
-        instrument.getSound().value(),
-        SoundCategory.RECORDS,
+            Mth.floor(pos.x()),
+            Mth.floor(pos.y()),
+            Mth.floor(pos.z())),
+        instrument.getSoundEvent().value(),
+        SoundSource.RECORDS,
         3.0F,
         f);
-    this.world.addParticle(
-        ParticleTypes.NOTE, pos.getX(), pos.getY() + 1.2, pos.getZ(), i / 24.0, 0.0, 0.0);
+    this.level.addParticle(
+        ParticleTypes.NOTE, pos.x(), pos.y() + 1.2, pos.z(), i / 24.0, 0.0, 0.0);
   }
 }

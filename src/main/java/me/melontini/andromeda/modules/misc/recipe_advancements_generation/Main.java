@@ -12,27 +12,27 @@ import java.util.function.Function;
 import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementManager;
-import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.criterion.InventoryChangedCriterion;
-import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.LootContextPredicate;
-import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementList;
+import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.Util;
 import org.jetbrains.annotations.NotNull;
 
 public final class Main {
   private static final Map<RecipeType<?>, Function<Context, Return>> RECIPE_TYPE_HANDLERS =
       new HashMap<>();
-  private static final List<BiPredicate<Identifier, Recipe<?>>> FILTERS =
+  private static final List<BiPredicate<ResourceLocation, Recipe<?>>> FILTERS =
       Collections.synchronizedList(new ArrayList<>());
 
   public static Function<Context, Return> basicConsumer(
@@ -42,8 +42,8 @@ public final class Main {
         createAdvBuilder(config, context.id(), context.recipe().getIngredients().get(0)));
   }
 
-  private static Identifier idFromRecipe(Identifier recipe, String typeName) {
-    return new Identifier(
+  private static ResourceLocation idFromRecipe(ResourceLocation recipe, String typeName) {
+    return new ResourceLocation(
         recipe.getNamespace(),
         "recipes/gen/" + typeName + "/" + recipe.toString().replace(":", "_"));
   }
@@ -54,12 +54,12 @@ public final class Main {
 
   public static void generateRecipeAdvancements(
       MinecraftServer server, AdvancementGeneration module, AdvancementGeneration.Config config) {
-    Map<Identifier, Advancement.Builder> advancementBuilders = new ConcurrentHashMap<>();
+    Map<ResourceLocation, Advancement.Builder> advancementBuilders = new ConcurrentHashMap<>();
     AtomicInteger count = new AtomicInteger();
 
-    List<CompletableFuture<Void>> futures = server.getRecipeManager().values().stream()
+    List<CompletableFuture<Void>> futures = server.getRecipeManager().getRecipes().stream()
         .filter(recipe -> {
-          for (BiPredicate<Identifier, Recipe<?>> filter : FILTERS) {
+          for (BiPredicate<ResourceLocation, Recipe<?>> filter : FILTERS) {
             if (filter.test(recipe.getId(), recipe)) return false;
           }
           return true;
@@ -75,7 +75,7 @@ public final class Main {
                 if (!recipe.getIngredients().isEmpty()) {
                   count.getAndIncrement();
                   advancementBuilders.put(
-                      new Identifier(
+                      new ResourceLocation(
                           recipe.getId().getNamespace(),
                           "recipes/gen/generic/" + recipe.getId().toString().replace(":", "_")),
                       createAdvBuilder(
@@ -85,15 +85,15 @@ public final class Main {
                 }
               }
             },
-            Util.getMainWorkerExecutor()))
+            Util.backgroundExecutor()))
         .toList();
     // and?
     CompletableFuture<Void> future =
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
-    server.runTasks(future::isDone);
+    server.managedBlock(future::isDone);
 
-    AdvancementManager advancementManager = server.getAdvancementLoader().manager;
-    advancementManager.load(advancementBuilders);
+    AdvancementList advancementManager = server.getAdvancements().advancements;
+    advancementManager.add(advancementBuilders);
 
     module.logger().info("finished generating {} recipe advancements", count.get());
     advancementBuilders.clear();
@@ -107,21 +107,21 @@ public final class Main {
     }
 
     @Override
-    public boolean test(ItemStack stack) {
+    public boolean matches(ItemStack stack) {
       return ingredient.test(stack);
     }
 
     @Override
-    public JsonElement toJson() {
-      return ANY.toJson();
+    public JsonElement serializeToJson() {
+      return ANY.serializeToJson();
     }
   }
 
   public static @NotNull Advancement.Builder createAdvBuilder(
-      AdvancementGeneration.Config config, Identifier id, Ingredient... ingredients) {
+          AdvancementGeneration.Config config, ResourceLocation id, Ingredient... ingredients) {
     MakeSure.notEmpty(ingredients); // shouldn't really happen
-    var builder = Advancement.Builder.createUntelemetered();
-    builder.parent(Identifier.of("minecraft", "recipes/root"));
+    var builder = Advancement.Builder.recipeAdvancement();
+    builder.parent(ResourceLocation.tryBuild("minecraft", "recipes/root"));
 
     List<String> names = new ArrayList<>();
     Set<JsonElement> elements = new HashSet<>();
@@ -133,11 +133,11 @@ public final class Main {
 
       var name = String.valueOf(i);
       names.add(name);
-      builder.criterion(
-          name, InventoryChangedCriterion.Conditions.items(new CustomPredicate(ingredient)));
+      builder.addCriterion(
+          name, InventoryChangeTrigger.TriggerInstance.hasItems(new CustomPredicate(ingredient)));
     }
-    builder.criterion(
-        "has_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.create(), id));
+    builder.addCriterion(
+        "has_recipe", new RecipeUnlockedTrigger.TriggerInstance(ContextAwarePredicate.create(), id));
 
     String[][] reqs;
     if (config.requireAllItems) {
@@ -165,7 +165,7 @@ public final class Main {
     FILTERS.add((id, recipe) -> config.namespaceBlacklist.contains(id.getNamespace()));
     FILTERS.add((id, recipe) -> config.recipeBlacklist.contains(id));
     FILTERS.add((id, recipe) ->
-        recipe.isIgnoredInRecipeBook() && config.ignoreRecipesHiddenInTheRecipeBook);
+        recipe.isSpecial() && config.ignoreRecipesHiddenInTheRecipeBook);
     ModuleManager.get()
         .getModuleApiListeners(ADVANCEMENT_RECIPE_FILTER)
         .forEach(listener -> listener.accept(recipeFilter -> {
@@ -184,7 +184,7 @@ public final class Main {
     addRecipeTypeHandler(RecipeType.CAMPFIRE_COOKING, basicConsumer("campfire_cooking", config));
     addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting", config));
     addRecipeTypeHandler(RecipeType.CRAFTING, (context) -> {
-      if (!(context.recipe() instanceof SpecialCraftingRecipe)) {
+      if (!(context.recipe() instanceof CustomRecipe)) {
         if (!context.recipe().getIngredients().isEmpty()) {
           return new Return(
               idFromRecipe(context.id(), "crafting"),
@@ -198,7 +198,7 @@ public final class Main {
     });
   }
 
-  public record Return(Identifier id, Advancement.Builder builder) {}
+  public record Return(ResourceLocation id, Advancement.Builder builder) {}
 
-  public record Context(Recipe<?> recipe, Identifier id) {}
+  public record Context(Recipe<?> recipe, ResourceLocation id) {}
 }

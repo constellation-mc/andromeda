@@ -3,31 +3,31 @@ package me.melontini.andromeda.modules.entities.slimes.mixin.slowness;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SlimeEntity.class)
-abstract class SlimeEntityMixin extends MobEntity {
+@Mixin(Slime.class)
+abstract class SlimeEntityMixin extends Mob {
 
   @Shadow
   public abstract int getSize();
 
   @Shadow
-  protected abstract ParticleEffect getParticles();
+  protected abstract ParticleOptions getParticleType();
 
-  protected SlimeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
+  protected SlimeEntityMixin(EntityType<? extends Mob> entityType, Level world) {
     super(entityType, world);
   }
 
@@ -35,22 +35,22 @@ abstract class SlimeEntityMixin extends MobEntity {
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/entity/mob/SlimeEntity;getSize()I",
+              target = "Lnet/minecraft/world/entity/monster/Slime;getSize()I",
               shift = At.Shift.BEFORE),
-      method = "damage")
+      method = "dealDamage")
   private void andromeda$onPlayerCollision(LivingEntity target, CallbackInfo ci) {
-    var config = this.world.am$get(Slimes.CONFIG);
+    var config = this.level.am$get(Slimes.CONFIG);
     if (!config.available.asBoolean(ConstantLootContextAccessor.get(this))) return;
     if (!config.slowness.asBoolean(LootContextBuilder.entity(
-        world,
+            level,
         builder -> builder.origin(target).thisEntity(target).genericSource().killer(this)))) return;
 
-    StatusEffectInstance effectInstance = new StatusEffectInstance(
-        StatusEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);
-    target.addStatusEffect(effectInstance);
-    if (world.getTime() % 3 == 0)
-      ((ServerWorld) world)
-          .spawnParticles(
-              getParticles(), target.getX(), target.getY(), target.getZ(), 5, 0.2, 0.7, 0.2, 0);
+    MobEffectInstance effectInstance = new MobEffectInstance(
+        MobEffects.MOVEMENT_SLOWDOWN, 20 * this.getSize(), 1, true, false, false);
+    target.addEffect(effectInstance);
+    if (level.getGameTime() % 3 == 0)
+      ((ServerLevel) level)
+          .sendParticles(
+              getParticleType(), target.getX(), target.getY(), target.getZ(), 5, 0.2, 0.7, 0.2, 0);
   }
 }

@@ -15,7 +15,7 @@ import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.Andromeda;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 @ModuleInfo(name = "recipe_advancements_generation", category = "misc", env = Environment.SERVER)
 public final class AdvancementGeneration extends Module implements PostBootstrapEvent {
@@ -36,6 +36,6 @@ public final class AdvancementGeneration extends Module implements PostBootstrap
     public boolean requireAllItems = true;
     public boolean ignoreRecipesHiddenInTheRecipeBook = true;
     public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");
-    public List<Identifier> recipeBlacklist = new ArrayList<>();
+    public List<ResourceLocation> recipeBlacklist = new ArrayList<>();
   }
 }

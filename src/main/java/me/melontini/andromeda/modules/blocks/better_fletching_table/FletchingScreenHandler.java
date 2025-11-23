@@ -10,55 +10,55 @@ import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.Keeper;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.ForgingScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.ForgingSlotsManager;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.inventory.ItemCombinerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.resources.ResourceLocation;
 
-public class FletchingScreenHandler extends ForgingScreenHandler {
+public class FletchingScreenHandler extends ItemCombinerMenu {
 
-  public static final Keeper<ScreenHandlerType<FletchingScreenHandler>> FLETCHING = Keeper.create();
+  public static final Keeper<MenuType<FletchingScreenHandler>> FLETCHING = Keeper.create();
 
-  public FletchingScreenHandler(int syncId, PlayerInventory playerInventory) {
-    this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
+  public FletchingScreenHandler(int syncId, Inventory playerInventory) {
+    this(syncId, playerInventory, ContainerLevelAccess.NULL);
   }
 
   public FletchingScreenHandler(
-      int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
+          int syncId, Inventory playerInventory, ContainerLevelAccess context) {
     super(FLETCHING.orThrow(), syncId, playerInventory, context);
   }
 
   @Override
-  public boolean canTakeOutput(PlayerEntity player, boolean present) {
-    return !this.output.isEmpty();
+  public boolean mayPickup(Player player, boolean present) {
+    return !this.resultSlots.isEmpty();
   }
 
   @Override
-  protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
-    stack.onCraft(player.getWorld(), player, stack.getCount());
-    this.output.unlockLastRecipe(player, List.of(this.input.getStack(0), this.input.getStack(1)));
+  protected void onTake(Player player, ItemStack stack) {
+    stack.onCraftedBy(player.level(), player, stack.getCount());
+    this.resultSlots.awardUsedRecipes(player, List.of(this.inputSlots.getItem(0), this.inputSlots.getItem(1)));
     this.decrementStack(0);
     this.decrementStack(1);
-    this.context.run((world, pos) -> world.syncWorldEvent(1044, pos, 0));
+    this.access.execute((world, pos) -> world.levelEvent(1044, pos, 0));
   }
 
   private void decrementStack(int slot) {
-    ItemStack itemStack = this.input.getStack(slot);
-    itemStack.decrement(1);
-    this.input.setStack(slot, itemStack);
+    ItemStack itemStack = this.inputSlots.getItem(slot);
+    itemStack.shrink(1);
+    this.inputSlots.setItem(slot, itemStack);
   }
 
   // This should probably be data-driven, but whatever.
@@ -66,88 +66,88 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
       new HashMap<>();
 
   public static void addRecipe(
-      Function<ItemStack, ItemStack> consumer, Ingredient ingredient, Ingredient input) {
+          Function<ItemStack, ItemStack> consumer, Ingredient ingredient, Ingredient input) {
     RECIPES.computeIfAbsent(input, i -> new IdentityHashMap<>()).put(ingredient, consumer);
   }
 
   @Override
-  public void updateResult() {
-    ItemStack stack = getSlot(0).getStack();
+  public void createResult() {
+    ItemStack stack = getSlot(0).getItem();
 
     var lookup = RECIPES.entrySet().stream()
         .filter(e -> e.getKey().test(stack))
         .flatMap(e -> e.getValue().entrySet().stream())
         .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
     if (lookup.isEmpty()) {
-      getSlot(2).setStack(ItemStack.EMPTY);
+      getSlot(2).setByPlayer(ItemStack.EMPTY);
       return;
     }
 
-    ItemStack stack1 = getSlot(1).getStack();
+    ItemStack stack1 = getSlot(1).getItem();
     var recipe = lookup.entrySet().stream().filter(e -> e.getKey().test(stack1)).findFirst();
     if (recipe.isEmpty()) {
-      getSlot(2).setStack(ItemStack.EMPTY);
+      getSlot(2).setByPlayer(ItemStack.EMPTY);
       return;
     }
 
-    getSlot(2).setStack(recipe.get().getValue().apply(stack));
+    getSlot(2).setByPlayer(recipe.get().getValue().apply(stack));
   }
 
   @Override
-  protected ForgingSlotsManager getForgingSlotsManager() {
-    return ForgingSlotsManager.create()
-        .input(0, 27, 47, stack -> true)
-        .input(1, 76, 47, stack -> true)
-        .output(0, 134, 47)
+  protected ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
+    return ItemCombinerMenuSlotDefinition.create()
+        .withSlot(0, 27, 47, stack -> true)
+        .withSlot(1, 76, 47, stack -> true)
+        .withResultSlot(0, 134, 47)
         .build();
   }
 
   @Override
-  protected boolean canUse(BlockState state) {
-    return state.isOf(Blocks.FLETCHING_TABLE);
+  protected boolean isValidBlock(BlockState state) {
+    return state.is(Blocks.FLETCHING_TABLE);
   }
 
   @Override
-  public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-    return slot.inventory != this.output && super.canInsertIntoSlot(stack, slot);
+  public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
+    return slot.container != this.resultSlots && super.canTakeItemForPickAll(stack, slot);
   }
 
   static void init() {
     var module = ModuleManager.get().get(BetterFletchingTable.class).orElseThrow();
     FletchingScreenHandler.FLETCHING.init(RegistryUtil.register(
-        Registries.SCREEN_HANDLER,
+        BuiltInRegistries.MENU,
         id("fletching"),
         RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
 
     Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 
     if (Debug.get().isModLoaded(module, "additionaladditions")) {
-      Registries.ITEM
-          .getOrEmpty(Identifier.of("additionaladditions", "crossbow_with_spyglass"))
+      BuiltInRegistries.ITEM
+          .getOptional(ResourceLocation.tryBuild("additionaladditions", "crossbow_with_spyglass"))
           .ifPresent(item -> {
             tightable.add(item);
             FletchingScreenHandler.addRecipe(
                 stack -> {
                   var result = new ItemStack(item, 1);
-                  if (stack.getNbt() != null) result.setNbt(stack.getNbt());
+                  if (stack.getTag() != null) result.setTag(stack.getTag());
                   return result;
                 },
-                Ingredient.ofItems(Items.SPYGLASS),
-                Ingredient.ofItems(Items.CROSSBOW));
+                Ingredient.of(Items.SPYGLASS),
+                Ingredient.of(Items.CROSSBOW));
           });
     }
 
     FletchingScreenHandler.addRecipe(
         stack -> {
-          NbtCompound nbt = stack.getOrCreateNbt();
+          CompoundTag nbt = stack.getOrCreateTag();
           int i = nbt.getInt("AM-Tightened");
           if (i >= 32) return ItemStack.EMPTY;
 
           ItemStack newStack = stack.copy();
-          newStack.getOrCreateNbt().putInt("AM-Tightened", Math.min(i + 2, 32));
+          newStack.getOrCreateTag().putInt("AM-Tightened", Math.min(i + 2, 32));
           return newStack;
         },
-        Ingredient.ofItems(Items.STRING),
-        Ingredient.ofItems(tightable.toArray(ItemConvertible[]::new)));
+        Ingredient.of(Items.STRING),
+        Ingredient.of(tightable.toArray(ItemLike[]::new)));
   }
 }

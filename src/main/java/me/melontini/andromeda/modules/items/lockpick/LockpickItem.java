@@ -13,38 +13,38 @@ import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
 
 public class LockpickItem extends Item {
 
   public static final Keeper<LockpickItem> INSTANCE = Keeper.create();
 
-  public LockpickItem(Settings settings) {
+  public LockpickItem(Properties settings) {
     super(settings);
   }
 
-  public boolean tryUse(ItemStack stack, LivingEntity user, Hand hand) {
-    var c = user.world.am$get(Lockpick.CONFIG);
+  public boolean tryUse(ItemStack stack, LivingEntity user, InteractionHand hand) {
+    var c = user.level.am$get(Lockpick.CONFIG);
     var supplier = LootContextBuilder.fishing(
-        user.world, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
-    if (c.available.asBoolean(supplier) && hand == Hand.MAIN_HAND) {
+        user.level, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
+    if (c.available.asBoolean(supplier) && hand == InteractionHand.MAIN_HAND) {
       int chance = c.chance.asInt(supplier);
 
-      if (!(user instanceof PlayerEntity p && p.getAbilities().creativeMode)) {
+      if (!(user instanceof Player p && p.getAbilities().instabuild)) {
         if (c.breakAfterUse.asBoolean(supplier)) {
-          if (!user.world.isClient()) user.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+          if (!user.level.isClientSide()) user.broadcastBreakEvent(EquipmentSlot.MAINHAND);
 
-          stack.decrement(1);
+          stack.shrink(1);
         }
       }
 
@@ -54,21 +54,21 @@ public class LockpickItem extends Item {
   }
 
   @Override
-  public ActionResult useOnEntity(
-      ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-    if (user.world.isClient()) return ActionResult.SUCCESS;
+  public InteractionResult interactLivingEntity(
+          ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+    if (user.level.isClientSide()) return InteractionResult.SUCCESS;
 
-    if (entity instanceof MerchantEntity merchant
+    if (entity instanceof AbstractVillager merchant
         && Andromeda.MAIN.get(Lockpick.MAIN_CONFIG).villagerInventory) {
       if (tryUse(stack, user, hand)) {
-        user.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+        user.openMenu(new SimpleMenuProvider(
             (syncId, inv, player) ->
                 new MerchantInventoryScreenHandler(syncId, inv, merchant.getInventory()),
             TextUtil.translatable("gui.andromeda.merchant")));
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
       }
     }
-    return ActionResult.CONSUME;
+    return InteractionResult.CONSUME;
   }
 
   static void init() {
@@ -76,27 +76,27 @@ public class LockpickItem extends Item {
     var config = Andromeda.MAIN.get(Lockpick.MAIN_CONFIG);
 
     LockpickItem.INSTANCE.init(RegistryUtil.register(
-        Registries.ITEM,
+        BuiltInRegistries.ITEM,
         id("lockpick"),
-        () -> new LockpickItem(new FabricItemSettings().maxCount(16))));
+        () -> new LockpickItem(new FabricItemSettings().stacksTo(16))));
     MerchantInventoryScreenHandler.INSTANCE.init(RegistryUtil.register(
         config.villagerInventory,
-        Registries.SCREEN_HANDLER,
+        BuiltInRegistries.MENU,
         id("merchant_inventory"),
         RegistryUtil.screenHandlerType(MerchantInventoryScreenHandler::new)));
 
     AndromedaItemGroup.BUS.listen(
-        acceptor -> acceptor.keeper(module, ItemGroups.TOOLS, LockpickItem.INSTANCE));
+        acceptor -> acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, LockpickItem.INSTANCE));
 
     ModuleManager.get()
         .whenAvailable(
             ModuleDeclarations.LOOT_UNLOCKER,
             function -> function.apply((be, player) -> {
-              if (player.world.am$get(GuardedLoot.CONFIG).allowLockPicking) {
-                if (player.getMainHandStack().isOf(LockpickItem.INSTANCE.orThrow())) {
+              if (player.level.am$get(GuardedLoot.CONFIG).allowLockPicking) {
+                if (player.getMainHandItem().is(LockpickItem.INSTANCE.orThrow())) {
                   return LockpickItem.INSTANCE
                       .orThrow()
-                      .tryUse(player.getMainHandStack(), player, Hand.MAIN_HAND);
+                      .tryUse(player.getMainHandItem(), player, InteractionHand.MAIN_HAND);
                 }
               }
               return false;

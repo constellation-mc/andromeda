@@ -10,11 +10,11 @@ import me.melontini.andromeda.bootstrap.event.bus.Bus;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.item_group.ItemGroupBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceKey;
 
 public interface AndromedaItemGroup {
 
@@ -26,7 +26,7 @@ public interface AndromedaItemGroup {
 
   void onCreateItemGroup(Acceptor acceptor);
 
-  static ItemGroup create() {
+  static CreativeModeTab create() {
     return ItemGroupBuilder.create(Andromeda.id("group"))
         .entries(entries -> {
           Map<Module, List<ItemStack>> stackMap = new LinkedHashMap<>();
@@ -56,7 +56,7 @@ public interface AndromedaItemGroup {
           List<ItemStack> stacks = new ArrayList<>();
           small.forEach((m, itemStacks) -> {
             ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-            sign.setCustomName(
+            sign.setHoverName(
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
             stacks.add(sign);
             stacks.addAll(itemStacks);
@@ -65,7 +65,7 @@ public interface AndromedaItemGroup {
           entries.appendStacks(stacks);
           big.forEach((m, itemStacks) -> {
             ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-            sign.setCustomName(
+            sign.setHoverName(
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
             itemStacks.add(0, sign);
             entries.appendStacks(itemStacks);
@@ -76,28 +76,28 @@ public interface AndromedaItemGroup {
   }
 
   interface Acceptor {
-    void stack(Module module, RegistryKey<ItemGroup> main, ItemStack stack);
+    void stack(Module module, ResourceKey<CreativeModeTab> main, ItemStack stack);
 
-    default void stacks(Module module, RegistryKey<ItemGroup> main, List<ItemStack> stacks) {
+    default void stacks(Module module, ResourceKey<CreativeModeTab> main, List<ItemStack> stacks) {
       for (ItemStack stack : stacks) {
         stack(module, main, stack);
       }
     }
 
-    default <T extends ItemConvertible> void items(
-        Module module, RegistryKey<ItemGroup> main, List<T> items) {
+    default <T extends ItemLike> void items(
+            Module module, ResourceKey<CreativeModeTab> main, List<T> items) {
       stacks(module, main, items.stream().map(ItemStack::new).toList());
     }
 
-    default <T extends ItemConvertible> void item(
-        Module module, RegistryKey<ItemGroup> main, T item) {
+    default <T extends ItemLike> void item(
+            Module module, ResourceKey<CreativeModeTab> main, T item) {
       stack(module, main, new ItemStack(item));
     }
 
-    default <T extends ItemConvertible> void keepers(
-        Module module,
-        RegistryKey<ItemGroup> main,
-        List<Keeper<? extends ItemConvertible>> keepers) {
+    default <T extends ItemLike> void keepers(
+            Module module,
+            ResourceKey<CreativeModeTab> main,
+            List<Keeper<? extends ItemLike>> keepers) {
       stacks(
           module,
           main,
@@ -108,8 +108,8 @@ public interface AndromedaItemGroup {
               .toList());
     }
 
-    default <T extends ItemConvertible> void keeper(
-        Module module, RegistryKey<ItemGroup> main, Keeper<T> keeper) {
+    default <T extends ItemLike> void keeper(
+            Module module, ResourceKey<CreativeModeTab> main, Keeper<T> keeper) {
       if (keeper.isPresent()) stack(module, main, new ItemStack(keeper.orThrow()));
     }
   }

@@ -6,74 +6,74 @@ import static me.melontini.andromeda.modules.entities.boats.entities.BoatEntityW
 import java.util.List;
 import me.melontini.andromeda.modules.entities.boats.BoatEntities;
 import me.melontini.andromeda.modules.entities.boats.BoatItems;
-import net.minecraft.block.entity.Hopper;
-import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.ChestBoatEntity;
-import net.minecraft.item.Item;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.HopperScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.Hopper;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.ChestBoat;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.inventory.HopperMenu;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class HopperBoatEntity extends ChestBoatEntity implements Hopper {
-  private final BlockPos currentBlockPos = BlockPos.ORIGIN;
+public class HopperBoatEntity extends ChestBoat implements Hopper {
+  private final BlockPos currentBlockPos = BlockPos.ZERO;
   public int transferCooldown = -1;
 
-  public HopperBoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
+  public HopperBoatEntity(EntityType<? extends Boat> entityType, Level world) {
     super(entityType, world);
-    this.resetInventory();
+    this.clearItemStacks();
   }
 
-  public HopperBoatEntity(World world, double x, double y, double z) {
+  public HopperBoatEntity(Level world, double x, double y, double z) {
     this(BoatEntities.BOAT_WITH_HOPPER.orThrow(), world);
-    this.setPosition(x, y, z);
-    this.prevX = x;
-    this.prevY = y;
-    this.prevZ = z;
+    this.setPos(x, y, z);
+    this.xo = x;
+    this.yo = y;
+    this.zo = z;
   }
 
   @Nullable @Override
-  public ScreenHandler createMenu(
-      int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-    return new HopperScreenHandler(i, playerInventory, this);
+  public AbstractContainerMenu createMenu(
+          int i, Inventory playerInventory, Player playerEntity) {
+    return new HopperMenu(i, playerInventory, this);
   }
 
   @Override
-  public int size() {
+  public int getContainerSize() {
     return 5;
   }
 
   @Override
-  public double getHopperX() {
-    Vec3d vec3d = new Vec3d(-0.8, 0.0, 0.0).rotateY(-this.getYaw() * PIby180 - PIby2);
+  public double getLevelX() {
+    Vec3 vec3d = new Vec3(-0.8, 0.0, 0.0).yRot(-this.getYRot() * PIby180 - PIby2);
     return this.getX() + vec3d.x;
   }
 
   @Override
-  public double getHopperY() {
+  public double getLevelY() {
     return this.getY() + 0.5;
   }
 
   @Override
-  public double getHopperZ() {
-    Vec3d vec3d = new Vec3d(-0.8, 0.0, 0.0).rotateY(-this.getYaw() * PIby180 - PIby2);
+  public double getLevelZ() {
+    Vec3 vec3d = new Vec3(-0.8, 0.0, 0.0).yRot(-this.getYRot() * PIby180 - PIby2);
     return this.getZ() + vec3d.z;
   }
 
   @Override
   public void tick() {
     super.tick();
-    if (!this.world.isClient && this.isAlive()) {
-      BlockPos blockPos = this.getBlockPos();
+    if (!this.level.isClientSide && this.isAlive()) {
+      BlockPos blockPos = this.blockPosition();
       if (blockPos.equals(this.currentBlockPos)) {
         --this.transferCooldown;
       } else {
@@ -84,27 +84,27 @@ public class HopperBoatEntity extends ChestBoatEntity implements Hopper {
         this.setTransferCooldown(0);
         if (this.canOperate()) {
           this.setTransferCooldown(4);
-          this.markDirty();
+          this.setChanged();
         }
       }
     }
   }
 
   @Override
-  public Item asItem() {
-    return Registries.ITEM.get(BoatItems.boatId(this.getVariant(), "hopper"));
+  public Item getDropItem() {
+    return BuiltInRegistries.ITEM.get(BoatItems.boatId(this.getVariant(), "hopper"));
   }
 
   public boolean canOperate() {
-    if (HopperBlockEntity.extract(this.world, this)) {
+    if (HopperBlockEntity.suckInItems(this.level, this)) {
       return true;
     } else {
-      List<ItemEntity> list = this.world.getEntitiesByClass(
+      List<ItemEntity> list = this.level.getEntitiesOfClass(
           ItemEntity.class,
-          this.getBoundingBox().expand(0.25, 0.0, 0.25),
-          EntityPredicates.VALID_ENTITY);
+          this.getBoundingBox().inflate(0.25, 0.0, 0.25),
+          EntitySelector.ENTITY_STILL_ALIVE);
       if (!list.isEmpty()) {
-        HopperBlockEntity.extract(this, list.get(0));
+        HopperBlockEntity.addItem(this, list.get(0));
       }
 
       return false;

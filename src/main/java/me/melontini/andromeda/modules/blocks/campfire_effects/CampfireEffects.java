@@ -14,8 +14,8 @@ import me.melontini.andromeda.common.config.GameConfig;
 import me.melontini.andromeda.common.util.commander.bool.BooleanIntermediary;
 import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
 import me.melontini.andromeda.common.util.commander.number.LongIntermediary;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 
 @ModuleInfo(name = "campfire_effects", category = "blocks", env = Environment.SERVER)
 public final class CampfireEffects extends Module {
@@ -35,7 +35,7 @@ public final class CampfireEffects extends Module {
     @AllArgsConstructor
     @NoArgsConstructor
     public static final class Effect {
-      public StatusEffect identifier = StatusEffects.REGENERATION;
+      public MobEffect identifier = MobEffects.REGENERATION;
       public LongIntermediary amplifier = LongIntermediary.of(0);
     }
   }

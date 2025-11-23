@@ -1,20 +1,20 @@
 package me.melontini.andromeda.modules.items.infinite_totem;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public class BeaconUtil {
 
-  public static boolean matchesPattern(World world, BlockPos pos) {
+  public static boolean matchesPattern(Level world, BlockPos pos) {
     int x = pos.getX();
     int y = pos.getY();
     int z = pos.getZ();
 
     for (int j = 1; j <= 4; j++) {
       int k = y - j;
-      if (k < world.getBottomY()) break;
+      if (k < world.getMinBuildHeight()) break;
 
       Block current = j % 2 == 0 ? Blocks.DIAMOND_BLOCK : Blocks.NETHERITE_BLOCK;
 

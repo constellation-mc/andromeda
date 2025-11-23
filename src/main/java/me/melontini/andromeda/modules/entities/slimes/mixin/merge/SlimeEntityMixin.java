@@ -5,13 +5,13 @@ import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.slimes.Slimes;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,8 +19,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SlimeEntity.class)
-abstract class SlimeEntityMixin extends MobEntity {
+@Mixin(Slime.class)
+abstract class SlimeEntityMixin extends Mob {
 
   @Shadow
   public abstract int getSize();
@@ -30,20 +30,20 @@ abstract class SlimeEntityMixin extends MobEntity {
 
   @Unique private int andromeda$mergeCD = MathUtil.nextInt(700, 2000);
 
-  protected SlimeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
+  protected SlimeEntityMixin(EntityType<? extends Mob> entityType, Level world) {
     super(entityType, world);
   }
 
-  @Inject(at = @At("TAIL"), method = "initGoals")
+  @Inject(at = @At("TAIL"), method = "registerGoals")
   private void andromeda$newGoal(CallbackInfo ci) {
-    var config = this.world.am$get(Slimes.CONFIG);
+    var config = this.level.am$get(Slimes.CONFIG);
     var supplier = ConstantLootContextAccessor.get(this);
-    this.targetSelector.add(
+    this.targetSelector.addGoal(
         2,
-        new ActiveTargetGoal<>(
-            (SlimeEntity) (Object) this, SlimeEntity.class, 5, true, false, livingEntity -> {
+        new NearestAttackableTargetGoal<>(
+            (Slime) (Object) this, Slime.class, 5, true, false, livingEntity -> {
               if (!config.available.asBoolean(supplier)) return false;
-              var supplier1 = LootContextBuilder.entity(world, builder -> builder
+              var supplier1 = LootContextBuilder.entity(level, builder -> builder
                   .origin(livingEntity)
                   .thisEntity(livingEntity)
                   .killer(this)
@@ -53,21 +53,21 @@ abstract class SlimeEntityMixin extends MobEntity {
               float d = livingEntity.distanceTo(this);
               return d <= 6
                   && (getSize() <= config.maxMerge.asInt(supplier1)
-                      && ((SlimeEntity) livingEntity).getSize() < getSize());
+                      && ((Slime) livingEntity).getSize() < getSize());
             }));
   }
 
-  @Inject(at = @At("TAIL"), method = "pushAwayFrom")
+  @Inject(at = @At("TAIL"), method = "push")
   private void andromeda$push(Entity entity, CallbackInfo ci) {
-    var config = this.world.am$get(Slimes.CONFIG);
+    var config = this.level.am$get(Slimes.CONFIG);
     var supplier = ConstantLootContextAccessor.get(this);
     if (!config.available.asBoolean(supplier)) return;
 
     if (!config.merge.asBoolean(LootContextBuilder.entity(
-        world,
+            level,
         builder -> builder.origin(entity).thisEntity(entity).genericSource().killer(this)))) return;
 
-    if (getTarget() instanceof SlimeEntity slime
+    if (getTarget() instanceof Slime slime
         && slime == entity
         && this.andromeda$mergeCD == 0) {
       int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);
@@ -83,13 +83,13 @@ abstract class SlimeEntityMixin extends MobEntity {
     if (this.andromeda$mergeCD > 0) --this.andromeda$mergeCD;
   }
 
-  @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
-  private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
+  private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
     nbt.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
   }
 
-  @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
-  private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
+  private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
     this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathUtil.nextInt(700, 2000));
   }
 }

@@ -4,19 +4,19 @@ import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(BowItem.class)
-abstract class BowItemMixin extends RangedWeaponItem {
+abstract class BowItemMixin extends ProjectileWeaponItem {
 
-  public BowItemMixin(Settings settings) {
+  public BowItemMixin(Properties settings) {
     super(settings);
   }
 
@@ -25,22 +25,22 @@ abstract class BowItemMixin extends RangedWeaponItem {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V"),
-      method = "onStoppedUsing",
+                      "Lnet/minecraft/world/entity/projectile/AbstractArrow;shootFromRotation(Lnet/minecraft/world/entity/Entity;FFFFF)V"),
+      method = "releaseUsing",
       index = 5)
   public float andromeda$setVelocity(
-      float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local PlayerEntity player) {
-    NbtCompound stackNbt = stack.getNbt();
+          float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local Player player) {
+    CompoundTag stackNbt = stack.getTag();
     int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);
     if (a > 0) {
       stackNbt.putInt("AM-Tightened", a - 1);
       return f
           * player
-              .world
+              .level
               .am$get(BetterFletchingTable.CONFIG)
               .divergenceModifier
               .asFloat(LootContextBuilder.fishing(
-                  player.world, builder -> builder.origin(player).tool(stack).thisEntity(player)));
+                  player.level, builder -> builder.origin(player).tool(stack).thisEntity(player)));
     }
     return f;
   }

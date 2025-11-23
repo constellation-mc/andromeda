@@ -2,38 +2,38 @@ package me.melontini.andromeda.modules.mechanics.throwable_items;
 
 import static me.melontini.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
 public interface ItemBehavior {
 
   void onCollision(
-      ItemStack stack,
-      FlyingItemEntity fie,
-      ServerWorld world,
-      @Nullable Entity user,
-      HitResult hitResult);
+          ItemStack stack,
+          FlyingItemEntity fie,
+          ServerLevel world,
+          @Nullable Entity user,
+          HitResult hitResult);
 
   static int getCooldown(
-      ServerWorld world, @Nullable Entity user, FlyingItemEntity fie, ItemStack stack) {
+          ServerLevel world, @Nullable Entity user, FlyingItemEntity fie, ItemStack stack) {
     var cd = world.getServer().dm$getReloader(RELOADER).getCooldown(stack.getItem());
     if (cd.toSource().left().isPresent()) return cd.asInt(null); // constant, can pass null.
 
-    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world);
-    builder.add(LootContextParameters.DIRECT_KILLER_ENTITY, fie);
-    builder.addOptional(LootContextParameters.KILLER_ENTITY, user);
-    builder.add(LootContextParameters.TOOL, stack);
-    builder.add(LootContextParameters.ORIGIN, fie.getPos());
+    LootParams.Builder builder = new LootParams.Builder(world);
+    builder.withParameter(LootContextParams.DIRECT_KILLER_ENTITY, fie);
+    builder.withOptionalParameter(LootContextParams.KILLER_ENTITY, user);
+    builder.withParameter(LootContextParams.TOOL, stack);
+    builder.withParameter(LootContextParams.ORIGIN, fie.position());
 
     LootContext lootContext =
-        new LootContext.Builder(builder.build(Main.CONTEXT_TYPE.orThrow())).build(null);
+        new LootContext.Builder(builder.create(Main.CONTEXT_TYPE.orThrow())).create(null);
     return cd.asInt(lootContext);
   }
 }

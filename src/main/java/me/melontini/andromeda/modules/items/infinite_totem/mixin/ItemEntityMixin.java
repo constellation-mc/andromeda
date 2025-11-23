@@ -10,21 +10,21 @@ import me.melontini.dark_matter.api.base.util.tuple.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -36,13 +36,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class ItemEntityMixin extends Entity {
 
   @Shadow
-  public abstract void setPickupDelayInfinite();
+  public abstract void setNeverPickUp();
 
   @Shadow
-  public abstract void setToDefaultPickupDelay();
+  public abstract void setDefaultPickUpDelay();
 
   @Shadow
-  public abstract ItemStack getStack();
+  public abstract ItemStack getItem();
 
   @Unique private static final Tuple<BeaconBlockEntity, Boolean> ANDROMEDA$NULL_BEACON =
       Tuple.of(null, false);
@@ -53,7 +53,7 @@ abstract class ItemEntityMixin extends Entity {
 
   @Unique private Tuple<BeaconBlockEntity, Boolean> andromeda$beacon = ANDROMEDA$NULL_BEACON;
 
-  public ItemEntityMixin(EntityType<?> type, World world) {
+  public ItemEntityMixin(EntityType<?> type, Level world) {
     super(type, world);
   }
 
@@ -61,21 +61,21 @@ abstract class ItemEntityMixin extends Entity {
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/entity/Entity;tick()V",
+              target = "Lnet/minecraft/world/entity/Entity;tick()V",
               shift = At.Shift.BEFORE),
       method = "tick")
   private void andromeda$tick(CallbackInfo ci) {
-    if (this.world.isClient()) return;
-    if (!this.getStack().isOf(Items.TOTEM_OF_UNDYING)) return;
-    var c = world.am$get(InfiniteTotem.CONFIG);
+    if (this.level.isClientSide()) return;
+    if (!this.getItem().is(Items.TOTEM_OF_UNDYING)) return;
+    var c = level.am$get(InfiniteTotem.CONFIG);
     var supplier =
-        LootContextBuilder.fishing(world, builder -> builder.origin(getPos()).tool(getStack()));
+        LootContextBuilder.fishing(level, builder -> builder.origin(position()).tool(getItem()));
     if (!c.available.asBoolean(supplier) || !c.enableAscension.asBoolean(supplier)) return;
 
-    if (age % 35 == 0 && andromeda$ascensionTicks == 0) {
+    if (tickCount % 35 == 0 && andromeda$ascensionTicks == 0) {
       if (!andromeda$beaconCheck()) {
-        this.setToDefaultPickupDelay();
-        if (andromeda$itemEntity != null) andromeda$itemEntity.setToDefaultPickupDelay();
+        this.setDefaultPickUpDelay();
+        if (andromeda$itemEntity != null) andromeda$itemEntity.setDefaultPickUpDelay();
       }
     }
 
@@ -83,12 +83,12 @@ abstract class ItemEntityMixin extends Entity {
       if (andromeda$itemEntity == null) {
         if (andromeda$ascensionTicks > 0) --andromeda$ascensionTicks;
 
-        if (age % 10 == 0) {
-          Optional<ItemEntity> optional = world
-              .getEntitiesByClass(
+        if (tickCount % 10 == 0) {
+          Optional<ItemEntity> optional = level
+              .getEntitiesOfClass(
                   ItemEntity.class,
-                  getBoundingBox().expand(0.5),
-                  itemEntity -> itemEntity.getStack().isOf(Items.NETHER_STAR)
+                  getBoundingBox().inflate(0.5),
+                  itemEntity -> itemEntity.getItem().is(Items.NETHER_STAR)
                       && toMixin(itemEntity).andromeda$itemEntity == null)
               .stream()
               .findAny();
@@ -97,33 +97,33 @@ abstract class ItemEntityMixin extends Entity {
             andromeda$itemEntity = optional.get();
             toMixin(andromeda$itemEntity).andromeda$itemEntity = (ItemEntity) (Object) this;
 
-            ItemStack targetStack = andromeda$itemEntity.getStack();
+            ItemStack targetStack = andromeda$itemEntity.getItem();
             int count = targetStack.getCount() - 1;
             if (count > 0) {
               ItemStack newStack = targetStack.copy();
               newStack.setCount(count);
               targetStack.setCount(1);
 
-              andromeda$itemEntity.setStack(targetStack);
+              andromeda$itemEntity.setItem(targetStack);
 
               ItemEntity entity = new ItemEntity(
-                  world,
+                      level,
                   andromeda$itemEntity.getX(),
                   andromeda$itemEntity.getY(),
                   andromeda$itemEntity.getZ(),
                   newStack);
-              world.spawnEntity(entity);
+              level.addFreshEntity(entity);
 
-              PacketByteBuf buf = PacketByteBufs.create()
+              FriendlyByteBuf buf = PacketByteBufs.create()
                   .writeVarInt(andromeda$itemEntity.getId())
-                  .writeItemStack(targetStack);
-              for (ServerPlayerEntity serverPlayerEntity : PlayerLookup.tracking(this)) {
+                  .writeItem(targetStack);
+              for (ServerPlayer serverPlayerEntity : PlayerLookup.tracking(this)) {
                 ServerPlayNetworking.send(serverPlayerEntity, Main.NOTIFY_CLIENT, buf);
               }
             }
 
-            andromeda$itemEntity.setPickupDelayInfinite();
-            this.setPickupDelayInfinite();
+            andromeda$itemEntity.setNeverPickUp();
+            this.setNeverPickUp();
           }
         }
       } else {
@@ -136,23 +136,23 @@ abstract class ItemEntityMixin extends Entity {
           if (andromeda$ascensionTicks == 180) {
             andromeda$ascensionTicks = 0;
 
-            ((ServerWorld) world)
-                .spawnParticles(
+            ((ServerLevel) level)
+                .sendParticles(
                     ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
 
             ItemEntity entity = new ItemEntity(
-                world,
+                    level,
                 this.getX(),
                 this.getY(),
                 this.getZ(),
                 new ItemStack(Main.INFINITE_TOTEM.orThrow()));
             this.discard();
             andromeda$itemEntity.discard();
-            world.spawnEntity(entity);
+            level.addFreshEntity(entity);
           }
         } else {
-          this.setToDefaultPickupDelay();
-          andromeda$itemEntity.setToDefaultPickupDelay();
+          this.setDefaultPickUpDelay();
+          andromeda$itemEntity.setDefaultPickUpDelay();
           toMixin(andromeda$itemEntity).andromeda$itemEntity = null;
 
           andromeda$itemEntity = null;
@@ -166,17 +166,17 @@ abstract class ItemEntityMixin extends Entity {
   }
 
   @Unique private boolean andromeda$beaconCheck() {
-    BlockEntity entity = world.getBlockEntity(new BlockPos(
+    BlockEntity entity = level.getBlockEntity(new BlockPos(
         (int) getX(),
-        world.getTopY(
-                Heightmap.Type.WORLD_SURFACE,
-                getBlockPos().getX(),
-                getBlockPos().getZ())
+        level.getHeight(
+                Heightmap.Types.WORLD_SURFACE,
+                blockPosition().getX(),
+                blockPosition().getZ())
             - 1,
         (int) getZ()));
     if (entity instanceof BeaconBlockEntity beaconBlock) {
       this.andromeda$beacon =
-          Tuple.of(beaconBlock, BeaconUtil.matchesPattern(world, beaconBlock.getPos()));
+          Tuple.of(beaconBlock, BeaconUtil.matchesPattern(level, beaconBlock.getBlockPos()));
       return true;
     } else {
       this.andromeda$beacon = ANDROMEDA$NULL_BEACON;
@@ -184,13 +184,13 @@ abstract class ItemEntityMixin extends Entity {
     }
   }
 
-  @Inject(at = @At("TAIL"), method = "readCustomDataFromNbt")
-  private void andromeda$readNbt(NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
+  private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
     this.andromeda$ascensionTicks = nbt.getInt("AM-Ascension");
   }
 
-  @Inject(at = @At("TAIL"), method = "writeCustomDataToNbt")
-  private void andromeda$writeNbt(NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
+  private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
     nbt.putInt("AM-Ascension", this.andromeda$ascensionTicks);
   }
 }

@@ -3,11 +3,11 @@ package me.melontini.andromeda.modules.entities.ghast_tweaks.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.melontini.andromeda.modules.entities.ghast_tweaks.GhastExplosionDuck;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.Explosion;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +21,7 @@ abstract class ExplosionMixin implements GhastExplosionDuck {
 
   @Shadow
   @Final
-  private World world;
+  private Level level;
 
   @Unique private final ObjectArrayList<BlockPos> affectedObsidian = new ObjectArrayList<>();
 
@@ -32,23 +32,23 @@ abstract class ExplosionMixin implements GhastExplosionDuck {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/explosion/ExplosionBehavior;getBlastResistance(Lnet/minecraft/world/explosion/Explosion;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/fluid/FluidState;)Ljava/util/Optional;"),
-      method = "collectBlocksAndDamageEntities")
+                      "Lnet/minecraft/world/level/ExplosionDamageCalculator;getBlockExplosionResistance(Lnet/minecraft/world/level/Explosion;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/material/FluidState;)Ljava/util/Optional;"),
+      method = "explode")
   private void collectAffectedObsidian(
       CallbackInfo ci,
       @Local(index = 14) float h,
       @Local(index = 22) BlockPos pos,
       @Local(index = 23) BlockState state) {
     if (!affectObsidian || state.getBlock() != Blocks.OBSIDIAN) return;
-    if (h - 0.64 > 0 && world.random.nextFloat() >= 0.2f) affectedObsidian.add(pos);
+    if (h - 0.64 > 0 && level.random.nextFloat() >= 0.2f) affectedObsidian.add(pos);
   }
 
   @Inject(
-      at = @At(value = "FIELD", target = "Lnet/minecraft/world/explosion/Explosion;createFire:Z"),
-      method = "affectWorld")
+      at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Explosion;fire:Z"),
+      method = "finalizeExplosion")
   private void affectObsidian(boolean particles, CallbackInfo ci) {
     for (BlockPos blockPos : affectedObsidian) {
-      world.setBlockState(blockPos, Blocks.CRYING_OBSIDIAN.getDefaultState());
+      level.setBlockAndUpdate(blockPos, Blocks.CRYING_OBSIDIAN.defaultBlockState());
     }
   }
 

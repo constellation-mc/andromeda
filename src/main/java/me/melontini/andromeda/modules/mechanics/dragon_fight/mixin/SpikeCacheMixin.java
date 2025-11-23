@@ -6,7 +6,7 @@ import me.melontini.andromeda.modules.mechanics.dragon_fight.DragonFight;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(targets = "net/minecraft/world/gen/feature/EndSpikeFeature$SpikeCache")
+@Mixin(targets = "net.minecraft.world.level.levelgen.feature.SpikeFeature$SpikeCacheLoader")
 abstract class SpikeCacheMixin {
 
   @ModifyExpressionValue(

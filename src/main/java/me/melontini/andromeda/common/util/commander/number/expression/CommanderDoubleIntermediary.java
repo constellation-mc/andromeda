@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.ToString;
 import me.melontini.andromeda.common.util.commander.number.DoubleIntermediary;
 import me.melontini.commander.api.expression.Arithmetica;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 @EqualsAndHashCode
 @ToString

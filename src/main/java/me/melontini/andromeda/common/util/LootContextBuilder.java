@@ -5,120 +5,124 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import lombok.NonNull;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.*;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 // Wrapper for a LootContextParameterSet.Builder to add our utility methods.
 public class LootContextBuilder {
 
-  LootContextParameterSet.Builder builder;
+  LootParams.Builder builder;
 
-  private LootContextBuilder(World world) {
-    this.builder = new LootContextParameterSet.Builder((ServerWorld) world);
+  private LootContextBuilder(Level world) {
+    this.builder = new LootParams.Builder((ServerLevel) world);
   }
 
   public static Supplier<LootContext> builder(
-      LootContextType type, World world, BuilderFunction function) {
+          LootContextParamSet type, Level world, BuilderFunction function) {
     return Memoize.supplier(
-        () -> build(function.apply(new LootContextBuilder(world)).builder.build(type)));
+        () -> build(function.apply(new LootContextBuilder(world)).builder.create(type)));
   }
 
-  public static Supplier<LootContext> block(World world, BuilderFunction function) {
-    return builder(LootContextTypes.BLOCK, world, function);
+  public static Supplier<LootContext> block(Level world, BuilderFunction function) {
+    return builder(LootContextParamSets.BLOCK, world, function);
   }
 
-  public static Supplier<LootContext> fishing(World world, BuilderFunction function) {
-    return builder(LootContextTypes.FISHING, world, function);
+  public static Supplier<LootContext> fishing(Level world, BuilderFunction function) {
+    return builder(LootContextParamSets.FISHING, world, function);
   }
 
-  public static Supplier<LootContext> command(World world, BuilderFunction function) {
-    return builder(LootContextTypes.COMMAND, world, function);
+  public static Supplier<LootContext> command(Level world, BuilderFunction function) {
+    return builder(LootContextParamSets.COMMAND, world, function);
   }
 
-  public static Supplier<LootContext> entity(World world, BuilderFunction function) {
-    return builder(LootContextTypes.ENTITY, world, function);
+  public static Supplier<LootContext> entity(Level world, BuilderFunction function) {
+    return builder(LootContextParamSets.ENTITY, world, function);
   }
 
-  public static LootContext build(LootContextParameterSet set) {
-    return new LootContext.Builder(set).build(null);
+  public static LootContext build(LootParams set) {
+    return new LootContext.Builder(set).create(null);
   }
 
-  public static List<ItemStack> prepareLoot(@NonNull World world, @NonNull Identifier lootId) {
-    return ((ServerWorld) world)
+  public static List<ItemStack> prepareLoot(@NonNull Level world, @NonNull ResourceLocation lootId) {
+    return ((ServerLevel) world)
         .getServer()
-        .getLootManager()
+        .getLootData()
         .getLootTable(lootId)
-        .generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world))
-            .build(LootContextTypes.EMPTY));
+        .getRandomItems(new LootParams.Builder(((ServerLevel) world))
+            .create(LootContextParamSets.EMPTY));
   }
 
   public LootContextBuilder origin(BlockPos pos) {
-    return this.origin(Vec3d.ofCenter(pos));
+    return this.origin(Vec3.atCenterOf(pos));
   }
 
   public LootContextBuilder origin(Entity entity) {
-    return this.origin(entity.getPos());
+    return this.origin(entity.position());
   }
 
-  public LootContextBuilder origin(Vec3d pos) {
-    this.builder.addOptional(LootContextParameters.ORIGIN, pos);
+  public LootContextBuilder origin(Vec3 pos) {
+    this.builder.withOptionalParameter(LootContextParams.ORIGIN, pos);
     return this;
   }
 
   public LootContextBuilder state(BlockState state) {
-    this.builder.addOptional(LootContextParameters.BLOCK_STATE, state);
+    this.builder.withOptionalParameter(LootContextParams.BLOCK_STATE, state);
     return this;
   }
 
-  public LootContextBuilder tool(LivingEntity player, Hand hand) {
-    return this.tool(player.getStackInHand(hand));
+  public LootContextBuilder tool(LivingEntity player, InteractionHand hand) {
+    return this.tool(player.getItemInHand(hand));
   }
 
   public LootContextBuilder tool(@Nullable ItemStack stack) {
-    this.builder.addOptional(
-        LootContextParameters.TOOL, Objects.requireNonNullElse(stack, ItemStack.EMPTY));
+    this.builder.withOptionalParameter(
+        LootContextParams.TOOL, Objects.requireNonNullElse(stack, ItemStack.EMPTY));
     return this;
   }
 
   public LootContextBuilder thisEntity(Entity entity) {
-    this.builder.addOptional(LootContextParameters.THIS_ENTITY, entity);
+    this.builder.withOptionalParameter(LootContextParams.THIS_ENTITY, entity);
     return this;
   }
 
   public LootContextBuilder killer(Entity entity) {
-    this.builder.addOptional(LootContextParameters.KILLER_ENTITY, entity);
+    this.builder.withOptionalParameter(LootContextParams.KILLER_ENTITY, entity);
     return this;
   }
 
   public LootContextBuilder directKiller(Entity entity) {
-    this.builder.addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, entity);
+    this.builder.withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, entity);
     return this;
   }
 
   public LootContextBuilder blockEntity(BlockEntity entity) {
-    this.builder.addOptional(LootContextParameters.BLOCK_ENTITY, entity);
+    this.builder.withOptionalParameter(LootContextParams.BLOCK_ENTITY, entity);
     return this;
   }
 
   public LootContextBuilder source(DamageSource source) {
-    this.builder.addOptional(LootContextParameters.DAMAGE_SOURCE, source);
+    this.builder.withOptionalParameter(LootContextParams.DAMAGE_SOURCE, source);
     return this;
   }
 
   public LootContextBuilder genericSource() {
-    return this.source(builder.getWorld().getDamageSources().generic());
+    return this.source(builder.getLevel().damageSources().generic());
   }
 
   public LootContextBuilder sourceOrGeneric(DamageSource source) {

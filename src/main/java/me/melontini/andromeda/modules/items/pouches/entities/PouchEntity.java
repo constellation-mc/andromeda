@@ -12,57 +12,57 @@ import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.InventoryOwner;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ItemStackParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.InventoryCarrier;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PouchEntity extends ThrownItemEntity {
+public class PouchEntity extends ThrowableItemProjectile {
 
-  private static final TrackedData<Integer> POUCH_TYPE =
-      DataTracker.registerData(PouchEntity.class, TrackedDataHandlerRegistry.INTEGER);
+  private static final EntityDataAccessor<Integer> POUCH_TYPE =
+      SynchedEntityData.defineId(PouchEntity.class, EntityDataSerializers.INT);
 
-  public PouchEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+  public PouchEntity(EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
     super(entityType, world);
   }
 
-  public PouchEntity(double d, double e, double f, World world) {
+  public PouchEntity(double d, double e, double f, Level world) {
     super(Main.POUCH.orThrow(), d, e, f, world);
   }
 
-  public PouchEntity(LivingEntity livingEntity, World world) {
+  public PouchEntity(LivingEntity livingEntity, Level world) {
     super(Main.POUCH.orThrow(), livingEntity, world);
   }
 
   @Override
-  protected void onCollision(HitResult hitResult) {
+  protected void onHit(HitResult hitResult) {
     HitResult.Type type = hitResult.getType();
 
-    ItemStack stack = getStack();
+    ItemStack stack = getItem();
     if (type == HitResult.Type.ENTITY) {
-      this.onEntityHit((EntityHitResult) hitResult);
-      if (world instanceof ServerWorld sw) {
-        sw.spawnParticles(
-            new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
+      this.onHitEntity((EntityHitResult) hitResult);
+      if (level instanceof ServerLevel sw) {
+        sw.sendParticles(
+            new ItemParticleOption(ParticleTypes.ITEM, stack),
             getX(),
             getY(),
             getZ(),
@@ -74,10 +74,10 @@ public class PouchEntity extends ThrownItemEntity {
       }
       this.discard();
     } else if (type == HitResult.Type.BLOCK) {
-      this.onBlockHit((BlockHitResult) hitResult);
-      if (world instanceof ServerWorld sw) {
-        sw.spawnParticles(
-            new ItemStackParticleEffect(ParticleTypes.ITEM, stack),
+      this.onHitBlock((BlockHitResult) hitResult);
+      if (level instanceof ServerLevel sw) {
+        sw.sendParticles(
+            new ItemParticleOption(ParticleTypes.ITEM, stack),
             getX(),
             getY(),
             getZ(),
@@ -91,60 +91,60 @@ public class PouchEntity extends ThrownItemEntity {
     }
 
     if (type != HitResult.Type.MISS) {
-      this.emitGameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());
+      this.gameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());
     }
   }
 
   @Override
-  protected void onEntityHit(EntityHitResult entityHitResult) {
-    if (!world.isClient()) {
-      var stacks = LootContextBuilder.prepareLoot(world, this.getPouchType().getLootId(getStack()));
+  protected void onHitEntity(EntityHitResult entityHitResult) {
+    if (!level.isClientSide()) {
+      var stacks = LootContextBuilder.prepareLoot(level, this.getPouchType().getLootId(getItem()));
 
       Entity entity = entityHitResult.getEntity();
-      if (entity instanceof PlayerEntity pe) {
-        stacks.forEach(stack -> pe.getInventory().offerOrDrop(stack));
+      if (entity instanceof Player pe) {
+        stacks.forEach(stack -> pe.getInventory().placeItemBackInInventory(stack));
         return;
-      } else if (entity instanceof InventoryOwner io) {
+      } else if (entity instanceof InventoryCarrier io) {
         var storage = InventoryStorage.of(io.getInventory(), null);
-        stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
+        stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
         return;
-      } else if (entity instanceof Inventory inv) {
+      } else if (entity instanceof Container inv) {
         var storage = InventoryStorage.of(inv, null);
-        stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
+        stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
         return;
       }
       stacks.forEach(stack ->
-          ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
+          ItemStackUtil.spawnVelocity(this.position(), stack, level, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
     }
   }
 
   @Override
-  protected void onBlockHit(BlockHitResult blockHitResult) {
-    if (!world.isClient()) {
-      var stacks = LootContextBuilder.prepareLoot(world, this.getPouchType().getLootId(getStack()));
+  protected void onHitBlock(BlockHitResult blockHitResult) {
+    if (!level.isClientSide()) {
+      var stacks = LootContextBuilder.prepareLoot(level, this.getPouchType().getLootId(getItem()));
 
-      var be = world.getBlockEntity(blockHitResult.getBlockPos());
+      var be = level.getBlockEntity(blockHitResult.getBlockPos());
       if ((be != null && Main.getViewCount(be) > 0)) {
         var storage = ItemStorage.SIDED.find(
-            world,
+                level,
             blockHitResult.getBlockPos(),
-            world.getBlockState(blockHitResult.getBlockPos()),
+            level.getBlockState(blockHitResult.getBlockPos()),
             be,
-            blockHitResult.getSide());
+            blockHitResult.getDirection());
         if (storage != null) {
-          stacks.forEach(stack -> Main.tryInsertItem(world, this.getPos(), stack, storage));
+          stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
           return;
         }
       }
       stacks.forEach(stack ->
-          ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
+          ItemStackUtil.spawnVelocity(this.position(), stack, level, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
     }
   }
 
   @Override
-  protected void initDataTracker() {
-    super.initDataTracker();
-    this.dataTracker.startTracking(POUCH_TYPE, Type.SEED.syncId);
+  protected void defineSynchedData() {
+    super.defineSynchedData();
+    this.entityData.define(POUCH_TYPE, Type.SEED.syncId);
   }
 
   @Override
@@ -153,20 +153,20 @@ public class PouchEntity extends ThrownItemEntity {
   }
 
   public Type getPouchType() {
-    return Type.getType(this.dataTracker.get(POUCH_TYPE));
+    return Type.getType(this.entityData.get(POUCH_TYPE));
   }
 
   public void setPouchType(Type type) {
-    this.dataTracker.set(POUCH_TYPE, type.syncId);
+    this.entityData.set(POUCH_TYPE, type.syncId);
   }
 
   @Override
-  public void writeCustomDataToNbt(NbtCompound nbt) {
+  public void addAdditionalSaveData(CompoundTag nbt) {
     nbt.putString("Type", getPouchType().name());
   }
 
   @Override
-  public void readCustomDataFromNbt(NbtCompound nbt) {
+  public void readAdditionalSaveData(CompoundTag nbt) {
     if (nbt.contains("Type")) {
       setPouchType(Type.valueOf(nbt.getString("Type")));
     }
@@ -178,10 +178,10 @@ public class PouchEntity extends ThrownItemEntity {
     FLOWER(2, Andromeda.id("pouches/flowers"), Main.FLOWER_POUCH),
     CUSTOM(3, null, Main.SPECIAL_POUCH) {
       @Override
-      public @NotNull Identifier getLootId(ItemStack stack) {
-        NbtCompound nbt = stack.getNbt();
+      public @NotNull ResourceLocation getLootId(ItemStack stack) {
+        CompoundTag nbt = stack.getTag();
         if (nbt != null && nbt.contains("CustomLootId")) {
-          return new Identifier(nbt.getString("CustomLootId"));
+          return new ResourceLocation(nbt.getString("CustomLootId"));
         }
         return SEED.getLootId(stack);
       }
@@ -197,17 +197,17 @@ public class PouchEntity extends ThrownItemEntity {
 
     private final int syncId;
 
-    @Nullable private final Identifier lootId;
+    @Nullable private final ResourceLocation lootId;
 
     private final Keeper<PouchItem> defaultItem;
 
-    Type(int syncId, @Nullable Identifier lootId, Keeper<PouchItem> defaultItem) {
+    Type(int syncId, @Nullable ResourceLocation lootId, Keeper<PouchItem> defaultItem) {
       this.syncId = syncId;
       this.lootId = lootId;
       this.defaultItem = defaultItem;
     }
 
-    public @NotNull Identifier getLootId(ItemStack stack) {
+    public @NotNull ResourceLocation getLootId(ItemStack stack) {
       return Objects.requireNonNull(lootId);
     }
 

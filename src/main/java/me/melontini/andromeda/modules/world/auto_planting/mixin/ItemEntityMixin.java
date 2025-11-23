@@ -3,16 +3,16 @@ package me.melontini.andromeda.modules.world.auto_planting.mixin;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.auto_planting.AutoPlanting;
 import me.melontini.dark_matter.api.base.util.MathUtil;
-import net.minecraft.block.PlantBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,36 +23,36 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class ItemEntityMixin {
 
   @Shadow
-  public abstract ItemStack getStack();
+  public abstract ItemStack getItem();
 
   @Inject(at = @At("HEAD"), method = "tick")
   public void andromeda$tryPlant(CallbackInfo ci) {
     Entity entity = (Entity) (Object) this;
-    ItemStack stack = this.getStack();
-    BlockPos pos = entity.getBlockPos();
-    World world = entity.getWorld();
+    ItemStack stack = this.getItem();
+    BlockPos pos = entity.blockPosition();
+    Level world = entity.level();
 
-    if (world.isClient()) return;
+    if (world.isClientSide()) return;
     if (!(stack.getItem() instanceof BlockItem blockItem)
-        || !(blockItem.getBlock() instanceof PlantBlock)) return;
+        || !(blockItem.getBlock() instanceof BushBlock)) return;
 
-    if (entity.age % MathUtil.nextInt(20, 101) != 0) return;
+    if (entity.tickCount % MathUtil.nextInt(20, 101) != 0) return;
     var config = world.am$get(AutoPlanting.CONFIG);
     if (!config.available.asBoolean(LootContextBuilder.fishing(
         world, builder -> builder.origin(entity).tool(stack).thisEntity(entity)))) return;
     if (!world.getFluidState(pos).isEmpty()) return;
     if (config.blacklistMode == config.idList.contains(stack.getItem())) return;
 
-    blockItem.place(new ItemPlacementContext(
+    blockItem.place(new BlockPlaceContext(
         world,
         null,
         null,
         stack,
-        world.raycast(new RaycastContext(
-            Vec3d.add(pos, 0.5, 0.5, 0.5),
-            Vec3d.add(pos, 0.5, -0.5, 0.5),
-            RaycastContext.ShapeType.COLLIDER,
-            RaycastContext.FluidHandling.ANY,
+        world.clip(new ClipContext(
+            Vec3.atLowerCornerWithOffset(pos, 0.5, 0.5, 0.5),
+            Vec3.atLowerCornerWithOffset(pos, 0.5, -0.5, 0.5),
+            ClipContext.Block.COLLIDER,
+            ClipContext.Fluid.ANY,
             entity))));
   }
 }

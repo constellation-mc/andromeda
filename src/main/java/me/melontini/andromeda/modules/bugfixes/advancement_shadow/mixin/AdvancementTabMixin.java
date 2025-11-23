@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.bugfixes.advancement_shadow.mixin;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.advancement.AdvancementTab;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.advancements.AdvancementTab;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,33 +12,33 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 abstract class AdvancementTabMixin {
 
   @Shadow
-  private float alpha;
+  private float fade;
 
   @Shadow
   @Final
-  private MinecraftClient client;
+  private Minecraft minecraft;
 
   @ModifyArg(
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F",
+              target = "Lnet/minecraft/util/Mth;clamp(FFF)F",
               ordinal = 0),
       index = 0,
-      method = "drawWidgetTooltip")
+      method = "drawTooltips")
   private float andromeda$draw(float value) {
-    return this.alpha + (0.04F * client.getLastFrameDuration());
+    return this.fade + (0.04F * minecraft.getDeltaFrameTime());
   }
 
   @ModifyArg(
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F",
+              target = "Lnet/minecraft/util/Mth;clamp(FFF)F",
               ordinal = 1),
       index = 0,
-      method = "drawWidgetTooltip")
+      method = "drawTooltips")
   private float andromeda$draw1(float value) {
-    return this.alpha - (0.06F * client.getLastFrameDuration());
+    return this.fade - (0.06F * minecraft.getDeltaFrameTime());
   }
 }

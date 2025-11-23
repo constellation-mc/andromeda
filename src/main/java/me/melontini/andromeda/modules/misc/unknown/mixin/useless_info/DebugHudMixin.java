@@ -6,8 +6,8 @@ import java.util.function.Supplier;
 import me.melontini.andromeda.bootstrap.util.mixin.MixinEnvironment;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.fabricmc.api.EnvType;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.DebugHud;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,12 +15,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @MixinEnvironment(EnvType.CLIENT)
-@Mixin(DebugHud.class)
+@Mixin(DebugScreenOverlay.class)
 abstract class DebugHudMixin {
 
   @Unique private static final Supplier<String> SPLASH = Memoize.supplier(() -> {
-    var r = MinecraftClient.getInstance().getSplashTextLoader().get();
-    return r != null ? r.text : null;
+    var r = Minecraft.getInstance().getSplashManager().getSplash();
+    return r != null ? r.splash : null;
   });
 
   @Inject(
@@ -28,9 +28,9 @@ abstract class DebugHudMixin {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/client/gui/hud/DebugHud;getServerWorldDebugString()Ljava/lang/String;",
+                      "Lnet/minecraft/client/gui/components/DebugScreenOverlay;getServerChunkStats()Ljava/lang/String;",
               shift = At.Shift.BEFORE),
-      method = "getLeftText")
+      method = "getGameInformation")
   private void andromeda$leftText(
       CallbackInfoReturnable<List<String>> cir, @Local List<String> list) {
     if (SPLASH.get() != null) list.add(SPLASH.get());

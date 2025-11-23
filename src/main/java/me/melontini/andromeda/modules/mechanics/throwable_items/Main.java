@@ -18,70 +18,70 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextType;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Position;
-import net.minecraft.world.World;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Position;
+import net.minecraft.world.level.Level;
 
 public final class Main {
 
   public static final Keeper<EntityType<FlyingItemEntity>> FLYING_ITEM = Keeper.create();
 
-  public static final RegistryKey<DamageType> BRICKED =
-      Andromeda.key(RegistryKeys.DAMAGE_TYPE, "bricked");
+  public static final ResourceKey<DamageType> BRICKED =
+      Andromeda.key(Registries.DAMAGE_TYPE, "bricked");
 
-  public static final Identifier FLYING_STACK_LANDED = Andromeda.id("flying_stack_landed");
-  public static final Identifier ITEMS_WITH_BEHAVIORS = Andromeda.id("items_with_behaviors");
-  public static final Identifier COLORED_FLYING_STACK_LANDED =
+  public static final ResourceLocation FLYING_STACK_LANDED = Andromeda.id("flying_stack_landed");
+  public static final ResourceLocation ITEMS_WITH_BEHAVIORS = Andromeda.id("items_with_behaviors");
+  public static final ResourceLocation COLORED_FLYING_STACK_LANDED =
       Andromeda.id("colored_flying_stack_landed");
 
-  public static final ProjectileDispenserBehavior BEHAVIOR = new ProjectileDispenserBehavior() {
+  public static final AbstractProjectileDispenseBehavior BEHAVIOR = new AbstractProjectileDispenseBehavior() {
     @Override
-    protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
+    protected Projectile getProjectile(Level world, Position position, ItemStack stack) {
       ItemStack stack1 = stack.copy();
       stack1.setCount(1);
-      return new FlyingItemEntity(stack1, position.getX(), position.getY(), position.getZ(), world);
+      return new FlyingItemEntity(stack1, position.x(), position.y(), position.z(), world);
     }
   };
 
-  public static final Keeper<LootContextType> CONTEXT_TYPE = Keeper.create();
+  public static final Keeper<LootContextParamSet> CONTEXT_TYPE = Keeper.create();
   public static final Keeper<CommandType> PARTICLE_COMMAND = Keeper.create();
   public static final Keeper<CommandType> ITEM_PLOP_COMMAND = Keeper.create();
 
   static void init() {
     FLYING_ITEM.init(RegistryUtil.register(
-        Registries.ENTITY_TYPE,
+        BuiltInRegistries.ENTITY_TYPE,
         id("flying_item"),
         () -> FabricEntityTypeBuilder.<FlyingItemEntity>create(
-                SpawnGroup.MISC, FlyingItemEntity::new)
+                MobCategory.MISC, FlyingItemEntity::new)
             .dimensions(new EntityDimensions(0.25F, 0.25F, true))
             .trackRangeChunks(4)
             .trackedUpdateRate(10)
             .build()));
 
-    CONTEXT_TYPE.init(LootContextTypes.register("andromeda:throwable_items", builder -> builder
-        .require(LootContextParameters.ORIGIN)
-        .require(LootContextParameters.DIRECT_KILLER_ENTITY)
-        .require(LootContextParameters.TOOL)
-        .allow(LootContextParameters.KILLER_ENTITY)
-        .allow(LootContextParameters.THIS_ENTITY)
-        .allow(LootContextParameters.BLOCK_STATE)
-        .allow(LootContextParameters.BLOCK_ENTITY)));
+    CONTEXT_TYPE.init(LootContextParamSets.register("andromeda:throwable_items", builder -> builder
+        .required(LootContextParams.ORIGIN)
+        .required(LootContextParams.DIRECT_KILLER_ENTITY)
+        .required(LootContextParams.TOOL)
+        .optional(LootContextParams.KILLER_ENTITY)
+        .optional(LootContextParams.THIS_ENTITY)
+        .optional(LootContextParams.BLOCK_STATE)
+        .optional(LootContextParams.BLOCK_ENTITY)));
     PARTICLE_COMMAND.init(CommandType.register(id("particles"), ParticleCommand.CODEC));
     ITEM_PLOP_COMMAND.init(CommandType.register(id("item_plop"), ItemPlopEffect.CODEC));
 
@@ -91,7 +91,7 @@ public final class Main {
     });
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
       var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
-      for (ServerPlayerEntity player : PlayerLookup.all(server)) {
+      for (ServerPlayer player : PlayerLookup.all(server)) {
         ServerPlayNetworking.send(player, ITEMS_WITH_BEHAVIORS, packet);
       }
     });
@@ -101,11 +101,11 @@ public final class Main {
     DefaultBehaviors.init();
   }
 
-  private static PacketByteBuf sendItemsS2CPacket(ItemBehaviorManager manger) {
+  private static FriendlyByteBuf sendItemsS2CPacket(ItemBehaviorManager manger) {
     var items = manger.itemsWithBehaviors();
     var packet = PacketByteBufs.create().writeVarInt(items.size());
     for (Item item : items) {
-      packet.writeIdentifier(Registries.ITEM.getId(item));
+      packet.writeResourceLocation(BuiltInRegistries.ITEM.getKey(item));
     }
     return packet;
   }

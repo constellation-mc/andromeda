@@ -11,19 +11,19 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import java.util.function.Consumer;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
-import net.minecraft.registry.MutableRegistry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryLoader;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.WritableRegistry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.RegistryDataLoader;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(RegistryLoader.class)
+@Mixin(RegistryDataLoader.class)
 abstract class RegistryLoaderMixin {
 
   @WrapOperation(
       method =
-          "load(Lnet/minecraft/registry/RegistryOps$RegistryInfoGetter;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/registry/MutableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
+              "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
       at =
           @At(
               value = "INVOKE",
@@ -35,7 +35,7 @@ abstract class RegistryLoaderMixin {
       DynamicOps<?> ops,
       Object input,
       Operation<DataResult<?>> original,
-      @Local Identifier identifier,
+      @Local ResourceLocation identifier,
       @Local JsonElement json) {
     // Only applying to Andromeda because this is very untested.
     if (identifier.getNamespace().equals("andromeda")
@@ -47,7 +47,7 @@ abstract class RegistryLoaderMixin {
 
   @WrapOperation(
       method =
-          "load(Lnet/minecraft/registry/RegistryOps$RegistryInfoGetter;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/registry/MutableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
+              "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
       at =
           @At(
               value = "INVOKE",
@@ -64,14 +64,14 @@ abstract class RegistryLoaderMixin {
 
   @WrapWithCondition(
       method =
-          "load(Lnet/minecraft/registry/RegistryOps$RegistryInfoGetter;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/registry/MutableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
+              "loadRegistryContents(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V",
       at =
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/registry/MutableRegistry;add(Lnet/minecraft/registry/RegistryKey;Ljava/lang/Object;Lcom/mojang/serialization/Lifecycle;)Lnet/minecraft/registry/entry/RegistryEntry$Reference;"))
+                      "Lnet/minecraft/core/WritableRegistry;register(Lnet/minecraft/resources/ResourceKey;Ljava/lang/Object;Lcom/mojang/serialization/Lifecycle;)Lnet/minecraft/core/Holder$Reference;"))
   private static boolean andromeda$cancelEntryAddition(
-      MutableRegistry<?> instance, RegistryKey<?> tRegistryKey, Object t, Lifecycle lifecycle) {
+          WritableRegistry<?> instance, ResourceKey<?> tRegistryKey, Object t, Lifecycle lifecycle) {
     return t != null;
   }
 }

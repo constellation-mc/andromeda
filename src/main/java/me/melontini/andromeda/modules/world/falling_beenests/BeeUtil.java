@@ -4,38 +4,38 @@ import java.util.List;
 import lombok.NonNull;
 import me.melontini.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BeehiveBlockEntity;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 public class BeeUtil {
 
   public static final List<Direction> AROUND_BLOCK_DIRECTIONS =
       List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
-  public static final Identifier BEE_LOOT_ID = Andromeda.id("bee_nest/bee_nest_broken");
+  public static final ResourceLocation BEE_LOOT_ID = Andromeda.id("bee_nest/bee_nest_broken");
 
-  public static List<ItemStack> prepareLoot(@NonNull World world, @NonNull Identifier lootId) {
-    return ((ServerWorld) world)
+  public static List<ItemStack> prepareLoot(@NonNull Level world, @NonNull ResourceLocation lootId) {
+    return ((ServerLevel) world)
         .getServer()
-        .getLootManager()
+        .getLootData()
         .getLootTable(lootId)
-        .generateLoot(new LootContextParameterSet.Builder(((ServerWorld) world))
-            .build(LootContextTypes.EMPTY));
+        .getRandomItems(new LootParams.Builder(((ServerLevel) world))
+            .create(LootContextParamSets.EMPTY));
   }
 
   public static void trySpawnFallingBeeNest(
-      @NonNull World world,
+      @NonNull Level world,
       @NonNull BlockPos pos,
       @NonNull BlockState state,
       @NonNull BeehiveBlockEntity beehiveBlockEntity) {
@@ -44,22 +44,22 @@ public class BeeUtil {
         pos.getX() + 0.5,
         pos.getY(),
         pos.getZ() + 0.5,
-        state.contains(Properties.WATERLOGGED)
-            ? state.with(Properties.WATERLOGGED, Boolean.FALSE)
+        state.hasProperty(BlockStateProperties.WATERLOGGED)
+            ? state.setValue(BlockStateProperties.WATERLOGGED, Boolean.FALSE)
             : state);
 
     // Thanks AccessWidener!
-    fallingBlock.readCustomDataFromNbt(NbtBuilder.create()
+    fallingBlock.readAdditionalSaveData(NbtBuilder.create()
         .put(
             "TileEntityData",
             NbtBuilder.create()
-                .put("Bees", beehiveBlockEntity.getBees())
+                .put("Bees", beehiveBlockEntity.writeBees())
                 .putBoolean("AM-FromFallenBlock", true)
                 .build())
-        .put("BlockState", NbtHelper.fromBlockState(state))
+        .put("BlockState", NbtUtils.writeBlockState(state))
         .build());
 
-    world.setBlockState(pos, state.getFluidState().getBlockState(), Block.NOTIFY_ALL);
-    world.spawnEntity(fallingBlock);
+    world.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
+    world.addFreshEntity(fallingBlock);
   }
 }

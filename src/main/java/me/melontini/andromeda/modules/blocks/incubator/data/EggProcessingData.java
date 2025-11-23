@@ -16,33 +16,33 @@ import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;
 import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.WeightedList;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.behavior.ShufflingList;
+import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.Nullable;
 
 public record EggProcessingData(
-    boolean replace, Item item, WeightedList<Entry> entity, Arithmetica time) {
+        boolean replace, Item item, ShufflingList<Entry> entity, Arithmetica time) {
 
   public static final Codec<EggProcessingData> CODEC = RecordCodecBuilder.create(data -> data.group(
           ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(EggProcessingData::replace),
-          Registries.ITEM.getCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
+          BuiltInRegistries.ITEM.byNameCodec().fieldOf("identifier").forGetter(EggProcessingData::item),
           ExtraCodecs.weightedList(Entry.CODEC)
               .fieldOf("entries")
               .forGetter(EggProcessingData::entity),
           Arithmetica.CODEC.fieldOf("time").forGetter(EggProcessingData::time))
       .apply(data, EggProcessingData::new));
 
-  public record Entry(EntityType<?> type, NbtCompound nbt, List<Command.Conditioned> commands) {
+  public record Entry(EntityType<?> type, CompoundTag nbt, List<Command.Conditioned> commands) {
     public static final Codec<Entry> CODEC = RecordCodecBuilder.create(data -> data.group(
-            Registries.ENTITY_TYPE.getCodec().fieldOf("entity").forGetter(Entry::type),
-            ExtraCodecs.optional("nbt", NbtCompound.CODEC, new NbtCompound()).forGetter(Entry::nbt),
+            BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(Entry::type),
+            ExtraCodecs.optional("nbt", CompoundTag.CODEC, new CompoundTag()).forGetter(Entry::nbt),
             ExtraCodecs.optional(
                     "commands", ExtraCodecs.list(Command.CODEC.codec()), Collections.emptyList())
                 .forGetter(Entry::commands))
@@ -70,16 +70,16 @@ public record EggProcessingData(
 
     @Override
     protected void apply(
-        Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
+            Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
       IdentityHashMap<Item, EggProcessingData> replace = new IdentityHashMap<>();
       IdentityHashMap<Item, EggProcessingData> result = new IdentityHashMap<>();
 
-      for (Item item : Registries.ITEM) {
+      for (Item item : BuiltInRegistries.ITEM) {
         if (item instanceof SpawnEggItem egg) {
-          WeightedList<Entry> list = new WeightedList<>();
+          ShufflingList<Entry> list = new ShufflingList<>();
           list.add(
               new Entry(
-                  egg.getEntityType(new NbtCompound()), new NbtCompound(), Collections.emptyList()),
+                  egg.getType(new CompoundTag()), new CompoundTag(), Collections.emptyList()),
               1);
           result.put(egg, new EggProcessingData(false, egg, list, Arithmetica.constant(8000)));
         }

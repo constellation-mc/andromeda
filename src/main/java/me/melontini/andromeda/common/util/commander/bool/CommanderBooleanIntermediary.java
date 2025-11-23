@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import me.melontini.commander.api.expression.BooleanExpression;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 @EqualsAndHashCode
 @ToString

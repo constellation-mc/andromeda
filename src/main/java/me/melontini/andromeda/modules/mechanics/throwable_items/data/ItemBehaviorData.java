@@ -16,18 +16,18 @@ import me.melontini.commander.api.event.EventKey;
 import me.melontini.commander.api.event.EventType;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public record ItemBehaviorData(Parameters parameters, List<Subscription> subscriptions)
@@ -35,11 +35,11 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
 
   @Override
   public void onCollision(
-      ItemStack stack,
-      FlyingItemEntity fie,
-      ServerWorld world,
-      @Nullable Entity user,
-      HitResult hitResult) {
+          ItemStack stack,
+          FlyingItemEntity fie,
+          ServerLevel world,
+          @Nullable Entity user,
+          HitResult hitResult) {
     Stream<Subscription> stream = null;
     switch (hitResult.getType()) {
       case BLOCK -> stream = subscriptions.stream().filter(s -> s.event == Main.Event.BLOCK);
@@ -50,28 +50,28 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
         .toList();
     if (list.isEmpty()) return;
 
-    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world);
-    builder.add(LootContextParameters.DIRECT_KILLER_ENTITY, fie);
-    builder.addOptional(LootContextParameters.KILLER_ENTITY, user);
-    builder.add(LootContextParameters.TOOL, stack);
+    LootParams.Builder builder = new LootParams.Builder(world);
+    builder.withParameter(LootContextParams.DIRECT_KILLER_ENTITY, fie);
+    builder.withOptionalParameter(LootContextParams.KILLER_ENTITY, user);
+    builder.withParameter(LootContextParams.TOOL, stack);
     switch (hitResult.getType()) {
       case BLOCK -> {
         BlockHitResult result = (BlockHitResult) hitResult;
-        builder.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(result.getBlockPos()));
-        builder.add(LootContextParameters.BLOCK_STATE, world.getBlockState(result.getBlockPos()));
-        builder.addOptional(
-            LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(result.getBlockPos()));
+        builder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(result.getBlockPos()));
+        builder.withParameter(LootContextParams.BLOCK_STATE, world.getBlockState(result.getBlockPos()));
+        builder.withOptionalParameter(
+            LootContextParams.BLOCK_ENTITY, world.getBlockEntity(result.getBlockPos()));
       }
       case ENTITY -> {
         EntityHitResult result = (EntityHitResult) hitResult;
-        builder.add(LootContextParameters.ORIGIN, result.getPos());
-        builder.addOptional(LootContextParameters.THIS_ENTITY, result.getEntity());
+        builder.withParameter(LootContextParams.ORIGIN, result.getLocation());
+        builder.withOptionalParameter(LootContextParams.THIS_ENTITY, result.getEntity());
       }
-      case MISS -> builder.add(LootContextParameters.ORIGIN, hitResult.getPos());
+      case MISS -> builder.withParameter(LootContextParams.ORIGIN, hitResult.getLocation());
     }
 
     LootContext lootContext =
-        new LootContext.Builder(builder.build(Main.CONTEXT_TYPE.orThrow())).build(null);
+        new LootContext.Builder(builder.create(Main.CONTEXT_TYPE.orThrow())).create(null);
     EventContext context = EventContext.builder(EventType.NULL)
         .addParameter(EventKey.LOOT_CONTEXT, lootContext)
         .build();
@@ -95,7 +95,7 @@ public record ItemBehaviorData(Parameters parameters, List<Subscription> subscri
       boolean complement,
       Arithmetica cooldown) {
     public static final MapCodec<Parameters> CODEC = RecordCodecBuilder.mapCodec(data -> data.group(
-            ExtraCodecs.list(Registries.ITEM.getCodec())
+            ExtraCodecs.list(BuiltInRegistries.ITEM.byNameCodec())
                 .fieldOf("items")
                 .forGetter(Parameters::items),
             ExtraCodecs.optional("disabled", Codec.BOOL, false).forGetter(Parameters::disabled),

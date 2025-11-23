@@ -5,8 +5,12 @@ import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import java.util.ArrayList;
 import java.util.List;
 import me.melontini.andromeda.modules.misc.translations.Translations;
-import net.minecraft.resource.*;
-import net.minecraft.resource.metadata.ResourceMetadataReader;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.resources.ReloadInstance;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,33 +19,33 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ReloadableResourceManagerImpl.class)
+@Mixin(ReloadableResourceManager.class)
 abstract class ReloadableResourceManagerImplMixin {
 
   @Shadow
   @Final
-  private ResourceType type;
+  private PackType type;
 
   @Inject(
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/resource/LifecycledResourceManager;close()V",
+              target = "Lnet/minecraft/server/packs/resources/CloseableResourceManager;close()V",
               shift = At.Shift.AFTER),
-      method = "reload")
+      method = "createReload")
   private void andromeda$injectDownloadedTranslations(
-      CallbackInfoReturnable<ResourceReload> cir,
-      @Local(argsOnly = true) LocalRef<List<ResourcePack>> packs) {
-    if (this.type != ResourceType.CLIENT_RESOURCES) return;
+      CallbackInfoReturnable<ReloadInstance> cir,
+      @Local(argsOnly = true) LocalRef<List<PackResources>> packs) {
+    if (this.type != PackType.CLIENT_RESOURCES) return;
 
     packs.set(new ArrayList<>(packs.get()));
     packs
         .get()
         .add(
-            new DirectoryResourcePack(
+            new PathPackResources(
                 "Andromeda Translations", Translations.TRANSLATION_PACK, true) {
               @Nullable @Override
-              public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
+              public <T> T getMetadataSection(MetadataSectionSerializer<T> metaReader) {
                 return null;
               }
             });

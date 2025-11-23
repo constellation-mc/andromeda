@@ -13,18 +13,18 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.decoration.EndCrystalEntity;
-import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -47,25 +47,25 @@ public class EnderDragonManager {
     this.maxPlayers = Math.max(maxPlayers, 1);
   }
 
-  public void tick(ServerWorld world) {
-    List<? extends EnderDragonEntity> dragons = world.getAliveEnderDragons();
+  public void tick(ServerLevel world) {
+    List<? extends EnderDragon> dragons = world.getDragons();
     if (dragons.isEmpty()) {
       maxPlayers = 1;
       return;
     }
-    int i = Math.max(world.getPlayers().size(), 1);
+    int i = Math.max(world.players().size(), 1);
     if (i > maxPlayers) maxPlayers = i;
 
     Set<Crystal> removal = new HashSet<>();
     for (Crystal pair : crystals) {
       if (pair.timer().decrementAndGet() > 0) continue;
 
-      LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
-      lightning.setCosmetic(true);
-      lightning.setPos(pair.pos().x, pair.pos().y, pair.pos().z);
-      world.spawnEntity(lightning);
+      LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, world);
+      lightning.setVisualOnly(true);
+      lightning.setPosRaw(pair.pos().x, pair.pos().y, pair.pos().z);
+      world.addFreshEntity(lightning);
 
-      ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(
+      ClientboundLevelParticlesPacket particleS2CPacket = new ClientboundLevelParticlesPacket(
           ParticleTypes.END_ROD,
           true,
           pair.pos().x,
@@ -76,40 +76,40 @@ public class EnderDragonManager {
           0.5f,
           0.5f,
           100);
-      for (int j = 0; j < world.getPlayers().size(); ++j) {
-        ServerPlayerEntity serverPlayerEntity = world.getPlayers().get(j);
-        world.sendToPlayerIfNearby(
+      for (int j = 0; j < world.players().size(); ++j) {
+        ServerPlayer serverPlayerEntity = world.players().get(j);
+        world.sendParticles(
             serverPlayerEntity, true, pair.pos().x, pair.pos().y, pair.pos().z, particleS2CPacket);
       }
 
-      EndCrystalEntity endCrystalEntity =
-          new EndCrystalEntity(world, pair.pos().x, pair.pos().y, pair.pos().z);
-      world.spawnEntity(endCrystalEntity);
+      EndCrystal endCrystalEntity =
+          new EndCrystal(world, pair.pos().x, pair.pos().y, pair.pos().z);
+      world.addFreshEntity(endCrystalEntity);
       removal.add(pair);
     }
     crystals.removeAll(removal);
 
     if (!Andromeda.MAIN.get(DragonFight.CONFIG).scaleHealthByMaxPlayers) return;
-    for (EnderDragonEntity dragon : dragons) {
-      EntityAttributeInstance inst =
-          dragon.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+    for (EnderDragon dragon : dragons) {
+      AttributeInstance inst =
+          dragon.getAttribute(Attributes.MAX_HEALTH);
       MakeSure.notNull(inst, "Ender Dragon has no attributes?")
           .setBaseValue(Math.floor(Math.sqrt(500 * maxPlayers) * 10));
     }
   }
 
-  public void queueRespawn(MutableInt mutableInt, Vec3d vec3d) {
+  public void queueRespawn(MutableInt mutableInt, Vec3 vec3d) {
     var crystal = new Crystal(mutableInt, vec3d);
     if (!crystals.contains(crystal)) crystals.add(crystal);
   }
 
-  public record Crystal(MutableInt timer, Vec3d pos) {
+  public record Crystal(MutableInt timer, Vec3 pos) {
     public static final Codec<Crystal> CODEC = RecordCodecBuilder.create(data -> data.group(
             Codec.INT
                 .fieldOf("timer")
                 .xmap(MutableInt::new, MutableInt::getValue)
                 .forGetter(Crystal::timer),
-            Vec3d.CODEC.fieldOf("pos").forGetter(Crystal::pos))
+            Vec3.CODEC.fieldOf("pos").forGetter(Crystal::pos))
         .apply(data, Crystal::new));
   }
 
@@ -120,12 +120,12 @@ public class EnderDragonManager {
         .buildAndRegister(id("ender_dragon_data")));
 
     ServerWorldEvents.LOAD.register((server, world) -> {
-      if (world.getRegistryKey() == World.END)
+      if (world.dimension() == Level.END)
         world.getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get());
     });
 
     ServerTickEvents.END_WORLD_TICK.register(world -> {
-      if (world.getRegistryKey() == World.END)
+      if (world.dimension() == Level.END)
         world.getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get()).tick(world);
     });
   }

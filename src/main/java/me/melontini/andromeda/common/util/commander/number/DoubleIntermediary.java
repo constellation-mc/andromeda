@@ -6,7 +6,7 @@ import me.melontini.andromeda.common.util.commander.number.constant.ConstantDoub
 import me.melontini.andromeda.common.util.commander.number.expression.CommanderDoubleIntermediary;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.Support;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 // We swap out this common interface to one of its impls. This allows us to support running with and
 // without commander.

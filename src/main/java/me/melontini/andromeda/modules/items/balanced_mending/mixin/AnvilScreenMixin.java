@@ -3,31 +3,31 @@ package me.melontini.andromeda.modules.items.balanced_mending.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import me.melontini.andromeda.bootstrap.util.mixin.MixinEnvironment;
 import net.fabricmc.api.EnvType;
-import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Items;
-import net.minecraft.screen.AnvilScreenHandler;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screens.inventory.AnvilScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @MixinEnvironment(EnvType.CLIENT)
 @Mixin(AnvilScreen.class)
-abstract class AnvilScreenMixin extends HandledScreen<AnvilScreenHandler> {
+abstract class AnvilScreenMixin extends AbstractContainerScreen<AnvilMenu> {
 
-  public AnvilScreenMixin(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
+  public AnvilScreenMixin(AnvilMenu handler, Inventory inventory, Component title) {
     super(handler, inventory, title);
   }
 
   @ModifyExpressionValue(
-      method = "drawForeground",
+      method = "renderLabels",
       at = @At(value = "CONSTANT", args = "intValue=40"))
   private int andromeda$setRepairLimit(int constant) {
-    if (!this.handler.getSlot(1).getStack().isOf(Items.ENCHANTED_BOOK))
-      if (EnchantmentHelper.get(this.handler.getSlot(0).getStack())
+    if (!this.menu.getSlot(1).getItem().is(Items.ENCHANTED_BOOK))
+      if (EnchantmentHelper.getEnchantments(this.menu.getSlot(0).getItem())
           .containsKey(Enchantments.MENDING)) {
         return Integer.MAX_VALUE;
       }

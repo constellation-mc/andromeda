@@ -6,23 +6,23 @@ import java.util.Optional;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.mechanics.trading_goat_horn.CustomTraderManager;
 import me.melontini.andromeda.modules.mechanics.trading_goat_horn.GoatHorn;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.GoatHornItem;
-import net.minecraft.item.Instrument;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.InstrumentItem;
+import net.minecraft.world.item.Instrument;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(GoatHornItem.class)
+@Mixin(InstrumentItem.class)
 abstract class GoatHornMixin {
 
   @Inject(
@@ -30,32 +30,32 @@ abstract class GoatHornMixin {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V",
+                      "Lnet/minecraft/world/item/ItemCooldowns;addCooldown(Lnet/minecraft/world/item/Item;I)V",
               shift = At.Shift.BEFORE),
       method = "use")
   private void andromeda$wanderingGoatHorn(
-      World world,
-      PlayerEntity user,
-      Hand hand,
-      CallbackInfoReturnable<TypedActionResult<ItemStack>> cir,
-      @Local Optional<? extends RegistryEntry<Instrument>> optional) {
-    if (world.isClient()) return;
+          Level world,
+          Player user,
+          InteractionHand hand,
+          CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir,
+          @Local Optional<? extends Holder<Instrument>> optional) {
+    if (world.isClientSide()) return;
 
-    Identifier identifier = optional.orElseThrow().getKey().orElseThrow().getValue();
+    ResourceLocation identifier = optional.orElseThrow().unwrapKey().orElseThrow().location();
     if (!Objects.equals(identifier, world.am$get(GoatHorn.CONFIG).instrumentId)) return;
 
-    ServerWorld sw = (ServerWorld) world;
-    if (!sw.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) return;
+    ServerLevel sw = (ServerLevel) world;
+    if (!sw.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) return;
     var cfg = world.am$get(GoatHorn.CONFIG);
     var context = LootContextBuilder.fishing(
-        user.world, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
+        user.level, builder -> builder.origin(user).tool(user, hand).thisEntity(user));
     if (!cfg.available.asBoolean(context)) return;
 
     sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get())
         .trySpawn(
-            (ServerWorld) world,
-            sw.getServer().getSaveProperties().getMainWorldProperties(),
-            user.getStackInHand(hand),
+            (ServerLevel) world,
+            sw.getServer().getWorldData().overworldData(),
+            user.getItemInHand(hand),
             user,
             cfg.highlightTrader.asBoolean(context));
   }

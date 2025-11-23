@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 import me.melontini.commander.api.expression.BooleanExpression;
 import me.melontini.dark_matter.api.base.util.Support;
 import net.fabricmc.fabric.api.util.BooleanFunction;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 public interface BooleanIntermediary {
   BooleanFunction<BooleanIntermediary> FACTORY = Support.support(

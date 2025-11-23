@@ -1,24 +1,24 @@
 package me.melontini.andromeda.modules.gui.no_more_adventure.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.minecraft.client.gui.screen.GameModeSelectionScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(GameModeSelectionScreen.class)
+@Mixin(GameModeSwitcherScreen.class)
 abstract class GameModeSelectionScreenMixin extends Screen {
-  protected GameModeSelectionScreenMixin(Text title) {
+  protected GameModeSelectionScreenMixin(Component title) {
     super(title);
   }
 
-  @Unique private final GameModeSelectionScreen.GameModeSelection[] andromeda$gameModeSelections =
+  @Unique private final GameModeSwitcherScreen.GameModeIcon[] andromeda$gameModeSelections =
       ArrayUtils.removeElement(
-          GameModeSelectionScreen.GameModeSelection.values(),
-          GameModeSelectionScreen.GameModeSelection.ADVENTURE);
+          GameModeSwitcherScreen.GameModeIcon.values(),
+          GameModeSwitcherScreen.GameModeIcon.ADVENTURE);
 
   @ModifyExpressionValue(
       method = "init",
@@ -26,9 +26,9 @@ abstract class GameModeSelectionScreenMixin extends Screen {
           @At(
               value = "FIELD",
               target =
-                  "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;VALUES:[Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;"))
-  private GameModeSelectionScreen.GameModeSelection[] andromeda$modValues(
-      GameModeSelectionScreen.GameModeSelection[] original) {
+                      "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;VALUES:[Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;"))
+  private GameModeSwitcherScreen.GameModeIcon[] andromeda$modValues(
+          GameModeSwitcherScreen.GameModeIcon[] original) {
     return andromeda$gameModeSelections;
   }
 
@@ -37,7 +37,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
       at =
           @At(
               value = "FIELD",
-              target = "Lnet/minecraft/client/gui/screen/GameModeSelectionScreen;UI_WIDTH:I"))
+              target = "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen;ALL_SLOTS_WIDTH:I"))
   private int andromeda$modValues(int original) {
     return andromeda$gameModeSelections.length * 31 - 5;
   }

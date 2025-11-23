@@ -5,19 +5,19 @@ import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.StackReference;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ClickType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.ClickAction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,21 +27,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Item.class)
 abstract class ItemMixin {
 
-  @Inject(at = @At("HEAD"), method = "onClicked", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "overrideOtherStackedOnMe", cancellable = true)
   private void andromeda$onLavaClick(
-      ItemStack stack,
-      ItemStack otherStack,
-      Slot slot,
-      ClickType clickType,
-      PlayerEntity player,
-      StackReference cursorStackReference,
-      CallbackInfoReturnable<Boolean> cir) {
-    if (clickType == ClickType.RIGHT && stack.isOf(Items.LAVA_BUCKET)) {
-      if (otherStack.getItem().isFireproof()
-          || EnchantmentHelper.getLevel(Enchantments.FIRE_PROTECTION, otherStack) > 0) return;
+          ItemStack stack,
+          ItemStack otherStack,
+          Slot slot,
+          ClickAction clickType,
+          Player player,
+          SlotAccess cursorStackReference,
+          CallbackInfoReturnable<Boolean> cir) {
+    if (clickType == ClickAction.SECONDARY && stack.is(Items.LAVA_BUCKET)) {
+      if (otherStack.getItem().isFireResistant()
+          || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION, otherStack) > 0) return;
 
       cursorStackReference.set(ItemStack.EMPTY);
-      if (player.world.isClient)
+      if (player.level.isClientSide)
         spawnLavaParticles((int) Math.max(2, Math.sqrt(otherStack.getCount())));
       cir.setReturnValue(true);
     }
@@ -49,20 +49,20 @@ abstract class ItemMixin {
 
   @Unique @Environment(EnvType.CLIENT)
   private static void spawnLavaParticles(int count) {
-    var client = MinecraftClient.getInstance();
-    int x = (int) (client.mouse.getX()
-        * (double) client.getWindow().getScaledWidth()
-        / (double) client.getWindow().getWidth());
-    int y = (int) (client.mouse.getY()
-        * (double) client.getWindow().getScaledHeight()
-        / (double) client.getWindow().getHeight());
+    var client = Minecraft.getInstance();
+    int x = (int) (client.mouseHandler.xpos()
+        * (double) client.getWindow().getGuiScaledWidth()
+        / (double) client.getWindow().getScreenWidth());
+    int y = (int) (client.mouseHandler.ypos()
+        * (double) client.getWindow().getGuiScaledHeight()
+        / (double) client.getWindow().getScreenHeight());
     for (int i = 0; i < count; i++) {
       ScreenParticleHelper.addParticle(ParticleTypes.LAVA, x, y, 0.0, 0.0);
     }
     Objects.requireNonNull(client.player)
-        .playSound(
-            SoundEvents.BLOCK_LAVA_EXTINGUISH,
-            SoundCategory.AMBIENT,
+        .playNotifySound(
+            SoundEvents.LAVA_EXTINGUISH,
+            SoundSource.AMBIENT,
             0.8f,
             0.8F + MathUtil.threadRandom().nextFloat() * 0.4F);
   }

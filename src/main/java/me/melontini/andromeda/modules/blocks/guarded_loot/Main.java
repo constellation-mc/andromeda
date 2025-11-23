@@ -11,26 +11,26 @@ import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 public final class Main {
 
-  private static final List<BiPredicate<BlockEntity, PlayerEntity>> UNLOCKERS = new ArrayList<>();
+  private static final List<BiPredicate<BlockEntity, Player>> UNLOCKERS = new ArrayList<>();
 
   static void init() {
     for (var listener : ModuleManager.get().getModuleApiListeners(LOOT_UNLOCKER)) {
@@ -41,9 +41,9 @@ public final class Main {
     }
 
     PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
-      if (player.getAbilities().creativeMode) return true;
+      if (player.getAbilities().instabuild) return true;
 
-      if (blockEntity instanceof LootableContainerBlockEntity
+      if (blockEntity instanceof RandomizableContainerBlockEntity
           && world.am$get(GuardedLoot.CONFIG).breakingHandler
               == GuardedLoot.BreakingHandler.UNBREAKABLE) {
         var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
@@ -57,40 +57,40 @@ public final class Main {
 
   // TODO fix igloos. Maybe check reach?
   public static List<LivingEntity> checkMonsterLock(
-      World world, BlockState state, PlayerEntity player, BlockPos pos, BlockEntity be) {
+          Level world, BlockState state, Player player, BlockPos pos, BlockEntity be) {
     var config = world.am$get(GuardedLoot.CONFIG);
     var supplier = LootContextBuilder.block(
         world, builder -> builder.origin(pos).state(state).thisEntity(player).blockEntity(be));
     if (!config.available.asBoolean(supplier)) return Collections.emptyList();
 
     return world
-        .getEntitiesByClass(
+        .getEntitiesOfClass(
             LivingEntity.class,
-            new Box(pos).expand(config.range.asDouble(supplier)),
+            new AABB(pos).inflate(config.range.asDouble(supplier)),
             Entity::isAlive)
         .stream()
-        .filter(Monster.class::isInstance)
+        .filter(Enemy.class::isInstance)
         .toList();
   }
 
-  public static boolean checkLockPicking(BlockEntity entity, PlayerEntity player) {
+  public static boolean checkLockPicking(BlockEntity entity, Player player) {
     if (UNLOCKERS.isEmpty()) return false;
 
-    for (BiPredicate<BlockEntity, PlayerEntity> unlocker : UNLOCKERS) {
+    for (BiPredicate<BlockEntity, Player> unlocker : UNLOCKERS) {
       if (unlocker.test(entity, player)) return true;
     }
     return false;
   }
 
-  public static void handleLockedContainer(PlayerEntity player, Collection<LivingEntity> monsters) {
-    player.sendMessage(
-        TextUtil.translatable("andromeda.container.guarded").formatted(Formatting.RED), true);
-    player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
-    player.emitGameEvent(GameEvent.CONTAINER_OPEN);
+  public static void handleLockedContainer(Player player, Collection<LivingEntity> monsters) {
+    player.displayClientMessage(
+        TextUtil.translatable("andromeda.container.guarded").withStyle(ChatFormatting.RED), true);
+    player.playNotifySound(SoundEvents.CHEST_LOCKED, SoundSource.BLOCKS, 1.0F, 1.0F);
+    player.gameEvent(GameEvent.CONTAINER_OPEN);
 
     for (LivingEntity livingEntity : monsters) {
-      livingEntity.addStatusEffect(
-          new StatusEffectInstance(StatusEffects.GLOWING, 5 * 20, 0, false, false));
+      livingEntity.addEffect(
+          new MobEffectInstance(MobEffects.GLOWING, 5 * 20, 0, false, false));
     }
   }
 }

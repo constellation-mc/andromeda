@@ -1,10 +1,10 @@
 package me.melontini.andromeda.modules.items.pouches;
 
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.village.VillagerProfession;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.entity.npc.VillagerProfession;
 
 public class Trades {
 
@@ -13,7 +13,7 @@ public class Trades {
       TradeOfferHelper.registerVillagerOffers(
           VillagerProfession.FARMER,
           2,
-          factories -> factories.add((entity, random) -> new TradeOffer(
+          factories -> factories.add((entity, random) -> new MerchantOffer(
               new ItemStack(Items.EMERALD, 5),
               new ItemStack(Main.SAPLING_POUCH.orThrow(), 1),
               12,
@@ -25,7 +25,7 @@ public class Trades {
       TradeOfferHelper.registerVillagerOffers(
           VillagerProfession.FARMER,
           2,
-          factories -> factories.add((entity, random) -> new TradeOffer(
+          factories -> factories.add((entity, random) -> new MerchantOffer(
               new ItemStack(Items.EMERALD, 4),
               new ItemStack(Main.FLOWER_POUCH.orThrow(), 1),
               12,
@@ -37,7 +37,7 @@ public class Trades {
       TradeOfferHelper.registerVillagerOffers(
           VillagerProfession.FARMER,
           2,
-          factories -> factories.add((entity, random) -> new TradeOffer(
+          factories -> factories.add((entity, random) -> new MerchantOffer(
               new ItemStack(Items.EMERALD, 3),
               new ItemStack(Main.SEED_POUCH.orThrow(), 1),
               12,

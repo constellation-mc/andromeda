@@ -3,44 +3,44 @@ package me.melontini.andromeda.modules.entities.villagers_follow_emeralds;
 import static me.melontini.andromeda.common.Andromeda.id;
 
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
-import net.minecraft.entity.ai.brain.Activity;
-import net.minecraft.entity.ai.goal.TemptGoal;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagKey;
 
 public class VillagerTemptGoal extends TemptGoal {
 
   public static final TagKey<Item> TEMPTING =
-      TagKey.of(Registries.ITEM.getKey(), id("tempting_for_villagers"));
+      TagKey.create(BuiltInRegistries.ITEM.key(), id("tempting_for_villagers"));
 
   public VillagerTemptGoal(
-      VillagerEntity entity, double speed, Ingredient food, boolean canBeScared) {
+          Villager entity, double speed, Ingredient food, boolean canBeScared) {
     super(entity, speed, food, canBeScared);
   }
 
   @Override
-  public boolean canStart() {
-    if (this.mob.world.isClient()) return false;
+  public boolean canUse() {
+    if (this.mob.level.isClientSide()) return false;
     if (!this.mob
-        .world
+        .level
         .am$get(VillagersFollowEmeralds.CONFIG)
         .available
         .asBoolean(ConstantLootContextAccessor.get(mob))) return false;
 
-    if (this.cooldown > 0) {
-      --this.cooldown;
+    if (this.calmDown > 0) {
+      --this.calmDown;
       return false;
     } else {
-      if (mob.getBrain().hasActivity(Activity.PANIC)
-          || mob.getBrain().hasActivity(Activity.REST)
-          || mob.getBrain().hasActivity(Activity.HIDE)) {
+      if (mob.getBrain().isActive(Activity.PANIC)
+          || mob.getBrain().isActive(Activity.REST)
+          || mob.getBrain().isActive(Activity.HIDE)) {
         return false;
       } else {
-        this.closestPlayer = this.mob.getWorld().getClosestPlayer(this.predicate, this.mob);
-        return closestPlayer != null;
+        this.player = this.mob.level().getNearestPlayer(this.targetingConditions, this.mob);
+        return player != null;
       }
     }
   }

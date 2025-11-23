@@ -1,13 +1,13 @@
 package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 
 import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
-import net.minecraft.block.BeehiveBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BeehiveBlockEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,23 +16,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BeehiveBlock.class)
 abstract class BeehiveBlockMixin {
 
-  @Inject(at = @At("HEAD"), method = "getStateForNeighborUpdate", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "updateShape", cancellable = true)
   private void andromeda$checkSupport(
-      BlockState state,
-      Direction direction,
-      BlockState neighborState,
-      WorldAccess world,
-      BlockPos pos,
-      BlockPos neighborPos,
-      CallbackInfoReturnable<BlockState> cir) {
-    if (!(world instanceof World)) return;
+          BlockState state,
+          Direction direction,
+          BlockState neighborState,
+          LevelAccessor world,
+          BlockPos pos,
+          BlockPos neighborPos,
+          CallbackInfoReturnable<BlockState> cir) {
+    if (!(world instanceof Level)) return;
     for (Direction value : Direction.values()) {
-      if (!world.getBlockState(pos.offset(value)).isAir()) {
+      if (!world.getBlockState(pos.relative(value)).isAir()) {
         return;
       }
     }
     BeeUtil.trySpawnFallingBeeNest(
-        (World) world, pos, state, (BeehiveBlockEntity) world.getBlockEntity(pos));
-    cir.setReturnValue(state.getFluidState().getBlockState());
+        (Level) world, pos, state, (BeehiveBlockEntity) world.getBlockEntity(pos));
+    cir.setReturnValue(state.getFluidState().createLegacyBlock());
   }
 }

@@ -11,23 +11,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowerBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Rarity;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public class RoseOfTheValley extends BlockItem {
@@ -35,20 +35,20 @@ public class RoseOfTheValley extends BlockItem {
   public static final Keeper<FlowerBlock> ROSE_OF_THE_VALLEY_BLOCK = Keeper.create();
   public static final Keeper<RoseOfTheValley> ROSE_OF_THE_VALLEY = Keeper.create();
 
-  public RoseOfTheValley(Block block, Settings settings) {
+  public RoseOfTheValley(Block block, Properties settings) {
     super(block, settings);
   }
 
   static void init() {
     RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.init(RegistryUtil.register(
-        Registries.BLOCK,
+        BuiltInRegistries.BLOCK,
         id("rose_of_the_valley"),
         () -> new FlowerBlock(
-            StatusEffects.REGENERATION,
+            MobEffects.REGENERATION,
             12,
-            AbstractBlock.Settings.copy(Blocks.LILY_OF_THE_VALLEY))));
+            BlockBehaviour.Properties.copy(Blocks.LILY_OF_THE_VALLEY))));
     RoseOfTheValley.ROSE_OF_THE_VALLEY.init(RegistryUtil.register(
-        Registries.ITEM,
+        BuiltInRegistries.ITEM,
         id("rose_of_the_valley"),
         () -> new RoseOfTheValley(
             RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow(),
@@ -58,28 +58,28 @@ public class RoseOfTheValley extends BlockItem {
   @Environment(EnvType.CLIENT)
   static void onClient() {
     BlockRenderLayerMap.INSTANCE.putBlocks(
-        RenderLayer.getCutout(), RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow());
+        RenderType.cutout(), RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow());
   }
 
   @Override
-  public void appendTooltip(
-      ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+  public void appendHoverText(
+          ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
     tooltip.add(
-        TextUtil.translatable("tooltip.andromeda.rose_of_the_valley").formatted(Formatting.GRAY));
+        TextUtil.translatable("tooltip.andromeda.rose_of_the_valley").withStyle(ChatFormatting.GRAY));
   }
 
-  public static void handleClick(ItemStack stack, ItemStack otherStack, PlayerEntity player) {
-    player.getInventory().offerOrDrop(new ItemStack(ROSE_OF_THE_VALLEY.orThrow()));
-    stack.decrement(1);
-    otherStack.decrement(1);
-    if (player.world.isClient) {
-      var client = MinecraftClient.getInstance();
-      int x = (int) (client.mouse.getX()
-          * (double) client.getWindow().getScaledWidth()
-          / (double) client.getWindow().getWidth());
-      int y = (int) (client.mouse.getY()
-          * (double) client.getWindow().getScaledHeight()
-          / (double) client.getWindow().getHeight());
+  public static void handleClick(ItemStack stack, ItemStack otherStack, Player player) {
+    player.getInventory().placeItemBackInInventory(new ItemStack(ROSE_OF_THE_VALLEY.orThrow()));
+    stack.shrink(1);
+    otherStack.shrink(1);
+    if (player.level.isClientSide) {
+      var client = Minecraft.getInstance();
+      int x = (int) (client.mouseHandler.xpos()
+          * (double) client.getWindow().getGuiScaledWidth()
+          / (double) client.getWindow().getScreenWidth());
+      int y = (int) (client.mouseHandler.ypos()
+          * (double) client.getWindow().getGuiScaledHeight()
+          / (double) client.getWindow().getScreenHeight());
       ScreenParticleHelper.addParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.08, 10);
     }
   }

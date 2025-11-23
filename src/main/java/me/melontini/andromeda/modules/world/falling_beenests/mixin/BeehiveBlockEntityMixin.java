@@ -3,16 +3,16 @@ package me.melontini.andromeda.modules.world.falling_beenests.mixin;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BeehiveBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,11 +31,11 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
   @Inject(at = @At("HEAD"), method = "serverTick")
   private static void andromeda$fallingHive(
-      @NotNull World world,
-      BlockPos pos,
-      BlockState state,
-      BeehiveBlockEntity beehiveBlockEntity,
-      CallbackInfo ci) {
+          @NotNull Level world,
+          BlockPos pos,
+          BlockState state,
+          BeehiveBlockEntity beehiveBlockEntity,
+          CallbackInfo ci) {
     if (state.getBlock() != Blocks.BEE_NEST) return;
 
     if (world
@@ -44,13 +44,13 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
             .asBoolean(LootContextBuilder.block(
                 world, builder -> builder.origin(pos).state(state).blockEntity(beehiveBlockEntity)))
         && world.random.nextInt(32000) == 0) {
-      if (!world.getBlockState(pos.offset(Direction.DOWN)).isAir()) return;
+      if (!world.getBlockState(pos.relative(Direction.DOWN)).isAir()) return;
 
-      BlockState up = world.getBlockState(pos.offset(Direction.UP));
-      if (!up.isIn(BlockTags.LOGS) && !up.isIn(BlockTags.LEAVES)) return;
+      BlockState up = world.getBlockState(pos.relative(Direction.UP));
+      if (!up.is(BlockTags.LOGS) && !up.is(BlockTags.LEAVES)) return;
 
       for (Direction direction : BeeUtil.AROUND_BLOCK_DIRECTIONS) {
-        if (world.getBlockState(pos.offset(direction)).isIn(BlockTags.LOGS)) {
+        if (world.getBlockState(pos.relative(direction)).is(BlockTags.LOGS)) {
           BeeUtil.trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
           break;
         }
@@ -58,14 +58,14 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
     }
   }
 
-  @Inject(at = @At("TAIL"), method = "readNbt")
-  private void andromeda$readNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "load")
+  private void andromeda$readNbt(@NotNull CompoundTag nbt, CallbackInfo ci) {
     if (nbt.contains("AM-FromFallenBlock"))
       this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
   }
 
-  @Inject(at = @At("TAIL"), method = "writeNbt")
-  private void andromeda$writeNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
+  @Inject(at = @At("TAIL"), method = "saveAdditional")
+  private void andromeda$writeNbt(@NotNull CompoundTag nbt, CallbackInfo ci) {
     if (this.andromeda$FromFallen) nbt.putBoolean("AM-FromFallenBlock", true);
   }
 }

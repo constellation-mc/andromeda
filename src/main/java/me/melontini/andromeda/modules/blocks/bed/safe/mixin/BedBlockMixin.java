@@ -1,19 +1,19 @@
 package me.melontini.andromeda.modules.blocks.bed.safe.mixin;
 
-import static net.minecraft.block.BedBlock.isBedWorking;
+import static net.minecraft.world.level.block.BedBlock.canSetSpawn;
 
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.bed.safe.Safe;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,27 +23,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BedBlock.class)
 abstract class BedBlockMixin extends Block {
 
-  public BedBlockMixin(Settings settings) {
+  public BedBlockMixin(Properties settings) {
     super(settings);
   }
 
-  @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "use", cancellable = true)
   public void andromeda$onUse(
-      BlockState state,
-      @NotNull World world,
-      BlockPos pos,
-      PlayerEntity player,
-      Hand hand,
-      BlockHitResult hit,
-      CallbackInfoReturnable<ActionResult> cir) {
-    if (world.isClient()) return;
+          BlockState state,
+          @NotNull Level world,
+          BlockPos pos,
+          Player player,
+          InteractionHand hand,
+          BlockHitResult hit,
+          CallbackInfoReturnable<InteractionResult> cir) {
+    if (world.isClientSide()) return;
 
-    if (!isBedWorking(world)) {
+    if (!canSetSpawn(world)) {
       var context = LootContextBuilder.block(
           world, builder -> builder.origin(pos).state(state).tool(player, hand).thisEntity(player));
       if (world.am$get(Safe.CONFIG).available.asBoolean(context)) {
-        player.sendMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
-        cir.setReturnValue(ActionResult.SUCCESS);
+        player.displayClientMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
+        cir.setReturnValue(InteractionResult.SUCCESS);
       }
     }
   }

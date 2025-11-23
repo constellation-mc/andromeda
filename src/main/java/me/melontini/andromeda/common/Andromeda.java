@@ -20,16 +20,16 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class Andromeda implements ModInitializer {
@@ -39,7 +39,7 @@ public class Andromeda implements ModInitializer {
   public static final MultiConfigHandler MAIN;
   public static final MultiConfigHandler GAME;
 
-  public static final Keeper<ItemGroup> GROUP = Keeper.create();
+  public static final Keeper<CreativeModeTab> GROUP = Keeper.create();
 
   @Getter
   private @Nullable MinecraftServer currentServer;
@@ -60,12 +60,12 @@ public class Andromeda implements ModInitializer {
         RegisterConfigEvent.GAME);
   }
 
-  public static Identifier id(String path) {
-    return new Identifier(MODID, path);
+  public static ResourceLocation id(String path) {
+    return new ResourceLocation(MODID, path);
   }
 
-  public static <T> RegistryKey<T> key(RegistryKey<? extends Registry<T>> registry, String path) {
-    return RegistryKey.of(registry, id(path));
+  public static <T> ResourceKey<T> key(ResourceKey<? extends Registry<T>> registry, String path) {
+    return ResourceKey.create(registry, id(path));
   }
 
   public static Gson buildGson() {
@@ -86,12 +86,12 @@ public class Andromeda implements ModInitializer {
     InitEvents.MAIN.invoker().onModuleMainInit().runEntrypoint();
 
     ResourceConditions.register(
-        id("items_registered"), object -> JsonHelper.getArray(object, "values").asList().stream()
+        id("items_registered"), object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
             .filter(JsonElement::isJsonPrimitive)
-            .allMatch(e -> Registries.ITEM.containsId(new Identifier(e.getAsString()))));
+            .allMatch(e -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(e.getAsString()))));
 
     ResourceConditions.register(
-        id("modules_loaded"), object -> JsonHelper.getArray(object, "values").asList().stream()
+        id("modules_loaded"), object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
             .filter(JsonElement::isJsonPrimitive)
             .allMatch(e -> ModuleManager.get().get(e.getAsString()).isPresent()));
 
@@ -121,13 +121,13 @@ public class Andromeda implements ModInitializer {
   public static void appendCommonGsonTypes(GsonBuilder builder) {
     IntermediaryTypes.initialize(builder); // Commander support
 
-    builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
-    builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
+    builder.registerTypeHierarchyAdapter(ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
+    builder.registerTypeHierarchyAdapter(ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
     builder.registerTypeHierarchyAdapter(
-        StatusEffect.class, GsonCodecContext.of(Registries.STATUS_EFFECT.getCodec()));
+        MobEffect.class, GsonCodecContext.of(BuiltInRegistries.MOB_EFFECT.byNameCodec()));
     builder.registerTypeHierarchyAdapter(
-        Item.class, GsonCodecContext.of(Registries.ITEM.getCodec()));
+        Item.class, GsonCodecContext.of(BuiltInRegistries.ITEM.byNameCodec()));
     builder.registerTypeHierarchyAdapter(
-        Block.class, GsonCodecContext.of(Registries.BLOCK.getCodec()));
+        Block.class, GsonCodecContext.of(BuiltInRegistries.BLOCK.byNameCodec()));
   }
 }

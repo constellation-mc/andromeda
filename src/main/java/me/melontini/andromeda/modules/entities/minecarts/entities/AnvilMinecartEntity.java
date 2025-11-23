@@ -7,29 +7,29 @@ import me.melontini.andromeda.modules.entities.minecart_speed_control.MinecartSp
 import me.melontini.andromeda.modules.entities.minecarts.MinecartEntities;
 import me.melontini.andromeda.modules.entities.minecarts.MinecartItems;
 import me.melontini.dark_matter.api.base.util.MathUtil;
-import net.minecraft.block.AnvilBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 
-public class AnvilMinecartEntity extends AbstractMinecartEntity {
-  public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, World world) {
+public class AnvilMinecartEntity extends AbstractMinecart {
+  public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, Level world) {
     super(entityType, world);
   }
 
-  public AnvilMinecartEntity(World world, double x, double y, double z) {
+  public AnvilMinecartEntity(Level world, double x, double y, double z) {
     super(MinecartEntities.ANVIL_MINECART_ENTITY.orThrow(), world, x, y, z);
   }
 
@@ -39,20 +39,20 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
   }
 
   @Override
-  public ActionResult interact(PlayerEntity player, Hand hand) {
-    return ActionResult.success(world.isClient);
+  public InteractionResult interact(Player player, InteractionHand hand) {
+    return InteractionResult.sidedSuccess(level.isClientSide);
   }
 
   @Override
-  public boolean handleFallDamage(
-      float fallDistance, float damageMultiplier, DamageSource damageSource) {
-    int i = MathHelper.ceil(fallDistance - 1.0F);
+  public boolean causeFallDamage(
+          float fallDistance, float damageMultiplier, DamageSource damageSource) {
+    int i = Mth.ceil(fallDistance - 1.0F);
     if (i >= 0) {
       float f = (float) Math.min(MathUtil.fastFloor(i * 2), 40);
-      for (Entity entity : world.getEntitiesByClass(
-          Entity.class, this.getBoundingBox().expand(0.1), EntityPredicates.EXCEPT_SPECTATOR)) {
-        if (!(entity instanceof AbstractMinecartEntity)) {
-          entity.damage(world.getDamageSources().fallingAnvil(this), f);
+      for (Entity entity : level.getEntitiesOfClass(
+          Entity.class, this.getBoundingBox().inflate(0.1), EntitySelector.NO_SPECTATORS)) {
+        if (!(entity instanceof AbstractMinecart)) {
+          entity.hurt(level.damageSources().anvil(this), f);
         }
       }
     }
@@ -60,7 +60,7 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
   }
 
   @Override
-  public Item getItem() {
+  public Item getDropItem() {
     return MinecartItems.ANVIL_MINECART.orThrow();
   }
 
@@ -70,10 +70,10 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
 
   @Override
   public double getMaxSpeed() {
-    double d = (this.isTouchingWater() ? 0.08 : 0.1) / 20.0;
+    double d = (this.isInWater() ? 0.08 : 0.1) / 20.0;
     return optional
         .map(ms -> {
-          var c = world.am$get(MinecartSpeedControl.CONFIG);
+          var c = level.am$get(MinecartSpeedControl.CONFIG);
           var supplier = ConstantLootContextAccessor.get(this);
           return c.available.asBoolean(supplier) ? d * c.modifier.asDouble(supplier) : d;
         })
@@ -81,12 +81,12 @@ public class AnvilMinecartEntity extends AbstractMinecartEntity {
   }
 
   @Override
-  public BlockState getDefaultContainedBlock() {
-    return Blocks.ANVIL.getDefaultState().with(AnvilBlock.FACING, Direction.NORTH);
+  public BlockState getDefaultDisplayBlockState() {
+    return Blocks.ANVIL.defaultBlockState().setValue(AnvilBlock.FACING, Direction.NORTH);
   }
 
   @Override
-  public ItemStack getPickBlockStack() {
+  public ItemStack getPickResult() {
     return new ItemStack(MinecartItems.ANVIL_MINECART.orThrow());
   }
 }

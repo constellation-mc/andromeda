@@ -2,11 +2,11 @@ package me.melontini.andromeda.modules.mechanics.throwable_items.client;
 
 import me.melontini.dark_matter.api.glitter.particles.AbstractScreenParticle;
 import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.model.BakedModel;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Mth;
 
 public class DyeParticle extends AbstractScreenParticle {
 
@@ -22,24 +22,24 @@ public class DyeParticle extends AbstractScreenParticle {
   }
 
   @Override
-  public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-    MatrixStack matrices = context.getMatrices();
-    float scale = MathHelper.lerp(delta, oldScale, this.scale);
-    float offset = MathHelper.lerp(delta, oldOffset, this.offset);
-    matrices.push();
+  public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    PoseStack matrices = context.pose();
+    float scale = Mth.lerp(delta, oldScale, this.scale);
+    float offset = Mth.lerp(delta, oldOffset, this.offset);
+    matrices.pushPose();
     matrices.translate(x, y + offset, 500);
     matrices.scale(scale, scale, 1);
     BakedModel model = client.getItemRenderer().getModel(stack, null, null, 0);
     DrawUtil.renderGuiItemModelCustomMatrix(matrices, stack, -8, -8, model);
-    matrices.pop();
+    matrices.popPose();
   }
 
   @Override
   protected void tick() {
     int window =
-        Math.max(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
+        Math.max(client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight());
     oldScale = scale;
-    scale = MathHelper.lerp(0.15f, scale, window / 25f);
+    scale = Mth.lerp(0.15f, scale, window / 25f);
     if (scale > (window / 25f) * 0.99f) {
       oldOffset = offset;
       offset += 1 * (offset * 0.07f);

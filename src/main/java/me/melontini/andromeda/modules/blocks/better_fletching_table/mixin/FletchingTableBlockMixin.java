@@ -2,18 +2,18 @@ package me.melontini.andromeda.modules.blocks.better_fletching_table.mixin;
 
 import me.melontini.andromeda.modules.blocks.better_fletching_table.FletchingScreenHandler;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CraftingTableBlock;
-import net.minecraft.block.FletchingTableBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CraftingTableBlock;
+import net.minecraft.world.level.block.FletchingTableBlock;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,30 +22,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FletchingTableBlock.class)
 abstract class FletchingTableBlockMixin extends CraftingTableBlock {
 
-  public FletchingTableBlockMixin(Settings settings) {
+  public FletchingTableBlockMixin(Properties settings) {
     super(settings);
   }
 
-  @Inject(at = @At("HEAD"), method = "onUse", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "use", cancellable = true)
   private void andromeda$onUse(
-      BlockState state,
-      World world,
-      BlockPos pos,
-      PlayerEntity player,
-      Hand hand,
-      BlockHitResult hit,
-      CallbackInfoReturnable<ActionResult> cir) {
-    if (state.isOf(Blocks.FLETCHING_TABLE)) {
-      if (player.world.isClient) {
-        cir.setReturnValue(ActionResult.SUCCESS);
+          BlockState state,
+          Level world,
+          BlockPos pos,
+          Player player,
+          InteractionHand hand,
+          BlockHitResult hit,
+          CallbackInfoReturnable<InteractionResult> cir) {
+    if (state.is(Blocks.FLETCHING_TABLE)) {
+      if (player.level.isClientSide) {
+        cir.setReturnValue(InteractionResult.SUCCESS);
         return;
       }
 
-      player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+      player.openMenu(new SimpleMenuProvider(
           (syncId, inv, player1) ->
-              new FletchingScreenHandler(syncId, inv, ScreenHandlerContext.create(world, pos)),
+              new FletchingScreenHandler(syncId, inv, ContainerLevelAccess.create(world, pos)),
           TextUtil.translatable("block.minecraft.fletching_table")));
-      cir.setReturnValue(ActionResult.SUCCESS);
+      cir.setReturnValue(InteractionResult.SUCCESS);
     }
   }
 }

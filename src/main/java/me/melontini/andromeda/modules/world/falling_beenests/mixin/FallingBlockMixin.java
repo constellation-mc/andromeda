@@ -6,21 +6,21 @@ import me.melontini.andromeda.modules.world.falling_beenests.BeeUtil;
 import me.melontini.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BeehiveBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,12 +32,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class FallingBlockMixin extends Entity {
 
   @Shadow
-  @Nullable public NbtCompound blockEntityData;
+  @Nullable public CompoundTag blockData;
 
   @Shadow
-  private BlockState block;
+  private BlockState blockState;
 
-  public FallingBlockMixin(EntityType<?> type, World world) {
+  public FallingBlockMixin(EntityType<?> type, Level world) {
     super(type, world);
   }
 
@@ -46,48 +46,48 @@ abstract class FallingBlockMixin extends Entity {
           @At(
               value = "INVOKE",
               target =
-                  "net/minecraft/world/World.getBlockEntity (Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/entity/BlockEntity;",
+                  "Lnet/minecraft/world/level/Level;getBlockEntity(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/entity/BlockEntity;",
               shift = At.Shift.AFTER),
       method = "tick")
   public void andromeda$tick(CallbackInfo ci) {
-    BlockPos blockPos = this.getBlockPos();
-    BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+    BlockPos blockPos = this.blockPosition();
+    BlockEntity blockEntity = this.level.getBlockEntity(blockPos);
     if (blockEntity == null) return;
 
     if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity
-        && this.world
+        && this.level
             .am$get(CanBeeNestsFall.CONFIG)
             .available
             .asBoolean(LootContextBuilder.block(
-                world, builder -> builder.origin(this).state(block).blockEntity(blockEntity)))) {
-      if (this.block.getBlock() != Blocks.BEE_NEST) return;
-      if (blockEntityData == null || !blockEntityData.getBoolean("AM-FromFallenBlock")) return;
+                    level, builder -> builder.origin(this).state(blockState).blockEntity(blockEntity)))) {
+      if (this.blockState.getBlock() != Blocks.BEE_NEST) return;
+      if (blockData == null || !blockData.getBoolean("AM-FromFallenBlock")) return;
 
-      blockEntityData.putBoolean("AM-FromFallenBlock", false);
+      blockData.putBoolean("AM-FromFallenBlock", false);
 
-      Optional<PlayerEntity> optional =
-          PlayerUtil.findClosestNonCreativePlayerInRange(world, this.getBlockPos(), 16);
-      final NbtList nbeetlist = blockEntityData.getList("Bees", 10);
+      Optional<Player> optional =
+          PlayerUtil.findClosestNonCreativePlayerInRange(level, this.blockPosition(), 16);
+      final ListTag nbeetlist = blockData.getList("Bees", 10);
 
-      world.breakBlock(beehiveBlockEntity.getPos(), false);
+      level.destroyBlock(beehiveBlockEntity.getBlockPos(), false);
       for (int i = 0; i < nbeetlist.size(); ++i) {
-        NbtCompound entityData = nbeetlist.getCompound(i).getCompound("EntityData");
-        BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
-        BeeEntity bee = EntityType.BEE.create(world);
+        CompoundTag entityData = nbeetlist.getCompound(i).getCompound("EntityData");
+        BeehiveBlockEntity.removeIgnoredBeeTags(entityData);
+        Bee bee = EntityType.BEE.create(level);
         if (bee == null) continue;
 
-        bee.readNbt(entityData);
-        bee.setPosition(getPos());
-        bee.setCannotEnterHiveTicks(400);
+        bee.load(entityData);
+        bee.setPos(position());
+        bee.setStayOutOfHiveCountdown(400);
         optional.ifPresent(bee::setTarget);
-        world.spawnEntity(bee);
+        level.addFreshEntity(bee);
       }
-      optional.ifPresent(player -> world
-          .getNonSpectatingEntities(BeeEntity.class, new Box(getBlockPos()).expand(50))
+      optional.ifPresent(player -> level
+          .getEntitiesOfClass(Bee.class, new AABB(blockPosition()).inflate(50))
           .forEach(bee -> bee.setTarget(player)));
 
-      for (ItemStack stack : BeeUtil.prepareLoot(world, BeeUtil.BEE_LOOT_ID)) {
-        ItemStackUtil.spawnVelocity(this.getPos(), stack, world, -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
+      for (ItemStack stack : BeeUtil.prepareLoot(level, BeeUtil.BEE_LOOT_ID)) {
+        ItemStackUtil.spawnVelocity(this.position(), stack, level, -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
       }
     }
   }

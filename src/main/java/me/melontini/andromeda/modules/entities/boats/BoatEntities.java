@@ -12,12 +12,12 @@ import me.melontini.andromeda.modules.entities.boats.entities.TNTBoatEntity;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class BoatEntities {
@@ -28,10 +28,10 @@ public class BoatEntities {
   public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.create();
 
   private static @Nullable <T extends Entity> EntityType<T> boatType(
-      boolean register, Identifier id, EntityType.EntityFactory<T> factory) {
+          boolean register, ResourceLocation id, EntityType.EntityFactory<T> factory) {
     return RegistryUtil.register(
-        register, Registries.ENTITY_TYPE, id, () -> FabricEntityTypeBuilder.create(
-                SpawnGroup.MISC, factory)
+        register, BuiltInRegistries.ENTITY_TYPE, id, () -> FabricEntityTypeBuilder.create(
+                MobCategory.MISC, factory)
             .dimensions(new EntityDimensions(1.375F, 0.5625F, true))
             .build());
   }
@@ -50,9 +50,9 @@ public class BoatEntities {
       // This sucks
       ServerPlayNetworking.registerGlobalReceiver(
           TNTBoatEntity.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {
-            UUID id = buf.readUuid();
+            UUID id = buf.readUUID();
             server.execute(() -> {
-              Entity entity = player.world.getEntityLookup().get(id);
+              Entity entity = player.level.getEntities().get(id);
               if (entity instanceof TNTBoatEntity boat
                   && boat.isAlive()
                   && player == boat.getFirstPassenger()) boat.explode();

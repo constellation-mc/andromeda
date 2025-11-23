@@ -1,50 +1,50 @@
 accessWidener  v2	named
 
-accessible class net/minecraft/server/MinecraftServer$ResourceManagerHolder
-accessible field net/minecraft/server/MinecraftServer session Lnet/minecraft/world/level/storage/LevelStorage$Session;
+accessible class net/minecraft/server/MinecraftServer$ReloadableResources
+accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
 
-accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
-accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/List;
-accessible field net/minecraft/client/gui/screen/Screen children Ljava/util/List;
-accessible field net/minecraft/entity/Entity world Lnet/minecraft/world/World;
+accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
+accessible field net/minecraft/client/gui/screens/Screen narratables Ljava/util/List;
+accessible field net/minecraft/client/gui/screens/Screen children Ljava/util/List;
+accessible field net/minecraft/world/entity/Entity level Lnet/minecraft/world/level/Level;
 
 # gui/no_more_adventure
-accessible class net/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection
+accessible class net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon
 
 # entities/boats (furnaceBoat)
-accessible field net/minecraft/client/render/entity/BoatEntityRenderer texturesAndModels Ljava/util/Map;
-accessible field net/minecraft/entity/vehicle/BoatEntity location Lnet/minecraft/entity/vehicle/BoatEntity$Location;
-extendable method net/minecraft/entity/vehicle/BoatEntity updateVelocity ()V
+accessible field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;
+accessible field net/minecraft/world/entity/vehicle/Boat status Lnet/minecraft/world/entity/vehicle/Boat$Status;
+extendable method net/minecraft/world/entity/vehicle/Boat floatBoat ()V
 
 # gui/gui_particles (furnaceScreen)
-accessible field net/minecraft/client/gui/screen/ingame/HandledScreen y I
-accessible field net/minecraft/client/gui/screen/ingame/HandledScreen x I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
 
 # gui/gui_particles (gameModeParticles)
-accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen$ButtonWidget gameMode Lnet/minecraft/client/gui/screen/GameModeSelectionScreen$GameModeSelection;
-accessible field net/minecraft/client/gui/screen/GameModeSelectionScreen gameModeButtons Ljava/util/List;
+accessible field net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeSlot icon Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;
+accessible field net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen slots Ljava/util/List;
 
 # misc/recipe_advancements_generation
-accessible field net/minecraft/server/ServerAdvancementLoader manager Lnet/minecraft/advancement/AdvancementManager;
+accessible field net/minecraft/server/ServerAdvancementManager advancements Lnet/minecraft/advancements/AdvancementList;
 
 # items/minecart_block_picking
-accessible field net/minecraft/entity/vehicle/FurnaceMinecartEntity fuel I
-accessible field net/minecraft/block/entity/AbstractFurnaceBlockEntity burnTime I
-accessible field net/minecraft/world/MobSpawnerLogic spawnEntry Lnet/minecraft/world/MobSpawnerEntry;
+accessible field net/minecraft/world/entity/vehicle/MinecartFurnace fuel I
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
+accessible field net/minecraft/world/level/BaseSpawner nextSpawnData Lnet/minecraft/world/level/SpawnData;
 
 # entities/villagers_follow_emeralds  mechanics/throwable_items
-accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
+accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
 
 # mechanics/throwable_items
-accessible method net/minecraft/loot/context/LootContextTypes register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/loot/context/LootContextType;
+accessible method net/minecraft/world/level/storage/loot/parameters/LootContextParamSets register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/world/level/storage/loot/parameters/LootContextParamSet;
 
 # entities/bee_flower_duplication
-accessible method net/minecraft/entity/passive/BeeEntity$PollinateGoal isRunning ()Z
-accessible method net/minecraft/entity/passive/BeeEntity$PollinateGoal completedPollination ()Z
+accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal isPollinating ()Z
+accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal hasPollinatedLongEnough ()Z
 
 # world/falling_beenests
-accessible method net/minecraft/entity/FallingBlockEntity readCustomDataFromNbt (Lnet/minecraft/nbt/NbtCompound;)V
-accessible method net/minecraft/block/entity/BeehiveBlockEntity removeIrrelevantNbtKeys (Lnet/minecraft/nbt/NbtCompound;)V
+accessible method net/minecraft/world/entity/item/FallingBlockEntity readAdditionalSaveData (Lnet/minecraft/nbt/CompoundTag;)V
+accessible method net/minecraft/world/level/block/entity/BeehiveBlockEntity removeIgnoredBeeTags (Lnet/minecraft/nbt/CompoundTag;)V
 
 # misc/unknown
-accessible field net/minecraft/client/gui/screen/SplashTextRenderer text Ljava/lang/String;
+accessible field net/minecraft/client/gui/components/SplashRenderer splash Ljava/lang/String;

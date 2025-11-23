@@ -1,7 +1,7 @@
 package me.melontini.andromeda.modules.blocks.cactus_bottle_filling;
 
-import net.minecraft.state.property.IntProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 public class Main {
-  public static final IntProperty WATER_LEVEL_3 = IntProperty.of("water_level", 1, 3);
+  public static final IntegerProperty WATER_LEVEL_3 = IntegerProperty.create("water_level", 1, 3);
 }

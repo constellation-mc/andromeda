@@ -3,94 +3,95 @@ package me.melontini.andromeda.modules.entities.snowball_tweaks.mixin.layers;
 import me.melontini.andromeda.common.util.ConstantLootContextAccessor;
 import me.melontini.andromeda.modules.entities.snowball_tweaks.Snowballs;
 import me.melontini.dark_matter.api.mixin.annotations.ConstructDummy;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SnowBlock;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
-import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SnowballEntity.class)
-abstract class SnowballEntityMixin extends ThrownItemEntity {
+@Mixin(Snowball.class)
+abstract class SnowballEntityMixin extends ThrowableItemProjectile {
 
-  public SnowballEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
+  public SnowballEntityMixin(EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
     super(entityType, world);
   }
 
+  // TODO(Ravel): target method tick with the signature not found
   @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
   @ConstructDummy(owner = "net.minecraft.class_1297", name = "method_5773", desc = "()V")
   @Inject(at = @At("TAIL"), method = "tick()V")
   public void andromeda$onBlockHit(CallbackInfo ci) {
-    if (world.isClient()) return;
+    if (level.isClientSide()) return;
 
-    var config = world.am$get(Snowballs.CONFIG);
+    var config = level.am$get(Snowballs.CONFIG);
     var supplier = ConstantLootContextAccessor.get(this);
     if (!config.available.asBoolean(supplier) || !config.layers.asBoolean(supplier)) return;
 
-    Vec3d pos = this.getPos();
-    Vec3d vec3d = pos.add(this.getVelocity());
+    Vec3 pos = this.position();
+    Vec3 vec3d = pos.add(this.getDeltaMovement());
     // We need to recast, since vanilla ignores fluids.
-    BlockHitResult hitResult = this.world.raycast(new RaycastContext(
-        pos, vec3d, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.WATER, this));
+    BlockHitResult hitResult = this.level.clip(new ClipContext(
+        pos, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.WATER, this));
 
     if (hitResult.getType() == HitResult.Type.BLOCK) {
       BlockPos blockPos = hitResult.getBlockPos();
-      FluidState fluidState = this.world.getFluidState(blockPos);
+      FluidState fluidState = this.level.getFluidState(blockPos);
       if (fluidState.isEmpty()) {
-        BlockState blockState = this.world.getBlockState(blockPos);
+        BlockState blockState = this.level.getBlockState(blockPos);
         if (!blockState.isAir()) {
-          if (blockState.isOf(Blocks.SNOW)) {
-            int i = blockState.get(SnowBlock.LAYERS);
+          if (blockState.is(Blocks.SNOW)) {
+            int i = blockState.getValue(SnowLayerBlock.LAYERS);
             BlockState placedState = i < 7
-                ? blockState.with(SnowBlock.LAYERS, Math.min(8, i + 1))
-                : Blocks.SNOW_BLOCK.getDefaultState();
+                ? blockState.setValue(SnowLayerBlock.LAYERS, Math.min(8, i + 1))
+                : Blocks.SNOW_BLOCK.defaultBlockState();
             this.andromeda$setStateAndDiscard(blockPos, placedState);
             return;
           }
 
-          BlockPos newPos = blockPos.offset(hitResult.getSide());
-          BlockState newBlockState = this.world.getBlockState(newPos);
-          if (newBlockState.isOf(Blocks.SNOW)) {
-            int i = newBlockState.get(SnowBlock.LAYERS);
+          BlockPos newPos = blockPos.relative(hitResult.getDirection());
+          BlockState newBlockState = this.level.getBlockState(newPos);
+          if (newBlockState.is(Blocks.SNOW)) {
+            int i = newBlockState.getValue(SnowLayerBlock.LAYERS);
             BlockState placedState = i < 7
-                ? newBlockState.with(SnowBlock.LAYERS, Math.min(8, i + 1))
-                : Blocks.SNOW_BLOCK.getDefaultState();
+                ? newBlockState.setValue(SnowLayerBlock.LAYERS, Math.min(8, i + 1))
+                : Blocks.SNOW_BLOCK.defaultBlockState();
             this.andromeda$setStateAndDiscard(newPos, placedState);
             return;
           }
           if (newBlockState.isAir()) {
-            BlockState below = this.world.getBlockState(newPos.down());
-            if (!below.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(this.world, newPos)) {
+            BlockState below = this.level.getBlockState(newPos.below());
+            if (!below.isAir() && Blocks.SNOW.defaultBlockState().canSurvive(this.level, newPos)) {
               this.andromeda$setStateAndDiscard(
-                  newPos, Blocks.SNOW.getDefaultState().with(SnowBlock.LAYERS, 1));
+                  newPos, Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1));
               return;
             }
           }
-          this.world.sendEntityStatus(this, (byte) 3);
+          this.level.broadcastEntityEvent(this, (byte) 3);
           this.discard();
         }
       } else {
-        this.andromeda$setStateAndDiscard(blockPos, Blocks.ICE.getDefaultState());
+        this.andromeda$setStateAndDiscard(blockPos, Blocks.ICE.defaultBlockState());
       }
     }
   }
 
   @Unique private void andromeda$setStateAndDiscard(BlockPos blockPos, BlockState state) {
-    this.world.setBlockState(blockPos, state, Block.NOTIFY_ALL);
-    this.world.sendEntityStatus(this, (byte) 3);
+    this.level.setBlock(blockPos, state, Block.UPDATE_ALL);
+    this.level.broadcastEntityEvent(this, (byte) 3);
     this.discard();
   }
 }

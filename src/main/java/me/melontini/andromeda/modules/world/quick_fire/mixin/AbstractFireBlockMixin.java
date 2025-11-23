@@ -4,13 +4,13 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.world.quick_fire.QuickFire;
-import net.minecraft.block.AbstractFireBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FireBlock;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,28 +20,28 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FireBlock.class)
-abstract class AbstractFireBlockMixin extends AbstractFireBlock {
+abstract class AbstractFireBlockMixin extends BaseFireBlock {
 
   @Shadow
-  protected abstract void trySpreadingFire(
-      World world, BlockPos pos, int spreadFactor, Random random, int currentAge);
+  protected abstract void checkBurnOut(
+          Level world, BlockPos pos, int spreadFactor, RandomSource random, int currentAge);
 
   @Unique private static final ThreadLocal<Boolean> LOCAL = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
-  public AbstractFireBlockMixin(Settings settings, float damage) {
+  public AbstractFireBlockMixin(Properties settings, float damage) {
     super(settings, damage);
   }
 
-  @ModifyVariable(method = "trySpreadingFire", at = @At("LOAD"), index = 3, argsOnly = true)
+  @ModifyVariable(method = "checkBurnOut", at = @At("LOAD"), index = 3, argsOnly = true)
   public int andromeda$spreadFire0(
-      int value, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
+          int value, @Local(argsOnly = true) Level world, @Local(argsOnly = true) BlockPos pos) {
     return Boolean.TRUE.equals(LOCAL.get()) ? (int) (value * 0.8) : value;
   }
 
   @ModifyExpressionValue(
-      method = "trySpreadingFire",
+      method = "checkBurnOut",
       at = @At(value = "CONSTANT", args = "intValue=10"))
-  public int andromeda$spreadFire01(int value, @Local(argsOnly = true) World world) {
+  public int andromeda$spreadFire01(int value, @Local(argsOnly = true) Level world) {
     return Boolean.TRUE.equals(LOCAL.get()) ? (int) Math.ceil(value / 3d) : value;
   }
 
@@ -50,18 +50,18 @@ abstract class AbstractFireBlockMixin extends AbstractFireBlock {
           @At(
               value = "INVOKE",
               target =
-                  "net/minecraft/block/FireBlock.trySpreadingFire (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/util/math/random/Random;I)V",
+                  "Lnet/minecraft/world/level/block/FireBlock;checkBurnOut(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;ILnet/minecraft/util/RandomSource;I)V",
               ordinal = 0,
               shift = At.Shift.BEFORE),
-      method = "scheduledTick")
+      method = "tick")
   public void andromeda$trySpreadBlocks(
-      BlockState state,
-      ServerWorld world,
-      BlockPos pos,
-      Random random,
-      CallbackInfo ci,
-      @Local(index = 7) int i,
-      @Local(index = 10) int k) {
+          BlockState state,
+          ServerLevel world,
+          BlockPos pos,
+          RandomSource random,
+          CallbackInfo ci,
+          @Local(index = 7) int i,
+          @Local(index = 10) int k) {
     if (world
         .am$get(QuickFire.CONFIG)
         .available
@@ -71,7 +71,7 @@ abstract class AbstractFireBlockMixin extends AbstractFireBlock {
         for (int x = -3; x < 3; x++) {
           for (int y = -3; y < 3; y++) {
             for (int z = -3; z < 3; z++) {
-              this.trySpreadingFire(
+              this.checkBurnOut(
                   world,
                   new BlockPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z),
                   300 + k,

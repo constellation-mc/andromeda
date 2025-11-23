@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.blocks.campfire_effects.CampfireEffects;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.block.entity.CampfireBlockEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.entity.CampfireBlockEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,11 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CampfireBlockEntity.class)
 abstract class CampfireBlockEntityMixin {
 
-  @Inject(at = @At("HEAD"), method = "litServerTick")
+  @Inject(at = @At("HEAD"), method = "cookTick")
   private static void andromeda$litServerTick(
-      World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
-    if (world.getTime() % 180 == 0) {
-      if (state.get(CampfireBlock.LIT)) {
+          Level world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
+    if (world.getGameTime() % 180 == 0) {
+      if (state.getValue(CampfireBlock.LIT)) {
         var config = world.am$get(CampfireEffects.CONFIG);
         var supplier = LootContextBuilder.block(
             world, builder -> builder.origin(pos).state(state).blockEntity(campfire));
@@ -35,9 +35,9 @@ abstract class CampfireBlockEntityMixin {
         List<LivingEntity> entities = new ArrayList<>();
         double rad = config.effectsRange.asDouble(supplier);
         boolean affectsPassive = config.affectsPassive.asBoolean(supplier);
-        world.getEntityLookup().forEachIntersects(new Box(pos).expand(rad), entity -> {
-          if ((entity instanceof PassiveEntity && affectsPassive)
-              || entity instanceof PlayerEntity) {
+        world.getEntities().get(new AABB(pos).inflate(rad), entity -> {
+          if ((entity instanceof AgeableMob && affectsPassive)
+              || entity instanceof Player) {
             entities.add((LivingEntity) entity);
           }
         });
@@ -45,9 +45,9 @@ abstract class CampfireBlockEntityMixin {
 
         for (LivingEntity player : entities) {
           for (CampfireEffects.Config.Effect effect : effects) {
-            StatusEffectInstance effectInstance = new StatusEffectInstance(
+            MobEffectInstance effectInstance = new MobEffectInstance(
                 effect.identifier, 200, effect.amplifier.asInt(supplier), true, false, true);
-            player.addStatusEffect(effectInstance);
+            player.addEffect(effectInstance);
           }
         }
       }
