@@ -1,13 +1,8 @@
 package me.melontini.andromeda.modules.blocks.guarded_loot;
 
-import static me.melontini.andromeda.api.ModuleDeclarations.LOOT_UNLOCKER;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiPredicate;
-import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.ChatFormatting;
@@ -29,16 +24,7 @@ import net.minecraft.world.phys.AABB;
 
 public final class Main {
 
-  private static final List<BiPredicate<BlockEntity, Player>> UNLOCKERS = new ArrayList<>();
-
   static void init() {
-    for (var listener : ModuleManager.get().getModuleApiListeners(LOOT_UNLOCKER)) {
-      listener.accept(lootUnlocker -> {
-        UNLOCKERS.add(lootUnlocker);
-        return null;
-      });
-    }
-
     PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
       if (player.getAbilities().instabuild) return true;
 
@@ -46,7 +32,7 @@ public final class Main {
           && world.am$get(GuardedLoot.CONFIG).breakingHandler
               == GuardedLoot.BreakingHandler.UNBREAKABLE) {
         var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
-        if (monsters.isEmpty() || checkLockPicking(blockEntity, player)) return true;
+        if (monsters.isEmpty()) return true;
         handleLockedContainer(player, monsters);
         return false;
       }
@@ -66,15 +52,6 @@ public final class Main {
         .stream()
         .filter(Enemy.class::isInstance)
         .toList();
-  }
-
-  public static boolean checkLockPicking(BlockEntity entity, Player player) {
-    if (UNLOCKERS.isEmpty()) return false;
-
-    for (BiPredicate<BlockEntity, Player> unlocker : UNLOCKERS) {
-      if (unlocker.test(entity, player)) return true;
-    }
-    return false;
   }
 
   public static void handleLockedContainer(Player player, Collection<LivingEntity> monsters) {
