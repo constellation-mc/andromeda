@@ -1,6 +1,10 @@
 package me.melontini.andromeda.modules.entities.bee_flower_duplication.mixin;
 
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.common.util.LootContextBuilder;
 import me.melontini.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
+import me.melontini.andromeda.modules.misc.unknown.RoseOfTheValley;
+import me.melontini.andromeda.modules.misc.unknown.Unknown;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
@@ -70,6 +74,8 @@ abstract class BeeEntityMixin extends Animal {
     if (this.savedFlowerPos != null) {
       BlockState flowerState = level.getBlockState(savedFlowerPos);
       var config = level.am$get(BeeFlowerDuplication.CONFIG);
+      var supplier =
+          LootContextBuilder.block(level, builder -> builder.origin(position()).state(flowerState));
       if (!config.available) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
@@ -82,7 +88,14 @@ abstract class BeeEntityMixin extends Animal {
               if (level.getBlockState(pos).getBlock() instanceof AirBlock
                   && flowerBlock.canSurvive(flowerState, level, pos)) {
                 if (level.random.nextInt(12) == 0) {
-                  level.setBlockAndUpdate(pos, flowerState);
+                  if (ModuleManager.get().get(Unknown.class).isPresent()
+                      && level.random.nextInt(100) == 0) {
+                    level.setBlockAndUpdate(
+                        pos,
+                        RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().defaultBlockState());
+                  } else {
+                    level.setBlockAndUpdate(pos, flowerState);
+                  }
                 }
               }
             }
