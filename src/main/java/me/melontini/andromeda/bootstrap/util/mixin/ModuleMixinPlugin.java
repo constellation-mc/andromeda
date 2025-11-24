@@ -30,5 +30,6 @@ public class ModuleMixinPlugin extends ExtendablePlugin {
 
   @Override
   protected void afterApply(
-      String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
+      String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+  }
 }

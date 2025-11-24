@@ -50,7 +50,7 @@ public class ModuleManager implements PreLaunchEntrypoint {
   public void onPreLaunch() {
     instance = this;
     this.modConfig.save();
-    VersionTracker.initialize(this);
+    TrackerMiner.initialize(this);
 
     List<Class<? extends Module>> moduleClasses = new ModuleDiscovery()
         .discoverModules().stream()
