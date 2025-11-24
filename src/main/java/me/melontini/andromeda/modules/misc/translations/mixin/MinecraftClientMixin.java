@@ -1,0 +1,35 @@
+package me.melontini.andromeda.modules.misc.translations.mixin;
+
+import java.util.concurrent.CompletableFuture;
+import me.melontini.andromeda.bootstrap.ModuleManager;
+import me.melontini.andromeda.modules.misc.translations.Client;
+import me.melontini.andromeda.modules.misc.translations.Translations;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+@Mixin(Minecraft.class)
+abstract class MinecraftClientMixin {
+
+  @Shadow
+  @Final
+  public Options options;
+
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V",
+              shift = At.Shift.BEFORE),
+      method = "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;")
+  private void andromeda$downloadLangFiles(
+      boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+    Client.onResourceReload(
+        this.options.languageCode, ModuleManager.get().get(Translations.class).orElseThrow());
+  }
+}
