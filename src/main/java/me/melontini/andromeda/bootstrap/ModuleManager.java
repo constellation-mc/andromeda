@@ -2,12 +2,17 @@ package me.melontini.andromeda.bootstrap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import me.melontini.andromeda.api.ApiDeclaration;
+import me.melontini.andromeda.api.ModuleApiProvider;
 import me.melontini.andromeda.bootstrap.config.handler.BootstrapConfigHandler;
 import me.melontini.andromeda.bootstrap.config.handler.ModConfigHandler;
 import me.melontini.andromeda.bootstrap.event.BootstrapConfigEvent;
+import me.melontini.andromeda.bootstrap.event.DeclareApiEvent;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.bootstrap.event.PostModuleInitEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
@@ -22,7 +27,7 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
 @CustomLog
 @Accessors(fluent = true)
-public class ModuleManager implements PreLaunchEntrypoint {
+public class ModuleManager implements PreLaunchEntrypoint, ModuleApiProvider {
 
   @Getter
   private final ModContainer modContainer =
@@ -45,6 +50,9 @@ public class ModuleManager implements PreLaunchEntrypoint {
 
   private final Map<Class<?>, Module> modules = new IdentityHashMap<>();
   private final Map<String, Module> modulesByName = new LinkedHashMap<>();
+
+  private final Map<ApiDeclaration<?, ?>, List<Consumer<Function<?, ?>>>> moduleApis =
+      new IdentityHashMap<>();
 
   private static ModuleManager instance;
 
@@ -111,6 +119,14 @@ public class ModuleManager implements PreLaunchEntrypoint {
     for (Module value : modulesByName.values()) {
       ModuleHelper.runAndDropBus(value, PostBootstrapEvent.ID, PostBootstrapEvent::postBootstrap);
     }
+
+    DeclareApiEvent.BUS.invoker().declareModuleApi(new DeclareApiEvent.ModuleApiDeclarinator() {
+      @Override
+      public <I, O> void accept(ApiDeclaration<I, O> declaration) {
+        ModuleManager.this.moduleApis.computeIfAbsent(
+            declaration, declaration1 -> new ArrayList<>());
+      }
+    });
   }
 
   public <T extends Module> Optional<T> getDiscovered(Class<T> cls) {
@@ -127,6 +143,14 @@ public class ModuleManager implements PreLaunchEntrypoint {
 
   public <T extends Module> Optional<T> get(String val) {
     return (Optional<T>) Optional.ofNullable(this.modulesByName.get(val));
+  }
+
+  // Returns a view of module api listeners. The list should be reused as much as possible to avoid
+  // calling this method.
+  public <I, O> List<Consumer<Function<I, O>>> getModuleApiListeners(
+      ApiDeclaration<I, O> declaration) {
+    return Collections.unmodifiableList(
+        (List<Consumer<Function<I, O>>>) (Object) this.moduleApis.get(declaration));
   }
 
   public Collection<Module> loaded() {
@@ -159,5 +183,27 @@ public class ModuleManager implements PreLaunchEntrypoint {
     } else {
       log.info("No modules loaded!");
     }
+  }
+
+  @Override
+  public <I, O> void whenAvailable(
+      ApiDeclaration<I, O> declaration, Consumer<Function<I, O>> consumer) {
+    switch (declaration.status()) {
+      case DEPRECATED -> log.warn(
+          "{} requested a deprecated module API!", Utilities.getCallerClass().getName());
+      case DEAD -> {
+        log.error(
+            "{} requested a dead module API! Aborting!",
+            Utilities.getCallerClass().getName());
+        return;
+      }
+    }
+
+    var listeners = this.moduleApis.get(declaration);
+    if (listeners == null) {
+      throw Util.create("### %s requested a non-existent module API! This is really bad! ###"
+          .formatted(Utilities.getCallerClass().getName()));
+    }
+    listeners.add((Consumer<Function<?, ?>>) (Object) consumer);
   }
 }

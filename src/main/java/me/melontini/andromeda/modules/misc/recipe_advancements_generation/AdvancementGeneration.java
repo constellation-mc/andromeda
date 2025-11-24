@@ -1,5 +1,7 @@
 package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
+import static me.melontini.andromeda.api.ModuleDeclarations.ADVANCEMENT_RECIPE_FILTER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +10,7 @@ import me.melontini.andromeda.bootstrap.ModuleInfo;
 import me.melontini.andromeda.bootstrap.config.BaseConfig;
 import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.event.DeclareApiEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
 import me.melontini.andromeda.bootstrap.util.Environment;
@@ -21,6 +24,7 @@ public final class AdvancementGeneration extends Module implements PostBootstrap
 
   AdvancementGeneration() {
     RegisterConfigEvent.get(this, RegisterConfigEvent.MAIN).listen(() -> CONFIG);
+    DeclareApiEvent.BUS.listen(consumer -> consumer.accept(ADVANCEMENT_RECIPE_FILTER));
   }
 
   @Override

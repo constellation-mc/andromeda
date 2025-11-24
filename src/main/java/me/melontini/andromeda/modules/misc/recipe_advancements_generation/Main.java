@@ -1,5 +1,7 @@
 package me.melontini.andromeda.modules.misc.recipe_advancements_generation;
 
+import static me.melontini.andromeda.api.ModuleDeclarations.ADVANCEMENT_RECIPE_FILTER;
+
 import com.google.gson.JsonElement;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -7,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.Util;
@@ -163,6 +166,12 @@ public final class Main {
     FILTERS.add((id, recipe) -> config.namespaceBlacklist.contains(id.getNamespace()));
     FILTERS.add((id, recipe) -> config.recipeBlacklist.contains(id));
     FILTERS.add((id, recipe) -> recipe.isSpecial() && config.ignoreRecipesHiddenInTheRecipeBook);
+    ModuleManager.get()
+        .getModuleApiListeners(ADVANCEMENT_RECIPE_FILTER)
+        .forEach(listener -> listener.accept(recipeFilter -> {
+          FILTERS.add(recipeFilter);
+          return null;
+        }));
 
     ServerLifecycleEvents.SERVER_STARTING.register(
         server -> generateRecipeAdvancements(server, module, config));
