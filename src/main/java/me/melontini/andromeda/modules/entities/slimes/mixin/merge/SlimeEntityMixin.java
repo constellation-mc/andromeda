@@ -39,7 +39,7 @@ abstract class SlimeEntityMixin extends Mob {
         2,
         new NearestAttackableTargetGoal<>(
             (Slime) (Object) this, Slime.class, 5, true, false, livingEntity -> {
-              if (!config.active) return false;
+              if (!config.available) return false;
               if (!config.merge) return false;
               if (this.andromeda$mergeCD > 0) return false;
               float d = livingEntity.distanceTo(this);
@@ -51,7 +51,7 @@ abstract class SlimeEntityMixin extends Mob {
   @Inject(at = @At("TAIL"), method = "push")
   private void andromeda$push(Entity entity, CallbackInfo ci) {
     var config = this.level.am$get(Slimes.CONFIG);
-    if (!config.active) return;
+    if (!config.available) return;
 
     if (!config.merge) return;
 

@@ -6,5 +6,5 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 public class GameConfig extends BaseConfig {
 
   @ConfigEntry.Gui.Excluded
-  public boolean active = false;
+  public boolean available = true;
 }

@@ -47,7 +47,7 @@ abstract class GoatHornMixin {
     ServerLevel sw = (ServerLevel) world;
     if (!sw.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) return;
     var cfg = world.am$get(GoatHorn.CONFIG);
-    if (!cfg.active) return;
+    if (!cfg.available) return;
 
     sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get())
         .trySpawn(

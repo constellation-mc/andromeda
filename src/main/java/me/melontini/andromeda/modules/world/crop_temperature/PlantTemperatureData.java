@@ -92,7 +92,7 @@ public final class PlantTemperatureData {
     if (isPlant(state.getBlock())) {
       float[] data = world.getServer().dm$getReloader(RELOADER).get(state.getBlock());
       if (data != null) {
-        if (!world.am$get(PlantTemperature.CONFIG).active) return true;
+        if (!world.am$get(PlantTemperature.CONFIG).available) return true;
 
         if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
           return MathUtil.nextInt(0, 1) != 0;

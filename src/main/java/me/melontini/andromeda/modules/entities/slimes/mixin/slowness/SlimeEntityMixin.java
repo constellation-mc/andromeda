@@ -38,7 +38,7 @@ abstract class SlimeEntityMixin extends Mob {
       method = "dealDamage")
   private void andromeda$onPlayerCollision(LivingEntity target, CallbackInfo ci) {
     var config = this.level.am$get(Slimes.CONFIG);
-    if (!config.active) return;
+    if (!config.available) return;
     if (!config.slowness) return;
 
     MobEffectInstance effectInstance = new MobEffectInstance(

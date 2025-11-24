@@ -21,6 +21,6 @@ abstract class BedBlockMixin {
   private boolean andromeda$explode(boolean original, @Local(argsOnly = true) Level world) {
     if (world.isClientSide()) return original;
 
-    return original && !world.am$get(Unsafe.CONFIG).active;
+    return original && !world.am$get(Unsafe.CONFIG).available;
   }
 }

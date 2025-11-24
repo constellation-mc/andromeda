@@ -64,7 +64,7 @@ abstract class MinecartItemMixin extends Item {
 
       PickUpBehaviorHandler.getPickUpBehavior(state.getBlock()).ifPresent(b -> {
         if (!world.isClientSide()) {
-          if (!world.am$get(MinecartBlockPicking.CONFIG).active) return;
+          if (!world.am$get(MinecartBlockPicking.CONFIG).available) return;
           ItemStack stack1 = b.pickUp(state, world, pos);
           if (stack1 == null || stack1.isEmpty()) return;
 

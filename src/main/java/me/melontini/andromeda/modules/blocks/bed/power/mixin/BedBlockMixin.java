@@ -21,6 +21,6 @@ abstract class BedBlockMixin extends Block {
     if (world.isClientSide()) return power;
 
     var config = world.am$get(Power.CONFIG);
-    return config.active ? (float) config.power : power;
+    return config.available ? (float) config.power : power;
   }
 }

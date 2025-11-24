@@ -44,7 +44,7 @@ public final class Main {
   public static List<LivingEntity> checkMonsterLock(
       Level world, BlockState state, Player player, BlockPos pos, BlockEntity be) {
     var config = world.am$get(GuardedLoot.CONFIG);
-    if (!config.active) return Collections.emptyList();
+    if (!config.available) return Collections.emptyList();
 
     return world
         .getEntitiesOfClass(

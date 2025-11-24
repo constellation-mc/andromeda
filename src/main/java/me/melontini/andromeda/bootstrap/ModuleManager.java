@@ -5,8 +5,11 @@ import java.util.*;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import me.melontini.andromeda.bootstrap.config.ModConfigHandler;
+import me.melontini.andromeda.bootstrap.config.handler.BootstrapConfigHandler;
+import me.melontini.andromeda.bootstrap.config.handler.ModConfigHandler;
+import me.melontini.andromeda.bootstrap.event.BootstrapConfigEvent;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.bootstrap.event.PostModuleInitEvent;
 import me.melontini.andromeda.bootstrap.util.mixin.MixinHandler;
 import me.melontini.andromeda.modules.ModuleDiscovery;
 import me.melontini.andromeda.util.*;
@@ -27,10 +30,16 @@ public class ModuleManager implements PreLaunchEntrypoint {
   private final ModConfigHandler modConfig = ModConfigHandler.load();
 
   @Getter
+  private final BootstrapConfigHandler configHandler = new BootstrapConfigHandler();
+
+  @Getter
   private final MixinHandler mixinHandler = new MixinHandler(this);
 
   @Getter
   private final InstanceDataHolder dataHolder = InstanceDataHolder.load();
+
+  private final Map<Class<?>, Module> discoveredModules = new IdentityHashMap<>();
+  private final Map<String, Module> discoveredModulesByName = new LinkedHashMap<>();
 
   private final Map<Class<?>, Module> modules = new IdentityHashMap<>();
   private final Map<String, Module> modulesByName = new LinkedHashMap<>();
@@ -57,19 +66,52 @@ public class ModuleManager implements PreLaunchEntrypoint {
         var ctx = cls.getDeclaredConstructors()[0];
         ctx.setAccessible(true);
         Module module = (Module) ctx.newInstance();
-        this.modules.put(cls, module);
-        this.modulesByName.put(ModuleHelper.id(module), module);
+        this.discoveredModules.put(cls, module);
+        this.discoveredModulesByName.put(ModuleHelper.id(module), module);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
         throw Util.wrap("Failed to create module %s".formatted(cls.getName()), e);
       }
     }
 
-    for (Module value : modulesByName.values()) {
-      ModuleHelper.runAndDropBus(value, PostBootstrapEvent.ID, PostBootstrapEvent::postBootstrap);
+    // Post module init event. All discovered modules are available here. Can be used to fix configs
+    // and whatnot.
+    for (Module value : discoveredModulesByName.values()) {
+      ModuleHelper.runAndDropBus(
+          value, PostModuleInitEvent.ID, PostModuleInitEvent::postModuleInit);
+    }
+
+    for (Module value : discoveredModulesByName.values()) {
+      var config = this.configHandler.load(value);
+
+      // Allow modules to modify their own configs.
+      // Other modules can subscribe to this event, but this is not correct.
+      ModuleHelper.runAndDropBus(
+          value, BootstrapConfigEvent.ID, event -> event.bootstrapConfig(config));
+
+      if (config.enabled || Debug.get().enableAllModules) {
+        this.modules.put(value.getClass(), value);
+        this.modulesByName.put(ModuleHelper.id(value.meta()), value);
+      }
+      this.configHandler.save(value);
     }
 
     // Inject all out mixin configs.
     this.mixinHandler.addMixins();
+
+    this.printModuleStats();
+
+    // All modules must be available by this point.
+    for (Module value : modulesByName.values()) {
+      ModuleHelper.runAndDropBus(value, PostBootstrapEvent.ID, PostBootstrapEvent::postBootstrap);
+    }
+  }
+
+  public <T extends Module> Optional<T> getDiscovered(Class<T> cls) {
+    return (Optional<T>) Optional.ofNullable(this.discoveredModules.get(cls));
+  }
+
+  public <T extends Module> Optional<T> getDiscovered(String val) {
+    return (Optional<T>) Optional.ofNullable(this.discoveredModulesByName.get(val));
   }
 
   public <T extends Module> Optional<T> get(Class<T> cls) {
@@ -82,6 +124,10 @@ public class ModuleManager implements PreLaunchEntrypoint {
 
   public Collection<Module> loaded() {
     return modules.values();
+  }
+
+  public Collection<Module> all() {
+    return discoveredModules.values();
   }
 
   public static ModuleManager get() {

@@ -27,7 +27,7 @@ abstract class CampfireBlockEntityMixin {
     if (world.getGameTime() % 180 == 0) {
       if (state.getValue(CampfireBlock.LIT)) {
         var config = world.am$get(CampfireEffects.CONFIG);
-        if (!config.active) return;
+        if (!config.available) return;
 
         List<LivingEntity> entities = new ArrayList<>();
         double rad = config.effectsRange;

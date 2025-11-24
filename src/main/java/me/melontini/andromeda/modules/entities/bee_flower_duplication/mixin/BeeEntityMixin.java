@@ -70,7 +70,7 @@ abstract class BeeEntityMixin extends Animal {
     if (this.savedFlowerPos != null) {
       BlockState flowerState = level.getBlockState(savedFlowerPos);
       var config = level.am$get(BeeFlowerDuplication.CONFIG);
-      if (!config.active) return;
+      if (!config.available) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
         andromeda$plantingCoolDown = level.random.nextIntBetweenInclusive(3600, 6490);

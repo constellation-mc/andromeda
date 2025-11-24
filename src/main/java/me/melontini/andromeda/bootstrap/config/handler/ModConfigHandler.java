@@ -1,4 +1,4 @@
-package me.melontini.andromeda.bootstrap.config;
+package me.melontini.andromeda.bootstrap.config.handler;
 
 import static me.melontini.andromeda.util.AndromedaConstants.MODID;
 
@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import lombok.CustomLog;
+import me.melontini.andromeda.bootstrap.config.BaseConfig;
+import me.melontini.andromeda.bootstrap.config.ModInitConfig;
 import me.melontini.andromeda.util.Debug;
 import me.melontini.andromeda.util.Util;
 import net.fabricmc.loader.api.FabricLoader;

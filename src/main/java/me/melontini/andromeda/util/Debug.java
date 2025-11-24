@@ -8,7 +8,7 @@ import me.melontini.andromeda.bootstrap.Module;
 import me.melontini.andromeda.bootstrap.ModuleHelper;
 import me.melontini.andromeda.bootstrap.ModuleManager;
 import me.melontini.andromeda.bootstrap.config.BaseConfig;
-import me.melontini.andromeda.bootstrap.config.ModConfigHandler;
+import me.melontini.andromeda.bootstrap.config.handler.ModConfigHandler;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;

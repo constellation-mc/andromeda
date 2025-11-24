@@ -38,7 +38,7 @@ abstract class BedBlockMixin extends Block {
     if (world.isClientSide()) return;
 
     if (!canSetSpawn(world)) {
-      if (world.am$get(Safe.CONFIG).active) {
+      if (world.am$get(Safe.CONFIG).available) {
         player.displayClientMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
         cir.setReturnValue(InteractionResult.SUCCESS);
       }

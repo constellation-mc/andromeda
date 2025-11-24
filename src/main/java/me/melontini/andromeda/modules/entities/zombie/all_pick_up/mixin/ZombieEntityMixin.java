@@ -38,6 +38,6 @@ abstract class ZombieEntityMixin extends Monster {
       CallbackInfoReturnable<SpawnGroupData> cir) {
     if (world.isClientSide()) return;
 
-    if (world.getLevel().am$get(Pickup.CONFIG).active) this.setCanPickUpLoot(true);
+    if (world.getLevel().am$get(Pickup.CONFIG).available) this.setCanPickUpLoot(true);
   }
 }

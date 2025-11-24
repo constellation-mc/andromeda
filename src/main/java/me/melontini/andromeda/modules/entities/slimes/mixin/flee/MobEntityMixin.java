@@ -30,7 +30,7 @@ abstract class MobEntityMixin extends Entity {
       var config = level.am$get(Slimes.CONFIG);
 
       if (!slime.isTiny()) return original;
-      if (!config.active) return original;
+      if (!config.available) return original;
 
       if (config.flee) return 270;
     }

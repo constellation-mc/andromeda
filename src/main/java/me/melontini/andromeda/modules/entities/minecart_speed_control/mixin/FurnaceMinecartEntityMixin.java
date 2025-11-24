@@ -27,7 +27,7 @@ abstract class FurnaceMinecartEntityMixin extends AbstractMinecart {
     if (!this.level().isClientSide()) {
       if (fuel > 0) {
         var c = this.level().am$get(MinecartSpeedControl.CONFIG);
-        if (c.active) fuel = Math.max(fuel - c.additionalFurnaceFuel, 0);
+        if (c.available) fuel = Math.max(fuel - c.additionalFurnaceFuel, 0);
       }
     }
   }
@@ -36,7 +36,7 @@ abstract class FurnaceMinecartEntityMixin extends AbstractMinecart {
   private double andromeda$getMaxSpeed(double original) {
     if (!this.level().isClientSide()) {
       var c = this.level().am$get(MinecartSpeedControl.CONFIG);
-      return c.active ? original * c.furnaceModifier : original;
+      return c.available ? original * c.furnaceModifier : original;
     }
     return original;
   }

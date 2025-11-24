@@ -30,7 +30,7 @@ public class MultiConfigHandler extends AbstractConfigHandler {
 
   @Override
   protected Collection<Module> modules(ModuleManager manager) {
-    return manager.loaded();
+    return manager.all();
   }
 
   @Override

@@ -77,9 +77,6 @@ public class Andromeda implements ModInitializer {
     MAIN.loadAll();
     MAIN.saveAll();
 
-    GAME.loadAll();
-    GAME.saveAll();
-
     InitEvents.MAIN.invoker().onModuleMainInit().runEntrypoint();
 
     ResourceConditions.register(
