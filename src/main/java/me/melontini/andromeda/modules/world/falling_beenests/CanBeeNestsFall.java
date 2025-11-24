@@ -4,9 +4,10 @@ import me.melontini.andromeda.bootstrap.Module;
 import me.melontini.andromeda.bootstrap.ModuleInfo;
 import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
 
-@ModuleInfo(name = "falling_beenests", category = "world")
+@ModuleInfo(name = "falling_beenests", category = "world", env = Environment.SERVER)
 public final class CanBeeNestsFall extends Module {
 
   public static final ConfigDefinition<GameConfig> CONFIG = ConfigDefinition.game();

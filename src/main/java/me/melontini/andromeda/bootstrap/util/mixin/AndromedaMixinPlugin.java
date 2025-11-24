@@ -10,11 +10,15 @@ import java.util.List;
 import me.melontini.andromeda.util.ClassPath;
 import me.melontini.andromeda.util.Util;
 import me.melontini.dark_matter.api.base.util.Exceptions;
+import me.melontini.dark_matter.api.mixin.AsmUtil;
 import me.melontini.dark_matter.api.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.mixin.IPluginPlugin;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.util.Annotations;
 
 public class AndromedaMixinPlugin extends ExtendablePlugin {
 
@@ -63,6 +67,16 @@ public class AndromedaMixinPlugin extends ExtendablePlugin {
   }
 
   public static boolean checkNode(ClassNode n) {
+    // if (Debug.Keys.VERIFY_MIXINS.isPresent()) verifyMixin(n, n.name);
+
+    // Validate that the mixin is loaded in a correct environment.
+    var current = FabricLoader.getInstance().getEnvironmentType();
+    AnnotationNode envNode = Annotations.getVisible(n, MixinEnvironment.class);
+    if (envNode != null) {
+      EnvType value = AsmUtil.getAnnotationValue(envNode, "value", null);
+      if (current != value) return false;
+    }
+
     // MixinPredicate only uses the node.
     return MIXIN_PREDICATE.shouldApplyMixin(null, null, n);
   }

@@ -8,8 +8,9 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
 
-@ModuleInfo(name = "tiny_storage", category = "misc")
+@ModuleInfo(name = "tiny_storage", category = "misc", env = Environment.SERVER)
 public final class TinyStorage extends Module implements PostBootstrapEvent {
 
   public static final ThreadLocal<Boolean> LOADING = ThreadLocal.withInitial(() -> false);

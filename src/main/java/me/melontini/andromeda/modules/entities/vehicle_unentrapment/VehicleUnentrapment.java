@@ -6,9 +6,10 @@ import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
 import me.melontini.andromeda.common.config.GameConfig;
 
-@ModuleInfo(name = "vehicle_unentrapment", category = "entities")
+@ModuleInfo(name = "vehicle_unentrapment", category = "entities", env = Environment.SERVER)
 public final class VehicleUnentrapment extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<GameConfig> CONFIG = ConfigDefinition.game();

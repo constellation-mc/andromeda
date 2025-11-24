@@ -1,14 +1,17 @@
 package me.melontini.andromeda.modules.mechanics.dragon_fight;
 
 import me.melontini.andromeda.bootstrap.Module;
-import me.melontini.andromeda.bootstrap.ModuleInfo;
 import me.melontini.andromeda.bootstrap.config.BaseConfig;
 import me.melontini.andromeda.bootstrap.config.ConfigDefinition;
 import me.melontini.andromeda.bootstrap.config.RegisterConfigEvent;
 import me.melontini.andromeda.bootstrap.event.InitEvents;
 import me.melontini.andromeda.bootstrap.event.PostBootstrapEvent;
+import me.melontini.andromeda.bootstrap.util.Environment;
 
-@ModuleInfo(name = "dragon_fight", category = "mechanics")
+@me.melontini.andromeda.bootstrap.ModuleInfo(
+    name = "dragon_fight",
+    category = "mechanics",
+    env = Environment.SERVER)
 public final class DragonFight extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
