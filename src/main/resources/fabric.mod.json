@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "andromeda",
   "version": "${version}",
-  "name": "Andromeda",
+  "name": "andromeda",
   "description": "",
   "authors": [],
   "contact": {},
@@ -11,16 +11,16 @@
   "environment": "*",
   "entrypoints": {
     "preLaunch": [
-      "me.melontini.andromeda.bootstrap.ModuleManager"
+      "dev.zenfyr.andromeda.bootstrap.ModuleManager"
     ],
     "server": [
-      "me.melontini.andromeda.common.AndromedaServer"
+      "dev.zenfyr.andromeda.common.AndromedaServer"
     ],
     "client": [
-      "me.melontini.andromeda.common.AndromedaClient"
+      "dev.zenfyr.andromeda.common.AndromedaClient"
     ],
     "main": [
-      "me.melontini.andromeda.common.Andromeda"
+      "dev.zenfyr.andromeda.common.Andromeda"
     ]
   },
   "mixins": [
@@ -34,7 +34,7 @@
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/class_1937": [
-        "me/melontini/andromeda/common/config/DataConfigs\u0024WorldExtension"
+        "dev/zenfyr/andromeda/common/config/DataConfigs\u0024WorldExtension"
       ]
     }
   }

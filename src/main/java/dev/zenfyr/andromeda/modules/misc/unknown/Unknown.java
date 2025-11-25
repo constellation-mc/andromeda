@@ -1,0 +1,16 @@
+package dev.zenfyr.andromeda.modules.misc.unknown;
+
+import dev.zenfyr.andromeda.bootstrap.Module;
+import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
+import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
+import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
+
+@ModuleInfo(name = "unknown", category = "misc")
+public final class Unknown extends Module implements PostBootstrapEvent {
+
+  @Override
+  public void postBootstrap() {
+    InitEvents.MAIN.listen(() -> RoseOfTheValley::init);
+    InitEvents.CLIENT.listen(() -> RoseOfTheValley::onClient);
+  }
+}

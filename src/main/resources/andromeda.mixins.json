@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.melontini.andromeda.common.mixin",
+  "package": "dev.zenfyr.andromeda.common.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "me.melontini.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin",
+  "plugin": "dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin",
   "injectors": {
     "defaultRequire": 1
   }

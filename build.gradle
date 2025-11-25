@@ -57,9 +57,7 @@ dependencies {
     modImplementation libs.fabric.loader
 
     def dm = libs.dark.matter
-    modApi(dm.base)
-    include(dm.base)
-    [dm.mixin, dm.minecraft, dm.crash.handler, dm.data, dm.mirage, dm.glitter, dm.item.group].each {
+    [dm.base, dm.mixin, dm.minecraft, dm.crash.handler, dm.data, dm.mirage, dm.glitter, dm.item.group].each {
         modImplementation it
         include it
     }
@@ -262,9 +260,9 @@ publishMods {
         minecraftVersions.add("${project.minecraft_version}")
 
         requires("fabric-api")
+        requires("dark-matter")
         optional("cloth-config")
         optional("modmenu")
-        embeds("dark-matter")
     }
     curseforge {
         projectId = "639198"
@@ -272,9 +270,9 @@ publishMods {
         minecraftVersions.add("${project.minecraft_version}")
 
         requires("fabric-api")
+        requires("dark-matter")
         optional("cloth-config")
         optional("modmenu")
-        embeds("dark-matter")
     }
     github {
         repository = "constellation-mc/andromeda"
