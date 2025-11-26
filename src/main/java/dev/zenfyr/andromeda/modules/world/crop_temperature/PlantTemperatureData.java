@@ -18,7 +18,6 @@ import dev.zenfyr.pulsar.resources.ReloaderType;
 import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import dev.zenfyr.pulsar.util.MathUtil;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
-import java.lang.invoke.MethodType;
 import java.util.*;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
@@ -26,13 +25,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.GrowingPlantBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,18 +114,12 @@ public final class PlantTemperatureData {
   }
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
-    String mapped = Mapper.mapMethod(
-        BlockBehaviour.class,
-        "method_9514",
-        MethodType.methodType(
-            void.class, BlockState.class, ServerLevel.class, BlockPos.class, RandomSource.class));
-
     List<Block> override = new ArrayList<>();
     List<Block> blocks = new ArrayList<>();
 
     BuiltInRegistries.BLOCK.forEach(block -> {
       if (isPlant(block) && reloader.get(block) == null) {
-        if (methodInHierarchyUntil(block.getClass(), mapped, Block.class)) {
+        if (methodInHierarchyUntil(block.getClass(), "randomTick", Block.class)) {
           override.add(block);
           return;
         }

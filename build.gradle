@@ -142,7 +142,7 @@ processResources {
             "fabric_version": libs.fabric.api.get().version,
             "cloth_version": libs.cloth.config.get().version,
             "modmenu_version": libs.modmenu.get().version,
-            "commander_version": libs.commander.get().version
+            "pulsar_version": libs.pulsar.get().version
     ]
     inputs.properties(map)
     filteringCharset "UTF-8"
