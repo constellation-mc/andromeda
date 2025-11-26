@@ -6,17 +6,17 @@ import com.google.common.collect.ImmutableSet;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.registry.RegistryUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
+import dev.zenfyr.pulsar.util.SupportUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.base.util.Support;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
-import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -56,10 +56,10 @@ import org.jetbrains.annotations.Nullable;
 public class MagnetItem extends Item {
 
   public static final Keeper<MagnetItem> MAGNET = Keeper.create();
-  private static final BiConsumer<ItemStack, Player> ITEM_PARTICLES =
-      Support.support(EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
+  private static final BiConsumer<ItemStack, Player> ITEM_PARTICLES = SupportUtil.support(
+      EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
   private static final Consumer<Player> UPGRADE_PARTICLES =
-      Support.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
+      SupportUtil.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
 
   public MagnetItem(Properties settings) {
     super(settings);

@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.misc.tiny_storage.mixin;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.misc.tiny_storage.TinyStorage;
-import me.melontini.dark_matter.api.data.nbt.NbtUtil;
+import dev.zenfyr.pulsar.nbt.NbtUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;

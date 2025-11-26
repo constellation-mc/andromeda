@@ -23,7 +23,7 @@ public interface ItemBehavior {
 
   static int getCooldown(
       ServerLevel world, @Nullable Entity user, FlyingItemEntity fie, ItemStack stack) {
-    var cd = world.getServer().dm$getReloader(RELOADER).getCooldown(stack.getItem());
+    var cd = world.getServer().pulsar$getReloader(RELOADER).getCooldown(stack.getItem());
     if (cd.toSource().left().isPresent()) return cd.asInt(null); // constant, can pass null.
 
     LootParams.Builder builder = new LootParams.Builder(world);

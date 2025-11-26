@@ -4,12 +4,12 @@ import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin;
 import dev.zenfyr.andromeda.util.ClassPath;
+import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import me.melontini.dark_matter.api.base.util.Exceptions;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.util.Annotations;
@@ -26,7 +26,7 @@ public class ModuleDiscovery {
       if (ci.packageName().endsWith("mixin") || ci.packageName().endsWith("client")) continue;
 
       futures.add(CompletableFuture.supplyAsync(() -> {
-            byte[] bytes = Exceptions.supply(ci::readAllBytes);
+            byte[] bytes = ExceptionUtil.supply(ci::readAllBytes);
 
             ClassReader reader = new ClassReader(bytes);
             ClassNode node = new ClassNode();
@@ -40,7 +40,7 @@ public class ModuleDiscovery {
           })
           .thenApplyAsync(name -> {
             if (name == null) return null;
-            return Exceptions.supply(
+            return ExceptionUtil.supply(
                 () -> (Class<? extends Module>) Class.forName(name.replace('/', '.')));
           }));
     }

@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.blocks.better_fletching_table.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable;
-import me.melontini.dark_matter.api.data.nbt.NbtUtil;
+import dev.zenfyr.pulsar.nbt.NbtUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;

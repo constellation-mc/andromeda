@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.modules.misc.unknown;
 
+import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;

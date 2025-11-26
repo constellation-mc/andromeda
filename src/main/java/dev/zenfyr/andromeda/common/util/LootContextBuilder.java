@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.common.util;
 
+import dev.zenfyr.pulsar.util.functions.Memoize;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import lombok.NonNull;
-import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;

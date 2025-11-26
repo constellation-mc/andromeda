@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles;
 
 import dev.zenfyr.andromeda.common.AndromedaClient;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
+import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.util.MathUtil;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.core.particles.ParticleTypes;

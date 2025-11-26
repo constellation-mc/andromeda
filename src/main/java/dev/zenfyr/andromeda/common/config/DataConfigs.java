@@ -11,6 +11,8 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.GameConfigHandler;
 import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.resources.ReloaderType;
+import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.lang.reflect.Field;
@@ -19,8 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import lombok.CustomLog;
-import me.melontini.dark_matter.api.data.loading.ReloaderType;
-import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -38,7 +38,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
       ReloaderType.create(Andromeda.id("scoped_config"));
 
   public static DataConfigs get(MinecraftServer server) {
-    return server.dm$getReloader(RELOADER);
+    return server.pulsar$getReloader(RELOADER);
   }
 
   private final ModuleManager moduleManager;

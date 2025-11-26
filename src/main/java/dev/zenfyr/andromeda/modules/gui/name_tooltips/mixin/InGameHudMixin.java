@@ -2,11 +2,11 @@ package dev.zenfyr.andromeda.modules.gui.name_tooltips.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.util.Utilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.entities.minecarts.items;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.List;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;

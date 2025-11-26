@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.gui.gui_particles;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import me.melontini.dark_matter.api.glitter.particles.ItemStackParticle;
+import dev.zenfyr.pulsar.client.particles.ItemStackParticle;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;

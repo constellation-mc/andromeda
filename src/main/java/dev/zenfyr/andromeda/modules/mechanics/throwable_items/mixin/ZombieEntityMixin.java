@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.mechanics.throwable_items.mixin;
 
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.*;
-import me.melontini.dark_matter.api.base.util.MathUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;

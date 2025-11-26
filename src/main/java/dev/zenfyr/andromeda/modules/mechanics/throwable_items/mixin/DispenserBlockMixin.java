@@ -23,7 +23,7 @@ abstract class DispenserBlockMixin {
       Object2ObjectOpenHashMap<Item, DispenseItemBehavior> map, CallbackInfo ci) {
     var b = map.defaultReturnValue();
     map.defaultReturnValue((pointer, stack) ->
-        pointer.getLevel().getServer().dm$getReloader(RELOADER).hasBehaviors(stack)
+        pointer.getLevel().getServer().pulsar$getReloader(RELOADER).hasBehaviors(stack)
             ? Main.BEHAVIOR.dispense(pointer, stack)
             : b.dispense(pointer, stack));
   }
@@ -34,7 +34,7 @@ abstract class DispenserBlockMixin {
     var server = Andromeda.get().getCurrentServer();
     if (server == null) return;
 
-    var manager = server.dm$getReloader(RELOADER);
+    var manager = server.pulsar$getReloader(RELOADER);
     if (manager.hasBehaviors(stack) && manager.overridesVanilla(stack.getItem())) {
       cir.setReturnValue(Main.BEHAVIOR);
     }

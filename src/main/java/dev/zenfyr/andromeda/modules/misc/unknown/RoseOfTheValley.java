@@ -3,10 +3,10 @@ package dev.zenfyr.andromeda.modules.misc.unknown;
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.registry.RegistryUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.List;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
-import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;

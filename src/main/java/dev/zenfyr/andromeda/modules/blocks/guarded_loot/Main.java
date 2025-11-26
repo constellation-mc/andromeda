@@ -1,11 +1,11 @@
 package dev.zenfyr.andromeda.modules.blocks.guarded_loot;
 
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;

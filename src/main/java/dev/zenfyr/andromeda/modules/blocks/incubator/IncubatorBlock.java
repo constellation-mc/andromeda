@@ -9,10 +9,10 @@ import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import dev.zenfyr.andromeda.modules.misc.unknown.Unknown;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.registry.RegistryUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.List;
 import java.util.Set;
-import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.ChatFormatting;
@@ -80,7 +80,7 @@ public class IncubatorBlock extends BaseEntityBlock implements WorldlyContainerH
       return InteractionResult.sidedSuccess(true);
 
     if (requireNonNull(world.getServer())
-            .dm$getReloader(EggProcessingData.RELOADER)
+            .pulsar$getReloader(EggProcessingData.RELOADER)
             .get(stack.getItem())
         != null) return entity.insertEgg(stack);
     if (stack.isEmpty()) return entity.extractEgg(player);

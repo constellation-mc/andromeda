@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
-import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
+import dev.zenfyr.pulsar.util.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.registries.BuiltInRegistries;

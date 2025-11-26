@@ -43,7 +43,7 @@ public class ThrowableItemAttackGoal<T extends Mob> extends Goal {
   @Override
   public boolean canUse() {
     if (requireNonNull(mob.level.getServer())
-        .dm$getReloader(RELOADER)
+        .pulsar$getReloader(RELOADER)
         .hasBehaviors(this.mob.getMainHandItem())) {
       LivingEntity livingEntity = this.mob.getTarget();
       if (livingEntity != null && livingEntity.isAlive() && this.owner.am$cooldown() <= 0) {

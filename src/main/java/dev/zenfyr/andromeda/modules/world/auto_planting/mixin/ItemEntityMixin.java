@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.world.auto_planting.mixin;
 
 import dev.zenfyr.andromeda.modules.world.auto_planting.AutoPlanting;
-import me.melontini.dark_matter.api.base.util.MathUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;

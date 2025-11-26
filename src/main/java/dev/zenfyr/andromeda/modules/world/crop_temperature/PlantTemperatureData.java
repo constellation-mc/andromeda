@@ -13,15 +13,14 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.codec.ExtraCodecs;
+import dev.zenfyr.pulsar.resources.ReloaderType;
+import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
+import dev.zenfyr.pulsar.util.MathUtil;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.lang.invoke.MethodType;
 import java.util.*;
 import java.util.function.Function;
-import me.melontini.dark_matter.api.base.util.Mapper;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.data.codecs.ExtraCodecs;
-import me.melontini.dark_matter.api.data.loading.ReloaderType;
-import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -90,7 +89,7 @@ public final class PlantTemperatureData {
 
   public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
     if (isPlant(state.getBlock())) {
-      float[] data = world.getServer().dm$getReloader(RELOADER).get(state.getBlock());
+      float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlock());
       if (data != null) {
         if (!world.am$get(PlantTemperature.CONFIG).available) return true;
 

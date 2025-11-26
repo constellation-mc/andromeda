@@ -34,7 +34,7 @@ public class FlyingItemEntity extends ThrowableItemProjectile {
   protected void onHit(HitResult hitResult) {
     if (!this.level.isClientSide()) {
       for (ItemBehavior behavior : requireNonNull(this.level.getServer())
-          .dm$getReloader(ItemBehaviorManager.RELOADER)
+          .pulsar$getReloader(ItemBehaviorManager.RELOADER)
           .getBehaviors(getItemRaw().getItem())) {
         if (!this.isRemoved())
           behavior.onCollision(getItemRaw(), this, (ServerLevel) level, getOwner(), hitResult);

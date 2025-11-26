@@ -2,9 +2,9 @@ package dev.zenfyr.andromeda.modules.world.falling_beenests.mixin;
 
 import dev.zenfyr.andromeda.modules.world.falling_beenests.BeeUtil;
 import dev.zenfyr.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
+import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.util.PlayerUtil;
 import java.util.Optional;
-import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
-import me.melontini.dark_matter.api.minecraft.util.PlayerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

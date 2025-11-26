@@ -1,16 +1,14 @@
 package dev.zenfyr.andromeda.modules.mechanics.throwable_items.client;
 
-import static me.melontini.dark_matter.api.base.util.MathUtil.threadRandom;
-
 import dev.zenfyr.andromeda.common.AndromedaClient;
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.Main;
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.ThrowableItems;
+import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.util.ColorUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.HashSet;
 import java.util.Set;
-import me.melontini.dark_matter.api.base.util.ColorUtil;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -82,9 +80,9 @@ public final class Client {
                         x,
                         y,
                         z,
-                        threadRandom().nextGaussian() * 0.15,
-                        threadRandom().nextDouble() * 0.2,
-                        threadRandom().nextGaussian() * 0.15);
+                        MathUtil.threadRandom().nextGaussian() * 0.15,
+                        MathUtil.threadRandom().nextDouble() * 0.2,
+                        MathUtil.threadRandom().nextGaussian() * 0.15);
               }
 
             if (spawnColor)
@@ -96,9 +94,9 @@ public final class Client {
                         x,
                         y,
                         z,
-                        threadRandom().nextGaussian() * 0.15,
+                        MathUtil.threadRandom().nextGaussian() * 0.15,
                         0.5,
-                        threadRandom().nextGaussian() * 0.15);
+                        MathUtil.threadRandom().nextGaussian() * 0.15);
                 if (particle != null) particle.setColor(r, g, b);
               }
           });

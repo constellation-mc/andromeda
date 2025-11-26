@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
+import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -14,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import lombok.CustomLog;
-import me.melontini.dark_matter.api.base.util.Exceptions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 
@@ -48,7 +48,7 @@ public class DataRefreshUtil {
   private static boolean checkUpdate(ModuleManager manager) {
     Version current = manager.modContainer().getMetadata().getVersion();
     if (manager.dataHolder().hasData("last_version")) {
-      Version version = Exceptions.supply(
+      Version version = ExceptionUtil.supply(
           () -> Version.parse(manager.dataHolder().getData("last_version").getAsString()));
       if (current.compareTo(version) != 0) {
         log.warn(

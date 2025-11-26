@@ -3,12 +3,11 @@ package dev.zenfyr.andromeda.bootstrap.util.mixin;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import java.util.List;
 import java.util.Set;
-import me.melontini.dark_matter.api.mixin.ExtendablePlugin;
-import me.melontini.dark_matter.api.mixin.IPluginPlugin;
 import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-public class ModuleMixinPlugin extends ExtendablePlugin {
+public class ModuleMixinPlugin implements IMixinConfigPlugin {
 
   private static final String MIXIN_ENVIRONMENT_ANNOTATION =
       "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
@@ -17,22 +16,34 @@ public class ModuleMixinPlugin extends ExtendablePlugin {
   private final MixinHandler processor = ModuleManager.get().mixinHandler();
 
   @Override
-  protected void onPluginLoad(String mixinPackage) {
+  public void onLoad(String mixinPackage) {
     this.mixinPackage = mixinPackage;
   }
 
   @Override
-  protected void getMixins(List<String> mixins) {
-    mixins.addAll(processor.mixinsFromPackage(this.mixinPackage));
+  public String getRefMapperConfig() {
+    return "";
   }
 
   @Override
-  protected void collectPlugins(Set<IPluginPlugin> plugins) {
-    plugins.add(DefaultPlugins.constructDummyPlugin());
+  public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+    return true;
   }
 
   @Override
-  protected void afterApply(
+  public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {}
+
+  @Override
+  public List<String> getMixins() {
+    return processor.mixinsFromPackage(this.mixinPackage);
+  }
+
+  @Override
+  public void preApply(
+      String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
+
+  @Override
+  public void postApply(
       String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
     if (targetClass.visibleAnnotations != null
         && !targetClass.visibleAnnotations.isEmpty()) { // strip our annotation from the class

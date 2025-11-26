@@ -45,6 +45,6 @@ abstract class ZombieEntityMixin extends Monster {
 
   @Unique private boolean handleThrowableItems(ThrowableItems m, Level world, ItemStack stack) {
     return world.am$get(ThrowableItems.CONFIG).canZombiesThrowItems
-        && requireNonNull(world.getServer()).dm$getReloader(RELOADER).hasBehaviors(stack);
+        && requireNonNull(world.getServer()).pulsar$getReloader(RELOADER).hasBehaviors(stack);
   }
 }

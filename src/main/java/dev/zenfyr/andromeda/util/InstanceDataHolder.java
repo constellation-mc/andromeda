@@ -1,6 +1,7 @@
 package dev.zenfyr.andromeda.util;
 
 import com.google.gson.*;
+import dev.zenfyr.pulsar.util.MakeSure;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,7 +10,6 @@ import java.util.function.Function;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import me.melontini.dark_matter.api.base.util.MakeSure;
 import org.jetbrains.annotations.NotNull;
 
 @CustomLog

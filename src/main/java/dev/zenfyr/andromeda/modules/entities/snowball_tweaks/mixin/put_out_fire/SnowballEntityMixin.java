@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.entities.snowball_tweaks.mixin.put_out_fire;
 
 import dev.zenfyr.andromeda.modules.entities.snowball_tweaks.Snowballs;
-import me.melontini.dark_matter.api.base.util.MathUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

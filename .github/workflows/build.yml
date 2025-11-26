@@ -6,7 +6,7 @@ jobs:
   build:
     uses: constellation-mc/actions/.github/workflows/gradle-build.yml@main
     with:
-      java: 17
+      java: 21
       gradle_tasks: spotbugs
       reviewdog: |
         cat ./build/reports/spotbugs/main/spotbugs.sarif | reviewdog -name="spotbugs" -f=sarif -reporter=github-check -level=warning
@@ -14,6 +14,6 @@ jobs:
   run_tests:
     uses: constellation-mc/actions/.github/workflows/mc-tests.yml@main
     with:
-      java: 17
+      java: 21
       client_task: runTestClient
       server_task: runTestServer

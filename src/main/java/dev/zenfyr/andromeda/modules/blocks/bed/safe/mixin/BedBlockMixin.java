@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.blocks.bed.safe.mixin;
 import static net.minecraft.world.level.block.BedBlock.canSetSpawn;
 
 import dev.zenfyr.andromeda.modules.blocks.bed.safe.Safe;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

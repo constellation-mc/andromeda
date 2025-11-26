@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.items.better_names.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.List;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;

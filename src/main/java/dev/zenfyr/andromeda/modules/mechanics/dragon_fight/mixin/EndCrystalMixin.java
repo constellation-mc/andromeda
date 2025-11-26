@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.mechanics.dragon_fight.mixin;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.mechanics.dragon_fight.DragonFight;
 import dev.zenfyr.andromeda.modules.mechanics.dragon_fight.EnderDragonManager;
-import me.melontini.dark_matter.api.base.util.MathUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;

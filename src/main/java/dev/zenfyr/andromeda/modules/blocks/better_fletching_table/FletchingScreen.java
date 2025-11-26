@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.blocks.better_fletching_table;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.zenfyr.andromeda.common.Andromeda;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;

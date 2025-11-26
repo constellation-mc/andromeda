@@ -9,9 +9,9 @@ import dev.zenfyr.andromeda.modules.mechanics.throwable_items.data.DefaultBehavi
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager;
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.data.ItemPlopEffect;
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.data.ParticleCommand;
+import dev.zenfyr.pulsar.registry.RegistryUtil;
+import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import me.melontini.commander.api.command.CommandType;
-import me.melontini.dark_matter.api.data.loading.ServerReloadersEvent;
-import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -87,11 +87,11 @@ public final class Main {
     ITEM_PLOP_COMMAND.init(CommandType.register(id("item_plop"), ItemPlopEffect.CODEC));
 
     ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-      var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
+      var packet = sendItemsS2CPacket(server.pulsar$getReloader(RELOADER));
       sender.sendPacket(ITEMS_WITH_BEHAVIORS, packet);
     });
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-      var packet = sendItemsS2CPacket(server.dm$getReloader(RELOADER));
+      var packet = sendItemsS2CPacket(server.pulsar$getReloader(RELOADER));
       for (ServerPlayer player : PlayerLookup.all(server)) {
         ServerPlayNetworking.send(player, ITEMS_WITH_BEHAVIORS, packet);
       }

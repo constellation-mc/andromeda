@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.entities.minecarts.entities;
 import dev.zenfyr.andromeda.modules.entities.boats.client.ClientSoundHolder;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartItems;
-import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
+import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.CompoundTag;

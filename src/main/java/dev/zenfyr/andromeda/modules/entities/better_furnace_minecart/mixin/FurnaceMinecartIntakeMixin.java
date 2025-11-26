@@ -1,15 +1,14 @@
 package dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.mixin;
 
-import static me.melontini.dark_matter.api.base.util.Exceptions.supply;
-
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
+import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.reflection.Reflect;
+import dev.zenfyr.pulsar.util.ExceptionUtil;
+import dev.zenfyr.pulsar.util.SupportUtil;
 import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.Optional;
-import me.melontini.dark_matter.api.base.reflect.Reflect;
-import me.melontini.dark_matter.api.base.util.Support;
-import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
@@ -29,7 +28,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
 
   // stfu IDEA.
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @Unique private static final Optional<Field> fb$pauseFuel = Support.fallback(
+  @Unique private static final Optional<Field> fb$pauseFuel = SupportUtil.fallback(
       "fabrication",
       () -> Reflect.findField(MinecartFurnace.class, "fabrication$pauseFuel"),
       Optional::empty);
@@ -47,7 +46,9 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
 
     if (!this.level.isClientSide() && this.fuel < 100) {
       if (level.getGameTime() % 20 == 0) {
-        if (fb$pauseFuel.map(f -> supply(() -> f.getInt(this)) > 0).orElse(false)) return;
+        if (fb$pauseFuel
+            .map(f -> ExceptionUtil.supply(() -> f.getInt(this)) > 0)
+            .orElse(false)) return;
 
         AbstractMinecart entity = this.level
             .getEntitiesOfClass(

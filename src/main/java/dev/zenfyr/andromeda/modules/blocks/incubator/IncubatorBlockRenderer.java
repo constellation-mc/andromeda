@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.blocks.incubator;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import me.melontini.dark_matter.api.base.util.MakeSure;
+import dev.zenfyr.pulsar.util.MakeSure;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;

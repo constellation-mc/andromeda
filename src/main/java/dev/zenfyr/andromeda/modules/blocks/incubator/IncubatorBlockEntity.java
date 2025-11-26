@@ -5,15 +5,15 @@ import static java.util.Objects.requireNonNull;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.blocks.incubator.data.EggProcessingData;
+import dev.zenfyr.pulsar.nbt.NbtUtil;
+import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.util.MathUtil;
 import java.util.Objects;
 import me.melontini.commander.api.command.Command;
 import me.melontini.commander.api.event.EventContext;
 import me.melontini.commander.api.event.EventKey;
 import me.melontini.commander.api.event.EventType;
 import me.melontini.commander.api.expression.Arithmetica;
-import me.melontini.dark_matter.api.base.util.MakeSure;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
@@ -64,7 +64,7 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
     ItemStack stack = this.inventory.get(0);
     if (!stack.isEmpty() && this.processingTime == -1) {
       EggProcessingData data = requireNonNull(world.getServer())
-          .dm$getReloader(EggProcessingData.RELOADER)
+          .pulsar$getReloader(EggProcessingData.RELOADER)
           .get(stack.getItem());
       if (data != null) {
         int time = getTime(data.time(), stack);
@@ -93,7 +93,7 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
 
   private void spawnResult(ItemStack stack, ServerLevel world, BlockState state) {
     EggProcessingData data =
-        world.getServer().dm$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
+        world.getServer().pulsar$getReloader(EggProcessingData.RELOADER).get(stack.getItem());
     if (data != null) {
       EggProcessingData.Entry entry =
           data.entity().shuffle().stream().findFirst().orElseThrow();
@@ -279,7 +279,7 @@ public class IncubatorBlockEntity extends BlockEntity implements WorldlyContaine
                 .getBlockState(this.worldPosition)
                 .getValue(IncubatorBlock.FACING)
         && requireNonNull(Andromeda.get().getCurrentServer())
-                .dm$getReloader(EggProcessingData.RELOADER)
+                .pulsar$getReloader(EggProcessingData.RELOADER)
                 .get(stack.getItem())
             != null;
   }

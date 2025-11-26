@@ -42,7 +42,7 @@ abstract class ItemStackMixin {
     if (world.isClientSide()) return;
     ItemStack stack = (ItemStack) (Object) this;
 
-    var manager = world.getServer().dm$getReloader(RELOADER);
+    var manager = world.getServer().pulsar$getReloader(RELOADER);
     if (manager.hasBehaviors(stack) && manager.overridesVanilla(getItem())) {
       if (andromeda$runBehaviors(world, manager, user)) {
         cir.setReturnValue(InteractionResultHolder.success(stack));
@@ -56,7 +56,7 @@ abstract class ItemStackMixin {
     if (world.isClientSide()) return original;
     ItemStack stack = (ItemStack) (Object) this;
 
-    var manager = world.getServer().dm$getReloader(RELOADER);
+    var manager = world.getServer().pulsar$getReloader(RELOADER);
     if (original.getResult() == InteractionResult.PASS
         && manager.hasBehaviors(stack)
         && !manager.overridesVanilla(getItem())) {

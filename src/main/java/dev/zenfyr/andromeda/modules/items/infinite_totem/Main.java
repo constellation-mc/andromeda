@@ -6,7 +6,7 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
+import dev.zenfyr.pulsar.registry.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;

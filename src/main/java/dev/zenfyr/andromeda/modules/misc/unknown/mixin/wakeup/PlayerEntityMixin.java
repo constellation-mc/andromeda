@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.misc.unknown.mixin.wakeup;
 
 import dev.zenfyr.andromeda.modules.misc.unknown.UnknownUtil;
+import dev.zenfyr.pulsar.nbt.NbtBuilder;
 import java.util.Optional;
-import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;

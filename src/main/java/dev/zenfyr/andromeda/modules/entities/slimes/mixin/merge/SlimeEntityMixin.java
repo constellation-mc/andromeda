@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.entities.slimes.mixin.merge;
 
 import dev.zenfyr.andromeda.modules.entities.slimes.Slimes;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.data.nbt.NbtUtil;
+import dev.zenfyr.pulsar.nbt.NbtUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

@@ -1,8 +1,7 @@
 package dev.zenfyr.andromeda.modules.mechanics.throwable_items.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.melontini.dark_matter.api.glitter.particles.AbstractScreenParticle;
-import me.melontini.dark_matter.api.minecraft.client.util.DrawUtil;
+import dev.zenfyr.pulsar.client.particles.AbstractScreenParticle;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;

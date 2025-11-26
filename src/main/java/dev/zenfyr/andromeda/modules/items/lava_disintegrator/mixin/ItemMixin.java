@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.items.lava_disintegrator.mixin;
 
+import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.util.MathUtil;
 import java.util.Objects;
-import me.melontini.dark_matter.api.base.util.MathUtil;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;

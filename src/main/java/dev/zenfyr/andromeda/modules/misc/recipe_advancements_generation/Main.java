@@ -1,13 +1,13 @@
 package dev.zenfyr.andromeda.modules.misc.recipe_advancements_generation;
 
 import com.google.gson.JsonElement;
+import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;

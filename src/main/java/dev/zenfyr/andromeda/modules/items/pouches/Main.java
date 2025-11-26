@@ -9,11 +9,11 @@ import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.registry.RegistryUtil;
+import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.lang.reflect.Field;
 import java.util.*;
-import me.melontini.dark_matter.api.base.util.Exceptions;
-import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
-import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -53,7 +53,7 @@ public final class Main {
   public static int getViewCount(BlockEntity be) {
     Field f = Main.VIEWABLE_VIEW.get(be.getType());
     if (f != null) {
-      ContainerOpenersCounter vcm = (ContainerOpenersCounter) Exceptions.supply(() -> f.get(be));
+      ContainerOpenersCounter vcm = (ContainerOpenersCounter) ExceptionUtil.supply(() -> f.get(be));
       return vcm.getOpenerCount();
     }
     return -1;

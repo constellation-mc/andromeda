@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
 import dev.zenfyr.andromeda.common.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
-import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
+import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.core.particles.BlockParticleOption;

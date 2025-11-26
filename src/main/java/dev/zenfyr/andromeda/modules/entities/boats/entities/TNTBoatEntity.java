@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
-import me.melontini.dark_matter.api.base.util.Support;
+import dev.zenfyr.pulsar.util.SupportUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -47,7 +47,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     this.zo = z;
   }
 
-  private final Runnable explode = Support.support(
+  private final Runnable explode = SupportUtil.support(
       EnvType.CLIENT,
       () -> () -> {
         FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());

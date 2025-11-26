@@ -3,11 +3,11 @@ package dev.zenfyr.andromeda.util;
 import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 
 import com.google.common.base.Splitter;
+import dev.zenfyr.pulsar.util.Utilities;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

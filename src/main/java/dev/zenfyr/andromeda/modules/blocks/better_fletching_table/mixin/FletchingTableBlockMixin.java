@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.blocks.better_fletching_table.mixin;
 
 import dev.zenfyr.andromeda.modules.blocks.better_fletching_table.FletchingScreenHandler;
-import me.melontini.dark_matter.api.minecraft.util.TextUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
