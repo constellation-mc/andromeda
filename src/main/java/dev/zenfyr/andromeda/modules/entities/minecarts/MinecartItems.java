@@ -2,8 +2,6 @@ package dev.zenfyr.andromeda.modules.entities.minecarts;
 
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
-import java.util.List;
-import java.util.Objects;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
@@ -15,6 +13,8 @@ import dev.zenfyr.andromeda.modules.entities.minecarts.items.NoteBlockMinecartIt
 import dev.zenfyr.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
+import java.util.List;
+import java.util.Objects;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;

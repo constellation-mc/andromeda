@@ -9,10 +9,7 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 
-@ModuleInfo(
-    name = "dragon_fight",
-    category = "mechanics",
-    env = Environment.SERVER)
+@ModuleInfo(name = "dragon_fight", category = "mechanics", env = Environment.SERVER)
 public final class DragonFight extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);

@@ -4,14 +4,14 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import java.util.*;
-import lombok.Getter;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.ItemBehavior;
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.ThrowableItems;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import java.util.*;
+import lombok.Getter;
 import me.melontini.commander.api.expression.Arithmetica;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.data.loading.ReloaderType;

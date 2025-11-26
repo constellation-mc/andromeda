@@ -1,9 +1,9 @@
 package dev.zenfyr.andromeda.modules.misc.unknown.mixin.useless_info;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
 import java.util.List;
 import java.util.function.Supplier;
-import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;

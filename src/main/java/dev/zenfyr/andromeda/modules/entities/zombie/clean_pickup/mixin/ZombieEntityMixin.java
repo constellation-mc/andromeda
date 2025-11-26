@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.entities.zombie.clean_pickup.mixin;
 
-import static java.util.Objects.requireNonNull;
 import static dev.zenfyr.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
+import static java.util.Objects.requireNonNull;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;

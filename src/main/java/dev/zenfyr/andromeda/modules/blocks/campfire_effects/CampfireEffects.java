@@ -1,16 +1,16 @@
 package dev.zenfyr.andromeda.modules.blocks.campfire_effects;
 
 import com.google.common.collect.Lists;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
 import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
 import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.common.config.GameConfig;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 

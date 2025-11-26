@@ -1,16 +1,16 @@
 package dev.zenfyr.andromeda.modules.blocks.incubator;
 
-import static java.util.Objects.requireNonNull;
 import static dev.zenfyr.andromeda.common.Andromeda.id;
+import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-import java.util.Set;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.blocks.incubator.data.EggProcessingData;
 import dev.zenfyr.andromeda.modules.misc.unknown.Unknown;
 import dev.zenfyr.andromeda.util.Util;
+import java.util.List;
+import java.util.Set;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;

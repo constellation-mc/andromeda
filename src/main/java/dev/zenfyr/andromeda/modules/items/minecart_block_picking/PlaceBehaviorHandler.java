@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.modules.items.minecart_block_picking;
 
-import java.util.IdentityHashMap;
-import java.util.Optional;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
+import java.util.IdentityHashMap;
+import java.util.Optional;
 import me.melontini.dark_matter.api.data.nbt.NbtUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;

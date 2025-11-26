@@ -1,9 +1,9 @@
 package dev.zenfyr.andromeda.modules.entities.boats.client;
 
+import dev.zenfyr.andromeda.common.Andromeda;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import dev.zenfyr.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.multiplayer.ClientLevel;

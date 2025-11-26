@@ -6,6 +6,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.zenfyr.andromeda.bootstrap.Module;
+import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
+import dev.zenfyr.andromeda.bootstrap.config.BootstrapConfig;
+import dev.zenfyr.andromeda.util.Util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,10 +17,6 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 import lombok.CustomLog;
-import dev.zenfyr.andromeda.bootstrap.Module;
-import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
-import dev.zenfyr.andromeda.bootstrap.config.BootstrapConfig;
-import dev.zenfyr.andromeda.util.Util;
 import net.fabricmc.loader.api.FabricLoader;
 
 // Loads and saves bootstrap configs.

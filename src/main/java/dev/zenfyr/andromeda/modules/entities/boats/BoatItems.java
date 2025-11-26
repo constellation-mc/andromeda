@@ -2,13 +2,13 @@ package dev.zenfyr.andromeda.modules.entities.boats;
 
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.modules.entities.boats.items.AndromedaBoatItem;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.core.registries.BuiltInRegistries;

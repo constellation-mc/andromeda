@@ -1,9 +1,9 @@
 package dev.zenfyr.andromeda.modules.misc.translations.mixin;
 
-import java.util.concurrent.CompletableFuture;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.modules.misc.translations.Client;
 import dev.zenfyr.andromeda.modules.misc.translations.Translations;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import org.spongepowered.asm.mixin.Final;

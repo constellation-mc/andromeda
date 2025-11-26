@@ -2,8 +2,8 @@ package dev.zenfyr.andromeda.modules.misc.unknown;
 
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
-import java.util.List;
 import dev.zenfyr.andromeda.common.util.Keeper;
+import java.util.List;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;

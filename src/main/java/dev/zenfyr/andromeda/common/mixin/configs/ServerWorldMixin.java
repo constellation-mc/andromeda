@@ -1,6 +1,5 @@
 package dev.zenfyr.andromeda.common.mixin.configs;
 
-import java.util.function.Supplier;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
@@ -8,6 +7,7 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.DataConfigs;
 import dev.zenfyr.andromeda.common.config.handler.GameConfigHandler;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;

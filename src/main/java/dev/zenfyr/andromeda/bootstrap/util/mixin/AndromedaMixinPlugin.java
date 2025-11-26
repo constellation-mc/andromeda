@@ -3,12 +3,12 @@ package dev.zenfyr.andromeda.bootstrap.util.mixin;
 import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 
 import com.google.common.collect.ImmutableList;
+import dev.zenfyr.andromeda.util.ClassPath;
+import dev.zenfyr.andromeda.util.Util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.util.List;
-import dev.zenfyr.andromeda.util.ClassPath;
-import dev.zenfyr.andromeda.util.Util;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.mixin.AsmUtil;
 import me.melontini.dark_matter.api.mixin.ExtendablePlugin;

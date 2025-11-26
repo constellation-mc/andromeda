@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.world.falling_beenests;
 
+import dev.zenfyr.andromeda.common.Andromeda;
 import java.util.List;
 import lombok.NonNull;
-import dev.zenfyr.andromeda.common.Andromeda;
 import me.melontini.dark_matter.api.data.nbt.NbtBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

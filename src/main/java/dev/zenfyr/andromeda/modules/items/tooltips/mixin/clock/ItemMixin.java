@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.items.tooltips.mixin.clock;
 
-import java.util.List;
 import dev.zenfyr.andromeda.common.AndromedaClient;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
+import java.util.List;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.ChatFormatting;

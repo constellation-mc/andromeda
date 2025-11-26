@@ -1,6 +1,5 @@
 package dev.zenfyr.andromeda.modules.misc.translations;
 
-import java.nio.file.Path;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
 import dev.zenfyr.andromeda.bootstrap.event.CreateBootstrapConfigEvent;
@@ -8,6 +7,7 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.util.Util;
+import java.nio.file.Path;
 import net.fabricmc.loader.api.FabricLoader;
 
 @ModuleInfo(name = "translations", category = "misc", env = Environment.CLIENT)

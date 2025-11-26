@@ -3,17 +3,17 @@ package dev.zenfyr.andromeda.common.config.handler;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Objects;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
 import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.EventMarker;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Objects;
 
 public class GameConfigHandler extends AbstractConfigHandler {
 

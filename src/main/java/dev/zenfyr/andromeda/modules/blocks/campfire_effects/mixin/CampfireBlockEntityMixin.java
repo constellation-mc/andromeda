@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.blocks.campfire_effects.mixin;
 
+import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import java.util.ArrayList;
 import java.util.List;
-import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AgeableMob;

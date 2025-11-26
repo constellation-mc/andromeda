@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.mechanics.villager_gifting.mixin;
 
-import java.util.Map;
 import dev.zenfyr.andromeda.modules.mechanics.villager_gifting.GiftTags;
 import dev.zenfyr.andromeda.modules.mechanics.villager_gifting.VillagerGifting;
+import java.util.Map;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

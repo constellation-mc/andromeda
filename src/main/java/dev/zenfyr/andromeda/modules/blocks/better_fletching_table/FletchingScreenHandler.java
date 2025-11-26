@@ -4,11 +4,11 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import java.util.*;
-import java.util.function.Function;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.util.Debug;
+import java.util.*;
+import java.util.function.Function;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;

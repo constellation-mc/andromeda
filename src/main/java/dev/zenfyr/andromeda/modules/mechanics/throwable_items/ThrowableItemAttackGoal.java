@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.mechanics.throwable_items;
 
-import static java.util.Objects.requireNonNull;
 import static dev.zenfyr.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
+import static java.util.Objects.requireNonNull;
 
 import java.util.EnumSet;
 import net.minecraft.util.Mth;

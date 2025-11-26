@@ -1,6 +1,10 @@
 package dev.zenfyr.andromeda.modules.misc.translations;
 
 import com.google.common.collect.Sets;
+import dev.zenfyr.andromeda.bootstrap.ModuleManager;
+import dev.zenfyr.andromeda.util.DataRefreshUtil;
+import dev.zenfyr.andromeda.util.NetUtils;
+import dev.zenfyr.andromeda.util.Util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,10 +17,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
-import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.util.NetUtils;
-import dev.zenfyr.andromeda.util.DataRefreshUtil;
-import dev.zenfyr.andromeda.util.Util;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 

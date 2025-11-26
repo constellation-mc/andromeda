@@ -2,11 +2,11 @@ package dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.mixin;
 
 import static me.melontini.dark_matter.api.base.util.Exceptions.supply;
 
+import dev.zenfyr.andromeda.common.Andromeda;
+import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.Optional;
-import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
 import me.melontini.dark_matter.api.base.reflect.Reflect;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;

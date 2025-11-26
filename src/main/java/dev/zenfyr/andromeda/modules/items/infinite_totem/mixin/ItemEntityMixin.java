@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.mixin;
 
-import java.util.Optional;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.BeaconUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import java.util.Optional;
 import me.melontini.dark_matter.api.base.util.tuple.Tuple;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;

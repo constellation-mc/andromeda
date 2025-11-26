@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.misc.unknown.mixin.nice_level;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import java.util.Objects;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,12 +1,5 @@
 package dev.zenfyr.andromeda.bootstrap;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
-import dev.zenfyr.andromeda.util.*;
-import lombok.CustomLog;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import dev.zenfyr.andromeda.bootstrap.config.handler.BootstrapConfigHandler;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
 import dev.zenfyr.andromeda.bootstrap.event.BootstrapConfigEvent;
@@ -15,6 +8,12 @@ import dev.zenfyr.andromeda.bootstrap.event.PostModuleInitEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinHandler;
 import dev.zenfyr.andromeda.modules.ModuleDiscovery;
+import dev.zenfyr.andromeda.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import lombok.CustomLog;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;

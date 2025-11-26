@@ -2,9 +2,9 @@ package dev.zenfyr.andromeda.modules.mechanics.throwable_items.mixin;
 
 import static dev.zenfyr.andromeda.modules.mechanics.throwable_items.data.ItemBehaviorManager.RELOADER;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.Main;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

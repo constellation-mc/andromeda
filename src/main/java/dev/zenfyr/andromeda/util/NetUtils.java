@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.util;
 
-import java.net.http.HttpClient;
-import java.time.Duration;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
+import java.net.http.HttpClient;
+import java.time.Duration;
 
 public final class NetUtils extends BaseConfig {
 

@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.client;
 
-import java.util.UUID;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import java.util.UUID;
 import me.melontini.dark_matter.api.base.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;

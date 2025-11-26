@@ -1,11 +1,11 @@
 package dev.zenfyr.andromeda.modules.items.pouches.items;
 
-import java.util.List;
-import lombok.Getter;
 import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.items.pouches.Main;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.util.Util;
+import java.util.List;
+import lombok.Getter;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;

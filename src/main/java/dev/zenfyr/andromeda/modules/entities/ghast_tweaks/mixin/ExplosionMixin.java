@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.entities.ghast_tweaks.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import dev.zenfyr.andromeda.modules.entities.ghast_tweaks.GhastExplosionDuck;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;

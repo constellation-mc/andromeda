@@ -1,11 +1,11 @@
 package dev.zenfyr.andromeda.bootstrap;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.function.Supplier;
 import dev.zenfyr.andromeda.bootstrap.event.EventMarker;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 import me.melontini.dark_matter.api.base.util.functions.Memoize;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

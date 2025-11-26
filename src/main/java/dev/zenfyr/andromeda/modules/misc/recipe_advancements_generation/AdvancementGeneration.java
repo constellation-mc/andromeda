@@ -1,8 +1,5 @@
 package dev.zenfyr.andromeda.modules.misc.recipe_advancements_generation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
@@ -12,6 +9,9 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.common.Andromeda;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 
 @ModuleInfo(name = "recipe_advancements_generation", category = "misc", env = Environment.SERVER)

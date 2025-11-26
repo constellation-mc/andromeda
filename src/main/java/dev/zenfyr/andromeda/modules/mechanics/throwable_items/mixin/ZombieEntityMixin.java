@@ -1,7 +1,6 @@
 package dev.zenfyr.andromeda.modules.mechanics.throwable_items.mixin;
 
 import dev.zenfyr.andromeda.modules.mechanics.throwable_items.*;
-import dev.zenfyr.andromeda.modules.mechanics.throwable_items.*;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

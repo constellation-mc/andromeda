@@ -3,15 +3,15 @@ package dev.zenfyr.andromeda.modules.items.magnet;
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import com.google.common.collect.ImmutableSet;
+import dev.zenfyr.andromeda.bootstrap.ModuleManager;
+import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.Keeper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
-import dev.zenfyr.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Support;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;

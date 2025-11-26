@@ -1,13 +1,13 @@
 package dev.zenfyr.andromeda.common.util;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
 import dev.zenfyr.andromeda.common.Andromeda;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import me.melontini.dark_matter.api.item_group.ItemGroupBuilder;
 import me.melontini.dark_matter.api.minecraft.util.TextUtil;
 import net.minecraft.resources.ResourceKey;

@@ -1,13 +1,13 @@
 package dev.zenfyr.andromeda.modules.items.pouches.entities;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.Objects;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.items.pouches.Main;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.Objects;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;

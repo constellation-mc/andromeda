@@ -4,15 +4,6 @@ import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
@@ -22,6 +13,15 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.EventMarker;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.util.Util;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 @Accessors(fluent = true)
 public abstract class AbstractConfigHandler {

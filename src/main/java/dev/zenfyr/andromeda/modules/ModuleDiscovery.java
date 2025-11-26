@@ -1,14 +1,14 @@
 package dev.zenfyr.andromeda.modules;
 
+import dev.zenfyr.andromeda.bootstrap.Module;
+import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
+import dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin;
+import dev.zenfyr.andromeda.util.ClassPath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import dev.zenfyr.andromeda.bootstrap.Module;
-import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
-import dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin;
-import dev.zenfyr.andromeda.util.ClassPath;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;

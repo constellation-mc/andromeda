@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.entities.boats.client;
 
-import java.util.Map;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
+import java.util.Map;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Blocks;

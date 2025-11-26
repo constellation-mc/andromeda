@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.blocks.leaf_slowdown.mixin;
 
-import java.util.UUID;
 import dev.zenfyr.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;

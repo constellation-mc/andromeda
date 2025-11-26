@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.modules.mechanics.trading_goat_horn.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import java.util.Objects;
-import java.util.Optional;
 import dev.zenfyr.andromeda.modules.mechanics.trading_goat_horn.CustomTraderManager;
 import dev.zenfyr.andromeda.modules.mechanics.trading_goat_horn.GoatHorn;
+import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;

@@ -1,6 +1,5 @@
 package dev.zenfyr.andromeda.modules.misc.tiny_storage;
 
-import java.util.Optional;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
@@ -9,6 +8,7 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
+import java.util.Optional;
 
 @ModuleInfo(name = "tiny_storage", category = "misc", env = Environment.SERVER)
 public final class TinyStorage extends Module implements PostBootstrapEvent {

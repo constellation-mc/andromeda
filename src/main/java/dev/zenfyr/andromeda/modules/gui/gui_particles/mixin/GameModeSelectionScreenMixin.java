@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
 import com.google.common.collect.Lists;
-import java.util.*;
-import java.util.function.Supplier;
 import dev.zenfyr.andromeda.common.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
+import java.util.*;
+import java.util.function.Supplier;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import me.melontini.dark_matter.api.base.util.Utilities;
 import me.melontini.dark_matter.api.glitter.ScreenParticleHelper;

@@ -2,9 +2,9 @@ package dev.zenfyr.andromeda.modules.world.loot_barrels;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.zenfyr.andromeda.common.Andromeda;
 import java.util.Arrays;
 import java.util.Comparator;
-import dev.zenfyr.andromeda.common.Andromeda;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;

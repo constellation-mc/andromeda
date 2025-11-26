@@ -2,9 +2,9 @@ package dev.zenfyr.andromeda.modules.misc.translations.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import dev.zenfyr.andromeda.modules.misc.translations.Translations;
 import java.util.ArrayList;
 import java.util.List;
-import dev.zenfyr.andromeda.modules.misc.translations.Translations;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;

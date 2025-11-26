@@ -2,8 +2,6 @@ package dev.zenfyr.andromeda.modules.items.pouches;
 
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
-import java.lang.reflect.Field;
-import java.util.*;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
@@ -11,6 +9,8 @@ import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
 import dev.zenfyr.andromeda.util.Util;
+import java.lang.reflect.Field;
+import java.util.*;
 import me.melontini.dark_matter.api.base.util.Exceptions;
 import me.melontini.dark_matter.api.minecraft.util.ItemStackUtil;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;

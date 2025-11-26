@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.bootstrap.util.mixin;
 
+import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import java.util.List;
 import java.util.Set;
-import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import me.melontini.dark_matter.api.mixin.ExtendablePlugin;
 import me.melontini.dark_matter.api.mixin.IPluginPlugin;
 import org.objectweb.asm.tree.ClassNode;

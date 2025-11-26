@@ -5,17 +5,17 @@ import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
+import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
+import dev.zenfyr.andromeda.util.Debug;
+import dev.zenfyr.andromeda.util.NetUtils;
+import dev.zenfyr.andromeda.util.Util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import lombok.CustomLog;
-import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
-import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
-import dev.zenfyr.andromeda.util.Debug;
-import dev.zenfyr.andromeda.util.NetUtils;
-import dev.zenfyr.andromeda.util.Util;
 import net.fabricmc.loader.api.FabricLoader;
 
 @CustomLog

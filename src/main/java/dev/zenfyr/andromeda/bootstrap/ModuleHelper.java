@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.bootstrap;
 
-import java.util.function.Consumer;
 import dev.zenfyr.andromeda.bootstrap.event.EventMarker;
+import java.util.function.Consumer;
 
 public class ModuleHelper {
 

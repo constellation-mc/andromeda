@@ -2,13 +2,13 @@ package dev.zenfyr.andromeda.modules.entities.boats;
 
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
-import java.util.UUID;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.TNTBoatEntity;
+import java.util.UUID;
 import me.melontini.dark_matter.api.minecraft.util.RegistryUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;

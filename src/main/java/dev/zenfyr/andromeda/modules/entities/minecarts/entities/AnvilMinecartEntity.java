@@ -1,10 +1,10 @@
 package dev.zenfyr.andromeda.modules.entities.minecarts.entities;
 
-import java.util.Optional;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartItems;
+import java.util.Optional;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;

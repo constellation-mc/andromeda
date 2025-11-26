@@ -4,10 +4,10 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.zenfyr.andromeda.common.util.Keeper;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.NonNull;
-import dev.zenfyr.andromeda.common.util.Keeper;
 import me.melontini.dark_matter.api.base.util.MathUtil;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;

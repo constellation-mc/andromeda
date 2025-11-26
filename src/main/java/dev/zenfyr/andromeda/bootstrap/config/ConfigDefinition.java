@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.bootstrap.config;
 
-import java.util.function.Supplier;
 import dev.zenfyr.andromeda.common.config.GameConfig;
+import java.util.function.Supplier;
 
 // Used to type-hint and provide implementation types to GSON.
 // The class is wrapped in a supplier to avoid classloading too early.
