@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.With;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -31,7 +32,6 @@ public class AutoConfigScreen {
   private final IdentityHashMap<Class<?>, Entry<?>> providers = new IdentityHashMap<>();
   private final Map<@NotNull MultiConfigHandler, @NotNull String> handlers;
 
-  private final Entry<Boolean> booleanEntry;
   private final Entry<Object> objectEntry;
   private final Entry<Enum<?>> enumEntry;
 
@@ -40,7 +40,6 @@ public class AutoConfigScreen {
     this.handlers =
         Map.of(Andromeda.MAIN, "main", Andromeda.GAME, "game", AndromedaClient.CLIENT, "client");
 
-    this.booleanEntry = (Entry<Boolean>) this.providers.get(boolean.class);
     this.objectEntry = (Entry<Object>) this.providers.get(Object.class);
     this.enumEntry = (Entry<Enum<?>>) this.providers.get(Enum.class);
   }
@@ -51,7 +50,24 @@ public class AutoConfigScreen {
 
   public <T> void register(
       Class<T> type, EntryFunction<T> entryFunction, Function<Class<?>, T> def) {
-    providers.put(type, new Entry<>(entryFunction, def));
+    providers.put(
+        type,
+        new Entry<>(
+            context -> {
+              var entry = entryFunction.getEntry(context);
+
+              if (context.field() != null) {
+                if (context.field().isAnnotationPresent(ConfigEntry.Gui.RequiresRestart.class))
+                  entry.setRequiresRestart(true);
+              }
+
+              if (context.module() != null) {
+                ClothTooltipUtil.setEntryTooltip(entry, context.i18n() + ".@Tooltip");
+              }
+
+              return ClothTooltipUtil.wrapTooltip(entry);
+            },
+            def));
   }
 
   public <T> Entry<T> getEntry(Class<T> type) {
@@ -126,10 +142,10 @@ public class AutoConfigScreen {
           .requireRestart()
           .build();
       if (moduleCategory.isEmpty()) {
-        category.addEntry(rootToggle);
+        category.addEntry(ClothTooltipUtil.standardForModule(rootToggle, module, "enabled"));
       } else {
         moduleCategory.add(0, rootToggle);
-        category.addEntry(moduleCategory.build());
+        category.addEntry(ClothTooltipUtil.standardForModule(moduleCategory.build(), module, null));
       }
     }
 
@@ -138,7 +154,7 @@ public class AutoConfigScreen {
 
   private static <T> EntryContext<T> makeRootCtx(
       T value, T def, Consumer<T> consumer, String i18n, Module module) {
-    return new EntryContext<>(value.getClass(), value, def, consumer, false, i18n, null, module);
+    return new EntryContext<>(value.getClass(), value, def, consumer, i18n, null, module);
   }
 
   @With
@@ -147,7 +163,6 @@ public class AutoConfigScreen {
       T value,
       @Nullable T def,
       Consumer<T> consumer,
-      boolean generic,
       String i18n,
       Field field,
       Module module) {}

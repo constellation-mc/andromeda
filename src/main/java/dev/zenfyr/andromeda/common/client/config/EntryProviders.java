@@ -117,10 +117,9 @@ public class EntryProviders {
                     o == null ? e.def().apply(fieldType) : o,
                     e.def().apply(fieldType),
                     o1 -> {},
-                    true,
                     context.i18n(),
                     context.field(),
-                    context.module());
+                    null);
                 return e.function().getEntry(innerCtx);
               });
         },
@@ -157,7 +156,7 @@ public class EntryProviders {
         Object.class,
         context -> {
           String classI13n;
-          if (context.generic()) {
+          if (context.module() == null) {
             String remainingI13n =
                 context.i18n().substring(0, context.i18n().indexOf(".option") + ".option".length());
             classI13n = String.format("%s.%s", remainingI13n, context.type().getSimpleName());
@@ -171,7 +170,7 @@ public class EntryProviders {
 
           for (Field field : fields) {
             String iI13n;
-            if (context.generic()) {
+            if (context.module() == null) {
               iI13n = String.format("%s.%s", classI13n, field.getName());
             } else {
               iI13n = String.format("%s.option.%s", classI13n, field.getName());
@@ -185,7 +184,6 @@ public class EntryProviders {
                   setField(field, context.value(), object);
                   context.consumer().accept(context.value());
                 },
-                false,
                 iI13n,
                 field,
                 context.module());
@@ -257,11 +255,11 @@ public class EntryProviders {
 
   private static <T> @Nullable Supplier<T> def(AutoConfigScreen.EntryContext<T> context) {
     T defaultValue = context.def();
-    return (defaultValue == null || context.generic()) ? null : () -> defaultValue;
+    return (defaultValue == null || context.module() == null) ? null : () -> defaultValue;
   }
 
   private static Component i18n(AutoConfigScreen.EntryContext<?> context) {
-    return (context.i18n().isBlank() || context.generic())
+    return (context.i18n().isBlank() || context.module() == null)
         ? TextUtil.empty()
         : TextUtil.translatable(context.i18n());
   }
