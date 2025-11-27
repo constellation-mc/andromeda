@@ -17,7 +17,7 @@ updates:
       - gradle-plugins
       - maven-central
     ignore:
-      - dependency-name: me.melontini:pulsar*
+      - dependency-name: dev.zenfyr:pulsar*
       - dependency-name: com.terraformersmc:modmenu
       - dependency-name: me.shedaniel.cloth:cloth-config-fabric
       - dependency-name: me.melontini:handy-tests
