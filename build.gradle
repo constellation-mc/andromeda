@@ -145,7 +145,7 @@ processResources {
             "pulsar_version": libs.pulsar.get().version
     ]
     inputs.properties(map)
-    filteringCharset "UTF-8"
+    filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand map
