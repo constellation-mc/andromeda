@@ -107,7 +107,7 @@ public class Andromeda implements ModInitializer {
     DataConfigs.init(manager);
   }
 
-  void onMergedEntryPoint() {
+  public void onMergedEntryPoint() {
     var manager = ModuleManager.get();
 
     GAME.loadAll();

@@ -10,6 +10,7 @@ import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
@@ -25,6 +26,9 @@ import org.spongepowered.asm.util.Annotations;
 public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   public static final ClassPath CLASS_PATH = new ClassPath();
+  private static final Set<String> CLOTH_MIXINS = Set.of(
+      "dev.zenfyr.andromeda.common.mixin.SubCategoryListEntryMixin",
+      "dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor");
 
   private String mixinPackage;
 
@@ -84,9 +88,8 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
   @Override
   public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
     try {
-      if ("dev.zenfyr.andromeda.common.mixin.SubCategoryListEntryMixin".equals(mixinClassName)) {
-        if (!FabricLoader.getInstance().isModLoaded("cloth-config")) return false;
-      }
+      if (CLOTH_MIXINS.contains(mixinClassName)
+          && !FabricLoader.getInstance().isModLoaded("cloth-config")) return false;
 
       ClassNode node = MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName);
 
@@ -101,7 +104,14 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   @Override
   public List<String> getMixins() {
-    return discoverInPackage(this.mixinPackage);
+    List<String> mixins = discoverInPackage(this.mixinPackage);
+    List<String> apply = new ArrayList<>();
+
+    for (String mixin : mixins) {
+      if (shouldApplyMixin(null, String.format("%s.%s", this.mixinPackage, mixin)))
+        apply.add(mixin);
+    }
+    return apply;
   }
 
   @Override

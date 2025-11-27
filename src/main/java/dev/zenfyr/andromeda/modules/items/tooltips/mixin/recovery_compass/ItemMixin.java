@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.items.tooltips.mixin.recovery_compass;
 
-import dev.zenfyr.andromeda.common.AndromedaClient;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
 import dev.zenfyr.pulsar.util.MathUtil;

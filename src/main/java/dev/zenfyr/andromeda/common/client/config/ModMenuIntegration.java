@@ -1,0 +1,23 @@
+package dev.zenfyr.andromeda.common.client.config;
+
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
+import dev.zenfyr.pulsar.util.Utilities;
+import java.util.function.Function;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.screens.Screen;
+
+public class ModMenuIntegration implements ModMenuApi {
+  public static final Function<Screen, Screen> SCREEN_PROVIDER = Utilities.supply(() -> {
+    if (FabricLoader.getInstance().isModLoaded("cloth-config")) {
+      var builder = new AutoConfigScreen();
+      return builder::getScreen;
+    }
+    return screen -> null;
+  });
+
+  @Override
+  public ConfigScreenFactory<?> getModConfigScreenFactory() {
+    return SCREEN_PROVIDER::apply;
+  }
+}

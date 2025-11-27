@@ -17,10 +17,13 @@
       "dev.zenfyr.andromeda.common.AndromedaServer"
     ],
     "client": [
-      "dev.zenfyr.andromeda.common.AndromedaClient"
+      "dev.zenfyr.andromeda.common.client.AndromedaClient"
     ],
     "main": [
       "dev.zenfyr.andromeda.common.Andromeda"
+    ],
+    "modmenu": [
+      "dev.zenfyr.andromeda.common.client.config.ModMenuIntegration"
     ]
   },
   "mixins": [

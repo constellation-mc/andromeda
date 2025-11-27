@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.items.tooltips.mixin.clock;
 
-import dev.zenfyr.andromeda.common.AndromedaClient;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
 import dev.zenfyr.pulsar.util.MathUtil;
 import dev.zenfyr.pulsar.util.TextUtil;

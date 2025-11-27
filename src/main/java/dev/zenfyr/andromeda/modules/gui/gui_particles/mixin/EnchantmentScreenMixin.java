@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
-import dev.zenfyr.andromeda.common.AndromedaClient;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles;
 
-import dev.zenfyr.andromeda.common.AndromedaClient;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
 import dev.zenfyr.pulsar.util.MathUtil;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;

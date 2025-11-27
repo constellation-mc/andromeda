@@ -8,6 +8,7 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
+import dev.zenfyr.andromeda.common.util.TranslationKeyProvider;
 import java.util.Optional;
 
 @ModuleInfo(name = "tiny_storage", category = "misc", env = Environment.SERVER)
@@ -29,11 +30,11 @@ public final class TinyStorage extends Module implements PostBootstrapEvent {
     public TransferMode transferMode = TransferMode.FOLLOW_GAMERULE;
   }
 
-  public enum TransferMode /*implements TranslationKeyProvider*/ {
+  public enum TransferMode implements TranslationKeyProvider {
     FOLLOW_GAMERULE,
     ALWAYS_TRANSFER;
 
-    // TODO @Override
+    @Override
     public Optional<String> getTranslationKey() {
       return Optional.of("config.andromeda.misc.tiny_storage.option.TransferMode." + name());
     }

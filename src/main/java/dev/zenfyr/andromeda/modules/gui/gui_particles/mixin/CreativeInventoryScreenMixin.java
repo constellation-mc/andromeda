@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.zenfyr.andromeda.common.AndromedaClient;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.CustomItemStackParticle;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;

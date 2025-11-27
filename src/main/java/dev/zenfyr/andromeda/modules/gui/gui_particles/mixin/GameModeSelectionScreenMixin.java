@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
 import com.google.common.collect.Lists;
-import dev.zenfyr.andromeda.common.AndromedaClient;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
 import dev.zenfyr.pulsar.client.particles.ItemStackParticle;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
