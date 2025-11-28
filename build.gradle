@@ -228,7 +228,7 @@ publishMods {
         minecraftVersions.add("${project.minecraft_version}")
 
         requires("fabric-api")
-        requires("dark-matter")
+        requires("pulsar")
         optional("cloth-config")
         optional("modmenu")
     }
@@ -238,7 +238,7 @@ publishMods {
         minecraftVersions.add("${project.minecraft_version}")
 
         requires("fabric-api")
-        requires("dark-matter")
+        requires("pulsar")
         optional("cloth-config")
         optional("modmenu")
     }

@@ -35,6 +35,10 @@
     "minecraft": "${minecraft_version}",
     "pulsar": ">=${pulsar_version}"
   },
+  "conflicts": {
+    "cloth-config": "<${cloth_version}",
+    "modmenu": "<${modmenu_version}"
+  },
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/class_1937": [
