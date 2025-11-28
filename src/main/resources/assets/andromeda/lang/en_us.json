@@ -335,6 +335,20 @@
   "config.andromeda.bugfixes.aligned_alternatives.@Tooltip": "Recipe groups won't look janky when there are a lot of recipes in a group.",
 
   "config.andromeda.category.mechanics": "Mechanics",
+
+  "config.andromeda.mechanics.linkart": "Linkart",
+  "config.andromeda.mechanics.linkart.@Tooltip": "Allows linking minecarts together.",
+  "config.andromeda.mechanics.linkart.option.pathfindingDistance": "Max Distance",
+  "config.andromeda.mechanics.linkart.option.pathfindingDistance.@Tooltip": "The maximum distance a cart will follow its parent for. Carts will break apart if their distance is greater.",
+  "config.andromeda.mechanics.linkart.option.velocityMultiplier": "Speed Multiplier",
+  "config.andromeda.mechanics.linkart.option.velocityMultiplier.@Tooltip": "Multiplies the speed of the following cart.",
+  "config.andromeda.mechanics.linkart.option.distance": "Cart Distance",
+  "config.andromeda.mechanics.linkart.option.distance.@Tooltip": "The minimum spacing between carts.",
+  "config.andromeda.mechanics.linkart.option.chunkloading": "Load Chunks",
+  "config.andromeda.mechanics.linkart.option.chunkloading.@Tooltip": "Linked carts will load chunks as they move.",
+  "config.andromeda.mechanics.linkart.option.chunkloadingRadius": "Chunkloading Distance",
+  "config.andromeda.mechanics.linkart.option.chunkloadingRadius.@Tooltip": "The radius of chunks that a given cart will load.",
+
   "config.andromeda.mechanics.villager_gifting": "Villager Gifting",
   "config.andromeda.mechanics.villager_gifting.@Tooltip": "Allows to restore some reputation by giving gifts to villagers!",
 

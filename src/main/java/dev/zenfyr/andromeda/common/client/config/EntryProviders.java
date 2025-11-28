@@ -60,6 +60,17 @@ public class EntryProviders {
                 .build(),
             c -> false));
 
+    Set.of(float.class, Float.class)
+        .forEach(cl -> registry.register(
+            cl,
+            context -> registry
+                .entryBuilder()
+                .startFloatField(i18n(context), context.value())
+                .setDefaultValue(def(context))
+                .setSaveConsumer(context.consumer())
+                .build(),
+            c -> 0f));
+
     Set.of(double.class, Double.class)
         .forEach(cl -> registry.register(
             cl,

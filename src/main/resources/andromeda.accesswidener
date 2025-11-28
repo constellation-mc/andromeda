@@ -38,6 +38,9 @@ accessible field net/minecraft/world/level/BaseSpawner nextSpawnData Lnet/minecr
 # entities/villagers_follow_emeralds  mechanics/throwable_items
 accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
 
+# mechanics/linkart
+accessible method net/minecraft/world/entity/vehicle/AbstractMinecart getMaxSpeed ()D
+
 # mechanics/throwable_items
 accessible method net/minecraft/world/level/storage/loot/parameters/LootContextParamSets register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/world/level/storage/loot/parameters/LootContextParamSet;
 
