@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "andromeda",
   "version": "${version}",
-  "name": "andromeda",
+  "name": "Andromeda",
   "description": "",
   "authors": [],
   "contact": {},
@@ -29,6 +29,7 @@
   "mixins": [
     "andromeda.mixins.json"
   ],
+  "accessWidener": "andromeda.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
