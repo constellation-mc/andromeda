@@ -46,7 +46,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
   public Map<Module, Set<Data>> defaultConfigs;
 
   public DataConfigs(ModuleManager moduleManager) {
-    super(RELOADER.identifier());
+    super(RELOADER.location());
     this.moduleManager = moduleManager;
   }
 

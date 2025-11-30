@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.misc.unknown.mixin.wakeup;
 
 import dev.zenfyr.andromeda.modules.misc.unknown.UnknownUtil;
-import dev.zenfyr.pulsar.nbt.NbtBuilder;
+import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -39,7 +39,7 @@ abstract class PlayerEntityMixin {
           ArmorStand stand = new ArmorStand(player.level, pos.getX(), pos.getY(), pos.getZ());
           ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-          stack.setTag(NbtBuilder.create()
+          stack.setTag(CompoundTagBuilder.create()
               .putString("SkullOwner", player.getDisplayName().getString())
               .build());
 

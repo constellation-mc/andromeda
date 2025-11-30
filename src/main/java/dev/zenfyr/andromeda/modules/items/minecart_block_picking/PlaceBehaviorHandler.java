@@ -34,7 +34,7 @@ public class PlaceBehaviorHandler {
       MinecartChest chestMinecart = (MinecartChest)
           AbstractMinecart.createMinecart(world, d, e + g, f, AbstractMinecart.Type.CHEST);
 
-      NbtUtil.readInventoryFromNbt(stack.getTag(), chestMinecart);
+      NbtUtil.readInventoryFromTag(stack.getTag(), chestMinecart);
       if (stack.hasCustomHoverName()) chestMinecart.setCustomName(stack.getHoverName());
       return chestMinecart;
     });
@@ -43,7 +43,7 @@ public class PlaceBehaviorHandler {
       MinecartHopper hopperMinecart = (MinecartHopper)
           AbstractMinecart.createMinecart(world, d, e + g, f, AbstractMinecart.Type.HOPPER);
 
-      NbtUtil.readInventoryFromNbt(stack.getTag(), hopperMinecart);
+      NbtUtil.readInventoryFromTag(stack.getTag(), hopperMinecart);
       if (stack.hasCustomHoverName()) hopperMinecart.setCustomName(stack.getHoverName());
       return hopperMinecart;
     });

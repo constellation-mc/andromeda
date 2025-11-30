@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.items.minecart_block_picking;
 
-import dev.zenfyr.pulsar.nbt.NbtBuilder;
+import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
 import dev.zenfyr.pulsar.nbt.NbtUtil;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.IdentityHashMap;
@@ -37,7 +37,7 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
-      chestMinecart.setTag(NbtUtil.writeInventoryToNbt(new CompoundTag(), chestBlockEntity));
+      chestMinecart.setTag(NbtUtil.writeInventoryToTag(new CompoundTag(), chestBlockEntity));
       chestBlockEntity.clearContent();
       return chestMinecart;
     });
@@ -49,7 +49,7 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack furnaceMinecart = new ItemStack(Items.FURNACE_MINECART, 1);
       // 2.25
-      furnaceMinecart.setTag(NbtBuilder.create()
+      furnaceMinecart.setTag(CompoundTagBuilder.create()
           .putInt("Fuel", (int) (furnaceBlock.litTime * 2.25))
           .build());
       return furnaceMinecart;
@@ -60,7 +60,7 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
-      hopperMinecart.setTag(NbtUtil.writeInventoryToNbt(new CompoundTag(), hopperBlockEntity));
+      hopperMinecart.setTag(NbtUtil.writeInventoryToTag(new CompoundTag(), hopperBlockEntity));
       hopperBlockEntity.clearContent();
       return hopperMinecart;
     });

@@ -8,7 +8,7 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
-import dev.zenfyr.pulsar.itemgroup.ItemGroupAnimaton;
+import dev.zenfyr.pulsar.creativetab.CreativeModeTabAnimaton;
 import java.util.function.Consumer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -43,7 +43,7 @@ public class AndromedaClient implements ClientModInitializer {
     InitEvents.CLIENT.invoker().onModuleClientInit().runEntrypoint();
 
     if (Andromeda.GROUP.isPresent()) {
-      ItemGroupAnimaton.setIconAnimation(
+      CreativeModeTabAnimaton.setIconAnimation(
           Andromeda.GROUP.orThrow(), (tab, graphics, x, y, selected, isTopRow) -> {
             drawTexture(graphics.pose(), x + 8, y + 8, stack -> {}, BACKGROUND_TEXTURE);
             drawTexture(

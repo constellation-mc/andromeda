@@ -13,7 +13,7 @@ import dev.zenfyr.andromeda.modules.entities.minecarts.items.NoteBlockMinecartIt
 import dev.zenfyr.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
-import dev.zenfyr.pulsar.nbt.NbtBuilder;
+import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.List;
 import java.util.Objects;
@@ -94,7 +94,7 @@ public class MinecartItems {
             SpawnerBlockEntity mobSpawnerBlockEntity = (SpawnerBlockEntity) MakeSure.notNull(
                 world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack spawnerMinecart = new ItemStack(SPAWNER_MINECART.orThrow(), 1);
-            spawnerMinecart.setTag(NbtBuilder.create()
+            spawnerMinecart.setTag(CompoundTagBuilder.create()
                 .putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity)))
                 .build());
             return spawnerMinecart;
@@ -114,7 +114,8 @@ public class MinecartItems {
           int noteProp = noteBlock.withPropertiesOf(state).getValue(BlockStateProperties.NOTE);
           ItemStack noteBlockMinecart = new ItemStack(NOTE_BLOCK_MINECART.orThrow());
 
-          noteBlockMinecart.setTag(NbtBuilder.create().putInt("Note", noteProp).build());
+          noteBlockMinecart.setTag(
+              CompoundTagBuilder.create().putInt("Note", noteProp).build());
           return noteBlockMinecart;
         });
       }
@@ -129,8 +130,9 @@ public class MinecartItems {
 
           if (!record.isEmpty()) {
             world.levelEvent(LevelEvent.SOUND_PLAY_JUKEBOX_SONG, pos, 0);
-            jukeboxMinecart.setTag(
-                NbtBuilder.create().put("Items", record.save(new CompoundTag())).build());
+            jukeboxMinecart.setTag(CompoundTagBuilder.create()
+                .put("Items", record.save(new CompoundTag()))
+                .build());
           }
           jukeboxBlockEntity.clearContent();
           return jukeboxMinecart;

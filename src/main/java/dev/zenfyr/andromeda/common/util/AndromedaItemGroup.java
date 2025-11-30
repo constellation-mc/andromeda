@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.pulsar.itemgroup.ItemGroupBuilder;
+import dev.zenfyr.pulsar.creativetab.CreativeModeTabBuilder;
 import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,7 +27,7 @@ public interface AndromedaItemGroup {
   void onCreateItemGroup(Acceptor acceptor);
 
   static CreativeModeTab create() {
-    return ItemGroupBuilder.create(Andromeda.id("group"))
+    return CreativeModeTabBuilder.create(Andromeda.id("group"))
         .entries(entries -> {
           Map<Module, List<ItemStack>> stackMap = new LinkedHashMap<>();
           AndromedaItemGroup.Acceptor acceptor = (module, main, stack) -> {

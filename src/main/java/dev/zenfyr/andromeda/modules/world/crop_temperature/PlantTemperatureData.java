@@ -156,7 +156,7 @@ public final class PlantTemperatureData {
     private final PlantTemperature module;
 
     protected Reloader(PlantTemperature module) {
-      super(RELOADER.identifier());
+      super(RELOADER.location());
       this.module = module;
     }
 

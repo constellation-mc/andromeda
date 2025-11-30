@@ -29,14 +29,14 @@ abstract class PlayerEntityMixin {
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
   private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
-    NbtUtil.writeInventoryToNbt("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
+    NbtUtil.writeInventoryToTag("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
   private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
     try {
       TinyStorage.LOADING.set(true); // We have to skip sending handler updates.
-      NbtUtil.readInventoryFromNbt("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
+      NbtUtil.readInventoryFromTag("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
     } finally {
       TinyStorage.LOADING.remove();
     }

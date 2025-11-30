@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.world.falling_beenests;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.pulsar.nbt.NbtBuilder;
+import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
 import java.util.List;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;
@@ -50,10 +50,10 @@ public class BeeUtil {
             : state);
 
     // Thanks AccessWidener!
-    fallingBlock.readAdditionalSaveData(NbtBuilder.create()
+    fallingBlock.readAdditionalSaveData(CompoundTagBuilder.create()
         .put(
             "TileEntityData",
-            NbtBuilder.create()
+            CompoundTagBuilder.create()
                 .put("Bees", beehiveBlockEntity.writeBees())
                 .putBoolean("AM-FromFallenBlock", true)
                 .build())
