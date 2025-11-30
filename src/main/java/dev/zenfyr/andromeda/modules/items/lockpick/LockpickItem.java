@@ -8,10 +8,10 @@ import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLoot;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.Main;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import dev.zenfyr.pulsar.util.MathUtil;
 import dev.zenfyr.pulsar.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,6 +20,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -70,15 +72,17 @@ public class LockpickItem extends Item {
     var module = ModuleManager.get().get(Lockpick.class).orElseThrow();
     var config = Andromeda.MAIN.get(Lockpick.MAIN_CONFIG);
 
-    LockpickItem.INSTANCE.init(RegistryUtil.register(
+    LockpickItem.INSTANCE.init(Registry.register(
         BuiltInRegistries.ITEM,
         id("lockpick"),
-        () -> new LockpickItem(new FabricItemSettings().stacksTo(16))));
-    MerchantInventoryScreenHandler.INSTANCE.init(RegistryUtil.register(
-        config.villagerInventory,
-        BuiltInRegistries.MENU,
-        id("merchant_inventory"),
-        RegistryUtil.screenHandlerType(MerchantInventoryScreenHandler::new)));
+        new LockpickItem(new FabricItemSettings().stacksTo(16))));
+
+    if (config.villagerInventory) {
+      MerchantInventoryScreenHandler.INSTANCE.init(Registry.register(
+          BuiltInRegistries.MENU,
+          id("merchant_inventory"),
+          new MenuType<>(MerchantInventoryScreenHandler::new, FeatureFlagSet.of())));
+    }
 
     AndromedaItemGroup.BUS.listen(acceptor ->
         acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, LockpickItem.INSTANCE));

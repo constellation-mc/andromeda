@@ -4,7 +4,6 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -14,6 +13,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -40,17 +40,17 @@ public class RoseOfTheValley extends BlockItem {
   }
 
   static void init() {
-    RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.init(RegistryUtil.register(
+    RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.init(Registry.register(
         BuiltInRegistries.BLOCK,
         id("rose_of_the_valley"),
-        () -> new FlowerBlock(
+        new FlowerBlock(
             MobEffects.REGENERATION,
             12,
             BlockBehaviour.Properties.copy(Blocks.LILY_OF_THE_VALLEY))));
-    RoseOfTheValley.ROSE_OF_THE_VALLEY.init(RegistryUtil.register(
+    RoseOfTheValley.ROSE_OF_THE_VALLEY.init(Registry.register(
         BuiltInRegistries.ITEM,
         id("rose_of_the_valley"),
-        () -> new RoseOfTheValley(
+        new RoseOfTheValley(
             RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow(),
             new FabricItemSettings().rarity(Rarity.UNCOMMON))));
   }

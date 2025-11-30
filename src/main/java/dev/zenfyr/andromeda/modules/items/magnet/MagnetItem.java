@@ -7,7 +7,6 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import dev.zenfyr.pulsar.util.MathUtil;
 import dev.zenfyr.pulsar.util.SupportUtil;
 import dev.zenfyr.pulsar.util.TextUtil;
@@ -23,6 +22,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -259,10 +259,10 @@ public class MagnetItem extends Item {
   static void init() {
     var module = ModuleManager.get().get(Magnet.class).orElseThrow();
 
-    MagnetItem.MAGNET.init(RegistryUtil.register(
+    MagnetItem.MAGNET.init(Registry.register(
         BuiltInRegistries.ITEM,
         id("magnet"),
-        () -> new MagnetItem(new FabricItemSettings().stacksTo(1))));
+        new MagnetItem(new FabricItemSettings().stacksTo(1))));
 
     AndromedaItemGroup.BUS.listen(acceptor ->
         acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, MagnetItem.MAGNET));

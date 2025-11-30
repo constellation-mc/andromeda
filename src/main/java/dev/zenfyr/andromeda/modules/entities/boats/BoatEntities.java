@@ -8,10 +8,10 @@ import dev.zenfyr.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.HopperBoatEntity;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.TNTBoatEntity;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -29,11 +29,16 @@ public class BoatEntities {
 
   private static @Nullable <T extends Entity> EntityType<T> boatType(
       boolean register, ResourceLocation id, EntityType.EntityFactory<T> factory) {
-    return RegistryUtil.register(
-        register, BuiltInRegistries.ENTITY_TYPE, id, () -> FabricEntityTypeBuilder.create(
-                MobCategory.MISC, factory)
-            .dimensions(new EntityDimensions(1.375F, 0.5625F, true))
-            .build());
+    if (register) {
+      return Registry.register(
+          BuiltInRegistries.ENTITY_TYPE,
+          id,
+          FabricEntityTypeBuilder.create(MobCategory.MISC, factory)
+              .dimensions(new EntityDimensions(1.375F, 0.5625F, true))
+              .build());
+    } else {
+      return null;
+    }
   }
 
   public static void init() {

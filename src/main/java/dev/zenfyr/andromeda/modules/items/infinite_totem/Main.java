@@ -6,9 +6,9 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -28,15 +28,15 @@ public final class Main {
   static void init() {
     var module = ModuleManager.get().get(InfiniteTotem.class).orElseThrow();
 
-    INFINITE_TOTEM.init(RegistryUtil.register(
+    INFINITE_TOTEM.init(Registry.register(
         BuiltInRegistries.ITEM,
         id("infinite_totem"),
-        () -> new Item(new FabricItemSettings().stacksTo(1).rarity(Rarity.EPIC))));
+        new Item(new FabricItemSettings().stacksTo(1).rarity(Rarity.EPIC))));
 
-    KNOCKOFF_TOTEM_PARTICLE.init(RegistryUtil.register(
+    KNOCKOFF_TOTEM_PARTICLE.init(Registry.register(
         BuiltInRegistries.PARTICLE_TYPE,
         id("knockoff_totem_particles"),
-        FabricParticleTypes::simple));
+        FabricParticleTypes.simple()));
 
     AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.keeper(module, CreativeModeTabs.COMBAT, INFINITE_TOTEM));

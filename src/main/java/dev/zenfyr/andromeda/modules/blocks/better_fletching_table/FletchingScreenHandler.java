@@ -7,14 +7,15 @@ import com.google.common.collect.Sets;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.util.Debug;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import java.util.*;
 import java.util.function.Function;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
@@ -115,10 +116,10 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
 
   static void init() {
     var module = ModuleManager.get().get(BetterFletchingTable.class).orElseThrow();
-    FletchingScreenHandler.FLETCHING.init(RegistryUtil.register(
+    FletchingScreenHandler.FLETCHING.init(Registry.register(
         BuiltInRegistries.MENU,
         id("fletching"),
-        RegistryUtil.screenHandlerType(FletchingScreenHandler::new)));
+        new MenuType<>(FletchingScreenHandler::new, FeatureFlagSet.of())));
 
     Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 

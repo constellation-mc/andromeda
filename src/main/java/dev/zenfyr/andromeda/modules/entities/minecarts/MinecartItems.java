@@ -14,13 +14,13 @@ import dev.zenfyr.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
 import dev.zenfyr.pulsar.nbt.NbtBuilder;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.List;
 import java.util.Objects;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -34,7 +34,6 @@ import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Unique;
 
 public class MinecartItems {
 
@@ -48,27 +47,41 @@ public class MinecartItems {
     var module = ModuleManager.get().get(Minecarts.class).orElseThrow();
     var config = Andromeda.MAIN.get(Minecarts.MAIN_CONFIG);
 
-    SPAWNER_MINECART.init(RegistryUtil.register(
-        config.isSpawnerMinecartOn,
-        BuiltInRegistries.ITEM,
-        id("spawner_minecart"),
-        () -> new SpawnerMinecartItem(new FabricItemSettings().stacksTo(1))));
-    ANVIL_MINECART.init(RegistryUtil.register(
-        config.isAnvilMinecartOn,
-        BuiltInRegistries.ITEM,
-        id("anvil_minecart"),
-        () -> new AndromedaMinecartItem<>(
-            MinecartEntities.ANVIL_MINECART_ENTITY, new FabricItemSettings().stacksTo(1))));
-    NOTE_BLOCK_MINECART.init(RegistryUtil.register(
-        config.isNoteBlockMinecartOn,
-        BuiltInRegistries.ITEM,
-        id("note_block_minecart"),
-        () -> new NoteBlockMinecartItem(new FabricItemSettings().stacksTo(1))));
-    JUKEBOX_MINECART.init(RegistryUtil.register(
-        config.isJukeboxMinecartOn,
-        BuiltInRegistries.ITEM,
-        id("jukebox_minecart"),
-        () -> new JukeboxMinecartItem(new FabricItemSettings().stacksTo(1))));
+    if (config.isSpawnerMinecartOn) {
+      SPAWNER_MINECART.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("spawner_minecart"),
+          new SpawnerMinecartItem(new FabricItemSettings().stacksTo(1))));
+    }
+
+    if (config.isSpawnerMinecartOn) {
+      SPAWNER_MINECART.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("spawner_minecart"),
+          new SpawnerMinecartItem(new FabricItemSettings().stacksTo(1))));
+    }
+
+    if (config.isAnvilMinecartOn) {
+      ANVIL_MINECART.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("anvil_minecart"),
+          new AndromedaMinecartItem<>(
+              MinecartEntities.ANVIL_MINECART_ENTITY, new FabricItemSettings().stacksTo(1))));
+    }
+
+    if (config.isNoteBlockMinecartOn) {
+      NOTE_BLOCK_MINECART.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("note_block_minecart"),
+          new NoteBlockMinecartItem(new FabricItemSettings().stacksTo(1))));
+    }
+
+    if (config.isJukeboxMinecartOn) {
+      JUKEBOX_MINECART.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("jukebox_minecart"),
+          new JukeboxMinecartItem(new FabricItemSettings().stacksTo(1))));
+    }
 
     var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
     AndromedaItemGroup.BUS.listen(
@@ -126,7 +139,7 @@ public class MinecartItems {
     }
   }
 
-  @Nullable @Unique private static ResourceLocation andromeda$getEntityId(SpawnerBlockEntity mobSpawnerBlockEntity) {
+  @Nullable private static ResourceLocation andromeda$getEntityId(SpawnerBlockEntity mobSpawnerBlockEntity) {
     var entry = mobSpawnerBlockEntity.getSpawner().nextSpawnData;
     if (entry == null) return BuiltInRegistries.ENTITY_TYPE.getDefaultKey();
     String identifier = entry.entityToSpawn().getString("id");

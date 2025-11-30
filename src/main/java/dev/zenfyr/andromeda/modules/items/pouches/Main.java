@@ -10,7 +10,6 @@ import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
 import dev.zenfyr.andromeda.util.Util;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -22,6 +21,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
+import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityDimensions;
@@ -79,34 +79,39 @@ public final class Main {
   static void init() {
     var module = ModuleManager.get().get(Pouches.class).orElseThrow();
     var config = Andromeda.MAIN.get(Pouches.MAIN_CONFIG);
-    SEED_POUCH.init(RegistryUtil.register(
-        config.seedPouch,
-        BuiltInRegistries.ITEM,
-        id("seed_pouch"),
-        () -> new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().stacksTo(16))));
 
-    FLOWER_POUCH.init(RegistryUtil.register(
-        config.flowerPouch,
-        BuiltInRegistries.ITEM,
-        id("flower_pouch"),
-        () -> new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().stacksTo(16))));
+    if (config.seedPouch) {
+      SEED_POUCH.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("seed_pouch"),
+          new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().stacksTo(16))));
+    }
 
-    SAPLING_POUCH.init(RegistryUtil.register(
-        config.saplingPouch,
-        BuiltInRegistries.ITEM,
-        id("sapling_pouch"),
-        () -> new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().stacksTo(16))));
+    if (config.flowerPouch) {
+      FLOWER_POUCH.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("flower_pouch"),
+          new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().stacksTo(16))));
+    }
 
-    SPECIAL_POUCH.init(RegistryUtil.register(
-        config.specialPouch,
-        BuiltInRegistries.ITEM,
-        id("special_pouch"),
-        () -> new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().stacksTo(16))));
+    if (config.saplingPouch) {
+      SAPLING_POUCH.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("sapling_pouch"),
+          new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().stacksTo(16))));
+    }
 
-    POUCH.init(RegistryUtil.register(
+    if (config.specialPouch) {
+      SPECIAL_POUCH.init(Registry.register(
+          BuiltInRegistries.ITEM,
+          id("special_pouch"),
+          new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().stacksTo(16))));
+    }
+
+    POUCH.init(Registry.register(
         BuiltInRegistries.ENTITY_TYPE,
         id("pouch"),
-        () -> FabricEntityTypeBuilder.<PouchEntity>create(MobCategory.MISC, PouchEntity::new)
+        FabricEntityTypeBuilder.<PouchEntity>create(MobCategory.MISC, PouchEntity::new)
             .dimensions(new EntityDimensions(0.25F, 0.25F, true))
             .trackRangeChunks(4)
             .trackedUpdateRate(10)

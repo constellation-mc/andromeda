@@ -6,11 +6,10 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.modules.entities.boats.items.AndromedaBoatItem;
-import dev.zenfyr.pulsar.registry.RegistryUtil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -25,37 +24,37 @@ public class BoatItems {
 
     List<Item> list = new ArrayList<>();
     for (Boat.Type value : Boat.Type.values()) {
-      Optional.ofNullable(RegistryUtil.register(
-              config.isFurnaceBoatOn,
-              BuiltInRegistries.ITEM,
-              boatId(value, "furnace"),
-              () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_FURNACE, value, new FabricItemSettings().stacksTo(1))))
-          .ifPresent(list::add);
+      if (config.isFurnaceBoatOn) {
+        list.add(Registry.register(
+            BuiltInRegistries.ITEM,
+            boatId(value, "furnace"),
+            new AndromedaBoatItem<>(
+                BoatEntities.BOAT_WITH_FURNACE, value, new FabricItemSettings().stacksTo(1))));
+      }
 
-      Optional.ofNullable(RegistryUtil.register(
-              config.isJukeboxBoatOn,
-              BuiltInRegistries.ITEM,
-              boatId(value, "jukebox"),
-              () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_JUKEBOX, value, new FabricItemSettings().stacksTo(1))))
-          .ifPresent(list::add);
+      if (config.isJukeboxBoatOn) {
+        list.add(Registry.register(
+            BuiltInRegistries.ITEM,
+            boatId(value, "jukebox"),
+            new AndromedaBoatItem<>(
+                BoatEntities.BOAT_WITH_JUKEBOX, value, new FabricItemSettings().stacksTo(1))));
+      }
 
-      Optional.ofNullable(RegistryUtil.register(
-              config.isTNTBoatOn,
-              BuiltInRegistries.ITEM,
-              boatId(value, "tnt"),
-              () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_TNT, value, new FabricItemSettings().stacksTo(1))))
-          .ifPresent(list::add);
+      if (config.isTNTBoatOn) {
+        list.add(Registry.register(
+            BuiltInRegistries.ITEM,
+            boatId(value, "tnt"),
+            new AndromedaBoatItem<>(
+                BoatEntities.BOAT_WITH_TNT, value, new FabricItemSettings().stacksTo(1))));
+      }
 
-      Optional.ofNullable(RegistryUtil.register(
-              config.isHopperBoatOn,
-              BuiltInRegistries.ITEM,
-              boatId(value, "hopper"),
-              () -> new AndromedaBoatItem<>(
-                  BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().stacksTo(1))))
-          .ifPresent(list::add);
+      if (config.isHopperBoatOn) {
+        list.add(Registry.register(
+            BuiltInRegistries.ITEM,
+            boatId(value, "hopper"),
+            new AndromedaBoatItem<>(
+                BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().stacksTo(1))));
+      }
     }
     AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.items(module, CreativeModeTabs.TOOLS_AND_UTILITIES, list));
