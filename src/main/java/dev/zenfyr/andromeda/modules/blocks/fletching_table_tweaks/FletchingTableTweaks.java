@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.modules.blocks.better_fletching_table;
+package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
@@ -8,12 +8,12 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 
-@ModuleInfo(name = "better_fletching_table", category = "blocks")
-public final class BetterFletchingTable extends Module implements PostBootstrapEvent {
+@ModuleInfo(name = "fletching_table_tweaks", category = "blocks")
+public final class FletchingTableTweaks extends Module implements PostBootstrapEvent {
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 
-  BetterFletchingTable() {
+  FletchingTableTweaks() {
     RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
   }
 

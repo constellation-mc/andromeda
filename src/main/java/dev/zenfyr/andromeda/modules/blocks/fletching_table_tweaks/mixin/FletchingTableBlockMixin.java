@@ -1,6 +1,6 @@
-package dev.zenfyr.andromeda.modules.blocks.better_fletching_table.mixin;
+package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.mixin;
 
-import dev.zenfyr.andromeda.modules.blocks.better_fletching_table.FletchingScreenHandler;
+import dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.FletchingScreenHandler;
 import dev.zenfyr.pulsar.util.TextUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;

@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
+import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
@@ -82,8 +82,8 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
       int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
       if ((this.getFuel() + (itemFuel * 2.25))
           <= ModuleManager.get()
-              .get(BetterFurnaceMinecart.class)
-              .map(m -> Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel)
+              .get(FurnaceMinecartTweaks.class)
+              .map(m -> Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel)
               .orElse(45000)) {
         if (!player.getAbilities().instabuild) {
           ItemStack reminder = stack.getRecipeRemainder();

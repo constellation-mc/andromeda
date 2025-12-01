@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.modules.items.better_names.mixin;
+package dev.zenfyr.andromeda.modules.items.informative_item_names.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.pulsar.util.TextUtil;

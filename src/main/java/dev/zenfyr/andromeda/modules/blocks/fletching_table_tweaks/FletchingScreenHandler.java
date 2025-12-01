@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.modules.blocks.better_fletching_table;
+package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks;
 
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
@@ -115,7 +115,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
   }
 
   static void init() {
-    var module = ModuleManager.get().get(BetterFletchingTable.class).orElseThrow();
+    var module = ModuleManager.get().get(FletchingTableTweaks.class).orElseThrow();
     FletchingScreenHandler.FLETCHING.init(Registry.register(
         BuiltInRegistries.MENU,
         id("fletching"),

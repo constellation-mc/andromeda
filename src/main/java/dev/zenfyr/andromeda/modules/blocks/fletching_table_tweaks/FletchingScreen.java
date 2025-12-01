@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.modules.blocks.better_fletching_table;
+package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.zenfyr.andromeda.common.Andromeda;

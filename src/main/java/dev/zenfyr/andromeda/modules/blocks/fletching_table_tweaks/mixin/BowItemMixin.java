@@ -1,7 +1,7 @@
-package dev.zenfyr.andromeda.modules.blocks.better_fletching_table.mixin;
+package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.zenfyr.andromeda.modules.blocks.better_fletching_table.BetterFletchingTable;
+import dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.FletchingTableTweaks;
 import dev.zenfyr.pulsar.nbt.NbtUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +33,7 @@ abstract class BowItemMixin extends ProjectileWeaponItem {
     int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);
     if (a > 0) {
       stackNbt.putInt("AM-Tightened", a - 1);
-      return f * player.level.am$get(BetterFletchingTable.CONFIG).divergenceModifier;
+      return f * player.level.am$get(FletchingTableTweaks.CONFIG).divergenceModifier;
     }
     return f;
   }

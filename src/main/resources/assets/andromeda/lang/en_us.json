@@ -84,9 +84,9 @@
   "tooltip.andromeda.incubator[0]": "A handy little device that is helpful for hatching eggs.",
   "tooltip.andromeda.incubator[1]": "Courtesy of \"Bad Software & Hardware LLC\"®",
 
-  "config.andromeda.blocks.better_fletching_table": "Useful Fletching Table",
-  "config.andromeda.blocks.better_fletching_table.@Tooltip": "Gives the fletching table a GUI where you can tighten the string of your bow for improved accuracy.",
-  "config.andromeda.blocks.better_fletching_table.option.divergenceModifier": "Divergence Modifier",
+  "config.andromeda.blocks.fletching_table_tweaks": "Fletching Table Tweaks",
+  "config.andromeda.blocks.fletching_table_tweaks.@Tooltip": "Gives the fletching table a GUI where you can tighten the string of your bow for improved accuracy.",
+  "config.andromeda.blocks.fletching_table_tweaks.option.divergenceModifier": "Divergence Modifier",
   "gui.andromeda.fletching": "Tighten Bow String",
   "tooltip.andromeda.bow.tight": "Tightened, usages left: %s",
 
@@ -154,12 +154,12 @@
   "config.andromeda.entities.villagers_follow_emeralds": "Villagers Follow Emerald Blocks",
   "config.andromeda.entities.villagers_follow_emeralds.@Tooltip": "Villagers will follow you when you have an emerald block in your hand.",
 
-  "config.andromeda.entities.better_furnace_minecart": "Better Furnace Minecart",
-  "config.andromeda.entities.better_furnace_minecart.@Tooltip": "A few tweaks to make furnace minecarts just a bit better: \n- Carts can now store more fuel. You can change the fuel limit below. \n- You can now use any type of fuel, such as lava buckets, coal blocks, etc.",
-  "config.andromeda.entities.better_furnace_minecart.option.maxFuel": "Max Fuel",
-  "config.andromeda.entities.better_furnace_minecart.option.maxFuel.@Tooltip": "Set the maximum allowed fuel for the furnace minecart. The default is 45000, and the maximum limit is 2147483647.",
-  "config.andromeda.entities.better_furnace_minecart.option.takeFuelWhenLow": "Take Fuel When Low",
-  "config.andromeda.entities.better_furnace_minecart.option.takeFuelWhenLow.@Tooltip": "Furnace minecarts will take fuel from nearby inventory carts, \nsuch as minecarts with chests, hoppers and possibly modded ones. \nIf a cart has stopped, you have to push it with your hand before it moves.",
+  "config.andromeda.entities.furnace_minecart_tweaks": "Furnace Minecart Tweaks",
+  "config.andromeda.entities.furnace_minecart_tweaks.@Tooltip": "- Carts can store more fuel. \n- Carts accept any type of fuel, such as lava buckets, coal blocks, etc. \n- Carts can auto-refill from nearby chests.",
+  "config.andromeda.entities.furnace_minecart_tweaks.option.maxFuel": "Max Fuel",
+  "config.andromeda.entities.furnace_minecart_tweaks.option.maxFuel.@Tooltip": "Set the maximum allowed fuel for the furnace minecart. The default is 45000, and the maximum limit is 2147483647.",
+  "config.andromeda.entities.furnace_minecart_tweaks.option.takeFuelWhenLow": "Take Fuel When Low",
+  "config.andromeda.entities.furnace_minecart_tweaks.option.takeFuelWhenLow.@Tooltip": "Furnace minecarts will take fuel from nearby inventory carts, \nsuch as minecarts with chests, hoppers and possibly modded ones. \nIf a cart has stopped, you have to push it with your hand before it moves.",
 
   "config.andromeda.entities.minecart_speed_control": "Minecart Speed Control",
   "config.andromeda.entities.minecart_speed_control.@Tooltip": "Allows some basic control over minecart speed!\nThis module does not adjust the physics in any way!\nCheck out Audaki Cart Engine if you need something more advanced.",
@@ -294,8 +294,8 @@
   "item.andromeda.magnet": "Magnet",
   "tooltip.andromeda.magnet.level": "Level %s/5",
 
-  "config.andromeda.items.better_names": "Slightly Better Item Names",
-  "config.andromeda.items.better_names.@Tooltip": "Shows durability (in %), or item count.",
+  "config.andromeda.items.informative_item_names": "Informative Item Names",
+  "config.andromeda.items.informative_item_names.@Tooltip": "Shows durability (in %), or item count.",
 
   "config.andromeda.items.infinite_totem": "Infinite Totem of Undying",
   "config.andromeda.items.infinite_totem.@Tooltip": "Infinite Totem settings. Please see the wiki for more info.",

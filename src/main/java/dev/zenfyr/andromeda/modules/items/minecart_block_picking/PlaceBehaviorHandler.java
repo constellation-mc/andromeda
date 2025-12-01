@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.items.minecart_block_picking;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
+import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
 import dev.zenfyr.pulsar.nbt.NbtUtil;
 import java.util.IdentityHashMap;
 import java.util.Optional;
@@ -57,8 +57,8 @@ public class PlaceBehaviorHandler {
           "Fuel",
           0,
           ModuleManager.get()
-              .get(BetterFurnaceMinecart.class)
-              .map(m -> Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel)
+              .get(FurnaceMinecartTweaks.class)
+              .map(m -> Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel)
               .orElse(32000));
       if (furnaceMinecart.fuel > 0) {
         furnaceMinecart.xPush = furnaceMinecart.getX() - pos.getX();

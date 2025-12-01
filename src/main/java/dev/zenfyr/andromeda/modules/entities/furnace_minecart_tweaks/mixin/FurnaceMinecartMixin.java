@@ -1,7 +1,7 @@
-package dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.mixin;
+package dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.mixin;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
+import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -34,7 +34,7 @@ abstract class FurnaceMinecartMixin {
     if (FuelRegistry.INSTANCE.get(item) != null) {
       int itemFuel = FuelRegistry.INSTANCE.get(item);
       if ((this.fuel + (itemFuel * 2.25))
-          <= Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
+          <= Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel) {
         if (!player.getAbilities().instabuild) {
           ItemStack reminder = stack.getRecipeRemainder();
           if (!reminder.isEmpty())

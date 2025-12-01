@@ -1,7 +1,7 @@
-package dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.mixin;
+package dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.mixin;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.better_furnace_minecart.BetterFurnaceMinecart;
+import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
 import dev.zenfyr.pulsar.reflection.Reflect;
 import dev.zenfyr.pulsar.util.ExceptionUtil;
@@ -42,7 +42,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
 
   @Inject(at = @At("HEAD"), method = "tick")
   private void andromeda$tick(CallbackInfo ci) {
-    if (!Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).takeFuelWhenLow) return;
+    if (!Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).takeFuelWhenLow) return;
 
     if (!this.level.isClientSide() && this.fuel < 100) {
       if (level.getGameTime() % 20 == 0) {
@@ -65,7 +65,7 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
             if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
               int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
               if ((this.fuel + (itemFuel * 2.25))
-                  <= Andromeda.MAIN.get(BetterFurnaceMinecart.CONFIG).maxFuel) {
+                  <= Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel) {
                 ItemStack reminder = stack.getRecipeRemainder();
                 if (!reminder.isEmpty())
                   ItemStackUtil.spawn(entity.position(), stack.getRecipeRemainder(), level);
