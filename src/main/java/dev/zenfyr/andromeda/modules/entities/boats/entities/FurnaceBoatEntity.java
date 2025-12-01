@@ -2,9 +2,9 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
+import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;

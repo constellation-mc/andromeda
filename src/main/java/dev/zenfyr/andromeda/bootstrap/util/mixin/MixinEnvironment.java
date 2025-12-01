@@ -1,9 +1,8 @@
 package dev.zenfyr.andromeda.bootstrap.util.mixin;
 
-import net.fabricmc.api.EnvType;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import net.fabricmc.api.EnvType;
 
 @Retention(RetentionPolicy.CLASS)
 public @interface MixinEnvironment {
