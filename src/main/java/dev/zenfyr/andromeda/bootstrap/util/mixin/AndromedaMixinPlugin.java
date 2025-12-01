@@ -10,7 +10,6 @@ import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
@@ -20,15 +19,13 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.util.Annotations;
 
 public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   public static final ClassPath CLASS_PATH = new ClassPath();
-  private static final Set<String> CLOTH_MIXINS = Set.of(
-      "dev.zenfyr.andromeda.common.mixin.SubCategoryListEntryMixin",
-      "dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor");
+  private static final Set<String> CLOTH_MIXINS =
+      Set.of("SubCategoryListEntryMixin", "MultiElementListEntryAccessor");
 
   private String mixinPackage;
 
@@ -41,23 +38,18 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
               node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
           return node;
         })
-        .filter(AndromedaMixinPlugin::checkNode)
+        .filter(AndromedaMixinPlugin::testMixinEnvironment)
         .map((n) -> n.name.replace('/', '.').substring((pck + ".").length()))
         .collect(ImmutableList.toImmutableList());
   }
 
-  public static boolean checkNode(ClassNode n) {
-    // if (Debug.Keys.VERIFY_MIXINS.isPresent()) verifyMixin(n, n.name);
-
-    // Validate that the mixin is loaded in a correct environment.
+  public static boolean testMixinEnvironment(ClassNode node) {
     var current = FabricLoader.getInstance().getEnvironmentType();
-    AnnotationNode envNode = Annotations.getVisible(n, MixinEnvironment.class);
+    AnnotationNode envNode = Annotations.getInvisible(node, MixinEnvironment.class);
     if (envNode != null) {
       EnvType value = AsmUtil.getAnnotationValue(envNode, "value", null);
-      if (current != value) return false;
+      return current == value;
     }
-
-    // MixinPredicate only uses the node.
     return true;
   }
 
@@ -87,16 +79,7 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   @Override
   public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-    try {
-      if (CLOTH_MIXINS.contains(mixinClassName)
-          && !FabricLoader.getInstance().isModLoaded("cloth-config")) return false;
-
-      ClassNode node = MixinService.getService().getBytecodeProvider().getClassNode(mixinClassName);
-
-      return checkNode(node);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    return true;
   }
 
   @Override
@@ -104,14 +87,10 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   @Override
   public List<String> getMixins() {
-    List<String> mixins = discoverInPackage(this.mixinPackage);
-    List<String> apply = new ArrayList<>();
-
-    for (String mixin : mixins) {
-      if (shouldApplyMixin(null, String.format("%s.%s", this.mixinPackage, mixin)))
-        apply.add(mixin);
-    }
-    return apply;
+    return discoverInPackage(this.mixinPackage).stream()
+        .filter(mixinClassName -> !CLOTH_MIXINS.contains(mixinClassName)
+            || FabricLoader.getInstance().isModLoaded("cloth-config"))
+        .toList();
   }
 
   @Override
