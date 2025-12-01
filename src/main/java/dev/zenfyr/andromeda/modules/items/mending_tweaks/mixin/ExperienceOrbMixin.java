@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.modules.items.balanced_mending.mixin;
+package dev.zenfyr.andromeda.modules.items.mending_tweaks.mixin;
 
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;

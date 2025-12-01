@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.modules.items.balanced_mending.mixin;
+package dev.zenfyr.andromeda.modules.items.mending_tweaks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.item.ItemStack;

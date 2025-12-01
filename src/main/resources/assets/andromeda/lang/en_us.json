@@ -303,8 +303,8 @@
   "config.andromeda.items.infinite_totem.option.enableAscension.@Tooltip": "Enables ascension of \"Totem of Undying\" to infinity. Otherwise, there's no way to make IToUs.",
   "item.andromeda.infinite_totem": "Infinite Totem of Undying",
 
-  "config.andromeda.items.balanced_mending": "Balanced Mending",
-  "config.andromeda.items.balanced_mending.@Tooltip": "Balances mending a bit, by making it remove the \"Too Expensive\" error instead of repairing items via XP. \nAlso sets anvil's XP cap to 40 levels (but not really!). \nInspired by TheMisterEpic's \"This Minecraft Enchantment has been BROKEN for 3 YEARS...\" video.",
+  "config.andromeda.items.mending_tweaks": "Mending Tweaks",
+  "config.andromeda.items.mending_tweaks.@Tooltip": "Tweaks mending by making it remove the \"Too Expensive\" error instead of repairing items via XP. \nAlso sets anvil's XP cap to 40 levels.",
 
   "config.andromeda.items.minecart_block_picking": "Minecart Block Picking",
   "config.andromeda.items.minecart_block_picking.@Tooltip": "Allow players to \"pick\" blocks via minecarts.",
