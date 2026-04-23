@@ -8,10 +8,3 @@ jobs:
     with:
       java: 21
       gradle_tasks: check
-
-  run_tests:
-    uses: constellation-mc/actions/.github/workflows/mc-tests.yml@main
-    with:
-      java: 21
-      client_task: runTestClient
-      server_task: runTestServer

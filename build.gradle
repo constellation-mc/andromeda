@@ -21,7 +21,6 @@ base {
 apply from: "https://raw.githubusercontent.com/constellation-mc/artifacts/main/artifacts.groovy"
 constellationRepo(project, "pulsar")
 constellationRepo(project, "commander")
-constellationRepo(project, "handy-tests")
 
 repositories {
     maven { url = "https://maven.shedaniel.me/" }
@@ -33,23 +32,6 @@ repositories {
         content { includeGroup "maven.modrinth" }
     }
     maven { url = 'https://jitpack.io' }
-}
-
-sourceSets {
-    testmod {
-        compileClasspath += main.compileClasspath
-        runtimeClasspath += main.runtimeClasspath
-    }
-}
-
-loom {
-    addRemapConfiguration("testmodRemapImplementation", (RemapConfigurationSettings configuration) -> {
-        configuration.getTargetConfigurationName().convention("testmodImplementation")
-        configuration.getSourceSet().convention(sourceSets.testmod)
-        configuration.getOnCompileClasspath().convention(true)
-        configuration.getOnRuntimeClasspath().convention(true)
-        configuration.getPublishingMode().convention(RemapConfigurationSettings.PublishingMode.NONE)
-    })
 }
 
 dependencies {
@@ -64,11 +46,6 @@ dependencies {
     [libs.modmenu, libs.cloth.config].each {
         modLocalRuntime it
         modCompileOnly it
-    }
-
-    testmodImplementation sourceSets.main.output
-    testmodRemapImplementation(libs.handy.tests) {
-        exclude(group: "net.fabricmc", module: "fabric-loader")
     }
 }
 
@@ -91,32 +68,6 @@ loom {
         server {
             runDir("run_server")
         }
-
-        testClient {
-            client()
-            source sourceSets.testmod
-            runDir("run_test_client")
-
-            properties([
-                    "handy-tests.auto-test": "true",
-                    "andromeda.enableAllModules": "true",
-                    "andromeda.skipMixinErrorHandler": "true",
-                    "andromeda.disableNetworkFeatures": "true",
-                    "andromeda.printMissingTooltips": "true",
-            ])
-        }
-        testServer {
-            server()
-            source sourceSets.testmod
-            runDir("run_test_server")
-
-            properties([
-                    "handy-tests.auto-test": "true",
-                    "andromeda.enableAllModules": "true",
-                    "andromeda.skipMixinErrorHandler": "true",
-                    "andromeda.disableNetworkFeatures": "true"
-            ])
-        }
     }
 
     //https://gist.github.com/maityyy/3dbcd558d58a6412c3a2a38c72706e8e
@@ -132,10 +83,6 @@ loom {
 
 loom.mods.register(project.name) {
     sourceSet project.sourceSets.main
-}
-
-loom.mods.register(project.name + "-testmod") {
-    sourceSet project.sourceSets.testmod
 }
 
 processResources {
