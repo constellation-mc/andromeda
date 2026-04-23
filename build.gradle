@@ -14,6 +14,10 @@ def local = !System.getenv().containsKey("GITHUB_RUN_NUMBER")
 version = "${project.mod_version}-${project.minecraft_version}-${local ? 'local' : "build.${System.getenv("GITHUB_RUN_NUMBER")}"}"
 group = project.maven_group
 
+base {
+    archivesName = project.archives_base_name
+}
+
 apply from: "https://raw.githubusercontent.com/constellation-mc/artifacts/main/artifacts.groovy"
 constellationRepo(project, "pulsar")
 constellationRepo(project, "commander")
@@ -168,7 +172,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${base.archivesName.get()}" }
     }
 }
 
