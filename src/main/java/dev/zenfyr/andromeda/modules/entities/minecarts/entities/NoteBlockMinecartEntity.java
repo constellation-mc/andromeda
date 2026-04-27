@@ -51,7 +51,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   @Override
   public InteractionResult interact(Player player, InteractionHand hand) {
     this.cycleNote();
-    this.playNote(level, new Vec3(getX(), getY() - 1, getZ()));
+    this.playNote(level, new Vec3(getX(), getY(), getZ()));
     player.awardStat(Stats.TUNE_NOTEBLOCK);
     return InteractionResult.SUCCESS;
   }
@@ -59,7 +59,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   @Override
   public void activateMinecart(int x, int y, int z, boolean powered) {
     if (powered && !this.isPowered) {
-      playNote(this.level, new Vec3(getX(), getY() - 1, getZ()));
+      playNote(this.level, new Vec3(getX(), getY(), getZ()));
     }
   }
 

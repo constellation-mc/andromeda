@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "andromeda:item/spawner_minecart"
+  }
+}
