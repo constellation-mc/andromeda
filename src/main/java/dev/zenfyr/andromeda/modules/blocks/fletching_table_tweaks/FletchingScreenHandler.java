@@ -4,6 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.util.Debug;
@@ -12,6 +13,7 @@ import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -100,7 +102,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
     return ItemCombinerMenuSlotDefinition.create()
         .withSlot(0, 27, 47, stack -> true)
         .withSlot(1, 76, 47, stack -> true)
-        .withResultSlot(0, 134, 47)
+        .withResultSlot(2, 134, 47)
         .build();
   }
 
@@ -120,6 +122,13 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
         BuiltInRegistries.MENU,
         id("fletching"),
         new MenuType<>(FletchingScreenHandler::new, FeatureFlagSet.of())));
+    TIGHTENED.init(Registry.register(
+        BuiltInRegistries.DATA_COMPONENT_TYPE,
+        id("tightened"),
+        DataComponentType.<Integer>builder()
+            .persistent(Codec.INT)
+            .networkSynchronized(ByteBufCodecs.VAR_INT)
+            .build()));
 
     Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 

@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.entities.ghast_tweaks.GhastExplosionDuck;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +22,7 @@ abstract class ExplosionMixin implements GhastExplosionDuck {
 
   @Shadow
   @Final
-  private Level level;
+  private ServerLevel level;
 
   @Unique private final ObjectArrayList<BlockPos> affectedObsidian = new ObjectArrayList<>();
 

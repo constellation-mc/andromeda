@@ -27,9 +27,9 @@ public class Client {
 
     EntityModelLayerRegistry.TexturedModelDataProvider provider;
 
-    if ("boat".equals(variant.name())) {
+    if ("boat".equals(type.model().name())) {
       provider = BoatModel::createBoatModel;
-    } else if ("raft".equals(variant.name())) {
+    } else if ("raft".equals(type.model().name())) {
       provider = RaftModel::createRaftModel;
     } else {
       throw new RuntimeException("No model provider for variant! '%s'".formatted(variant.name()));

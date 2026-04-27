@@ -1,5 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.magnet;
 
+import static dev.zenfyr.andromeda.common.Andromeda.id;
+
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -248,6 +250,14 @@ public class MagnetItem extends Item {
 
   static void init() {
     var module = ModuleManager.get().get(Magnet.class).orElseThrow();
+
+    COMPONENT_TYPE.init(Registry.register(
+        BuiltInRegistries.DATA_COMPONENT_TYPE,
+        id("magnet_contents"),
+        DataComponentType.<MagnetContents>builder()
+            .persistent(MagnetContents.CODEC)
+            .networkSynchronized(MagnetContents.PACKET_CODEC)
+            .build()));
 
     MagnetItem.MAGNET.init(Registry.register(
         BuiltInRegistries.ITEM,

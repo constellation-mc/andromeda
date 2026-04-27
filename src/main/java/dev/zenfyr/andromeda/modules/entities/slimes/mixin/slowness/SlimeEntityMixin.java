@@ -56,6 +56,8 @@ abstract class SlimeEntityMixin extends Mob {
   }
 
   @Unique private void andromeda$tryApplyEffect(LivingEntity target) {
+    if (level.isClientSide()) return;
+
     var config = this.level.am$get(Slimes.CONFIG);
     if (!config.available) return;
     if (!config.slowness) return;

@@ -1,7 +1,6 @@
 package dev.zenfyr.andromeda.modules.entities.boats.items;
 
 import dev.zenfyr.andromeda.common.util.MiscUtil;
-import dev.zenfyr.andromeda.modules.entities.boats.entities.BoatEntityWithBlock;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.List;
 import java.util.function.Predicate;
@@ -20,6 +19,7 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -30,7 +30,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-public class AndromedaBoatItem<T extends BoatEntityWithBlock> extends Item {
+public class AndromedaBoatItem<T extends AbstractBoat> extends Item {
 
   private static final Predicate<Entity> RIDERS =
       EntitySelector.NO_SPECTATORS.and(Entity::isPickable);

@@ -152,4 +152,14 @@ public abstract class AbstractMinecartEntityMixin extends Entity implements Link
   public void linkart$setLinkItem(ItemStack linkItem) {
     this.linkart$itemStack = linkItem == null ? ItemStack.EMPTY : linkItem;
   }
+
+  @Override
+  public double linkart$lastMovementLength() {
+    return this.lastMovementLength;
+  }
+
+  @Override
+  public void linkart$lastMovementLength(double len) {
+    this.lastMovementLength = len;
+  }
 }
