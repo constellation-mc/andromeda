@@ -4,15 +4,13 @@ import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.BeaconUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.NotifyClientPayload;
 import dev.zenfyr.pulsar.util.tuple.Tuple;
 import java.util.Optional;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +22,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -111,11 +111,9 @@ abstract class ItemEntityMixin extends Entity {
                   newStack);
               level.addFreshEntity(entity);
 
-              FriendlyByteBuf buf = PacketByteBufs.create()
-                  .writeVarInt(andromeda$itemEntity.getId())
-                  .writeItem(targetStack);
+              var payload = new NotifyClientPayload(andromeda$itemEntity.getId(), targetStack);
               for (ServerPlayer serverPlayerEntity : PlayerLookup.tracking(this)) {
-                ServerPlayNetworking.send(serverPlayerEntity, Main.NOTIFY_CLIENT, buf);
+                ServerPlayNetworking.send(serverPlayerEntity, payload);
               }
             }
 
@@ -182,12 +180,12 @@ abstract class ItemEntityMixin extends Entity {
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
-    this.andromeda$ascensionTicks = nbt.getInt("AM-Ascension");
+  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
+    this.andromeda$ascensionTicks = valueInput.getIntOr("AM-Ascension", 0);
   }
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
-  private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
-    nbt.putInt("AM-Ascension", this.andromeda$ascensionTicks);
+  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
+    valueOutput.putInt("AM-Ascension", this.andromeda$ascensionTicks);
   }
 }

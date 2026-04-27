@@ -11,13 +11,25 @@ accessible field net/minecraft/client/gui/screens/Screen narratables Ljava/util/
 accessible field net/minecraft/client/gui/screens/Screen children Ljava/util/List;
 accessible field net/minecraft/world/entity/Entity level Lnet/minecraft/world/level/Level;
 
+# blocks/campfire_tweaks
+accessible method net/minecraft/server/level/ServerLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
+
 # gui/no_more_adventure
 accessible class net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon
 
+# entities/bee_flower_duplication
+accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal isPollinating ()Z
+accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal hasPollinatedLongEnough ()Z
+accessible method net/minecraft/world/level/block/DoublePlantBlock canSurvive (Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z
+accessible method net/minecraft/world/level/block/VegetationBlock canSurvive (Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z
+
+# entities/boats
+accessible method net/minecraft/world/entity/vehicle/AbstractBoat getDropItem ()Lnet/minecraft/world/item/Item;
+
 # entities/boats (furnaceBoat)
-accessible field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;
-accessible field net/minecraft/world/entity/vehicle/Boat status Lnet/minecraft/world/entity/vehicle/Boat$Status;
-extendable method net/minecraft/world/entity/vehicle/Boat floatBoat ()V
+#accessible field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;
+#accessible field net/minecraft/world/entity/vehicle/Boat status Lnet/minecraft/world/entity/vehicle/Boat$Status;
+#extendable method net/minecraft/world/entity/vehicle/Boat floatBoat ()V
 
 # gui/gui_particles (furnaceScreen)
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
@@ -28,29 +40,26 @@ accessible field net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$G
 accessible field net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen slots Ljava/util/List;
 
 # misc/recipe_advancements_generation
-accessible field net/minecraft/server/ServerAdvancementManager advancements Lnet/minecraft/advancements/AdvancementList;
+#accessible field net/minecraft/server/ServerAdvancementManager advancements Lnet/minecraft/advancements/AdvancementList;
 
 # items/minecart_block_picking
 accessible field net/minecraft/world/entity/vehicle/MinecartFurnace fuel I
-accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTimeRemaining I
 accessible field net/minecraft/world/level/BaseSpawner nextSpawnData Lnet/minecraft/world/level/SpawnData;
 
 # entities/villagers_follow_emeralds  mechanics/throwable_items
 accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
 
 # mechanics/linkart
-accessible method net/minecraft/world/entity/vehicle/AbstractMinecart getMaxSpeed ()D
+accessible method net/minecraft/world/entity/vehicle/AbstractMinecart getMaxSpeed (Lnet/minecraft/server/level/ServerLevel;)D
 
 # mechanics/throwable_items
-accessible method net/minecraft/world/level/storage/loot/parameters/LootContextParamSets register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/world/level/storage/loot/parameters/LootContextParamSet;
-
-# entities/bee_flower_duplication
-accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal isPollinating ()Z
-accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal hasPollinatedLongEnough ()Z
+#accessible method net/minecraft/world/level/storage/loot/parameters/LootContextParamSets register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/world/level/storage/loot/parameters/LootContextParamSet;
 
 # world/falling_beenests
-accessible method net/minecraft/world/entity/item/FallingBlockEntity readAdditionalSaveData (Lnet/minecraft/nbt/CompoundTag;)V
-accessible method net/minecraft/world/level/block/entity/BeehiveBlockEntity removeIgnoredBeeTags (Lnet/minecraft/nbt/CompoundTag;)V
+accessible field net/minecraft/world/level/block/entity/BeehiveBlockEntity IGNORED_BEE_TAGS Ljava/util/List;
+accessible method net/minecraft/world/entity/item/FallingBlockEntity readAdditionalSaveData (Lnet/minecraft/world/level/storage/ValueInput;)V
+accessible method net/minecraft/world/level/block/entity/BeehiveBlockEntity getBees ()Ljava/util/List;
 
 # misc/unknown
 accessible field net/minecraft/client/gui/components/SplashRenderer splash Ljava/lang/String;

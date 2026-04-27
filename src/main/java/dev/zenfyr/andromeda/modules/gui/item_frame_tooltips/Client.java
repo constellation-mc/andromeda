@@ -1,7 +1,5 @@
 package dev.zenfyr.andromeda.modules.gui.item_frame_tooltips;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.zenfyr.pulsar.util.Utilities;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.ArrayList;
@@ -24,6 +22,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.joml.Matrix3x2fStack;
 import org.joml.Vector2i;
 
 public class Client {
@@ -110,25 +109,27 @@ public class Client {
       Minecraft client, GuiGraphics context, List<ClientTooltipComponent> components) {
     if (components.isEmpty()) return;
 
-    float flow = Mth.lerp(client.getFrameTime(), oldTooltipFlow, tooltipFlow);
-    PoseStack matrices = context.pose();
+    float flow = Mth.lerp(client.getFrameTimeNs(), oldTooltipFlow, tooltipFlow);
+    Matrix3x2fStack matrices = context.pose();
 
-    matrices.pushPose();
-    matrices.translate(0, 0, -450);
-    matrices.scale(1, 1, 1);
-    RenderSystem.enableBlend();
-    RenderSystem.defaultBlendFunc();
-    RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
+    matrices.pushMatrix();
+    // matrices.translate(0, 0, -450);
+    matrices.scale(1, 1);
+    // RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
 
-    context.renderTooltipInternal(
-        client.font, components, 0, 0, (screenWidth, screenHeight, sameX, sameY, width, height) -> {
+    context.renderTooltip(
+        client.font,
+        components,
+        0,
+        0,
+        (screenWidth, screenHeight, sameX, sameY, width, height) -> {
           float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
           float smoothY = ((client.getWindow().getGuiScaledHeight() - height) / 2f);
-          matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY, 1);
+          matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY);
           return new Vector2i((int) smoothX, (int) smoothY);
-        });
-    RenderSystem.setShaderColor(1, 1, 1, 1);
-    RenderSystem.disableBlend();
-    matrices.popPose();
+        },
+        null);
+    // RenderSystem.setShaderColor(1, 1, 1, 1);
+    matrices.popMatrix();
   }
 }

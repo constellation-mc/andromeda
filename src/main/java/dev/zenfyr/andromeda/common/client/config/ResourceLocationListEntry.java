@@ -23,20 +23,16 @@ public class ResourceLocationListEntry extends TextFieldListEntry<ResourceLocati
 
   @Override
   public Optional<Component> getError() {
-    if (!ResourceLocation.isValidResourceLocation(this.textFieldWidget.getValue())) {
-      var id = ResourceLocation.read(this.textFieldWidget.getValue());
-      if (id.error().isPresent())
-        return Optional.of(Component.literal(id.error().orElseThrow().message()));
-    }
+    var location = ResourceLocation.read(this.textFieldWidget.getValue());
+    if (location.error().isPresent())
+      return Optional.of(Component.literal(location.error().orElseThrow().message()));
     return super.getError();
   }
 
   @Override
   public ResourceLocation getValue() {
-    if (ResourceLocation.isValidResourceLocation(this.textFieldWidget.getValue())) {
-      var id = ResourceLocation.tryParse(this.textFieldWidget.getValue());
-      if (id != null) return id;
-    }
-    return new ResourceLocation("");
+    var id = ResourceLocation.tryParse(this.textFieldWidget.getValue());
+    if (id != null) return id;
+    return ResourceLocation.withDefaultNamespace("");
   }
 }

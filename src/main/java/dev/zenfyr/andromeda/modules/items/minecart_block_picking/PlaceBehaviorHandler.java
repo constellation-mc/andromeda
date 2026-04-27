@@ -4,9 +4,13 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
 import dev.zenfyr.pulsar.nbt.NbtUtil;
+import dev.zenfyr.pulsar.util.MathUtil;
 import java.util.IdentityHashMap;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.entity.vehicle.MinecartFurnace;
@@ -31,40 +35,49 @@ public class PlaceBehaviorHandler {
 
   public static void init() {
     registerPlaceBehavior(Items.CHEST_MINECART, (stack, world, d, e, f, g, pos) -> {
-      MinecartChest chestMinecart = (MinecartChest)
-          AbstractMinecart.createMinecart(world, d, e + g, f, AbstractMinecart.Type.CHEST);
+      MinecartChest chestMinecart = AbstractMinecart.createMinecart(
+          world, d, e + g, f, EntityType.CHEST_MINECART, EntitySpawnReason.DISPENSER, stack, null);
 
-      NbtUtil.readInventoryFromTag(stack.getTag(), chestMinecart);
-      if (stack.hasCustomHoverName()) chestMinecart.setCustomName(stack.getHoverName());
+      var nbt = stack.get(DataComponents.ENTITY_DATA);
+      if (nbt != null) NbtUtil.readInventoryFromTag(nbt.copyTagWithoutId(), chestMinecart);
       return chestMinecart;
     });
 
     registerPlaceBehavior(Items.HOPPER_MINECART, (stack, world, d, e, f, g, pos) -> {
-      MinecartHopper hopperMinecart = (MinecartHopper)
-          AbstractMinecart.createMinecart(world, d, e + g, f, AbstractMinecart.Type.HOPPER);
+      MinecartHopper hopperMinecart = AbstractMinecart.createMinecart(
+          world, d, e + g, f, EntityType.HOPPER_MINECART, EntitySpawnReason.DISPENSER, stack, null);
 
-      NbtUtil.readInventoryFromTag(stack.getTag(), hopperMinecart);
-      if (stack.hasCustomHoverName()) hopperMinecart.setCustomName(stack.getHoverName());
+      var nbt = stack.get(DataComponents.ENTITY_DATA);
+      if (nbt != null) NbtUtil.readInventoryFromTag(nbt.copyTagWithoutId(), hopperMinecart);
       return hopperMinecart;
     });
 
     registerPlaceBehavior(Items.FURNACE_MINECART, (stack, world, d, e, f, g, pos) -> {
-      MinecartFurnace furnaceMinecart = (MinecartFurnace)
-          AbstractMinecart.createMinecart(world, d, e + g, f, AbstractMinecart.Type.FURNACE);
+      MinecartFurnace furnaceMinecart = AbstractMinecart.createMinecart(
+          world,
+          d,
+          e + g,
+          f,
+          EntityType.FURNACE_MINECART,
+          EntitySpawnReason.DISPENSER,
+          stack,
+          null);
 
-      furnaceMinecart.fuel = NbtUtil.getInt(
-          stack.getTag(),
-          "Fuel",
-          0,
-          ModuleManager.get()
-              .get(FurnaceMinecartTweaks.class)
-              .map(m -> Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel)
-              .orElse(32000));
-      if (furnaceMinecart.fuel > 0) {
-        furnaceMinecart.xPush = furnaceMinecart.getX() - pos.getX();
-        furnaceMinecart.zPush = furnaceMinecart.getZ() - pos.getZ();
+      var nbt = stack.get(DataComponents.ENTITY_DATA);
+      if (nbt != null) {
+        furnaceMinecart.fuel = MathUtil.clamp(
+            NbtUtil.getInt(nbt.copyTagWithoutId(), "Fuel", 0),
+            0,
+            ModuleManager.get()
+                .get(FurnaceMinecartTweaks.class)
+                .map(m -> Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel)
+                .orElse(32000));
+
+        if (furnaceMinecart.fuel > 0) {
+          furnaceMinecart.push =
+              furnaceMinecart.position().subtract(pos.getCenter()).horizontal();
+        }
       }
-      if (stack.hasCustomHoverName()) furnaceMinecart.setCustomName(stack.getHoverName());
 
       return furnaceMinecart;
     });

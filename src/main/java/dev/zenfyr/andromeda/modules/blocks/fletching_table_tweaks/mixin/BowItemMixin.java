@@ -1,9 +1,8 @@
 package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.FletchingScreenHandler;
 import dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.FletchingTableTweaks;
-import dev.zenfyr.pulsar.nbt.NbtUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
@@ -24,15 +23,14 @@ abstract class BowItemMixin extends ProjectileWeaponItem {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/entity/projectile/AbstractArrow;shootFromRotation(Lnet/minecraft/world/entity/Entity;FFFFF)V"),
+                  "Lnet/minecraft/world/item/BowItem;shoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/world/entity/LivingEntity;)V"),
       method = "releaseUsing",
-      index = 5)
+      index = 6)
   public float andromeda$setVelocity(
       float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local Player player) {
-    CompoundTag stackNbt = stack.getTag();
-    int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);
+    int a = stack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);
     if (a > 0) {
-      stackNbt.putInt("AM-Tightened", a - 1);
+      stack.set(FletchingScreenHandler.TIGHTENED.get(), a - 1);
       return f * player.level.am$get(FletchingTableTweaks.CONFIG).divergenceModifier;
     }
     return f;

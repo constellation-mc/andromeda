@@ -7,6 +7,7 @@ import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartItems;
 import dev.zenfyr.pulsar.util.MathUtil;
 import java.util.Optional;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -33,18 +34,13 @@ public class AnvilMinecartEntity extends AbstractMinecart {
   }
 
   @Override
-  public Type getMinecartType() {
-    return Type.CHEST;
-  }
-
-  @Override
   public InteractionResult interact(Player player, InteractionHand hand) {
-    return InteractionResult.sidedSuccess(level.isClientSide);
+    return InteractionResult.SUCCESS;
   }
 
   @Override
   public boolean causeFallDamage(
-      float fallDistance, float damageMultiplier, DamageSource damageSource) {
+      double fallDistance, float damageMultiplier, DamageSource damageSource) {
     int i = Mth.ceil(fallDistance - 1.0F);
     if (i >= 0) {
       float f = (float) Math.min(MathUtil.fastFloor(i * 2), 40);
@@ -68,7 +64,7 @@ public class AnvilMinecartEntity extends AbstractMinecart {
       ModuleManager.get().get(MinecartSpeedControl.class);
 
   @Override
-  public double getMaxSpeed() {
+  public double getMaxSpeed(ServerLevel level) {
     double d = (this.isInWater() ? 0.08 : 0.1) / 20.0;
     return optional
         .map(ms -> {

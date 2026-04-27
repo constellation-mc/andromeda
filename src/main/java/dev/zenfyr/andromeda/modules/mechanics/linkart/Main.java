@@ -16,8 +16,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Unique;
 
 public class Main {
+
+  // Used to smooth out acceleration
+  @Unique private static final double SAFE_SPEEDUP_THRESHOLD = 0.4;
+
+  @Unique private static final double SMOOTH_SPEEDUP_AMOUNT = 0.2;
+
+  @Unique private static final double SAFE_SPEEDUP_DIFFERENCE = 0.02;
 
   public static final TagKey<Item> LINKERS =
       TagKey.create(BuiltInRegistries.ITEM.key(), id("linkers"));
@@ -35,6 +43,32 @@ public class Main {
         level.getAttachedOrCreate(ATTACHMENT.get()).tick(level);
       }
     });
+  }
+
+  public static double limitMovementLength(LinkableMinecart cart, double targetMovementLength) {
+    double cartLastMovementLength = cart.linkart$lastMovementLength();
+
+    boolean isLeading = (cart.linkart$getFollowing() == null && cart.linkart$getFollower() != null);
+    // Don't limit if we are not the leading minecart
+    if (!isLeading) return targetMovementLength;
+    // Don't limit if we are below the safe speedup threshold
+    if (targetMovementLength <= SAFE_SPEEDUP_THRESHOLD) return targetMovementLength;
+
+    AbstractMinecart follower = cart.linkart$getFollower();
+    // Check if there are follower minecarts not at our speed
+    while (follower != null) {
+      double followerLastMovementLength =
+          ((LinkableMinecart) follower).linkart$lastMovementLength();
+      if (Math.abs(followerLastMovementLength - cartLastMovementLength) > SAFE_SPEEDUP_DIFFERENCE)
+        // If so, maintain same speed
+        return cartLastMovementLength;
+      follower = ((LinkableMinecart) follower).linkart$getFollower();
+    }
+
+    // Otherwise increase our speed slowly
+    return Math.min(
+        Math.max(cartLastMovementLength + SMOOTH_SPEEDUP_AMOUNT, SAFE_SPEEDUP_THRESHOLD), // min
+        targetMovementLength); // max
   }
 
   public static boolean shouldCollide(Entity source, Entity target) {
@@ -98,7 +132,8 @@ public class Main {
     entity.setDeltaMovement(0, 0, 0);
 
     if (!((LinkableMinecart) entity).linkart$getLinkItem().isEmpty()) {
-      entity.spawnAtLocation(((LinkableMinecart) entity).linkart$getLinkItem());
+      entity.spawnAtLocation(
+          (ServerLevel) entity.level, ((LinkableMinecart) entity).linkart$getLinkItem());
       spawnChainParticles(entity);
     }
 

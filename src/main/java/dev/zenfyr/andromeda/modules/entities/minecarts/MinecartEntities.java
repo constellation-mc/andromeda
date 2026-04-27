@@ -4,13 +4,13 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.andromeda.modules.entities.boats.packets.SoundPayloadHolder;
 import dev.zenfyr.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import dev.zenfyr.andromeda.modules.entities.minecarts.entities.JukeboxMinecartEntity;
 import dev.zenfyr.andromeda.modules.entities.minecarts.entities.NoteBlockMinecartEntity;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
@@ -27,33 +27,36 @@ public class MinecartEntities {
     var config = Andromeda.MAIN.get(Minecarts.MAIN_CONFIG);
 
     if (config.isAnvilMinecartOn) {
+      var key = ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), id("anvil_minecart"));
       ANVIL_MINECART_ENTITY.init(Registry.register(
           BuiltInRegistries.ENTITY_TYPE,
-          id("anvil_minecart"),
-          FabricEntityTypeBuilder.<AnvilMinecartEntity>create(
-                  MobCategory.MISC, AnvilMinecartEntity::new)
-              .dimensions(new EntityDimensions(0.98F, 0.7F, true))
-              .build()));
+          key,
+          EntityType.Builder.<AnvilMinecartEntity>of(AnvilMinecartEntity::new, MobCategory.MISC)
+              .sized(0.98F, 0.7F)
+              .build(key)));
     }
 
     if (config.isNoteBlockMinecartOn) {
+      var key = ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), id("note_block_minecart"));
       NOTEBLOCK_MINECART_ENTITY.init(Registry.register(
           BuiltInRegistries.ENTITY_TYPE,
-          id("note_block_minecart"),
-          FabricEntityTypeBuilder.<NoteBlockMinecartEntity>create(
-                  MobCategory.MISC, NoteBlockMinecartEntity::new)
-              .dimensions(new EntityDimensions(0.98F, 0.7F, true))
-              .build()));
+          key,
+          EntityType.Builder.<NoteBlockMinecartEntity>of(
+                  NoteBlockMinecartEntity::new, MobCategory.MISC)
+              .sized(0.98F, 0.7F)
+              .build(key)));
     }
 
     if (config.isJukeboxMinecartOn) {
+      SoundPayloadHolder.init();
+
+      var key = ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), id("jukebox_minecart"));
       JUKEBOX_MINECART_ENTITY.init(Registry.register(
           BuiltInRegistries.ENTITY_TYPE,
-          id("jukebox_minecart"),
-          FabricEntityTypeBuilder.<JukeboxMinecartEntity>create(
-                  MobCategory.MISC, JukeboxMinecartEntity::new)
-              .dimensions(new EntityDimensions(0.98F, 0.7F, true))
-              .build()));
+          key,
+          EntityType.Builder.<JukeboxMinecartEntity>of(JukeboxMinecartEntity::new, MobCategory.MISC)
+              .sized(0.98F, 0.7F)
+              .build(key)));
     }
   }
 }

@@ -1,68 +1,73 @@
 package dev.zenfyr.andromeda.modules.entities.boats;
 
-import static dev.zenfyr.andromeda.common.Andromeda.id;
-
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.andromeda.modules.entities.boats.entities.FurnaceBoatEntity;
-import dev.zenfyr.andromeda.modules.entities.boats.entities.HopperBoatEntity;
-import dev.zenfyr.andromeda.modules.entities.boats.entities.JukeboxBoatEntity;
-import dev.zenfyr.andromeda.modules.entities.boats.entities.TNTBoatEntity;
-import java.util.UUID;
+import dev.zenfyr.andromeda.modules.entities.boats.entities.*;
+import dev.zenfyr.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
+import dev.zenfyr.andromeda.modules.entities.boats.packets.SoundPayloadHolder;
+import java.util.function.Supplier;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 
 public class BoatEntities {
 
-  public static final Keeper<EntityType<TNTBoatEntity>> BOAT_WITH_TNT = Keeper.create();
-  public static final Keeper<EntityType<FurnaceBoatEntity>> BOAT_WITH_FURNACE = Keeper.create();
-  public static final Keeper<EntityType<JukeboxBoatEntity>> BOAT_WITH_JUKEBOX = Keeper.create();
-  public static final Keeper<EntityType<HopperBoatEntity>> BOAT_WITH_HOPPER = Keeper.create();
+  private interface Factory<T extends AbstractBoat> {
+    T create(EntityType<T> entityType, Level level, Supplier<Item> dropItem);
+  }
 
-  private static @Nullable <T extends Entity> EntityType<T> boatType(
-      boolean register, ResourceLocation id, EntityType.EntityFactory<T> factory) {
-    if (register) {
-      return Registry.register(
-          BuiltInRegistries.ENTITY_TYPE,
-          id,
-          FabricEntityTypeBuilder.create(MobCategory.MISC, factory)
-              .dimensions(new EntityDimensions(1.375F, 0.5625F, true))
-              .build());
-    } else {
-      return null;
-    }
+  private static <T extends AbstractBoat> void boatType(
+      BoatTypes.BoatType type, BoatTypes.BoatVariant variant, Factory<T> factory) {
+    var location = BoatTypes.location(type, variant);
+    Supplier<Item> dropItem = () -> BuiltInRegistries.ITEM.getValue(location);
+    var key = ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), location);
+    Registry.register(
+        BuiltInRegistries.ENTITY_TYPE,
+        key,
+        EntityType.Builder.<T>of(
+                (entityType, level) -> factory.create(entityType, level, dropItem),
+                MobCategory.MISC)
+            .sized(1.375F, 0.5625F)
+            .build(key));
   }
 
   public static void init() {
     var config = Andromeda.MAIN.get(Boats.MAIN_CONFIG);
-    BOAT_WITH_TNT.init(boatType(config.isTNTBoatOn, id("tnt_boat"), TNTBoatEntity::new));
-    BOAT_WITH_FURNACE.init(
-        boatType(config.isFurnaceBoatOn, id("furnace_boat"), FurnaceBoatEntity::new));
-    BOAT_WITH_JUKEBOX.init(
-        boatType(config.isJukeboxBoatOn, id("jukebox_boat"), JukeboxBoatEntity::new));
-    BOAT_WITH_HOPPER.init(
-        boatType(config.isHopperBoatOn, id("hopper_boat"), HopperBoatEntity::new));
 
-    if (BOAT_WITH_TNT.isPresent()) {
+    for (BoatTypes.BoatType type : BoatTypes.getBoatTypes()) {
+      if (config.isTNTBoatOn) BoatEntities.boatType(type, BoatTypes.TNT, TNTBoatEntity::new);
+
+      if (config.isFurnaceBoatOn)
+        BoatEntities.boatType(type, BoatTypes.FURNACE, FurnaceBoatEntity::new);
+
+      if (config.isJukeboxBoatOn)
+        BoatEntities.boatType(type, BoatTypes.JUKEBOX, JukeboxBoatEntity::new);
+
+      if (config.isHopperBoatOn)
+        BoatEntities.boatType(type, BoatTypes.HOPPER, HopperBoatEntity::new);
+    }
+
+    if (config.isJukeboxBoatOn) {
+      SoundPayloadHolder.init();
+    }
+
+    if (config.isTNTBoatOn) {
+      PayloadTypeRegistry.playC2S().register(ExplodeBoatC2SPayload.ID, ExplodeBoatC2SPayload.CODEC);
+
       // This sucks
-      ServerPlayNetworking.registerGlobalReceiver(
-          TNTBoatEntity.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {
-            UUID id = buf.readUUID();
-            server.execute(() -> {
-              Entity entity = player.level.getEntities().get(id);
-              if (entity instanceof TNTBoatEntity boat
-                  && boat.isAlive()
-                  && player == boat.getFirstPassenger()) boat.explode();
-            });
-          });
+      ServerPlayNetworking.registerGlobalReceiver(ExplodeBoatC2SPayload.ID, (payload, context) -> {
+        Entity entity = context.player().level().getEntity(payload.entity());
+        if (entity instanceof TNTBoatEntity boat
+            && boat.isAlive()
+            && context.player() == boat.getFirstPassenger()) boat.explode();
+      });
     }
   }
 }

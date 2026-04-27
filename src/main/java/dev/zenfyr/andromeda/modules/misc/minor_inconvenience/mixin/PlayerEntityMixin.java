@@ -4,6 +4,7 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.misc.minor_inconvenience.MinorInconvenience;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
@@ -31,17 +32,17 @@ abstract class PlayerEntityMixin extends LivingEntity {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+                  "Lnet/minecraft/world/entity/Avatar;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
               shift = At.Shift.BEFORE),
-      method = "hurt",
+      method = "hurtServer",
       cancellable = true)
   private void andromeda$damage(
-      DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-    if (!level.isClientSide
+      ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    if (!level.isClientSide()
         && !source.is(AGONY)
         && level.am$get(MinorInconvenience.CONFIG).available) {
       DamageSource damageSource = this.level().damageSources().source(AGONY, this);
-      super.hurt(damageSource, Float.MAX_VALUE);
+      super.hurtServer(level, damageSource, Float.MAX_VALUE);
       this.level()
           .explode(
               null,

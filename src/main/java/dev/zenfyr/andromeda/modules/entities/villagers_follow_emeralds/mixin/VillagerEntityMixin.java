@@ -1,6 +1,8 @@
 package dev.zenfyr.andromeda.modules.entities.villagers_follow_emeralds.mixin;
 
 import dev.zenfyr.andromeda.modules.entities.villagers_follow_emeralds.VillagerTemptGoal;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
@@ -27,12 +29,19 @@ abstract class VillagerEntityMixin extends AbstractVillager {
                   "Lnet/minecraft/world/entity/npc/Villager;setVillagerData(Lnet/minecraft/world/entity/npc/VillagerData;)V",
               shift = At.Shift.AFTER),
       method =
-          "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/npc/VillagerType;)V")
+          "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/Holder;)V")
   private void andromeda$init(
-      EntityType<? extends Villager> entityType, Level world, VillagerType type, CallbackInfo ci) {
-    this.goalSelector.addGoal(
-        6,
-        new VillagerTemptGoal(
-            (Villager) (Object) this, 0.5, Ingredient.of(VillagerTemptGoal.TEMPTING), false));
+      EntityType<? extends Villager> entityType,
+      Level level,
+      Holder<VillagerType> holder,
+      CallbackInfo ci) {
+    level
+        .registryAccess()
+        .lookup(Registries.ITEM)
+        .flatMap(items -> items.get(VillagerTemptGoal.TEMPTING))
+        .ifPresent(itemHolderSet -> this.goalSelector.addGoal(
+            6,
+            new VillagerTemptGoal(
+                (Villager) (Object) this, 0.5, Ingredient.of(itemHolderSet), false)));
   }
 }

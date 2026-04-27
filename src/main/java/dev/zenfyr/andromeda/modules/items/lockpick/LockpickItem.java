@@ -10,9 +10,10 @@ import dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLoot;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.Main;
 import dev.zenfyr.pulsar.util.MathUtil;
 import dev.zenfyr.pulsar.util.TextUtil;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class LockpickItem extends Item {
 
+  public static final ResourceKey<Item> LOCKPICK_KEY = Andromeda.key(Registries.ITEM, "lockpick");
   public static final Keeper<LockpickItem> INSTANCE = Keeper.create();
 
   public LockpickItem(Properties settings) {
@@ -39,7 +41,8 @@ public class LockpickItem extends Item {
     if (c.available && hand == InteractionHand.MAIN_HAND) {
       if (!(user instanceof Player p && p.getAbilities().instabuild)) {
         if (c.breakAfterUse) {
-          if (!user.level.isClientSide()) user.broadcastBreakEvent(EquipmentSlot.MAINHAND);
+          if (!user.level.isClientSide())
+            user.onEquippedItemBroken(LockpickItem.INSTANCE.orThrow(), EquipmentSlot.MAINHAND);
 
           stack.shrink(1);
         }
@@ -74,8 +77,8 @@ public class LockpickItem extends Item {
 
     LockpickItem.INSTANCE.init(Registry.register(
         BuiltInRegistries.ITEM,
-        id("lockpick"),
-        new LockpickItem(new FabricItemSettings().stacksTo(16))));
+        LOCKPICK_KEY,
+        new LockpickItem(new Item.Properties().setId(LOCKPICK_KEY).stacksTo(16))));
 
     if (config.villagerInventory) {
       MerchantInventoryScreenHandler.INSTANCE.init(Registry.register(

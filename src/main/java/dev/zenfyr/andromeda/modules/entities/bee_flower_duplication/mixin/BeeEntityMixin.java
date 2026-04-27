@@ -1,12 +1,10 @@
 package dev.zenfyr.andromeda.modules.entities.bee_flower_duplication.mixin;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import dev.zenfyr.andromeda.modules.misc.unknown.RoseOfTheValley;
 import dev.zenfyr.andromeda.modules.misc.unknown.Unknown;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Bee;
@@ -16,6 +14,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.TallFlowerBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -59,23 +59,21 @@ abstract class BeeEntityMixin extends Animal {
   }
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
-  private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
+  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
     if (this.andromeda$plantingCoolDown != 0)
-      nbt.putInt("AM-plantingCoolDown", this.andromeda$plantingCoolDown);
+      valueOutput.putInt("AM-plantingCoolDown", this.andromeda$plantingCoolDown);
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
-    if (nbt.contains("AM-plantingCoolDown"))
-      this.andromeda$plantingCoolDown = nbt.getInt("AM-plantingCoolDown");
+  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
+    if (valueInput.contains("AM-plantingCoolDown"))
+      this.andromeda$plantingCoolDown = valueInput.getIntOr("AM-plantingCoolDown", 0);
   }
 
   @Unique private void andromeda$growFlower() {
     if (this.savedFlowerPos != null) {
       BlockState flowerState = level.getBlockState(savedFlowerPos);
       var config = level.am$get(BeeFlowerDuplication.CONFIG);
-      var supplier =
-          LootContextBuilder.block(level, builder -> builder.origin(position()).state(flowerState));
       if (!config.available) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {

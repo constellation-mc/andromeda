@@ -29,4 +29,12 @@ public interface LinkableMinecart {
   default void linkart$setLinkItem(ItemStack linkItem) {
     throw new IllegalStateException("Implemented via mixin");
   }
+
+  default double linkart$lastMovementLength() {
+    throw new IllegalStateException("Implemented via mixin");
+  }
+
+  default void linkart$lastMovementLength(double len) {
+    throw new IllegalStateException("Implemented via mixin");
+  }
 }

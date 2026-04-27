@@ -1,27 +1,20 @@
 package dev.zenfyr.andromeda.modules.entities.boats.client;
 
-import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.andromeda.modules.entities.boats.packets.RecordPlaybackS2CPayload;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
 
 public class ClientSoundHolder {
-
-  public static final ResourceLocation JUKEBOX_START_PLAYING =
-      Andromeda.id("jukebox_start_playing");
-  public static final ResourceLocation JUKEBOX_STOP_PLAYING = Andromeda.id("jukebox_stop_playing");
 
   private static volatile boolean done = false;
   private static final Map<UUID, PersistentMovingSoundInstance> soundInstanceMap = new HashMap<>();
@@ -29,40 +22,43 @@ public class ClientSoundHolder {
   public static void init() {
     if (done) return;
 
-    ClientPlayNetworking.registerGlobalReceiver(
-        JUKEBOX_START_PLAYING, (client, handler, buf, responseSender) -> {
-          UUID id = buf.readUUID();
-          ItemStack stack = buf.readItem();
-          client.execute(() -> {
-            Entity entity =
-                MakeSure.notNull(client.level, "client.world").getEntities().get(id);
-            if (stack.getItem() instanceof RecordItem disc) {
-              var discName = disc.getDisplayName();
-              soundInstanceMap.computeIfAbsent(id, k -> {
-                var instance = new PersistentMovingSoundInstance(
-                    disc.getSound(), SoundSource.RECORDS, id, client.level, RandomSource.create());
-                client.getSoundManager().play(instance);
-                return instance;
-              });
-              if (discName != null) {
-                if (client.player != null
-                    && entity != null
-                    && entity.distanceTo(client.player) < 76) {
-                  client.gui.setNowPlaying(discName);
-                }
-              }
-            }
-          });
-        });
-    ClientPlayNetworking.registerGlobalReceiver(
-        JUKEBOX_STOP_PLAYING, (client, handler, buf, responseSender) -> {
-          UUID id = buf.readUUID();
-          client.execute(() -> {
-            SoundInstance instance = soundInstanceMap.remove(id);
-            if (client.getSoundManager().isActive(instance))
-              client.getSoundManager().stop(instance);
-          });
-        });
+    ClientPlayNetworking.registerGlobalReceiver(RecordPlaybackS2CPayload.ID, (payload, context) -> {
+      var client = context.client();
+      var entity = client.level.getEntity(payload.entity());
+
+      if (payload.record().isEmpty() || !payload.record().has(DataComponents.JUKEBOX_PLAYABLE)) {
+        var instance = soundInstanceMap.remove(payload.entity());
+        if (instance != null && client.getSoundManager().isActive(instance)) {
+          client.getSoundManager().stop(instance);
+        }
+        return;
+      }
+
+      var playable = payload.record().get(DataComponents.JUKEBOX_PLAYABLE);
+      var songOptional = playable
+          .song()
+          .unwrap(context
+              .client()
+              .getConnection()
+              .registryAccess()
+              .lookupOrThrow(Registries.JUKEBOX_SONG));
+      if (songOptional.isEmpty()) return;
+      var song = songOptional.get();
+      soundInstanceMap.computeIfAbsent(payload.entity(), uuid -> {
+        var instance = new PersistentMovingSoundInstance(
+            song.soundEvent().value(),
+            SoundSource.RECORDS,
+            uuid,
+            client.level,
+            RandomSource.create());
+        client.getSoundManager().play(instance);
+        return instance;
+      });
+
+      if (client.player != null && entity != null && entity.distanceTo(client.player) < 76) {
+        client.gui.setNowPlaying(song.description());
+      }
+    });
 
     done = true;
   }

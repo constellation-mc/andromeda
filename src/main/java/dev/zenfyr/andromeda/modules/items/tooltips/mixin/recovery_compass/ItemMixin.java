@@ -5,7 +5,7 @@ import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
 import dev.zenfyr.pulsar.util.MathUtil;
 import dev.zenfyr.pulsar.util.TextUtil;
-import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.GlobalPos;
@@ -14,9 +14,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,14 +27,16 @@ abstract class ItemMixin {
   @Inject(at = @At("HEAD"), method = "appendHoverText")
   public void andromeda$tooltip(
       ItemStack stack,
-      @Nullable Level world,
-      List<Component> tooltip,
-      TooltipFlag context,
+      Item.TooltipContext context,
+      TooltipDisplay tooltipDisplay,
+      Consumer<Component> tooltipAdder,
+      TooltipFlag flag,
       CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).recoveryCompass) return;
+    var world = Minecraft.getInstance().level;
 
     if (world != null)
-      if (world.isClientSide) {
+      if (world.isClientSide()) {
         var player = Minecraft.getInstance().player;
         if (stack.getItem() == Items.RECOVERY_COMPASS && player != null) {
           var optional = player.getLastDeathLocation();
@@ -52,7 +53,7 @@ abstract class ItemMixin {
             } else {
               dist = MathUtil.threadRandom().nextGaussian() * 0.1;
             }
-            tooltip.add(TextUtil.translatable(
+            tooltipAdder.accept(TextUtil.translatable(
                     "tooltip.andromeda.compass.recovery", String.format("%.1f", dist))
                 .withStyle(ChatFormatting.GRAY));
           }

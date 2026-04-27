@@ -15,10 +15,6 @@ public final class NameTooltips extends Module {
 
     if (loaded) {
       BootstrapConfigEvent.get(this).listen(config -> config.enabled = false);
-
-      // BlockadesEvent.BUS.listen((manager, blockade) -> {
-      //  blockade.explain(this, "enabled", iceberg, blockade.andromeda("iceberg"));
-      // });
     }
   }
 }

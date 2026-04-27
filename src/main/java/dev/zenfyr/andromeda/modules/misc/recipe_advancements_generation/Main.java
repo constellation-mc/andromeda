@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.misc.recipe_advancements_generation;
 
-import com.google.gson.JsonElement;
+import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -10,20 +10,15 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.Util;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementList;
-import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 import org.jetbrains.annotations.NotNull;
 
 public final class Main {
@@ -34,15 +29,28 @@ public final class Main {
 
   public static Function<Context, Return> basicConsumer(
       String typeName, AdvancementGeneration.Config config) {
-    return context -> new Return(
-        idFromRecipe(context.id(), typeName),
-        createAdvBuilder(config, context.id(), context.recipe().getIngredients().get(0)));
+    return context -> {
+      if (!(context.recipe() instanceof SingleItemRecipe sir)) {
+        ModuleManager.get()
+            .get(AdvancementGeneration.class)
+            .orElseThrow()
+            .logger()
+            .error("Single item factory requested for non single item recipe! {}", context.key());
+        return null;
+      }
+      return new Return(
+          idFromRecipe(context.key(), typeName),
+          createAdvBuilder(config, context.key(), sir.input()));
+    };
   }
 
-  private static ResourceLocation idFromRecipe(ResourceLocation recipe, String typeName) {
-    return new ResourceLocation(
-        recipe.getNamespace(),
-        "recipes/gen/" + typeName + "/" + recipe.toString().replace(":", "_"));
+  private static ResourceKey<Recipe<?>> idFromRecipe(
+      ResourceKey<Recipe<?>> recipe, String typeName) {
+    return ResourceKey.create(
+        Registries.RECIPE,
+        ResourceLocation.fromNamespaceAndPath(
+            recipe.location().getNamespace(),
+            "recipes/gen/" + typeName + "/" + recipe.location().toString().replace(":", "_")));
   }
 
   public static void addRecipeTypeHandler(RecipeType<?> type, Function<Context, Return> consumer) {
@@ -51,35 +59,38 @@ public final class Main {
 
   public static void generateRecipeAdvancements(
       MinecraftServer server, AdvancementGeneration module, AdvancementGeneration.Config config) {
-    Map<ResourceLocation, Advancement.Builder> advancementBuilders = new ConcurrentHashMap<>();
+    Map<ResourceLocation, AdvancementHolder> advancementBuilders = new ConcurrentHashMap<>();
     AtomicInteger count = new AtomicInteger();
 
     List<CompletableFuture<Void>> futures = server.getRecipeManager().getRecipes().stream()
         .filter(recipe -> {
           for (BiPredicate<ResourceLocation, Recipe<?>> filter : FILTERS) {
-            if (filter.test(recipe.getId(), recipe)) return false;
+            if (filter.test(recipe.id().location(), recipe.value())) return false;
           }
           return true;
         })
         .map(recipe -> CompletableFuture.runAsync(
             () -> {
-              var handler = RECIPE_TYPE_HANDLERS.get(recipe.getType());
+              var handler = RECIPE_TYPE_HANDLERS.get(recipe.value().getType());
               if (handler != null) {
                 count.getAndIncrement();
-                var r = handler.apply(new Context(recipe, recipe.getId()));
-                if (r != null) advancementBuilders.put(r.id(), r.builder());
-              } else {
-                if (!recipe.getIngredients().isEmpty()) {
-                  count.getAndIncrement();
+                var r = handler.apply(new Context(recipe.value(), recipe.id()));
+                if (r != null)
                   advancementBuilders.put(
-                      new ResourceLocation(
-                          recipe.getId().getNamespace(),
-                          "recipes/gen/generic/" + recipe.getId().toString().replace(":", "_")),
-                      createAdvBuilder(
-                          config,
-                          recipe.getId(),
-                          recipe.getIngredients().toArray(Ingredient[]::new)));
-                }
+                      r.key().location(), r.builder().build(r.key().location()));
+              } else {
+                //                if (!recipe.getIngredients().isEmpty()) {
+                //                  count.getAndIncrement();
+                //                  advancementBuilders.put(
+                //                      new ResourceLocation(
+                //                          recipe.getId().getNamespace(),
+                //                          "recipes/gen/generic/" +
+                // recipe.getId().toString().replace(":", "_")),
+                //                      createAdvBuilder(
+                //                          config,
+                //                          recipe.getId(),
+                //                          recipe.getIngredients().toArray(Ingredient[]::new)));
+                //                }
               }
             },
             Util.backgroundExecutor()))
@@ -89,53 +100,34 @@ public final class Main {
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
     server.managedBlock(future::isDone);
 
-    AdvancementList advancementManager = server.getAdvancements().advancements;
-    advancementManager.add(advancementBuilders);
+    AdvancementTree advancementManager = server.getAdvancements().tree();
+    advancementManager.addAll(advancementBuilders.values());
 
     module.logger().info("finished generating {} recipe advancements", count.get());
     advancementBuilders.clear();
   }
 
-  static final class CustomPredicate extends ItemPredicate {
-    private final Ingredient ingredient;
-
-    CustomPredicate(Ingredient ingredient) {
-      this.ingredient = ingredient;
-    }
-
-    @Override
-    public boolean matches(ItemStack stack) {
-      return ingredient.test(stack);
-    }
-
-    @Override
-    public JsonElement serializeToJson() {
-      return ANY.serializeToJson();
-    }
-  }
-
   public static @NotNull Advancement.Builder createAdvBuilder(
-      AdvancementGeneration.Config config, ResourceLocation id, Ingredient... ingredients) {
+      AdvancementGeneration.Config config, ResourceKey<Recipe<?>> id, Ingredient... ingredients) {
     MakeSure.notEmpty(ingredients); // shouldn't really happen
     var builder = Advancement.Builder.recipeAdvancement();
     builder.parent(ResourceLocation.tryBuild("minecraft", "recipes/root"));
 
     List<String> names = new ArrayList<>();
-    Set<JsonElement> elements = new HashSet<>();
+    Set<Ingredient> elements = new HashSet<>();
     for (int i = 0; i < ingredients.length; i++) {
       var ingredient = ingredients[i];
 
       if (ingredient.isEmpty()) continue;
-      if (!elements.add(ingredient.toJson())) continue;
+      if (!elements.add(ingredient)) continue;
 
       var name = String.valueOf(i);
       names.add(name);
-      builder.addCriterion(
-          name, InventoryChangeTrigger.TriggerInstance.hasItems(new CustomPredicate(ingredient)));
+      var predicate = ItemPredicate.Builder.item().build();
+      // TODO: hook the trigger
+      builder.addCriterion(name, InventoryChangeTrigger.TriggerInstance.hasItems(predicate));
     }
-    builder.addCriterion(
-        "has_recipe",
-        new RecipeUnlockedTrigger.TriggerInstance(ContextAwarePredicate.create(), id));
+    builder.addCriterion("has_recipe", RecipeUnlockedTrigger.unlocked(id));
 
     String[][] reqs;
     if (config.requireAllItems) {
@@ -153,9 +145,10 @@ public final class Main {
       }
       reqs[0][names.size()] = "has_recipe";
     }
-    builder.requirements(reqs);
+    builder.requirements(
+        new AdvancementRequirements(Arrays.stream(reqs).map(List::of).toList()));
 
-    Optional.ofNullable(AdvancementRewards.Builder.recipe(id).build()).ifPresent(builder::rewards);
+    builder.rewards(AdvancementRewards.Builder.recipe(id).build());
     return builder;
   }
 
@@ -174,22 +167,43 @@ public final class Main {
     addRecipeTypeHandler(RecipeType.SMELTING, basicConsumer("smelting", config));
     addRecipeTypeHandler(RecipeType.CAMPFIRE_COOKING, basicConsumer("campfire_cooking", config));
     addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting", config));
+    addRecipeTypeHandler(RecipeType.SMITHING, context -> {
+      if (!(context.recipe() instanceof SmithingRecipe sr)) {
+        ModuleManager.get()
+            .get(AdvancementGeneration.class)
+            .orElseThrow()
+            .logger()
+            .error(
+                "Smithing recipe factory requested for non smithing recipe type! {}",
+                context.key());
+        return null;
+      }
+
+      return new Return(
+          idFromRecipe(context.key(), "crafting"),
+          createAdvBuilder(
+              config,
+              context.key(),
+              sr.baseIngredient(),
+              sr.additionIngredient().orElse(Ingredient.of())));
+    });
     addRecipeTypeHandler(RecipeType.CRAFTING, (context) -> {
       if (!(context.recipe() instanceof CustomRecipe)) {
-        if (!context.recipe().getIngredients().isEmpty()) {
-          return new Return(
-              idFromRecipe(context.id(), "crafting"),
-              createAdvBuilder(
-                  config,
-                  context.id(),
-                  context.recipe().getIngredients().toArray(Ingredient[]::new)));
-        }
+        // TODO: fix crafting recipe book gen
+        //        if (!context.recipe().getIngredients().isEmpty()) {
+        //          return new Return(
+        //              idFromRecipe(context.id(), "crafting"),
+        //              createAdvBuilder(
+        //                  config,
+        //                  context.id(),
+        //                  context.recipe().getIngredients().toArray(Ingredient[]::new)));
+        //        }
       }
       return null;
     });
   }
 
-  public record Return(ResourceLocation id, Advancement.Builder builder) {}
+  public record Return(ResourceKey<Recipe<?>> key, Advancement.Builder builder) {}
 
-  public record Context(Recipe<?> recipe, ResourceLocation id) {}
+  public record Context(Recipe<?> recipe, ResourceKey<Recipe<?>> key) {}
 }

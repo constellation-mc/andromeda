@@ -8,6 +8,8 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
+import org.jetbrains.annotations.Nullable;
 
 public class KnockoffTotemParticle extends SimpleAnimatedParticle {
 
@@ -40,16 +42,17 @@ public class KnockoffTotemParticle extends SimpleAnimatedParticle {
   public record Factory(SpriteSet spriteProvider) implements ParticleProvider<SimpleParticleType> {
 
     @Override
-    public Particle createParticle(
-        SimpleParticleType defaultParticleType,
-        ClientLevel clientWorld,
+    public @Nullable Particle createParticle(
+        SimpleParticleType particleOptions,
+        ClientLevel clientLevel,
         double d,
         double e,
         double f,
         double g,
         double h,
-        double i) {
-      return new KnockoffTotemParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
+        double i,
+        RandomSource randomSource) {
+      return new KnockoffTotemParticle(clientLevel, d, e, f, g, h, i, this.spriteProvider);
     }
   }
 }

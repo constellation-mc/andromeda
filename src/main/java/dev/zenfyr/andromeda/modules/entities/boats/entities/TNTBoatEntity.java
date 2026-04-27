@@ -1,17 +1,14 @@
 package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
-import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
+import dev.zenfyr.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
 import dev.zenfyr.pulsar.util.SupportUtil;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
@@ -28,6 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class TNTBoatEntity extends BoatEntityWithBlock {
@@ -35,24 +34,14 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
       Andromeda.id("explode_boat_on_server");
   public int fuseTicks = -1;
 
-  public TNTBoatEntity(EntityType<? extends Boat> entityType, Level world) {
-    super(entityType, world);
-  }
-
-  public TNTBoatEntity(Level world, double x, double y, double z) {
-    this(BoatEntities.BOAT_WITH_TNT.orThrow(), world);
-    this.setPos(x, y, z);
-    this.xo = x;
-    this.yo = y;
-    this.zo = z;
+  public TNTBoatEntity(
+      EntityType<? extends Boat> entityType, Level world, Supplier<Item> dropItem) {
+    super(entityType, world, dropItem);
   }
 
   private final Runnable explode = SupportUtil.support(
       EnvType.CLIENT,
-      () -> () -> {
-        FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());
-        ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
-      },
+      () -> () -> ClientPlayNetworking.send(new ExplodeBoatC2SPayload(this.getUUID())),
       () -> this::explode);
 
   @Override
@@ -83,7 +72,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   }
 
   @Override
-  public boolean hurt(DamageSource source, float amount) {
+  public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
     Entity entity = source.getDirectEntity();
 
     if (entity instanceof AbstractArrow persistentProjectileEntity
@@ -101,9 +90,9 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
       return false;
     }
 
-    if (this.isInvulnerableTo(source)) {
+    if (this.isInvulnerableToBase(source)) {
       return false;
-    } else if (!this.level.isClientSide && !this.isRemoved()) {
+    } else if (!this.isRemoved()) {
       this.setHurtDir(-this.getHurtDir());
       this.setHurtTime(10);
       this.setDamage(this.getDamage() + amount * 10.0F);
@@ -129,7 +118,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
       this.setFuse();
       if (!player.isCreative()) {
         if (stack.is(Items.FLINT_AND_STEEL)) {
-          stack.hurtAndBreak(1, player, playerx -> playerx.broadcastBreakEvent(hand));
+          stack.hurtAndBreak(1, player, hand);
         } else {
           stack.shrink(1);
         }
@@ -140,20 +129,15 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   }
 
   @Override
-  public Item getDropItem() {
-    return BuiltInRegistries.ITEM.get(BoatItems.boatId(this.getVariant(), "tnt"));
-  }
-
-  @Override
-  protected void readAdditionalSaveData(CompoundTag nbt) {
+  protected void readAdditionalSaveData(ValueInput nbt) {
     super.readAdditionalSaveData(nbt);
-    if (nbt.contains("AM-TNTFuse", 99)) {
-      this.fuseTicks = nbt.getInt("AM-TNTFuse");
+    if (nbt.contains("AM-TNTFuse")) {
+      this.fuseTicks = nbt.getIntOr("AM-TNTFuse", -1);
     }
   }
 
   @Override
-  protected void addAdditionalSaveData(CompoundTag nbt) {
+  protected void addAdditionalSaveData(ValueOutput nbt) {
     super.addAdditionalSaveData(nbt);
     nbt.putInt("AM-TNTFuse", this.fuseTicks);
   }
@@ -161,14 +145,14 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   public void setFuse() {
     if (this.fuseTicks == -1) {
       this.fuseTicks = 50 + level.getRandom().nextInt(20);
-      if (!level.isClientSide) {
+      if (!level.isClientSide()) {
         level.playSound(null, this, SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1F, 1F);
       }
     }
   }
 
   public void explode() {
-    if (!this.level.isClientSide) {
+    if (!this.level.isClientSide()) {
       this.discard();
       this.level.explode(
           this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.TNT);

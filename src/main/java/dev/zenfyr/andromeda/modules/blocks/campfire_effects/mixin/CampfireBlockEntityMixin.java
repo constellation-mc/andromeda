@@ -4,11 +4,15 @@ import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,7 +27,12 @@ abstract class CampfireBlockEntityMixin {
 
   @Inject(at = @At("HEAD"), method = "cookTick")
   private static void andromeda$litServerTick(
-      Level world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
+      ServerLevel world,
+      BlockPos pos,
+      BlockState state,
+      CampfireBlockEntity campfireBlockEntity,
+      RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> cachedCheck,
+      CallbackInfo ci) {
     if (world.getGameTime() % 180 == 0) {
       if (state.getValue(CampfireBlock.LIT)) {
         var config = world.am$get(CampfireEffects.CONFIG);
@@ -41,8 +50,13 @@ abstract class CampfireBlockEntityMixin {
 
         for (LivingEntity player : entities) {
           for (CampfireEffects.Config.Effect effect : effects) {
-            MobEffectInstance effectInstance =
-                new MobEffectInstance(effect.identifier, 200, effect.amplifier, true, false, true);
+            MobEffectInstance effectInstance = new MobEffectInstance(
+                BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect.identifier),
+                200,
+                effect.amplifier,
+                true,
+                false,
+                true);
             player.addEffect(effectInstance);
           }
         }

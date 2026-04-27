@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.ArrayUtils;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +27,8 @@ abstract class GameModeSelectionScreenMixin extends Screen {
           @At(
               value = "FIELD",
               target =
-                  "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;VALUES:[Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;"))
+                  "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;VALUES:[Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;",
+              opcode = Opcodes.GETSTATIC))
   private GameModeSwitcherScreen.GameModeIcon[] andromeda$modValues(
       GameModeSwitcherScreen.GameModeIcon[] original) {
     return andromeda$gameModeSelections;
@@ -38,7 +40,8 @@ abstract class GameModeSelectionScreenMixin extends Screen {
           @At(
               value = "FIELD",
               target =
-                  "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen;ALL_SLOTS_WIDTH:I"))
+                  "Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen;ALL_SLOTS_WIDTH:I",
+              opcode = Opcodes.GETSTATIC))
   private int andromeda$modValues(int original) {
     return andromeda$gameModeSelections.length * 31 - 5;
   }

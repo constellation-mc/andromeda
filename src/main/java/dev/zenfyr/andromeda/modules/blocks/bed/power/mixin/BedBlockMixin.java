@@ -16,7 +16,9 @@ abstract class BedBlockMixin extends Block {
     super(settings);
   }
 
-  @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=5.0F"), method = "use")
+  @ModifyExpressionValue(
+      at = @At(value = "CONSTANT", args = "floatValue=5.0F"),
+      method = "useWithoutItem")
   public float andromeda$explosionRedirect(float power, @Local(argsOnly = true) Level world) {
     if (world.isClientSide()) return power;
 

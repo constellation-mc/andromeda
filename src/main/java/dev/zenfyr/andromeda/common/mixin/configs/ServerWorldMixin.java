@@ -7,17 +7,16 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.DataConfigs;
 import dev.zenfyr.andromeda.common.config.handler.GameConfigHandler;
-import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.WritableLevelData;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,25 +28,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class ServerWorldMixin extends Level implements DataConfigs.AttachmentGetter {
 
   protected ServerWorldMixin(
-      WritableLevelData properties,
-      ResourceKey<Level> registryRef,
-      RegistryAccess registryManager,
-      Holder<DimensionType> dimensionEntry,
-      Supplier<ProfilerFiller> profiler,
-      boolean isClient,
-      boolean debugWorld,
-      long biomeAccess,
-      int maxChainedNeighborUpdates) {
-    super(
-        properties,
-        registryRef,
-        registryManager,
-        dimensionEntry,
-        profiler,
-        isClient,
-        debugWorld,
-        biomeAccess,
-        maxChainedNeighborUpdates);
+      WritableLevelData writableLevelData,
+      ResourceKey<Level> resourceKey,
+      RegistryAccess registryAccess,
+      Holder<DimensionType> holder,
+      boolean bl,
+      boolean bl2,
+      long l,
+      int i) {
+    super(writableLevelData, resourceKey, registryAccess, holder, bl, bl2, l, i);
   }
 
   @Shadow
@@ -62,7 +51,8 @@ abstract class ServerWorldMixin extends Level implements DataConfigs.AttachmentG
               target =
                   "Lnet/minecraft/server/level/ServerLevel;chunkSource:Lnet/minecraft/server/level/ServerChunkCache;",
               ordinal = 0,
-              shift = At.Shift.AFTER),
+              shift = At.Shift.AFTER,
+              opcode = Opcodes.PUTFIELD),
       method = "<init>")
   private void andromeda$initStates(CallbackInfo ci) {
     var manager = ModuleManager.get();

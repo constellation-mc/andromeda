@@ -74,14 +74,13 @@ public class RegistryListEntry<T> extends TextFieldListEntry<T> {
   public T getValue() {
     var id = tryParse(this.textFieldWidget.getValue());
     if (id != null) {
-      T entry = this.registry.get(id);
+      T entry = this.registry.getValue(id);
       if (entry != null) return entry;
     }
-    return this.registry.get(this.defaultKey);
+    return this.registry.getValue(this.defaultKey);
   }
 
   private static ResourceLocation tryParse(String location) {
-    if (!ResourceLocation.isValidResourceLocation(location)) return null;
     return ResourceLocation.tryParse(location);
   }
 }

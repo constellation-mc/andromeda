@@ -1,7 +1,5 @@
 package dev.zenfyr.andromeda.modules.entities.minecarts;
 
-import static dev.zenfyr.andromeda.common.Andromeda.id;
-
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
@@ -17,15 +15,19 @@ import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.List;
 import java.util.Objects;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.NoteBlock;
@@ -48,39 +50,37 @@ public class MinecartItems {
     var config = Andromeda.MAIN.get(Minecarts.MAIN_CONFIG);
 
     if (config.isSpawnerMinecartOn) {
+      var key = Andromeda.key(Registries.ITEM, "spawner_minecart");
       SPAWNER_MINECART.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("spawner_minecart"),
-          new SpawnerMinecartItem(new FabricItemSettings().stacksTo(1))));
-    }
-
-    if (config.isSpawnerMinecartOn) {
-      SPAWNER_MINECART.init(Registry.register(
-          BuiltInRegistries.ITEM,
-          id("spawner_minecart"),
-          new SpawnerMinecartItem(new FabricItemSettings().stacksTo(1))));
+          key,
+          new SpawnerMinecartItem(new Item.Properties().setId(key).stacksTo(1))));
     }
 
     if (config.isAnvilMinecartOn) {
+      var key = Andromeda.key(Registries.ITEM, "anvil_minecart");
       ANVIL_MINECART.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("anvil_minecart"),
+          key,
           new AndromedaMinecartItem<>(
-              MinecartEntities.ANVIL_MINECART_ENTITY, new FabricItemSettings().stacksTo(1))));
+              MinecartEntities.ANVIL_MINECART_ENTITY,
+              new Item.Properties().setId(key).stacksTo(1))));
     }
 
     if (config.isNoteBlockMinecartOn) {
+      var key = Andromeda.key(Registries.ITEM, "note_block_minecart");
       NOTE_BLOCK_MINECART.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("note_block_minecart"),
-          new NoteBlockMinecartItem(new FabricItemSettings().stacksTo(1))));
+          key,
+          new NoteBlockMinecartItem(new Item.Properties().setId(key).stacksTo(1))));
     }
 
     if (config.isJukeboxMinecartOn) {
+      var key = Andromeda.key(Registries.ITEM, "jukebox_minecart");
       JUKEBOX_MINECART.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("jukebox_minecart"),
-          new JukeboxMinecartItem(new FabricItemSettings().stacksTo(1))));
+          key,
+          new JukeboxMinecartItem(new Item.Properties().setId(key).stacksTo(1))));
     }
 
     var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
@@ -94,9 +94,11 @@ public class MinecartItems {
             SpawnerBlockEntity mobSpawnerBlockEntity = (SpawnerBlockEntity) MakeSure.notNull(
                 world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
             ItemStack spawnerMinecart = new ItemStack(SPAWNER_MINECART.orThrow(), 1);
-            spawnerMinecart.setTag(CompoundTagBuilder.create()
+            var nbt = CompoundTagBuilder.create()
                 .putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity)))
-                .build());
+                .build();
+            spawnerMinecart.set(
+                DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.SPAWNER_MINECART, nbt));
             return spawnerMinecart;
           }
           return null;
@@ -114,8 +116,10 @@ public class MinecartItems {
           int noteProp = noteBlock.withPropertiesOf(state).getValue(BlockStateProperties.NOTE);
           ItemStack noteBlockMinecart = new ItemStack(NOTE_BLOCK_MINECART.orThrow());
 
-          noteBlockMinecart.setTag(
-              CompoundTagBuilder.create().putInt("Note", noteProp).build());
+          var nbt = CompoundTagBuilder.create().putInt("Note", noteProp).build();
+          noteBlockMinecart.set(
+              DataComponents.ENTITY_DATA,
+              TypedEntityData.of(MinecartEntities.NOTEBLOCK_MINECART_ENTITY.orThrow(), nbt));
           return noteBlockMinecart;
         });
       }
@@ -130,9 +134,16 @@ public class MinecartItems {
 
           if (!record.isEmpty()) {
             world.levelEvent(LevelEvent.SOUND_PLAY_JUKEBOX_SONG, pos, 0);
-            jukeboxMinecart.setTag(CompoundTagBuilder.create()
-                .put("Items", record.save(new CompoundTag()))
-                .build());
+            var nbt = CompoundTagBuilder.create()
+                .put(
+                    "Items",
+                    ItemStack.OPTIONAL_CODEC
+                        .encodeStart(NbtOps.INSTANCE, record)
+                        .getOrThrow())
+                .build();
+            jukeboxMinecart.set(
+                DataComponents.ENTITY_DATA,
+                TypedEntityData.of(MinecartEntities.JUKEBOX_MINECART_ENTITY.orThrow(), nbt));
           }
           jukeboxBlockEntity.clearContent();
           return jukeboxMinecart;
@@ -144,12 +155,12 @@ public class MinecartItems {
   @Nullable private static ResourceLocation andromeda$getEntityId(SpawnerBlockEntity mobSpawnerBlockEntity) {
     var entry = mobSpawnerBlockEntity.getSpawner().nextSpawnData;
     if (entry == null) return BuiltInRegistries.ENTITY_TYPE.getDefaultKey();
-    String identifier = entry.entityToSpawn().getString("id");
+    String identifier = entry.entityToSpawn().getString("id").orElse("");
 
     try {
       return StringUtils.isEmpty(identifier)
           ? BuiltInRegistries.ENTITY_TYPE.getDefaultKey()
-          : new ResourceLocation(identifier);
+          : ResourceLocation.tryParse(identifier);
     } catch (ResourceLocationException e) {
       BlockPos blockPos = mobSpawnerBlockEntity.getBlockPos();
       ModuleManager.get()

@@ -1,40 +1,40 @@
 package dev.zenfyr.andromeda.modules.items.magnet;
 
-import static dev.zenfyr.andromeda.common.Andromeda.id;
-
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
+import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
-import dev.zenfyr.pulsar.util.MathUtil;
 import dev.zenfyr.pulsar.util.SupportUtil;
 import dev.zenfyr.pulsar.util.TextUtil;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import lombok.With;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -48,14 +48,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class MagnetItem extends Item {
 
+  public static final ResourceKey<Item> MAGNET_KEY = Andromeda.key(Registries.ITEM, "magnet");
   public static final Keeper<MagnetItem> MAGNET = Keeper.create();
+  public static final Keeper<DataComponentType<MagnetContents>> COMPONENT_TYPE = Keeper.create();
   private static final BiConsumer<ItemStack, Player> ITEM_PARTICLES = SupportUtil.support(
       EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
   private static final Consumer<Player> UPGRADE_PARTICLES =
@@ -146,97 +149,84 @@ public class MagnetItem extends Item {
     }
   }
 
+  // TODO check if equipment slot works with offhand now
   @Override
   public void inventoryTick(
-      ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-    if (!world.isClientSide()) {
-      if (entity instanceof LivingEntity pe) { // selected doesn't account for offhand
-        if (!ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.MAIN_HAND))
-            && !ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.OFF_HAND))) return;
-      } else if (!selected) return;
+      ItemStack stack,
+      ServerLevel serverLevel,
+      Entity entity,
+      @Nullable EquipmentSlot equipmentSlot) {
+    if (entity instanceof LivingEntity pe) { // selected doesn't account for offhand
+      if (!ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.MAIN_HAND))
+          && !ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.OFF_HAND))) return;
+    } else if (equipmentSlot == null) return;
 
-      Set<Item> magnetables = magnetable(stack);
-      int level = getLevel(stack);
-      world
-          .getEntitiesOfClass(
-              ItemEntity.class,
-              new AABB(entity.blockPosition())
-                  .inflate(level * world.am$get(Magnet.CONFIG).rangeMultiplier),
-              ie -> magnetables.contains(
-                  ie.getEntityData().get(ItemEntity.DATA_ITEM).getItem()))
-          .forEach(ie -> {
-            Vec3 vel = ie.position().vectorTo(entity.position()).normalize().scale(0.05f * level);
-            ie.push(vel.x, vel.y, vel.z);
-          });
-    }
+    Set<Item> magnetables = magnetable(stack);
+    int level = getLevel(stack);
+    serverLevel
+        .getEntitiesOfClass(
+            ItemEntity.class,
+            new AABB(entity.blockPosition())
+                .inflate(level * serverLevel.am$get(Magnet.CONFIG).rangeMultiplier),
+            ie -> magnetables.contains(
+                ie.getEntityData().get(ItemEntity.DATA_ITEM).getItem()))
+        .forEach(ie -> {
+          Vec3 vel = ie.position().vectorTo(entity.position()).normalize().scale(0.05f * level);
+          ie.push(vel.x, vel.y, vel.z);
+        });
   }
 
   @Override
   public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-    NonNullList<ItemStack> defaultedList = NonNullList.create();
-    magnetable(stack).forEach(item -> defaultedList.add(item.getDefaultInstance()));
-    return Optional.of(new BundleTooltip(defaultedList, Integer.MAX_VALUE));
+    return Optional.of(new BundleTooltip(new BundleContents(
+        magnetable(stack).stream().map(Item::getDefaultInstance).toList())));
   }
 
   @Override
   public void appendHoverText(
-      ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-    tooltip.add(TextUtil.translatable("tooltip.andromeda.magnet.level", getLevel(stack))
+      ItemStack stack,
+      TooltipContext tooltipContext,
+      TooltipDisplay tooltipDisplay,
+      Consumer<Component> consumer,
+      TooltipFlag tooltipFlag) {
+    consumer.accept(TextUtil.translatable("tooltip.andromeda.magnet.level", getLevel(stack))
         .withStyle(ChatFormatting.GRAY));
   }
 
   private static boolean incrementLevel(ItemStack stack) {
-    CompoundTag nbt = stack.getOrCreateTag();
-    if (!nbt.contains(LEVEL_KEY)) nbt.putInt(LEVEL_KEY, 1);
-    int level = nbt.getInt(LEVEL_KEY);
+    int level = getLevel(stack);
     if (level >= 5) return false;
-    nbt.putInt(LEVEL_KEY, level + 1);
+    stack.update(
+        COMPONENT_TYPE.get(),
+        MagnetContents.DEFAULT,
+        contents -> contents.withLevel(contents.level() + 1));
     return true;
   }
 
   private static int getLevel(ItemStack stack) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null) {
-      if (nbt.contains(LEVEL_KEY)) return MathUtil.clamp(nbt.getInt(LEVEL_KEY), 0, 5);
-    }
-    return 1;
+    return stack.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT).level();
   }
 
   public static void addFirst(ItemStack bundle, ItemStack other) {
-    CompoundTag nbt = bundle.getOrCreateTag();
-    if (!nbt.contains("Items")) {
-      nbt.put("Items", new ListTag());
-    }
-
-    ListTag list = nbt.getList("Items", Tag.TAG_STRING);
-    StringTag id =
-        StringTag.valueOf(BuiltInRegistries.ITEM.getKey(other.getItem()).toString());
-    if (list.contains(id)) return;
-    list.add(0, id);
+    bundle.update(
+        COMPONENT_TYPE.get(),
+        MagnetContents.DEFAULT,
+        component -> component.withItems(
+            Stream.concat(Stream.of(other.getItem()), component.items().stream())
+                .collect(ImmutableList.toImmutableList())));
   }
 
   private static void removeFirst(ItemStack stack) {
-    CompoundTag nbt = stack.getOrCreateTag();
-    if (nbt.contains("Items")) {
-      ListTag list = nbt.getList("Items", Tag.TAG_STRING);
-      if (!list.isEmpty()) {
-        list.remove(0);
-        if (list.isEmpty()) stack.removeTagKey("Items");
-      }
-    }
+    stack.update(
+        COMPONENT_TYPE.get(),
+        MagnetContents.DEFAULT,
+        component -> component.withItems(
+            component.items().stream().skip(1).collect(ImmutableList.toImmutableList())));
   }
 
   private static Set<Item> magnetable(ItemStack stack) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt == null) {
-      return Collections.emptySet();
-    } else {
-      ListTag nbtList = nbt.getList("Items", Tag.TAG_STRING);
-      return nbtList.stream()
-          .map(StringTag.class::cast)
-          .map(s -> BuiltInRegistries.ITEM.get(new ResourceLocation(s.getAsString())))
-          .collect(ImmutableSet.toImmutableSet());
-    }
+    return new LinkedHashSet<>(
+        stack.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT).items());
   }
 
   private void playUpgradeSound(Entity entity) {
@@ -261,10 +251,38 @@ public class MagnetItem extends Item {
 
     MagnetItem.MAGNET.init(Registry.register(
         BuiltInRegistries.ITEM,
-        id("magnet"),
-        new MagnetItem(new FabricItemSettings().stacksTo(1))));
+        MAGNET_KEY,
+        new MagnetItem(new Item.Properties().setId(MAGNET_KEY).stacksTo(1))));
 
     AndromedaItemGroup.BUS.listen(acceptor ->
         acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, MagnetItem.MAGNET));
+  }
+
+  @With
+  public record MagnetContents(ImmutableList<Item> items, int level) {
+
+    private MagnetContents(List<Item> items, int level) {
+      this(ImmutableList.copyOf(items), level);
+    }
+
+    public static final MagnetContents DEFAULT = new MagnetContents(ImmutableList.of(), 1);
+
+    public static final Codec<MagnetContents> CODEC = RecordCodecBuilder.create(data -> data.group(
+            BuiltInRegistries.ITEM
+                .byNameCodec()
+                .listOf()
+                .fieldOf("items")
+                .forGetter(MagnetContents::items),
+            Codec.intRange(0, 5).fieldOf("level").forGetter(MagnetContents::level))
+        .apply(data, MagnetContents::new));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, MagnetContents> PACKET_CODEC =
+        StreamCodec.composite(
+            ByteBufCodecs.fromCodecWithRegistries(
+                BuiltInRegistries.ITEM.byNameCodec().listOf()),
+            MagnetContents::items,
+            ByteBufCodecs.VAR_INT,
+            MagnetContents::level,
+            MagnetContents::new);
   }
 }

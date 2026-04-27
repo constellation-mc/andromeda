@@ -1,10 +1,9 @@
 package dev.zenfyr.andromeda.modules.entities.zombie.all_pick_up.mixin;
 
 import dev.zenfyr.andromeda.modules.entities.zombie.all_pick_up.Pickup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Zombie;
@@ -31,13 +30,10 @@ abstract class ZombieEntityMixin extends Monster {
       method = "finalizeSpawn")
   private void andromeda$initialize(
       ServerLevelAccessor world,
-      DifficultyInstance difficulty,
-      MobSpawnType spawnReason,
-      SpawnGroupData entityData,
-      CompoundTag entityNbt,
+      DifficultyInstance difficultyInstance,
+      EntitySpawnReason entitySpawnReason,
+      SpawnGroupData spawnGroupData,
       CallbackInfoReturnable<SpawnGroupData> cir) {
-    if (world.isClientSide()) return;
-
     if (world.getLevel().am$get(Pickup.CONFIG).available) this.setCanPickUpLoot(true);
   }
 }

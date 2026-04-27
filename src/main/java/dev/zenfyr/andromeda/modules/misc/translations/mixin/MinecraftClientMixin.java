@@ -26,9 +26,9 @@ abstract class MinecraftClientMixin {
               value = "INVOKE",
               target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V",
               shift = At.Shift.BEFORE),
-      method = "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;")
-  private void andromeda$downloadLangFiles(
-      boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+      method =
+          "reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;")
+  private void andromeda$downloadLangFiles(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
     Client.onResourceReload(
         this.options.languageCode, ModuleManager.get().get(Translations.class).orElseThrow());
   }

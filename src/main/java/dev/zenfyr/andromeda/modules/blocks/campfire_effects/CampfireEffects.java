@@ -32,7 +32,7 @@ public final class CampfireEffects extends Module {
     @AllArgsConstructor
     @NoArgsConstructor
     public static final class Effect {
-      public MobEffect identifier = MobEffects.REGENERATION;
+      public MobEffect identifier = MobEffects.REGENERATION.value();
       public int amplifier = 0;
     }
   }

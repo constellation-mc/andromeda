@@ -1,7 +1,13 @@
 package dev.zenfyr.andromeda.common.util;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -9,6 +15,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 public class MiscUtil {
+
+  public static final Codec<UUID> UUID_CODEC = Codec.pair(Codec.LONG, Codec.LONG)
+      .xmap(
+          pair -> new UUID(pair.getFirst(), pair.getSecond()),
+          uuid -> new Pair<>(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits()));
+  public static final StreamCodec<ByteBuf, UUID> UUID_PACKET_CODEC = StreamCodec.composite(
+      ByteBufCodecs.VAR_LONG,
+      UUID::getMostSignificantBits,
+      ByteBufCodecs.VAR_LONG,
+      UUID::getLeastSignificantBits,
+      UUID::new);
 
   public static double horizontalDistanceTo(Vec3 owner, Vec3 target) {
     double d = target.x - owner.x;
@@ -25,7 +42,7 @@ public class MiscUtil {
   }
 
   public static void crudeSetVelocity(Entity entity, Vec3 velocity) {
-    if (!entity.level.isClientSide) {
+    if (!entity.level.isClientSide()) {
       entity.setDeltaMovement(velocity);
       for (ServerPlayer player : PlayerLookup.tracking(entity)) {
         player.connection.send(new ClientboundSetEntityMotionPacket(entity));

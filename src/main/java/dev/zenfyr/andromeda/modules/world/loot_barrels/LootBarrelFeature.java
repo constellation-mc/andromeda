@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.common.Andromeda;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.Predicate;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
@@ -12,12 +13,11 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraft.world.level.block.BarrelBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -25,6 +25,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfiguration> {
 
@@ -43,32 +44,38 @@ public class LootBarrelFeature extends Feature<LootBarrelFeature.LootBarrelConfi
     if (!world.getBlockState(context.origin()).isAir()
         || !world.getBlockState(context.origin().below()).canOcclude()) return false;
 
-    world.setBlock(
+    Predicate<BlockState> predicate = Feature.isReplaceable(BlockTags.FEATURES_CANNOT_REPLACE);
+    this.safeSetBlock(
+        world,
         context.origin(),
         Blocks.BARREL
             .defaultBlockState()
             .setValue(BarrelBlock.FACING, Util.getRandom(HORIZONTAL, context.random())),
-        Block.UPDATE_CLIENTS);
-    RandomizableContainerBlockEntity.setLootTable(
+        predicate);
+
+    RandomizableContainer.setBlockEntityLootTable(
         world, context.random(), context.origin(), context.config().loot());
 
     if (world.getBlockState(context.origin().above()).isAir()
         && context.config().decorations().stream().findAny().isPresent()) {
-      world.setBlock(
+      this.safeSetBlock(
+          world,
           context.origin().above(),
           context.config().decorations().shuffle().stream().findFirst().orElseThrow(),
-          Block.UPDATE_CLIENTS);
+          predicate);
     }
     return true;
   }
 
   public record LootBarrelConfiguration(
-      ResourceLocation loot, ShufflingList<BlockState> decorations)
+      ResourceKey<LootTable> loot, ShufflingList<BlockState> decorations)
       implements FeatureConfiguration {
 
     public static final Codec<LootBarrelConfiguration> CODEC =
         RecordCodecBuilder.create(data -> data.group(
-                ResourceLocation.CODEC.fieldOf("loot").forGetter(LootBarrelConfiguration::loot),
+                ResourceKey.codec(Registries.LOOT_TABLE)
+                    .fieldOf("loot")
+                    .forGetter(LootBarrelConfiguration::loot),
                 ShufflingList.codec(BlockState.CODEC)
                     .fieldOf("decorations")
                     .forGetter(LootBarrelConfiguration::decorations))

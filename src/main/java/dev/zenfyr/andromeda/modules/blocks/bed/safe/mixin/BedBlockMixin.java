@@ -5,7 +5,6 @@ import static net.minecraft.world.level.block.BedBlock.canSetSpawn;
 import dev.zenfyr.andromeda.modules.blocks.bed.safe.Safe;
 import dev.zenfyr.pulsar.util.TextUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -13,7 +12,6 @@ import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,14 +24,13 @@ abstract class BedBlockMixin extends Block {
     super(settings);
   }
 
-  @Inject(at = @At("HEAD"), method = "use", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "useWithoutItem", cancellable = true)
   public void andromeda$onUse(
-      BlockState state,
-      @NotNull Level world,
-      BlockPos pos,
+      BlockState blockState,
+      Level world,
+      BlockPos blockPos,
       Player player,
-      InteractionHand hand,
-      BlockHitResult hit,
+      BlockHitResult blockHitResult,
       CallbackInfoReturnable<InteractionResult> cir) {
     if (world.isClientSide()) return;
 

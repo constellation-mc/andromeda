@@ -1,21 +1,16 @@
 package dev.zenfyr.andromeda.modules.items.informative_item_names.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.zenfyr.pulsar.util.TextUtil;
-import java.util.List;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.TooltipFlag;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
 abstract class ItemStackMixin {
@@ -35,27 +30,27 @@ abstract class ItemStackMixin {
   @Shadow
   public abstract Rarity getRarity();
 
-  @Inject(
+  @ModifyExpressionValue(
       at =
           @At(
               value = "INVOKE",
-              target = "Ljava/util/List;add(Ljava/lang/Object;)Z",
-              ordinal = 0,
-              shift = At.Shift.BEFORE),
+              target =
+                  "Lnet/minecraft/world/item/ItemStack;getStyledHoverName()Lnet/minecraft/network/chat/Component;",
+              ordinal = 0),
       method = "getTooltipLines")
-  private void andromeda$getTooltip(
-      @Nullable Player player,
-      TooltipFlag context,
-      CallbackInfoReturnable<List<Component>> cir,
-      @Local MutableComponent mutableText) {
-    if (!this.getItem().canBeDepleted()) {
+  private Component andromeda$getTooltip(Component original) {
+    MutableComponent mutable = original instanceof MutableComponent m ? m : original.copy();
+
+    if (!((ItemStack) (Object) this).has(DataComponents.MAX_DAMAGE)) {
       if (this.getCount() > 1)
-        mutableText.append(TextUtil.literal(" x" + this.getCount()).withStyle(getRarity().color));
+        mutable.append(
+            TextUtil.literal(" x" + this.getCount()).withStyle(getRarity().color()));
     } else {
       if (this.getDamageValue() > 0)
-        mutableText.append(TextUtil.literal(" "
+        mutable.append(TextUtil.literal(" "
                 + ((this.getMaxDamage() - this.getDamageValue()) * 100 / this.getMaxDamage()) + "%")
-            .withStyle(getRarity().color));
+            .withStyle(getRarity().color()));
     }
+    return mutable;
   }
 }

@@ -4,7 +4,6 @@ import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
@@ -14,6 +13,8 @@ import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.GsonCodecContext;
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.andromeda.common.util.condition.ItemsRegisteredCondition;
+import dev.zenfyr.andromeda.common.util.condition.ModulesLoadedCondition;
 import lombok.Getter;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -24,7 +25,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -60,7 +60,7 @@ public class Andromeda implements ModInitializer {
   }
 
   public static ResourceLocation id(String path) {
-    return new ResourceLocation(MODID, path);
+    return ResourceLocation.tryBuild(MODID, path);
   }
 
   public static <T> ResourceKey<T> key(ResourceKey<? extends Registry<T>> registry, String path) {
@@ -84,18 +84,8 @@ public class Andromeda implements ModInitializer {
 
     InitEvents.MAIN.invoker().onModuleMainInit().runEntrypoint();
 
-    ResourceConditions.register(
-        id("items_registered"),
-        object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
-            .filter(JsonElement::isJsonPrimitive)
-            .allMatch(
-                e -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(e.getAsString()))));
-
-    ResourceConditions.register(
-        id("modules_loaded"),
-        object -> GsonHelper.getAsJsonArray(object, "values").asList().stream()
-            .filter(JsonElement::isJsonPrimitive)
-            .allMatch(e -> ModuleManager.get().get(e.getAsString()).isPresent()));
+    ResourceConditions.register(ItemsRegisteredCondition.TYPE);
+    ResourceConditions.register(ModulesLoadedCondition.TYPE);
 
     GROUP.init(AndromedaItemGroup.create());
 

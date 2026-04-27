@@ -67,6 +67,7 @@ public class EnderDragonManager {
 
       ClientboundLevelParticlesPacket particleS2CPacket = new ClientboundLevelParticlesPacket(
           ParticleTypes.END_ROD,
+          false,
           true,
           pair.pos().x,
           pair.pos().y,

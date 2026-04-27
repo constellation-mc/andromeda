@@ -34,16 +34,14 @@ abstract class EndCrystalMixin extends Entity {
               target =
                   "Lnet/minecraft/world/entity/boss/enderdragon/EndCrystal;remove(Lnet/minecraft/world/entity/Entity$RemovalReason;)V",
               shift = At.Shift.BEFORE),
-      method = "hurt")
+      method = "hurtServer")
   private void andromeda$damage(
-      DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+      ServerLevel level, DamageSource source, float f, CallbackInfoReturnable<Boolean> cir) {
     if (!Andromeda.MAIN.get(DragonFight.CONFIG).respawnCrystals) return;
 
-    if (level.dimension() == Level.END
-        && !((ServerLevel) level).getDragons().isEmpty()
-        && showsBottom()) {
+    if (level.dimension() == Level.END && !level.getDragons().isEmpty() && showsBottom()) {
       if (this.position().y() <= 71) return;
-      ((ServerLevel) level)
+      level
           .getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get())
           .queueRespawn(new MutableInt(MathUtil.nextInt(1900, 3500)), this.position());
     }

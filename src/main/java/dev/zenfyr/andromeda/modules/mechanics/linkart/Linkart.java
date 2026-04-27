@@ -11,6 +11,7 @@ import dev.zenfyr.andromeda.common.config.GameConfig;
 
 // this module is based on https://github.com/constellation-mc/Linkart and includes contributions
 // from GeeTransit https://github.com/GeeTransit
+// TODO: port smoothing logic to new behavior
 @ModuleInfo(category = "mechanics", name = "linkart", env = Environment.SERVER)
 public final class Linkart extends Module implements PostBootstrapEvent {
 

@@ -23,7 +23,7 @@ abstract class AdvancementTabMixin {
       index = 0,
       method = "drawTooltips")
   private float andromeda$draw(float value) {
-    return this.fade + (0.04F * minecraft.getDeltaFrameTime());
+    return this.fade + (0.04F * minecraft.getDeltaTracker().getGameTimeDeltaTicks());
   }
 
   @ModifyArg(
@@ -31,6 +31,6 @@ abstract class AdvancementTabMixin {
       index = 0,
       method = "drawTooltips")
   private float andromeda$draw1(float value) {
-    return this.fade - (0.06F * minecraft.getDeltaFrameTime());
+    return this.fade - (0.06F * minecraft.getDeltaTracker().getGameTimeDeltaTicks());
   }
 }

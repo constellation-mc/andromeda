@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CactusBlock;
@@ -28,14 +28,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockBehaviour.class)
 abstract class AbstractBlockMixin {
 
-  @Inject(at = @At("HEAD"), method = "use", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "useItemOn", cancellable = true)
   private void andromeda$onUse(
+      ItemStack itemStack,
       BlockState state,
       Level world,
       BlockPos pos,
       Player player,
       InteractionHand hand,
-      BlockHitResult hit,
+      BlockHitResult blockHitResult,
       CallbackInfoReturnable<InteractionResult> cir) {
     if (state.getBlock() instanceof CactusBlock) {
       ItemStack stack = player.getItemInHand(hand);
@@ -54,9 +55,7 @@ abstract class AbstractBlockMixin {
           player.setItemInHand(
               hand,
               ItemUtils.createFilledResult(
-                  stack,
-                  player,
-                  PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                  stack, player, PotionContents.createItemStack(Items.POTION, Potions.WATER)));
           player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 
           if (state.getValue(Main.WATER_LEVEL_3) == 3) {

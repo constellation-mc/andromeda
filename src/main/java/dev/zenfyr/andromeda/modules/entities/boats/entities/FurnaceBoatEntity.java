@@ -2,13 +2,9 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
-import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
 import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
+import java.util.function.Supplier;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,28 +16,23 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class FurnaceBoatEntity extends BoatEntityWithBlock {
   private static final EntityDataAccessor<Integer> FUEL =
       SynchedEntityData.defineId(FurnaceBoatEntity.class, EntityDataSerializers.INT);
 
-  public FurnaceBoatEntity(EntityType<? extends Boat> entityType, Level world) {
-    super(entityType, world);
-  }
-
-  public FurnaceBoatEntity(Level world, double x, double y, double z) {
-    this(BoatEntities.BOAT_WITH_FURNACE.orThrow(), world);
-    this.setPos(x, y, z);
-    this.xo = x;
-    this.yo = y;
-    this.zo = z;
+  public FurnaceBoatEntity(
+      EntityType<? extends Boat> entityType, Level world, Supplier<Item> dropItem) {
+    super(entityType, world, dropItem);
   }
 
   @Override
-  protected void defineSynchedData() {
-    super.defineSynchedData();
-    this.entityData.define(FUEL, 0);
+  protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    super.defineSynchedData(builder);
+    builder.define(FUEL, 0);
   }
 
   @Override
@@ -63,23 +54,24 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     }
   }
 
-  @Override
-  public void floatBoat() {
-    super.floatBoat();
-    Vec3 vec3d = this.getDeltaMovement();
-    if (this.getFuel() > 0) {
-      Vec3 rotationVec = this.getViewVector(1.0F);
-      if (this.status == Status.ON_LAND)
-        this.setDeltaMovement(rotationVec.x() * 0.1, vec3d.y, rotationVec.z() * 0.1);
-      else this.setDeltaMovement(rotationVec.x() * 0.4, vec3d.y, rotationVec.z() * 0.4);
-    }
-  }
+  // TODO: fix boat movement
+  //  @Override
+  //  public void floatBoat() {
+  //    super.floatBoat();
+  //    Vec3 vec3d = this.getDeltaMovement();
+  //    if (this.getFuel() > 0) {
+  //      Vec3 rotationVec = this.getViewVector(1.0F);
+  //      if (this.status == Status.ON_LAND)
+  //        this.setDeltaMovement(rotationVec.x() * 0.1, vec3d.y, rotationVec.z() * 0.1);
+  //      else this.setDeltaMovement(rotationVec.x() * 0.4, vec3d.y, rotationVec.z() * 0.4);
+  //    }
+  //  }
 
   @Override
   public InteractionResult interact(Player player, InteractionHand hand) {
     ItemStack stack = player.getItemInHand(hand);
-    if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
-      int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
+    if (level.fuelValues().isFuel(stack)) {
+      int itemFuel = level.fuelValues().burnDuration(stack);
       if ((this.getFuel() + (itemFuel * 2.25))
           <= ModuleManager.get()
               .get(FurnaceMinecartTweaks.class)
@@ -100,20 +92,15 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
   }
 
   @Override
-  public void addAdditionalSaveData(CompoundTag nbt) {
+  public void addAdditionalSaveData(ValueOutput nbt) {
     super.addAdditionalSaveData(nbt);
     nbt.putInt("AM-Fuel", this.getFuel());
   }
 
   @Override
-  public void readAdditionalSaveData(CompoundTag nbt) {
+  public void readAdditionalSaveData(ValueInput nbt) {
     super.readAdditionalSaveData(nbt);
-    setFuel(nbt.getInt("AM-Fuel"));
-  }
-
-  @Override
-  public Item getDropItem() {
-    return BuiltInRegistries.ITEM.get(BoatItems.boatId(this.getVariant(), "furnace"));
+    setFuel(nbt.getIntOr("AM-Fuel", 0));
   }
 
   public int getFuel() {

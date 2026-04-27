@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.entities.minecarts.items;
 
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities;
 import dev.zenfyr.andromeda.modules.entities.minecarts.entities.NoteBlockMinecartEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 
 public class NoteBlockMinecartItem extends AndromedaMinecartItem<NoteBlockMinecartEntity> {
@@ -13,10 +13,12 @@ public class NoteBlockMinecartItem extends AndromedaMinecartItem<NoteBlockMineca
 
   @Override
   protected void onCreate(ItemStack stack, NoteBlockMinecartEntity entity) {
-    CompoundTag nbt = stack.getTag();
-    if (nbt != null)
-      if (nbt.getInt("Note") >= 0) {
-        entity.note = nbt.getInt("Note");
+    var data = stack.get(DataComponents.ENTITY_DATA);
+    if (data != null) {
+      var nbt = data.copyTagWithoutId();
+      if (nbt.getIntOr("Note", 0) >= 0) {
+        entity.note = nbt.getIntOr("Note", 0);
       }
+    }
   }
 }

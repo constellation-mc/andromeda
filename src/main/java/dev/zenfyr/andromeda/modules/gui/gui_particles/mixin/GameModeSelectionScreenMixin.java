@@ -75,7 +75,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/client/multiplayer/ClientPacketListener;sendUnsignedCommand(Ljava/lang/String;)Z",
+                  "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V",
               shift = At.Shift.BEFORE),
       method =
           "switchToHoveredGameMode(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;)V")

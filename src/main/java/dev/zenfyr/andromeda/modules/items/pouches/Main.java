@@ -6,6 +6,7 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.andromeda.modules.items.pouches.entities.CustomPouchComponent;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
 import dev.zenfyr.andromeda.util.Util;
@@ -13,22 +14,21 @@ import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
 import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.lang.reflect.Field;
 import java.util.*;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Position;
 import net.minecraft.core.Registry;
-import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -45,6 +45,9 @@ public final class Main {
   public static final Keeper<PouchItem> SAPLING_POUCH = Keeper.create();
   public static final Keeper<PouchItem> SPECIAL_POUCH = Keeper.create();
   public static final Keeper<EntityType<PouchEntity>> POUCH = Keeper.create();
+
+  public static final Keeper<DataComponentType<CustomPouchComponent>> CUSTOM_COMPONENT =
+      Keeper.create();
 
   private static final Map<BlockEntityType<?>, Field> VIEWABLE_BLOCKS = new HashMap<>();
   public static final Map<BlockEntityType<?>, Field> VIEWABLE_VIEW =
@@ -81,40 +84,56 @@ public final class Main {
     var config = Andromeda.MAIN.get(Pouches.MAIN_CONFIG);
 
     if (config.seedPouch) {
+      var key = Andromeda.key(Registries.ITEM, "seed_pouch");
       SEED_POUCH.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("seed_pouch"),
-          new PouchItem(PouchEntity.Type.SEED, new FabricItemSettings().stacksTo(16))));
+          key,
+          new PouchItem(PouchEntity.Type.SEED, new Item.Properties().setId(key).stacksTo(16))));
     }
 
     if (config.flowerPouch) {
+      var key = Andromeda.key(Registries.ITEM, "flower_pouch");
       FLOWER_POUCH.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("flower_pouch"),
-          new PouchItem(PouchEntity.Type.FLOWER, new FabricItemSettings().stacksTo(16))));
+          key,
+          new PouchItem(
+              PouchEntity.Type.FLOWER, new Item.Properties().setId(key).stacksTo(16))));
     }
 
     if (config.saplingPouch) {
+      var key = Andromeda.key(Registries.ITEM, "sapling_pouch");
       SAPLING_POUCH.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("sapling_pouch"),
-          new PouchItem(PouchEntity.Type.SAPLING, new FabricItemSettings().stacksTo(16))));
+          key,
+          new PouchItem(
+              PouchEntity.Type.SAPLING, new Item.Properties().setId(key).stacksTo(16))));
     }
 
     if (config.specialPouch) {
+      var key = Andromeda.key(Registries.ITEM, "special_pouch");
       SPECIAL_POUCH.init(Registry.register(
           BuiltInRegistries.ITEM,
-          id("special_pouch"),
-          new PouchItem(PouchEntity.Type.CUSTOM, new FabricItemSettings().stacksTo(16))));
+          key,
+          new PouchItem(
+              PouchEntity.Type.CUSTOM, new Item.Properties().setId(key).stacksTo(16))));
     }
 
+    var key = ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), id("pouch"));
     POUCH.init(Registry.register(
         BuiltInRegistries.ENTITY_TYPE,
         id("pouch"),
-        FabricEntityTypeBuilder.<PouchEntity>create(MobCategory.MISC, PouchEntity::new)
-            .dimensions(new EntityDimensions(0.25F, 0.25F, true))
-            .trackRangeChunks(4)
-            .trackedUpdateRate(10)
+        EntityType.Builder.<PouchEntity>of(PouchEntity::new, MobCategory.MISC)
+            .sized(0.25F, 0.25F)
+            .clientTrackingRange(4)
+            .updateInterval(10)
+            .build(key)));
+
+    CUSTOM_COMPONENT.init(Registry.register(
+        BuiltInRegistries.DATA_COMPONENT_TYPE,
+        id("custom_loot"),
+        DataComponentType.<CustomPouchComponent>builder()
+            .persistent(CustomPouchComponent.CODEC)
+            .networkSynchronized(CustomPouchComponent.PACKET_CODEC)
             .build()));
 
     Trades.register();
@@ -123,18 +142,10 @@ public final class Main {
     AndromedaItemGroup.BUS.listen(acceptor ->
         acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, new ArrayList<>(l)));
 
-    var behavior = new AbstractProjectileDispenseBehavior() {
-      @Override
-      protected Projectile getProjectile(Level world, Position position, ItemStack stack) {
-        var pouch = new PouchEntity(position.x(), position.y(), position.z(), world);
-        pouch.setPouchType(((PouchItem) stack.getItem()).getType());
-        return pouch;
-      }
-    };
-
     for (Keeper<PouchItem> pouchItemKeeper : l) {
       if (pouchItemKeeper.isPresent())
-        DispenserBlock.registerBehavior(pouchItemKeeper.orThrow(), behavior);
+        DispenserBlock.registerBehavior(
+            pouchItemKeeper.orThrow(), new ProjectileDispenseBehavior(pouchItemKeeper.orThrow()));
     }
   }
 

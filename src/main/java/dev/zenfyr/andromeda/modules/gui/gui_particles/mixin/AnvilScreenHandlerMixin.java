@@ -9,10 +9,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.ItemCombinerMenu;
-import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -27,11 +24,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
 
   public AnvilScreenHandlerMixin(
-      @Nullable MenuType<?> type,
-      int syncId,
-      Inventory playerInventory,
-      ContainerLevelAccess context) {
-    super(type, syncId, playerInventory, context);
+      @Nullable MenuType<?> menuType,
+      int i,
+      Inventory inventory,
+      ContainerLevelAccess containerLevelAccess,
+      ItemCombinerMenuSlotDefinition itemCombinerMenuSlotDefinition) {
+    super(menuType, i, inventory, containerLevelAccess, itemCombinerMenuSlotDefinition);
   }
 
   @Inject(

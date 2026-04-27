@@ -1,13 +1,12 @@
 package dev.zenfyr.andromeda.modules.entities.minecarts.entities;
 
-import dev.zenfyr.andromeda.modules.entities.boats.client.ClientSoundHolder;
+import dev.zenfyr.andromeda.modules.entities.boats.packets.RecordPlaybackS2CPayload;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartItems;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.Clearable;
@@ -19,12 +18,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable {
@@ -38,11 +38,6 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
 
   public JukeboxMinecartEntity(Level world, double x, double y, double z) {
     super(MinecartEntities.JUKEBOX_MINECART_ENTITY.orThrow(), world, x, y, z);
-  }
-
-  @Override
-  public Type getMinecartType() {
-    return Type.CHEST;
   }
 
   @Override
@@ -64,10 +59,10 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   }
 
   @Override
-  public boolean hurt(DamageSource source, float amount) {
-    if (this.level.isClientSide || this.isRemoved()) {
+  public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    if (this.isRemoved()) {
       return true;
-    } else if (this.isInvulnerableTo(source)) {
+    } else if (this.isInvulnerableToBase(source)) {
       return false;
     } else {
       this.setHurtDir(-this.getHurtDir());
@@ -83,7 +78,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
         if (isCreativePlayer && !this.hasCustomName()) {
           this.discard();
         } else {
-          this.destroy(source);
+          this.destroy(level, source);
         }
       }
 
@@ -92,15 +87,15 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   }
 
   @Override
-  public void destroy(DamageSource damageSource) {
-    super.destroy(damageSource);
-    if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-      this.spawnAtLocation(record.getItem());
+  public void destroy(ServerLevel level, DamageSource damageSource) {
+    super.destroy(level, damageSource);
+    if (level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+      this.spawnAtLocation(level, record.getItem());
     }
   }
 
   @Override
-  public void kill() {
+  public void kill(ServerLevel level) {
     this.stopPlaying();
     this.remove(RemovalReason.KILLED);
   }
@@ -122,45 +117,41 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
             0.2);
         this.stopPlaying();
         this.clearContent();
-      } else if (stackInHand.getItem() instanceof RecordItem) {
+      } else if (stackInHand.has(DataComponents.JUKEBOX_PLAYABLE)) {
         this.record = stackInHand.copy();
         this.startPlaying();
         stackInHand.shrink(1);
         player.awardStat(Stats.PLAY_RECORD);
       }
-    return InteractionResult.sidedSuccess(this.level.isClientSide);
+    return InteractionResult.SUCCESS;
   }
 
   public void stopPlaying() {
-    FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());
-
     for (Player player1 : level.players()) {
       ServerPlayNetworking.send(
-          (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
+          (ServerPlayer) player1, new RecordPlaybackS2CPayload(this.getUUID(), ItemStack.EMPTY));
     }
   }
 
   public void startPlaying() {
-    FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.uuid).writeItem(this.record);
-
     for (Player player1 : level.players()) {
       ServerPlayNetworking.send(
-          (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
+          (ServerPlayer) player1, new RecordPlaybackS2CPayload(this.getUUID(), this.record));
     }
   }
 
   @Override
-  public void readAdditionalSaveData(CompoundTag nbt) {
+  public void readAdditionalSaveData(ValueInput nbt) {
     super.readAdditionalSaveData(nbt);
-    if (nbt.contains("Items", 10)) {
-      this.record = ItemStack.of(nbt.getCompound("Items"));
+    if (nbt.contains("Items")) {
+      this.record = nbt.read("Items", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
     }
   }
 
   @Override
-  public void addAdditionalSaveData(CompoundTag nbt) {
+  public void addAdditionalSaveData(ValueOutput nbt) {
     super.addAdditionalSaveData(nbt);
-    if (!this.record.isEmpty()) nbt.put("Items", this.record.save(new CompoundTag()));
+    if (!this.record.isEmpty()) nbt.storeNullable("Items", ItemStack.OPTIONAL_CODEC, this.record);
   }
 
   @Override

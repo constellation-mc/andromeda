@@ -9,7 +9,6 @@ import dev.zenfyr.pulsar.util.SupportUtil;
 import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.Optional;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
@@ -62,8 +61,8 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
         if (entity instanceof Container inventory) {
           for (int i = 0; i < inventory.getContainerSize(); ++i) {
             ItemStack stack = inventory.getItem(i);
-            if (FuelRegistry.INSTANCE.get(stack.getItem()) != null) {
-              int itemFuel = FuelRegistry.INSTANCE.get(stack.getItem());
+            if (level.fuelValues().isFuel(stack)) {
+              int itemFuel = level.fuelValues().burnDuration(stack);
               if ((this.fuel + (itemFuel * 2.25))
                   <= Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel) {
                 ItemStack reminder = stack.getRecipeRemainder();

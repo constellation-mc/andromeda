@@ -3,11 +3,14 @@ package dev.zenfyr.andromeda.common.util;
 import dev.zenfyr.pulsar.util.functions.Memoize;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -18,7 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -34,7 +37,7 @@ public class LootContextBuilder {
   }
 
   public static Supplier<LootContext> builder(
-      LootContextParamSet type, Level world, BuilderFunction function) {
+      ContextKeySet type, Level world, BuilderFunction function) {
     return Memoize.supplier(
         () -> build(function.apply(new LootContextBuilder(world)).builder.create(type)));
   }
@@ -56,17 +59,18 @@ public class LootContextBuilder {
   }
 
   public static LootContext build(LootParams set) {
-    return new LootContext.Builder(set).create(null);
+    return new LootContext.Builder(set).create(Optional.empty());
   }
 
   public static List<ItemStack> prepareLoot(
-      @NonNull Level world, @NonNull ResourceLocation lootId) {
-    return ((ServerLevel) world)
-        .getServer()
-        .getLootData()
-        .getLootTable(lootId)
-        .getRandomItems(
-            new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY));
+      @NonNull Level world, @NonNull ResourceKey<LootTable> lootId) {
+    return world
+        .registryAccess()
+        .lookupOrThrow(Registries.LOOT_TABLE)
+        .getOptional(lootId)
+        .<List<ItemStack>>map(loot -> loot.getRandomItems(
+            new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY)))
+        .orElse(List.of());
   }
 
   public LootContextBuilder origin(BlockPos pos) {
@@ -103,12 +107,12 @@ public class LootContextBuilder {
   }
 
   public LootContextBuilder killer(Entity entity) {
-    this.builder.withOptionalParameter(LootContextParams.KILLER_ENTITY, entity);
+    this.builder.withOptionalParameter(LootContextParams.ATTACKING_ENTITY, entity);
     return this;
   }
 
   public LootContextBuilder directKiller(Entity entity) {
-    this.builder.withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, entity);
+    this.builder.withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, entity);
     return this;
   }
 

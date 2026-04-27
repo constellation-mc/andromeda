@@ -1,6 +1,5 @@
 package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.util.TextUtil;
 import net.fabricmc.api.EnvType;
@@ -10,7 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -29,7 +28,6 @@ public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> 
 
   @Override
   protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
-    RenderSystem.disableBlend();
     super.renderLabels(context, mouseX, mouseY);
   }
 
@@ -38,7 +36,8 @@ public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> 
     if (menu.getSlot(0).hasItem()
         && menu.getSlot(1).hasItem()
         && !menu.getSlot(2).hasItem()) {
-      context.blit(TEXTURE, x + 99, y + 45, this.imageWidth, 0, 28, 21);
+      context.blitSprite(
+          RenderPipelines.GUI_TEXTURED, TEXTURE, x + 99, y + 45, this.imageWidth, 28, 21);
     }
   }
 
@@ -47,11 +46,8 @@ public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> 
       MenuScreens.register(FletchingScreenHandler.FLETCHING.get(), FletchingScreen::new);
     }
 
-    ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
-      CompoundTag nbt = stack.getTag();
-      if (nbt == null) return;
-
-      int i = nbt.getInt("AM-Tightened");
+    ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
+      int i = stack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);
       if (i > 0)
         lines.add(
             TextUtil.translatable("tooltip.andromeda.bow.tight", i).withStyle(ChatFormatting.GRAY));

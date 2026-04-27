@@ -1,9 +1,9 @@
 package dev.zenfyr.andromeda.modules.misc.unknown.mixin.wakeup;
 
 import dev.zenfyr.andromeda.modules.misc.unknown.UnknownUtil;
-import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -12,6 +12,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,7 +31,7 @@ abstract class PlayerEntityMixin {
       boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
     Player player = (Player) (Object) this;
 
-    if (!player.level.isClientSide)
+    if (!player.level.isClientSide())
       if (player.level.getRandom().nextInt(100000) == 0) {
         Optional<BlockPos> optional = UnknownUtil.pickRandomSpot(
             player.level, player.blockPosition(), 10, player.level.getRandom());
@@ -39,9 +40,8 @@ abstract class PlayerEntityMixin {
           ArmorStand stand = new ArmorStand(player.level, pos.getX(), pos.getY(), pos.getZ());
           ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
-          stack.setTag(CompoundTagBuilder.create()
-              .putString("SkullOwner", player.getDisplayName().getString())
-              .build());
+          stack.set(
+              DataComponents.PROFILE, ResolvableProfile.createResolved(player.getGameProfile()));
 
           stand.setItemSlot(EquipmentSlot.HEAD, stack);
           player.level.addFreshEntity(stand);

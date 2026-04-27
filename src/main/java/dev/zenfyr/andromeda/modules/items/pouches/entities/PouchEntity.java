@@ -14,22 +14,24 @@ import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -43,14 +45,6 @@ public class PouchEntity extends ThrowableItemProjectile {
 
   public PouchEntity(EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
     super(entityType, world);
-  }
-
-  public PouchEntity(double d, double e, double f, Level world) {
-    super(Main.POUCH.orThrow(), d, e, f, world);
-  }
-
-  public PouchEntity(LivingEntity livingEntity, Level world) {
-    super(Main.POUCH.orThrow(), livingEntity, world);
   }
 
   @Override
@@ -142,9 +136,9 @@ public class PouchEntity extends ThrowableItemProjectile {
   }
 
   @Override
-  protected void defineSynchedData() {
-    super.defineSynchedData();
-    this.entityData.define(POUCH_TYPE, Type.SEED.syncId);
+  protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    super.defineSynchedData(builder);
+    builder.define(POUCH_TYPE, Type.SEED.syncId);
   }
 
   @Override
@@ -161,29 +155,27 @@ public class PouchEntity extends ThrowableItemProjectile {
   }
 
   @Override
-  public void addAdditionalSaveData(CompoundTag nbt) {
+  public void addAdditionalSaveData(ValueOutput nbt) {
     nbt.putString("Type", getPouchType().name());
   }
 
   @Override
-  public void readAdditionalSaveData(CompoundTag nbt) {
+  public void readAdditionalSaveData(ValueInput nbt) {
     if (nbt.contains("Type")) {
-      setPouchType(Type.valueOf(nbt.getString("Type")));
+      setPouchType(Type.valueOf(nbt.getStringOr("Type", "")));
     }
   }
 
   public enum Type {
-    SEED(0, Andromeda.id("pouches/seeds"), Main.SEED_POUCH),
-    SAPLING(1, Andromeda.id("pouches/saplings"), Main.SAPLING_POUCH),
-    FLOWER(2, Andromeda.id("pouches/flowers"), Main.FLOWER_POUCH),
+    SEED(0, Andromeda.key(Registries.LOOT_TABLE, "pouches/seeds"), Main.SEED_POUCH),
+    SAPLING(1, Andromeda.key(Registries.LOOT_TABLE, "pouches/saplings"), Main.SAPLING_POUCH),
+    FLOWER(2, Andromeda.key(Registries.LOOT_TABLE, "pouches/flowers"), Main.FLOWER_POUCH),
     CUSTOM(3, null, Main.SPECIAL_POUCH) {
       @Override
-      public @NotNull ResourceLocation getLootId(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
-        if (nbt != null && nbt.contains("CustomLootId")) {
-          return new ResourceLocation(nbt.getString("CustomLootId"));
-        }
-        return SEED.getLootId(stack);
+      public @NotNull ResourceKey<LootTable> getLootId(ItemStack stack) {
+        return stack
+            .getOrDefault(Main.CUSTOM_COMPONENT.get(), CustomPouchComponent.DEFAULT)
+            .key();
       }
     };
 
@@ -197,17 +189,17 @@ public class PouchEntity extends ThrowableItemProjectile {
 
     private final int syncId;
 
-    @Nullable private final ResourceLocation lootId;
+    @Nullable private final ResourceKey<LootTable> lootId;
 
     private final Keeper<PouchItem> defaultItem;
 
-    Type(int syncId, @Nullable ResourceLocation lootId, Keeper<PouchItem> defaultItem) {
+    Type(int syncId, @Nullable ResourceKey<LootTable> lootId, Keeper<PouchItem> defaultItem) {
       this.syncId = syncId;
       this.lootId = lootId;
       this.defaultItem = defaultItem;
     }
 
-    public @NotNull ResourceLocation getLootId(ItemStack stack) {
+    public @NotNull ResourceKey<LootTable> getLootId(ItemStack stack) {
       return Objects.requireNonNull(lootId);
     }
 

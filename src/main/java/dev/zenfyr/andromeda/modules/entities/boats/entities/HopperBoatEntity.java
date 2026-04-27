@@ -3,17 +3,14 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import static dev.zenfyr.andromeda.modules.entities.boats.entities.BoatEntityWithBlock.PIby180;
 import static dev.zenfyr.andromeda.modules.entities.boats.entities.BoatEntityWithBlock.PIby2;
 
-import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
-import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
 import java.util.List;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.ChestBoat;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.HopperMenu;
@@ -28,17 +25,10 @@ public class HopperBoatEntity extends ChestBoat implements Hopper {
   private final BlockPos currentBlockPos = BlockPos.ZERO;
   public int transferCooldown = -1;
 
-  public HopperBoatEntity(EntityType<? extends Boat> entityType, Level world) {
-    super(entityType, world);
+  public HopperBoatEntity(
+      EntityType<? extends ChestBoat> entityType, Level world, Supplier<Item> dropItem) {
+    super(entityType, world, dropItem);
     this.clearItemStacks();
-  }
-
-  public HopperBoatEntity(Level world, double x, double y, double z) {
-    this(BoatEntities.BOAT_WITH_HOPPER.orThrow(), world);
-    this.setPos(x, y, z);
-    this.xo = x;
-    this.yo = y;
-    this.zo = z;
   }
 
   @Nullable @Override
@@ -69,9 +59,14 @@ public class HopperBoatEntity extends ChestBoat implements Hopper {
   }
 
   @Override
+  public boolean isGridAligned() {
+    return false;
+  }
+
+  @Override
   public void tick() {
     super.tick();
-    if (!this.level.isClientSide && this.isAlive()) {
+    if (!this.level.isClientSide() && this.isAlive()) {
       BlockPos blockPos = this.blockPosition();
       if (blockPos.equals(this.currentBlockPos)) {
         --this.transferCooldown;
@@ -87,11 +82,6 @@ public class HopperBoatEntity extends ChestBoat implements Hopper {
         }
       }
     }
-  }
-
-  @Override
-  public Item getDropItem() {
-    return BuiltInRegistries.ITEM.get(BoatItems.boatId(this.getVariant(), "hopper"));
   }
 
   public boolean canOperate() {

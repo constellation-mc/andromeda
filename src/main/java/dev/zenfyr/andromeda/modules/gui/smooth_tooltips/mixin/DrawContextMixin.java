@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
 import java.util.List;
@@ -13,7 +12,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 import org.joml.Vector2d;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
@@ -34,7 +36,7 @@ abstract class DrawContextMixin {
 
   @Shadow
   @Final
-  private PoseStack pose;
+  private Matrix3x2fStack pose;
 
   @Unique private static Vector2d smoothPos;
 
@@ -44,8 +46,7 @@ abstract class DrawContextMixin {
               value = "INVOKE",
               target =
                   "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"),
-      method =
-          "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
+      method = "renderTooltip")
   private Vector2ic andromeda$smoothTooltip(
       Vector2ic vic,
       @Local(argsOnly = true, ordinal = 0) int x,
@@ -55,17 +56,20 @@ abstract class DrawContextMixin {
       var c = AndromedaClient.CLIENT.get(SmoothTooltips.CONFIG);
       if (smoothPos == null) smoothPos = new Vector2d(x, y);
       smoothPos.x = Mth.clamp(
-          Mth.lerp(c.deltaX * minecraft.getDeltaFrameTime(), smoothPos.x, vic.x()),
+          Mth.lerp(
+              c.deltaX * minecraft.getDeltaTracker().getGameTimeDeltaTicks(), smoothPos.x, vic.x()),
           vic.x() - c.clampX,
           vic.x() + c.clampX);
       smoothPos.y = Mth.clamp(
-          Mth.lerp(c.deltaY * minecraft.getDeltaFrameTime(), smoothPos.y, vic.y()),
+          Mth.lerp(
+              c.deltaY * minecraft.getDeltaTracker().getGameTimeDeltaTicks(), smoothPos.y, vic.y()),
           vic.y() - c.clampY,
           vic.y() + c.clampY);
 
       popMatrix.set(true);
-      this.pose.pushPose();
-      this.pose.translate(smoothPos.x - (int) smoothPos.x, smoothPos.y - (int) smoothPos.y, 1);
+      this.pose.pushMatrix();
+      this.pose.translate(
+          (float) (smoothPos.x - (int) smoothPos.x), (float) (smoothPos.y - (int) smoothPos.y));
       return new Vector2i((int) smoothPos.x, (int) smoothPos.y);
     }
     return vic;
@@ -82,18 +86,16 @@ abstract class DrawContextMixin {
     return (int) mY == y;
   }
 
-  @Inject(
-      at = @At(value = "TAIL"),
-      method =
-          "renderTooltipInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V")
+  @Inject(at = @At(value = "TAIL"), method = "renderTooltip")
   private void andromeda$popMatrix(
-      Font textRenderer,
-      List<ClientTooltipComponent> components,
-      int x,
-      int y,
-      ClientTooltipPositioner positioner,
+      Font font,
+      List<ClientTooltipComponent> list,
+      int i,
+      int j,
+      ClientTooltipPositioner clientTooltipPositioner,
+      @Nullable ResourceLocation resourceLocation,
       CallbackInfo ci,
       @Share("popMatrix") LocalBooleanRef popMatrix) {
-    if (popMatrix.get()) this.pose.popPose();
+    if (popMatrix.get()) this.pose.popMatrix();
   }
 }

@@ -6,9 +6,13 @@ import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.IdentityHashMap;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -37,7 +41,14 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack chestMinecart = new ItemStack(Items.CHEST_MINECART, 1);
 
-      chestMinecart.setTag(NbtUtil.writeInventoryToTag(new CompoundTag(), chestBlockEntity));
+      var nbt = CompoundTagBuilder.create(
+              NbtUtil.writeInventoryToTag(new CompoundTag(), chestBlockEntity))
+          .putString(
+              "id",
+              BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.CHEST_MINECART).toString())
+          .build();
+      chestMinecart.set(
+          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.CHEST_MINECART, nbt));
       chestBlockEntity.clearContent();
       return chestMinecart;
     });
@@ -49,9 +60,14 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack furnaceMinecart = new ItemStack(Items.FURNACE_MINECART, 1);
       // 2.25
-      furnaceMinecart.setTag(CompoundTagBuilder.create()
-          .putInt("Fuel", (int) (furnaceBlock.litTime * 2.25))
-          .build());
+      var nbt = CompoundTagBuilder.create()
+          .putInt("Fuel", (int) (furnaceBlock.litTimeRemaining * 2.25))
+          .putString(
+              "id",
+              BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.FURNACE_MINECART).toString())
+          .build();
+      furnaceMinecart.set(
+          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.FURNACE_MINECART, nbt));
       return furnaceMinecart;
     });
 
@@ -60,7 +76,14 @@ public class PickUpBehaviorHandler {
           world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
       ItemStack hopperMinecart = new ItemStack(Items.HOPPER_MINECART, 1);
 
-      hopperMinecart.setTag(NbtUtil.writeInventoryToTag(new CompoundTag(), hopperBlockEntity));
+      var nbt = CompoundTagBuilder.create(
+              NbtUtil.writeInventoryToTag(new CompoundTag(), hopperBlockEntity))
+          .putString(
+              "id",
+              BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.HOPPER_MINECART).toString())
+          .build();
+      hopperMinecart.set(
+          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.HOPPER_MINECART, nbt));
       hopperBlockEntity.clearContent();
       return hopperMinecart;
     });

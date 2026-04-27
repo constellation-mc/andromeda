@@ -102,7 +102,7 @@ public class EntryProviders {
             context.consumer(),
             null,
             false),
-        c -> new ResourceLocation(""));
+        c -> ResourceLocation.withDefaultNamespace(""));
 
     registry.register(
         (Class<List<Object>>) (Object) List.class,
@@ -211,7 +211,7 @@ public class EntryProviders {
         registry,
         MobEffect.class,
         BuiltInRegistries.MOB_EFFECT,
-        BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.REGENERATION));
+        BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.REGENERATION.value()));
   }
 
   private static <T> void forRegistry(
@@ -228,7 +228,7 @@ public class EntryProviders {
             context.consumer(),
             null,
             false),
-        c -> contentRegistry.get(contentRegistry.getDefaultKey()));
+        c -> contentRegistry.getValue(contentRegistry.getDefaultKey()));
   }
 
   private static <T> void forRegistry(
@@ -245,7 +245,7 @@ public class EntryProviders {
             context.consumer(),
             null,
             false),
-        c -> contentRegistry.get(def));
+        c -> contentRegistry.getValue(def));
   }
 
   private static void setField(Field field, Object object, Object value) {

@@ -1,7 +1,5 @@
 package dev.zenfyr.andromeda.modules.gui.name_tooltips.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.zenfyr.pulsar.util.MakeSure;
 import dev.zenfyr.pulsar.util.Utilities;
 import java.util.ArrayList;
@@ -14,7 +12,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix3x2fStack;
 import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,12 +35,9 @@ abstract class InGameHudMixin {
   @Shadow
   private ItemStack lastToolHighlight;
 
-  @Shadow
-  private int screenHeight;
-
   @Inject(at = @At("HEAD"), method = "renderSelectedItemName", cancellable = true)
   private void andromeda$renderTooltip(GuiGraphics context, CallbackInfo ci) {
-    this.minecraft.getProfiler().push("selectedItemName");
+    Profiler.get().push("selectedItemName");
 
     if (this.toolHighlightTimer > 0
         && !this.lastToolHighlight.isEmpty()
@@ -51,18 +48,16 @@ abstract class InGameHudMixin {
       }
 
       if (l > 0) {
-        int k = this.screenHeight - 59;
+        int k = context.guiHeight() - 59;
         if (!MakeSure.notNull(this.minecraft.gameMode).canHurtPlayer()) {
           k += 14;
         }
 
-        PoseStack matrices = context.pose();
-        matrices.pushPose();
-        matrices.translate(0, 0, -450);
-        matrices.scale(1, 1, 1);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1, 1, 1, Math.min(l / 255f, 0.8f));
+        Matrix3x2fStack matrices = context.pose();
+        matrices.pushMatrix();
+        // matrices.translate(0, 0, -450);
+        matrices.scale(1, 1);
+        // RenderSystem.setShaderColor(1, 1, 1, Math.min(l / 255f, 0.8f));
         var list = Screen.getTooltipFromItem(Minecraft.getInstance(), this.lastToolHighlight);
         List<ClientTooltipComponent> list1 = list.stream()
             .map(Component::getVisualOrderText)
@@ -80,20 +75,23 @@ abstract class InGameHudMixin {
 
         int finalK = k;
         int finalL = l;
-        context.renderTooltipInternal(
-            minecraft.font, list1, 0, 0, (screenWidth, screenHeight, x, y, width, height) -> {
+        context.renderTooltip(
+            minecraft.font,
+            list1,
+            0,
+            0,
+            (screenWidth, screenHeight, x, y, width, height) -> {
               float smoothX = ((screenWidth - width) / 2f);
               float smoothY = (finalK - height + (finalL / 255f * 2)) + 6;
-              matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY, 1);
+              matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY);
               return new Vector2i((int) smoothX, (int) smoothY);
-            });
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
-        matrices.popPose();
+            },
+            null);
+        matrices.popMatrix();
       }
     }
 
-    this.minecraft.getProfiler().pop();
+    Profiler.get().pop();
     ci.cancel();
   }
 }

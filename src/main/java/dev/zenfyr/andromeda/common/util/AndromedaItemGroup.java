@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -56,7 +57,8 @@ public interface AndromedaItemGroup {
           List<ItemStack> stacks = new ArrayList<>();
           small.forEach((m, itemStacks) -> {
             ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-            sign.setHoverName(
+            sign.set(
+                DataComponents.ITEM_NAME,
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
             stacks.add(sign);
             stacks.addAll(itemStacks);
@@ -65,7 +67,8 @@ public interface AndromedaItemGroup {
           entries.appendStacks(stacks);
           big.forEach((m, itemStacks) -> {
             ItemStack sign = new ItemStack(Items.SPRUCE_SIGN);
-            sign.setHoverName(
+            sign.set(
+                DataComponents.ITEM_NAME,
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
             itemStacks.add(0, sign);
             entries.appendStacks(itemStacks);

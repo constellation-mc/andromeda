@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
@@ -24,6 +24,8 @@ import net.minecraft.world.level.block.PoweredRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class NoteBlockMinecartEntity extends AbstractMinecart {
@@ -40,9 +42,9 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   }
 
   @Override
-  public boolean hurt(DamageSource source, float amount) {
+  public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
     this.playNote(level, new Vec3(getX(), getY() - 1, getZ()));
-    super.hurt(source, amount);
+    super.hurtServer(level, source, amount);
     return true;
   }
 
@@ -51,7 +53,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
     this.cycleNote();
     this.playNote(level, new Vec3(getX(), getY() - 1, getZ()));
     player.awardStat(Stats.TUNE_NOTEBLOCK);
-    return InteractionResult.sidedSuccess(level.isClientSide);
+    return InteractionResult.SUCCESS;
   }
 
   @Override
@@ -88,19 +90,14 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   }
 
   @Override
-  public Type getMinecartType() {
-    return Type.CHEST;
-  }
-
-  @Override
-  public void readAdditionalSaveData(CompoundTag nbt) {
+  public void readAdditionalSaveData(ValueInput nbt) {
     super.readAdditionalSaveData(nbt);
-    this.note = nbt.getInt("Note");
-    this.isPowered = nbt.getBoolean("Powered");
+    this.note = nbt.getIntOr("Note", 0);
+    this.isPowered = nbt.getBooleanOr("Powered", false);
   }
 
   @Override
-  public void addAdditionalSaveData(CompoundTag nbt) {
+  public void addAdditionalSaveData(ValueOutput nbt) {
     super.addAdditionalSaveData(nbt);
     nbt.putInt("Note", this.note);
     nbt.putBoolean("Powered", this.isPowered);

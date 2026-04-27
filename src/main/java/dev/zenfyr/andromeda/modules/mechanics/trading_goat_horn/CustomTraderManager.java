@@ -18,8 +18,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
@@ -30,7 +31,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.jetbrains.annotations.Nullable;
@@ -88,7 +88,7 @@ public class CustomTraderManager {
     if (world.getBiome(blockPos3).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) return;
 
     WanderingTrader wanderingTraderEntity =
-        EntityType.WANDERING_TRADER.spawn(world, blockPos3, MobSpawnType.EVENT);
+        EntityType.WANDERING_TRADER.spawn(world, blockPos3, EntitySpawnReason.EVENT);
     if (wanderingTraderEntity == null) return;
     this.trader = wanderingTraderEntity;
 
@@ -102,7 +102,7 @@ public class CustomTraderManager {
     properties.setWanderingTraderId(this.trader.getUUID());
     this.trader.setDespawnDelay(tCooldown);
     this.trader.setWanderTarget(blockPos2);
-    this.trader.restrictTo(blockPos2, 16);
+    this.trader.setHomeTo(blockPos2, 16);
     this.trader.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 8, 0, true, false));
   }
 
@@ -111,7 +111,7 @@ public class CustomTraderManager {
     if (blockPos == null) return;
 
     TraderLlama traderLlamaEntity =
-        EntityType.TRADER_LLAMA.spawn(world, blockPos, MobSpawnType.EVENT);
+        EntityType.TRADER_LLAMA.spawn(world, blockPos, EntitySpawnReason.EVENT);
     if (traderLlamaEntity == null) return;
 
     traderLlamaEntity.setLeashedTo(wanderingTrader, true);
@@ -119,14 +119,14 @@ public class CustomTraderManager {
 
   @Nullable private BlockPos getNearbySpawnPos(LevelReader world, BlockPos pos, int range) {
     BlockPos blockPos = null;
+    SpawnPlacementType placements = SpawnPlacements.getPlacementType(EntityType.WANDERING_TRADER);
 
     for (int i = 0; i < 10; ++i) {
       int x = pos.getX() + MathUtil.threadRandom().nextInt(range * 2) - range;
       int z = pos.getZ() + MathUtil.threadRandom().nextInt(range * 2) - range;
       int y = world.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
       BlockPos blockPos2 = new BlockPos(x, y, z);
-      if (NaturalSpawner.isSpawnPositionOk(
-          SpawnPlacements.Type.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) {
+      if (placements.isSpawnPositionOk(world, blockPos2, EntityType.WANDERING_TRADER)) {
         blockPos = blockPos2;
         break;
       }

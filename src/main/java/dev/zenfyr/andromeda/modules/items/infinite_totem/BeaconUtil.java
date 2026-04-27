@@ -14,7 +14,7 @@ public class BeaconUtil {
 
     for (int j = 1; j <= 4; j++) {
       int k = y - j;
-      if (k < world.getMinBuildHeight()) break;
+      if (k < world.getMinY()) break;
 
       Block current = j % 2 == 0 ? Blocks.DIAMOND_BLOCK : Blocks.NETHERITE_BLOCK;
 

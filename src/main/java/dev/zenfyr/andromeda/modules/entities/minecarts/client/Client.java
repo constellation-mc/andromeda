@@ -3,27 +3,26 @@ package dev.zenfyr.andromeda.modules.entities.minecarts.client;
 import static dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities.*;
 
 import dev.zenfyr.andromeda.modules.entities.boats.client.ClientSoundHolder;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.MinecartRenderer;
 
 public class Client {
 
   public static void init() {
     if (ANVIL_MINECART_ENTITY.isPresent()) {
-      EntityRendererRegistry.register(
-          ANVIL_MINECART_ENTITY.get(), ctx -> new MinecartRenderer<>(ctx, ModelLayers.MINECART));
+      EntityRenderers.register(
+          ANVIL_MINECART_ENTITY.get(), ctx -> new MinecartRenderer(ctx, ModelLayers.MINECART));
     }
 
     if (NOTEBLOCK_MINECART_ENTITY.isPresent()) {
-      EntityRendererRegistry.register(
-          NOTEBLOCK_MINECART_ENTITY.get(),
-          ctx -> new MinecartRenderer<>(ctx, ModelLayers.MINECART));
+      EntityRenderers.register(
+          NOTEBLOCK_MINECART_ENTITY.get(), ctx -> new MinecartRenderer(ctx, ModelLayers.MINECART));
     }
 
     if (JUKEBOX_MINECART_ENTITY.isPresent()) {
-      EntityRendererRegistry.register(
-          JUKEBOX_MINECART_ENTITY.get(), ctx -> new MinecartRenderer<>(ctx, ModelLayers.MINECART));
+      EntityRenderers.register(
+          JUKEBOX_MINECART_ENTITY.get(), ctx -> new MinecartRenderer(ctx, ModelLayers.MINECART));
     }
 
     if (JUKEBOX_MINECART_ENTITY.isPresent()) ClientSoundHolder.init();

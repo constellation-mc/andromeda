@@ -1,32 +1,57 @@
 package dev.zenfyr.andromeda.modules.entities.boats.client;
 
-import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
-import java.util.Map;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.FurnaceBlock;
+import static dev.zenfyr.andromeda.common.Andromeda.id;
+
+import dev.zenfyr.andromeda.common.Andromeda;
+import dev.zenfyr.andromeda.modules.entities.boats.BoatTypes;
+import dev.zenfyr.andromeda.modules.entities.boats.Boats;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.minecraft.client.model.BoatModel;
+import net.minecraft.client.model.RaftModel;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.BoatRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 
 public class Client {
 
+  private static <T extends AbstractBoat> void renderer(
+      BoatTypes.BoatType type, BoatTypes.BoatVariant variant) {
+    var location = BoatTypes.location(type, variant);
+    EntityType<T> entityType = (EntityType<T>) BuiltInRegistries.ENTITY_TYPE.getValue(location);
+
+    var modelLocation =
+        new ModelLayerLocation(id(variant.name() + "_boat/" + type.material()), "main");
+
+    EntityModelLayerRegistry.TexturedModelDataProvider provider;
+
+    if ("boat".equals(variant.name())) {
+      provider = BoatModel::createBoatModel;
+    } else if ("raft".equals(variant.name())) {
+      provider = RaftModel::createRaftModel;
+    } else {
+      throw new RuntimeException("No model provider for variant! '%s'".formatted(variant.name()));
+    }
+
+    EntityModelLayerRegistry.registerModelLayer(modelLocation, provider);
+    EntityRenderers.register(entityType, context -> new BoatRenderer(context, modelLocation));
+  }
+
   public static void init() {
-    var map = Map.of(
-        BoatEntities.BOAT_WITH_FURNACE,
-        Blocks.FURNACE.defaultBlockState().setValue(FurnaceBlock.FACING, Direction.NORTH),
-        BoatEntities.BOAT_WITH_JUKEBOX,
-        Blocks.JUKEBOX.defaultBlockState(),
-        BoatEntities.BOAT_WITH_TNT,
-        Blocks.TNT.defaultBlockState(),
-        BoatEntities.BOAT_WITH_HOPPER,
-        Blocks.HOPPER.defaultBlockState());
+    var config = Andromeda.MAIN.get(Boats.MAIN_CONFIG);
 
-    map.forEach((keeper, blockState) -> {
-      if (keeper.isPresent()) {
-        EntityRendererRegistry.register(
-            keeper.get(), ctx -> new BoatWithBlockRenderer(ctx, blockState));
-      }
-    });
+    for (BoatTypes.BoatType type : BoatTypes.getBoatTypes()) {
+      if (config.isTNTBoatOn) renderer(type, BoatTypes.TNT);
 
-    if (BoatEntities.BOAT_WITH_JUKEBOX.isPresent()) ClientSoundHolder.init();
+      if (config.isHopperBoatOn) renderer(type, BoatTypes.HOPPER);
+
+      if (config.isFurnaceBoatOn) renderer(type, BoatTypes.FURNACE);
+
+      if (config.isJukeboxBoatOn) renderer(type, BoatTypes.JUKEBOX);
+    }
+
+    if (config.isJukeboxBoatOn) ClientSoundHolder.init();
   }
 }

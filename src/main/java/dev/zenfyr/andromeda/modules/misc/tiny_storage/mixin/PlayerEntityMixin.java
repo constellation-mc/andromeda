@@ -3,12 +3,14 @@ package dev.zenfyr.andromeda.modules.misc.tiny_storage.mixin;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.misc.tiny_storage.TinyStorage;
 import dev.zenfyr.pulsar.nbt.NbtUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,18 +27,20 @@ abstract class PlayerEntityMixin {
   public InventoryMenu inventoryMenu;
 
   @Shadow
-  @Nullable public abstract ItemEntity drop(ItemStack stack, boolean throwRandomly, boolean retainOwnership);
+  public abstract @Nullable ItemEntity drop(ItemStack itemStack, boolean bl);
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
-  private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
-    NbtUtil.writeInventoryToTag("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
+  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
+    NbtUtil.writeInventoryToOutput(
+        "AM-Tiny-Storage", valueOutput, this.inventoryMenu.getCraftSlots());
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
+  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
     try {
       TinyStorage.LOADING.set(true); // We have to skip sending handler updates.
-      NbtUtil.readInventoryFromTag("AM-Tiny-Storage", nbt, this.inventoryMenu.getCraftSlots());
+      NbtUtil.readInventoryFromInput(
+          "AM-Tiny-Storage", valueInput, this.inventoryMenu.getCraftSlots());
     } finally {
       TinyStorage.LOADING.remove();
     }
@@ -52,8 +56,10 @@ abstract class PlayerEntityMixin {
 
     for (int i = 0; i < this.inventoryMenu.getCraftSlots().getContainerSize(); ++i) {
       ItemStack stack = this.inventoryMenu.getCraftSlots().removeItemNoUpdate(i);
-      if (!stack.isEmpty() && EnchantmentHelper.hasVanishingCurse(stack)) continue;
-      this.drop(stack, true, false);
+      if (!stack.isEmpty()
+          && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP))
+        continue;
+      this.drop(stack, true);
     }
   }
 }

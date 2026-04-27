@@ -10,8 +10,8 @@ import dev.zenfyr.andromeda.util.Debug;
 import java.util.*;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class FletchingScreenHandler extends ItemCombinerMenu {
 
   public static final Keeper<MenuType<FletchingScreenHandler>> FLETCHING = Keeper.create();
+  public static final Keeper<DataComponentType<Integer>> TIGHTENED = Keeper.create();
 
   public FletchingScreenHandler(int syncId, Inventory playerInventory) {
     this(syncId, playerInventory, ContainerLevelAccess.NULL);
@@ -39,7 +40,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
 
   public FletchingScreenHandler(
       int syncId, Inventory playerInventory, ContainerLevelAccess context) {
-    super(FLETCHING.orThrow(), syncId, playerInventory, context);
+    super(FLETCHING.orThrow(), syncId, playerInventory, context, createInputSlotDefinitions());
   }
 
   @Override
@@ -49,7 +50,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
 
   @Override
   protected void onTake(Player player, ItemStack stack) {
-    stack.onCraftedBy(player.level(), player, stack.getCount());
+    stack.onCraftedBy(player, stack.getCount());
     this.resultSlots.awardUsedRecipes(
         player, List.of(this.inputSlots.getItem(0), this.inputSlots.getItem(1)));
     this.decrementStack(0);
@@ -95,8 +96,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
     getSlot(2).setByPlayer(recipe.get().getValue().apply(stack));
   }
 
-  @Override
-  protected ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
+  private static ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
     return ItemCombinerMenuSlotDefinition.create()
         .withSlot(0, 27, 47, stack -> true)
         .withSlot(1, 76, 47, stack -> true)
@@ -129,11 +129,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
           .ifPresent(item -> {
             tightable.add(item);
             FletchingScreenHandler.addRecipe(
-                stack -> {
-                  var result = new ItemStack(item, 1);
-                  if (stack.getTag() != null) result.setTag(stack.getTag());
-                  return result;
-                },
+                stack -> stack.transmuteCopy(item),
                 Ingredient.of(Items.SPYGLASS),
                 Ingredient.of(Items.CROSSBOW));
           });
@@ -141,12 +137,11 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
 
     FletchingScreenHandler.addRecipe(
         stack -> {
-          CompoundTag nbt = stack.getOrCreateTag();
-          int i = nbt.getInt("AM-Tightened");
+          int i = stack.getOrDefault(TIGHTENED.get(), 0);
           if (i >= 32) return ItemStack.EMPTY;
 
           ItemStack newStack = stack.copy();
-          newStack.getOrCreateTag().putInt("AM-Tightened", Math.min(i + 2, 32));
+          newStack.set(TIGHTENED.get(), Math.min(i + 2, 32));
           return newStack;
         },
         Ingredient.of(Items.STRING),

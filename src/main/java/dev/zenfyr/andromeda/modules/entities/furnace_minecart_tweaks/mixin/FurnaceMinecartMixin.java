@@ -2,14 +2,13 @@ package dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.mixin;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.MinecartFurnace;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,11 +27,10 @@ abstract class FurnaceMinecartMixin {
   public void andromeda$interact(
       Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
     ItemStack stack = player.getItemInHand(hand);
-    Item item = stack.getItem();
 
     MinecartFurnace furnaceMinecart = (MinecartFurnace) (Object) this;
-    if (FuelRegistry.INSTANCE.get(item) != null) {
-      int itemFuel = FuelRegistry.INSTANCE.get(item);
+    if (furnaceMinecart.level.fuelValues().isFuel(stack)) {
+      int itemFuel = furnaceMinecart.level.fuelValues().burnDuration(stack);
       if ((this.fuel + (itemFuel * 2.25))
           <= Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel) {
         if (!player.getAbilities().instabuild) {
@@ -47,25 +45,26 @@ abstract class FurnaceMinecartMixin {
     }
 
     if (this.fuel > 0) {
-      furnaceMinecart.xPush = furnaceMinecart.getX() - player.getX();
-      furnaceMinecart.zPush = furnaceMinecart.getZ() - player.getZ();
+      furnaceMinecart.push =
+          furnaceMinecart.position().subtract(player.position()).horizontal();
     }
 
-    cir.setReturnValue(InteractionResult.sidedSuccess(furnaceMinecart.level.isClientSide));
+    cir.setReturnValue(InteractionResult.SUCCESS);
   }
 
   @Redirect(
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/nbt/CompoundTag;putShort(Ljava/lang/String;S)V"),
+              target =
+                  "Lnet/minecraft/world/level/storage/ValueOutput;putShort(Ljava/lang/String;S)V"),
       method = "addAdditionalSaveData")
-  private void andromeda$fuelIntToNbt(CompoundTag nbt, String key, short value /* short */) {
-    nbt.putInt(key, this.fuel);
+  private void andromeda$fuelIntToNbt(ValueOutput instance, String key, short i /* short */) {
+    instance.putInt(key, this.fuel);
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  public void andromeda$fuelIntFromNbt(CompoundTag nbt, CallbackInfo ci) {
-    this.fuel = nbt.getInt("Fuel");
+  public void andromeda$fuelIntFromNbt(ValueInput valueInput, CallbackInfo ci) {
+    this.fuel = valueInput.getIntOr("Fuel", 0);
   }
 }

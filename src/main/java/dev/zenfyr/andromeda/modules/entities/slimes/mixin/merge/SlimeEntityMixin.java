@@ -1,15 +1,15 @@
 package dev.zenfyr.andromeda.modules.entities.slimes.mixin.merge;
 
 import dev.zenfyr.andromeda.modules.entities.slimes.Slimes;
-import dev.zenfyr.pulsar.nbt.NbtUtil;
 import dev.zenfyr.pulsar.util.MathUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,7 +38,7 @@ abstract class SlimeEntityMixin extends Mob {
     this.targetSelector.addGoal(
         2,
         new NearestAttackableTargetGoal<>(
-            (Slime) (Object) this, Slime.class, 5, true, false, livingEntity -> {
+            (Slime) (Object) this, Slime.class, 5, true, false, (livingEntity, level) -> {
               if (!config.available) return false;
               if (!config.merge) return false;
               if (this.andromeda$mergeCD > 0) return false;
@@ -70,12 +70,12 @@ abstract class SlimeEntityMixin extends Mob {
   }
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
-  private void andromeda$writeNbt(CompoundTag nbt, CallbackInfo ci) {
-    nbt.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
+  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
+    valueOutput.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  private void andromeda$readNbt(CompoundTag nbt, CallbackInfo ci) {
-    this.andromeda$mergeCD = NbtUtil.getInt(nbt, "AM-MergeCD", MathUtil.nextInt(700, 2000));
+  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
+    this.andromeda$mergeCD = valueInput.getIntOr("AM-MergeCD", MathUtil.nextInt(700, 2000));
   }
 }

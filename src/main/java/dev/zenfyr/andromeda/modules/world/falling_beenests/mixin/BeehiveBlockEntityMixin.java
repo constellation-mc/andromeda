@@ -4,7 +4,6 @@ import dev.zenfyr.andromeda.modules.world.falling_beenests.BeeUtil;
 import dev.zenfyr.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -12,6 +11,8 @@ import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -52,14 +53,14 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
     }
   }
 
-  @Inject(at = @At("TAIL"), method = "load")
-  private void andromeda$readNbt(@NotNull CompoundTag nbt, CallbackInfo ci) {
-    if (nbt.contains("AM-FromFallenBlock"))
-      this.andromeda$FromFallen = nbt.getBoolean("AM-FromFallenBlock");
+  @Inject(at = @At("TAIL"), method = "loadAdditional")
+  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
+    if (valueInput.contains("AM-FromFallenBlock"))
+      this.andromeda$FromFallen = valueInput.getBooleanOr("AM-FromFallenBlock", false);
   }
 
   @Inject(at = @At("TAIL"), method = "saveAdditional")
-  private void andromeda$writeNbt(@NotNull CompoundTag nbt, CallbackInfo ci) {
-    if (this.andromeda$FromFallen) nbt.putBoolean("AM-FromFallenBlock", true);
+  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
+    if (this.andromeda$FromFallen) valueOutput.putBoolean("AM-FromFallenBlock", true);
   }
 }

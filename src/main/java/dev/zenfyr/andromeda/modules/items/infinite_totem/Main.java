@@ -6,18 +6,26 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.NotifyClientPayload;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.UsedCustomTotemPayload;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.DeathProtection;
 
 public final class Main {
 
+  public static final ResourceKey<Item> INFINITE_TOTEM_KEY =
+      Andromeda.key(Registries.ITEM, "infinite_totem");
   public static final Keeper<Item> INFINITE_TOTEM = Keeper.create();
   public static final Keeper<SimpleParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.create();
 
@@ -30,13 +38,20 @@ public final class Main {
 
     INFINITE_TOTEM.init(Registry.register(
         BuiltInRegistries.ITEM,
-        id("infinite_totem"),
-        new Item(new FabricItemSettings().stacksTo(1).rarity(Rarity.EPIC))));
+        INFINITE_TOTEM_KEY,
+        new Item(new Item.Properties()
+            .setId(INFINITE_TOTEM_KEY)
+            .stacksTo(1)
+            .rarity(Rarity.EPIC)
+            .component(DataComponents.DEATH_PROTECTION, DeathProtection.TOTEM_OF_UNDYING))));
 
     KNOCKOFF_TOTEM_PARTICLE.init(Registry.register(
         BuiltInRegistries.PARTICLE_TYPE,
         id("knockoff_totem_particles"),
         FabricParticleTypes.simple()));
+
+    PayloadTypeRegistry.playS2C().register(UsedCustomTotemPayload.ID, UsedCustomTotemPayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(NotifyClientPayload.ID, NotifyClientPayload.CODEC);
 
     AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.keeper(module, CreativeModeTabs.COMBAT, INFINITE_TOTEM));

@@ -17,7 +17,7 @@ abstract class BedBlockMixin {
               value = "INVOKE",
               target =
                   "Lnet/minecraft/world/level/block/BedBlock;canSetSpawn(Lnet/minecraft/world/level/Level;)Z"),
-      method = "use")
+      method = "useWithoutItem")
   private boolean andromeda$explode(boolean original, @Local(argsOnly = true) Level world) {
     if (world.isClientSide()) return original;
 

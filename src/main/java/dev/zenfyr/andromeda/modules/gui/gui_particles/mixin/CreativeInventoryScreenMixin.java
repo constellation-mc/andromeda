@@ -6,8 +6,8 @@ import dev.zenfyr.andromeda.modules.gui.gui_particles.CustomItemStackParticle;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
 import dev.zenfyr.pulsar.util.MathUtil;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
@@ -19,12 +19,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CreativeModeInventoryScreen.class)
 abstract class CreativeInventoryScreenMixin
-    extends EffectRenderingInventoryScreen<CreativeModeInventoryScreen.ItemPickerMenu> {
+    extends AbstractContainerScreen<CreativeModeInventoryScreen.ItemPickerMenu> {
+
   public CreativeInventoryScreenMixin(
-      CreativeModeInventoryScreen.ItemPickerMenu screenHandler,
-      Inventory playerInventory,
-      Component text) {
-    super(screenHandler, playerInventory, text);
+      CreativeModeInventoryScreen.ItemPickerMenu abstractContainerMenu,
+      Inventory inventory,
+      Component component) {
+    super(abstractContainerMenu, inventory, component);
   }
 
   @Inject(

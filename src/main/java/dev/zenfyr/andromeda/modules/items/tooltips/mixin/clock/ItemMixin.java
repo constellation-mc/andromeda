@@ -4,15 +4,15 @@ import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
 import dev.zenfyr.pulsar.util.MathUtil;
 import dev.zenfyr.pulsar.util.TextUtil;
-import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,19 +24,21 @@ abstract class ItemMixin {
   @Inject(at = @At("HEAD"), method = "appendHoverText")
   public void andromeda$tooltip(
       ItemStack stack,
-      @Nullable Level world,
-      List<Component> tooltip,
-      TooltipFlag context,
+      Item.TooltipContext context,
+      TooltipDisplay tooltipDisplay,
+      Consumer<Component> tooltipAdder,
+      TooltipFlag flag,
       CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).clock) return;
+    var world = Minecraft.getInstance().level;
 
-    if (world != null && world.isClientSide) {
+    if (world != null && world.isClientSide()) {
       if (stack.getItem() == Items.CLOCK) {
         // totally not stolen from here
         // https://bukkit.org/threads/how-can-i-convert-minecraft-long-time-to-real-hours-and-minutes.122912/
         int i = MathUtil.fastFloor((world.getDayTime() / 1000d + 8) % 24);
         int j = MathUtil.fastFloor(60 * (world.getDayTime() % 1000d) / 1000);
-        tooltip.add(
+        tooltipAdder.accept(
             TextUtil.translatable("tooltip.andromeda.clock", String.format("%02d:%02d", i, j))
                 .withStyle(ChatFormatting.GRAY));
       }

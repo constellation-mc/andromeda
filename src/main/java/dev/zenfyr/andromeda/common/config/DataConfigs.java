@@ -9,8 +9,8 @@ import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.GameConfigHandler;
-import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.codec.JsonCodecDataLoader;
 import dev.zenfyr.pulsar.resources.ReloaderType;
 import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
@@ -26,12 +26,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.Level;
 
 // Loads and applies custom config overrides from data packs
 @CustomLog
-public final class DataConfigs extends IdentifiedJsonDataLoader {
+public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
 
   public static final ResourceLocation DEFAULT = Andromeda.id("default");
   public static final ReloaderType<DataConfigs> RELOADER =
@@ -46,13 +46,12 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
   public Map<Module, Set<Data>> defaultConfigs;
 
   public DataConfigs(ModuleManager moduleManager) {
-    super(RELOADER.location());
+    super(RELOADER.location(), ExtraCodecs.JSON);
     this.moduleManager = moduleManager;
   }
 
   @Override
-  protected void apply(
-      Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
+  protected void apply(Map<ResourceLocation, JsonElement> data, ResourceManager manager) {
     Map<ResourceLocation, Map<Module, Set<Data>>> parsed = new HashMap<>();
 
     for (var entry : Maps.transformValues(data, JsonElement::getAsJsonObject).entrySet()) {
@@ -66,7 +65,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
       var type = Andromeda.GAME.getDefinition(module).supplier().get();
 
       Maps.transformValues(json.asMap(), JsonElement::getAsJsonObject).forEach((string, value) -> {
-        var dimension = new ResourceLocation(string);
+        var dimension = ResourceLocation.parse(string);
         var cfg = Andromeda.GAME.gson().fromJson(value, type);
 
         // Parse the fields that must be modified during `apply`
@@ -141,7 +140,8 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
   }
 
   public static void init(ModuleManager manager) {
-    ServerReloadersEvent.EVENT.register(context -> context.register(new DataConfigs(manager)));
+    ServerReloadersEvent.EVENT.register(
+        context -> context.register(RELOADER.location(), new DataConfigs(manager)));
 
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
       if (!success) return;

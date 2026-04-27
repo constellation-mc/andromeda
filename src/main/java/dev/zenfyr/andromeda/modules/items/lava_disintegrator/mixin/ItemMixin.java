@@ -6,6 +6,7 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,8 +17,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Item.class)
 abstract class ItemMixin {
 
+  // TODO: figure out how to get fire resist state
   @Inject(at = @At("HEAD"), method = "overrideOtherStackedOnMe", cancellable = true)
   private void andromeda$onLavaClick(
       ItemStack stack,
@@ -37,12 +37,15 @@ abstract class ItemMixin {
       SlotAccess cursorStackReference,
       CallbackInfoReturnable<Boolean> cir) {
     if (clickType == ClickAction.SECONDARY && stack.is(Items.LAVA_BUCKET)) {
-      if (otherStack.getItem().isFireResistant()
-          || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION, otherStack)
-              > 0) return;
+      var damageResistant = otherStack.get(DataComponents.DAMAGE_RESISTANT);
+      // if (damageResistant != null) {}
+
+      // if (otherStack.has(DataComponents.DAMAGE_RESISTANT)
+      //    || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION, otherStack)
+      //        > 0) return;
 
       cursorStackReference.set(ItemStack.EMPTY);
-      if (player.level.isClientSide)
+      if (player.level.isClientSide())
         spawnLavaParticles((int) Math.max(2, Math.sqrt(otherStack.getCount())));
       cir.setReturnValue(true);
     }

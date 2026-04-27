@@ -29,7 +29,7 @@ public class LoadingCarts {
           .apply(data, LoadingCarts::new));
 
   public static LoadingCarts get(Level level) {
-    return ((ServerLevel) level).getAttachedOrCreate(Main.ATTACHMENT.get());
+    return level.getAttachedOrCreate(Main.ATTACHMENT.get());
   }
 
   private final Set<AbstractMinecart> carts = new HashSet<>();
@@ -42,7 +42,7 @@ public class LoadingCarts {
   public void tick(ServerLevel level) {
     if (!this.reloads.isEmpty()) {
       for (BlockPos reload : this.reloads) {
-        level.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(reload), 4, reload);
+        level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(reload), 4);
       }
       this.reloads.clear();
     }

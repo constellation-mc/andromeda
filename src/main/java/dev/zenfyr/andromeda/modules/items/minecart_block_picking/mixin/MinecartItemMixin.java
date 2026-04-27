@@ -43,7 +43,7 @@ abstract class MinecartItemMixin extends Item {
       RailShape railShape = state.getBlock() instanceof BaseRailBlock
           ? state.getValue(((BaseRailBlock) state.getBlock()).getShapeProperty())
           : RailShape.NORTH_SOUTH;
-      double d = railShape.isAscending() ? 0.5 : 0.0;
+      double d = railShape.isSlope() ? 0.5 : 0.0;
 
       PlaceBehaviorHandler.getPlaceBehavior(stack.getItem()).ifPresent(b -> {
         if (!world.isClientSide()) {
@@ -54,7 +54,7 @@ abstract class MinecartItemMixin extends Item {
           world.addFreshEntity(entity);
           if (!player.isCreative()) stack.shrink(1);
         }
-        cir.setReturnValue(InteractionResult.sidedSuccess(world.isClientSide()));
+        cir.setReturnValue(InteractionResult.SUCCESS);
       });
       return;
     }
@@ -72,7 +72,7 @@ abstract class MinecartItemMixin extends Item {
           player.getInventory().placeItemBackInInventory(stack1);
           world.destroyBlock(pos, false);
         }
-        cir.setReturnValue(InteractionResult.sidedSuccess(world.isClientSide()));
+        cir.setReturnValue(InteractionResult.SUCCESS);
       });
     }
   }

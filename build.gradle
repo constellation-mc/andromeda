@@ -23,6 +23,8 @@ constellationRepo(project, "pulsar")
 constellationRepo(project, "commander")
 
 repositories {
+    mavenLocal()
+    maven { url = 'https://maven.parchmentmc.org' }
     maven { url = "https://maven.shedaniel.me/" }
     maven { url = "https://maven.terraformersmc.com/releases/" }
     mavenCentral()
@@ -34,14 +36,23 @@ repositories {
     maven { url = 'https://jitpack.io' }
 }
 
+configurations.configureEach {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.21.10:2025.10.12@zip")
+    }
     modImplementation libs.fabric.loader
 
     modImplementation libs.fabric.api
-    modImplementation libs.pulsar
+    modImplementation(libs.pulsar) {
+        changing = true
+    }
 
     [libs.modmenu, libs.cloth.config].each {
         modLocalRuntime it

@@ -4,6 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.schedule.Activity;
@@ -33,7 +34,10 @@ public class VillagerTemptGoal extends TemptGoal {
           || mob.getBrain().isActive(Activity.HIDE)) {
         return false;
       } else {
-        this.player = this.mob.level().getNearestPlayer(this.targetingConditions, this.mob);
+        this.player = getServerLevel(this.mob)
+            .getNearestPlayer(
+                this.targetingConditions.range(this.mob.getAttributeValue(Attributes.TEMPT_RANGE)),
+                this.mob);
         return player != null;
       }
     }

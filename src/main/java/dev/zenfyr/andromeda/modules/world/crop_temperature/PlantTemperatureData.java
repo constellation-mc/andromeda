@@ -1,19 +1,15 @@
 package dev.zenfyr.andromeda.modules.world.crop_temperature;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
 import dev.zenfyr.andromeda.util.Util;
 import dev.zenfyr.pulsar.codec.ExtraCodecs;
+import dev.zenfyr.pulsar.codec.JsonCodecDataLoader;
 import dev.zenfyr.pulsar.resources.ReloaderType;
 import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import dev.zenfyr.pulsar.util.MathUtil;
@@ -25,10 +21,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.GrowingPlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -103,14 +97,13 @@ public final class PlantTemperatureData {
   record NewHolder(boolean replace, Map<Block, float[]> temperatures) {}
 
   public static boolean isPlant(Block block) {
-    return block instanceof BushBlock
-        || block instanceof GrowingPlantBlock
-        || block instanceof BonemealableBlock;
+    return block instanceof GrowingPlantBlock || block instanceof BonemealableBlock;
   }
 
   public static void init() {
     var module = ModuleManager.get().get(PlantTemperature.class).orElseThrow();
-    ServerReloadersEvent.EVENT.register(context -> context.register(new Reloader(module)));
+    ServerReloadersEvent.EVENT.register(
+        context -> context.register(RELOADER.location(), new Reloader(module)));
   }
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
@@ -149,14 +142,14 @@ public final class PlantTemperatureData {
         && methodInHierarchyUntil(cls.getSuperclass(), name, stopClass);
   }
 
-  public static class Reloader extends IdentifiedJsonDataLoader {
+  public static class Reloader extends JsonCodecDataLoader<NewHolder> {
 
     @Nullable private IdentityHashMap<Block, float[]> map;
 
     private final PlantTemperature module;
 
     protected Reloader(PlantTemperature module) {
-      super(RELOADER.location());
+      super(RELOADER.location(), MERGED_CODEC);
       this.module = module;
     }
 
@@ -165,20 +158,15 @@ public final class PlantTemperatureData {
     }
 
     @Override
-    protected void apply(
-        Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
+    protected void apply(Map<ResourceLocation, NewHolder> data, ResourceManager manager) {
       IdentityHashMap<Block, float[]> replace = new IdentityHashMap<>();
       IdentityHashMap<Block, float[]> result = new IdentityHashMap<>();
-      Maps.transformValues(
-              data,
-              input -> MERGED_CODEC.parse(JsonOps.INSTANCE, input).getOrThrow(false, string -> {
-                throw new JsonParseException(string);
-              }))
-          .values()
-          .forEach(newHolder -> {
-            if (newHolder.replace()) replace.putAll(newHolder.temperatures());
-            else result.putAll(newHolder.temperatures());
-          });
+
+      data.forEach((location, holder) -> {
+        if (holder.replace()) replace.putAll(holder.temperatures());
+        else result.putAll(holder.temperatures());
+      });
+
       result.putAll(replace);
       this.map = result;
 

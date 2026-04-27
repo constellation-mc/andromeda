@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,7 +25,7 @@ public class MerchantInventoryScreen
 
   @Override
   public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-    this.renderBackground(context);
+    this.renderBackground(context, mouseX, mouseY, delta);
     super.render(context, mouseX, mouseY, delta);
     this.renderTooltip(context, mouseX, mouseY);
   }
@@ -38,7 +39,8 @@ public class MerchantInventoryScreen
   protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
     int i = (this.width - this.imageWidth) / 2;
     int j = (this.height - this.imageHeight) / 2;
-    context.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+    context.blitSprite(
+        RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, this.imageWidth, this.imageHeight);
   }
 
   public static void onClient() {
