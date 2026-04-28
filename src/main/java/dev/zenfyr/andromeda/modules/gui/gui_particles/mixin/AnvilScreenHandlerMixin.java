@@ -37,12 +37,12 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/Container;setItem(ILnet/minecraft/world/item/ItemStack;)V",
-              ordinal = 0),
+                  "Lnet/minecraft/world/entity/player/Player;hasInfiniteMaterials()Z",
+              ordinal = 0,
+          shift = At.Shift.BEFORE),
       method = "onTake")
   private void andromeda$particles(Player player, ItemStack stack, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).anvilScreenParticles) return;
-
     if (Minecraft.getInstance().isSameThread()
         && Minecraft.getInstance().screen instanceof AnvilScreen anvilScreen) {
       BlockState state = Blocks.ANVIL.defaultBlockState();
