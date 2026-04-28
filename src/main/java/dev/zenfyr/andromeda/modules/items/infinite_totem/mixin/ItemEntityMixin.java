@@ -9,7 +9,6 @@ import dev.zenfyr.pulsar.util.tuple.Tuple;
 import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -161,14 +160,12 @@ abstract class ItemEntityMixin extends Entity {
   }
 
   @Unique private boolean andromeda$beaconCheck() {
-    BlockEntity entity = level.getBlockEntity(new BlockPos(
-        (int) getX(),
-        level.getHeight(
+    BlockEntity entity = level.getBlockEntity(blockPosition()
+        .atY(level.getHeight(
                 Heightmap.Types.WORLD_SURFACE,
                 blockPosition().getX(),
                 blockPosition().getZ())
-            - 1,
-        (int) getZ()));
+            - 1));
     if (entity instanceof BeaconBlockEntity beaconBlock) {
       this.andromeda$beacon =
           Tuple.of(beaconBlock, BeaconUtil.matchesPattern(level, beaconBlock.getBlockPos()));
