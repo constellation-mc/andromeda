@@ -9,6 +9,7 @@ import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.pulsar.creativetab.CreativeModeTabAnimaton;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 
@@ -40,11 +41,15 @@ public class AndromedaClient implements ClientModInitializer {
     if (Andromeda.GROUP.isPresent()) {
       CreativeModeTabAnimaton.setIconAnimation(
           Andromeda.GROUP.orThrow(), (tab, graphics, x, y, selected, isTopRow) -> {
-            // TODO: rotate the texture on centered axis
             var pose = graphics.pose();
             pose.pushMatrix();
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURE, x, y, 0, 1);
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GALAXY_TEXTURE, x, y, 0, 1);
+            pose.translate(x + 8, y + 8);
+            graphics.blit(
+                RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURE, -8, -8, 0f, 0f, 16, 16, 16, 16);
+            pose.rotate(Util.getMillis() * 0.0005f);
+            graphics.blit(
+                RenderPipelines.GUI_TEXTURED, GALAXY_TEXTURE, -8, -8, 0f, 0f, 16, 16, 16, 16);
+            pose.popMatrix();
           });
     }
   }
