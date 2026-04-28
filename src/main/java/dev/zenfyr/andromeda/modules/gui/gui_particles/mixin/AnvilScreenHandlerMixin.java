@@ -36,10 +36,9 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
       at =
           @At(
               value = "INVOKE",
-              target =
-                  "Lnet/minecraft/world/entity/player/Player;hasInfiniteMaterials()Z",
+              target = "Lnet/minecraft/world/entity/player/Player;hasInfiniteMaterials()Z",
               ordinal = 0,
-          shift = At.Shift.BEFORE),
+              shift = At.Shift.BEFORE),
       method = "onTake")
   private void andromeda$particles(Player player, ItemStack stack, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).anvilScreenParticles) return;

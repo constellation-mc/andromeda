@@ -114,7 +114,8 @@ public class Client {
       Minecraft client, GuiGraphics context, List<ClientTooltipComponent> components) {
     if (components.isEmpty()) return;
 
-    float flow = Mth.lerp(client.getDeltaTracker().getGameTimeDeltaPartialTick(false), oldTooltipFlow, tooltipFlow);
+    float flow = Mth.lerp(
+        client.getDeltaTracker().getGameTimeDeltaPartialTick(false), oldTooltipFlow, tooltipFlow);
     Matrix3x2fStack matrices = context.pose();
 
     matrices.pushMatrix();
