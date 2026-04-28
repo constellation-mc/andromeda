@@ -1,9 +1,12 @@
 package dev.zenfyr.andromeda.modules.entities.villagers_follow_emeralds.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.zenfyr.andromeda.modules.entities.villagers_follow_emeralds.VillagerTemptGoal;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerType;
@@ -43,5 +46,10 @@ abstract class VillagerEntityMixin extends AbstractVillager {
             6,
             new VillagerTemptGoal(
                 (Villager) (Object) this, 0.5, Ingredient.of(itemHolderSet), false)));
+  }
+
+  @ModifyReturnValue(at = @At("RETURN"), method = "createAttributes")
+  private static AttributeSupplier.Builder andromeda$addTemptRange(AttributeSupplier.Builder original) {
+    return original.add(Attributes.TEMPT_RANGE, 10);
   }
 }
