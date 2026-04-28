@@ -49,7 +49,8 @@ abstract class VillagerEntityMixin extends AbstractVillager {
   }
 
   @ModifyReturnValue(at = @At("RETURN"), method = "createAttributes")
-  private static AttributeSupplier.Builder andromeda$addTemptRange(AttributeSupplier.Builder original) {
+  private static AttributeSupplier.Builder andromeda$addTemptRange(
+      AttributeSupplier.Builder original) {
     return original.add(Attributes.TEMPT_RANGE, 10);
   }
 }

@@ -51,7 +51,9 @@ public abstract class ServerLevelMixin extends Level {
       method = "explode")
   private void andromeda$modExplosion(
       CallbackInfo ci, @Local(argsOnly = true) Entity source, @Local ServerExplosion explosion) {
-    if ((source instanceof Fireball fb) && fb.getOwner() instanceof Ghast && this.am$get(GhastTweaks.CONFIG).fireBallsConvertObsidian) {
+    if ((source instanceof Fireball fb)
+        && fb.getOwner() instanceof Ghast
+        && this.am$get(GhastTweaks.CONFIG).fireBallsConvertObsidian) {
       ((GhastExplosionDuck) explosion).andromeda$convertObsidian(true);
     }
   }
