@@ -143,7 +143,7 @@ public class PouchEntity extends ThrowableItemProjectile {
 
   @Override
   protected PouchItem getDefaultItem() {
-    return getPouchType().getDefaultItem();
+    return Type.SEED.getDefaultItem();
   }
 
   public Type getPouchType() {

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -65,9 +66,12 @@ public class LootContextBuilder {
   public static List<ItemStack> prepareLoot(
       @NonNull Level world, @NonNull ResourceKey<LootTable> lootId) {
     return world
-        .registryAccess()
-        .lookupOrThrow(Registries.LOOT_TABLE)
-        .getOptional(lootId)
+        .getServer()
+        .reloadableRegistries()
+        .lookup()
+        .lookup(Registries.LOOT_TABLE)
+        .flatMap(reg -> reg.get(lootId))
+        .map(Holder.Reference::value)
         .<List<ItemStack>>map(loot -> loot.getRandomItems(
             new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY)))
         .orElse(List.of());
