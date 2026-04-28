@@ -1,0 +1,19 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:spruce_tnt_boat"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "tnt_boat",
+	"ingredients": [
+		"minecraft:tnt",
+		"minecraft:spruce_boat"
+	],
+	"result": {
+		"id": "andromeda:spruce_tnt_boat"
+	}
+}

@@ -32,12 +32,14 @@ public class BoatTypes {
   public static final BoatType BAMBOO = BoatType.of("bamboo", RAFT);
 
   public static ResourceLocation location(BoatType type, BoatVariant variant) {
-    return Andromeda.id(type.material() + '_' + variant.name() + "_boat");
+    return Andromeda.id(
+        type.material() + '_' + variant.name() + '_' + type.model().name());
   }
 
   public static <T> ResourceKey<T> key(
       ResourceKey<? extends Registry<T>> registry, BoatType type, BoatVariant variant) {
-    return Andromeda.key(registry, type.material() + '_' + variant.name() + "_boat");
+    return Andromeda.key(
+        registry, type.material() + '_' + variant.name() + '_' + type.model().name());
   }
 
   public static List<BoatVariant> getBoatVariants() {

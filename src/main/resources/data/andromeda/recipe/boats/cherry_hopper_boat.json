@@ -1,0 +1,19 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:cherry_hopper_boat"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "hopper_boat",
+	"ingredients": [
+		"minecraft:hopper",
+		"minecraft:cherry_boat"
+	],
+	"result": {
+		"id": "andromeda:cherry_hopper_boat"
+	}
+}

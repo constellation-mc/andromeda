@@ -1,0 +1,19 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:bamboo_jukebox_raft"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "jukebox_boat",
+	"ingredients": [
+		"minecraft:jukebox",
+		"minecraft:bamboo_raft"
+	],
+	"result": {
+		"id": "andromeda:bamboo_jukebox_raft"
+	}
+}

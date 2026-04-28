@@ -1,0 +1,19 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:birch_jukebox_boat"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "jukebox_boat",
+	"ingredients": [
+		"minecraft:jukebox",
+		"minecraft:birch_boat"
+	],
+	"result": {
+		"id": "andromeda:birch_jukebox_boat"
+	}
+}

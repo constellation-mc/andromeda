@@ -1,0 +1,25 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "andromeda:items_registered",
+      "values": [
+        "andromeda:magnet"
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "cr ",
+    "c r",
+    "hcc"
+  ],
+  "key": {
+    "c": "minecraft:copper_ingot",
+    "r": "minecraft:redstone",
+    "h": "minecraft:heart_of_the_sea"
+  },
+  "result": {
+    "id": "andromeda:magnet"
+  }
+}

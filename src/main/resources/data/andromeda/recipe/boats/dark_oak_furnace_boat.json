@@ -1,0 +1,19 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:dark_oak_furnace_boat"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "furnace_boat",
+	"ingredients": [
+		"minecraft:furnace",
+		"minecraft:dark_oak_boat"
+	],
+	"result": {
+		"id": "andromeda:dark_oak_furnace_boat"
+	}
+}

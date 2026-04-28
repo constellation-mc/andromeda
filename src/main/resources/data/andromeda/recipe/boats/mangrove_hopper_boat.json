@@ -1,0 +1,19 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "andromeda:items_registered",
+			"values": [
+				"andromeda:mangrove_hopper_boat"
+			]
+		}
+	],
+	"type": "minecraft:crafting_shapeless",
+	"group": "hopper_boat",
+	"ingredients": [
+		"minecraft:hopper",
+		"minecraft:mangrove_boat"
+	],
+	"result": {
+		"id": "andromeda:mangrove_hopper_boat"
+	}
+}
