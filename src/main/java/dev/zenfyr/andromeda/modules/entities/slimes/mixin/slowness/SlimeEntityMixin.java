@@ -44,17 +44,6 @@ abstract class SlimeEntityMixin extends Mob {
     this.andromeda$tryApplyEffect(target);
   }
 
-  @Inject(
-      at =
-          @At(
-              value = "INVOKE",
-              target = "Lnet/minecraft/world/entity/monster/Slime;isDealsDamage()Z",
-              shift = At.Shift.BEFORE),
-      method = "playerTouch")
-  private void andromeda$onPlayerCollision(Player player, CallbackInfo ci) {
-    this.andromeda$tryApplyEffect(player);
-  }
-
   @Unique private void andromeda$tryApplyEffect(LivingEntity target) {
     if (level.isClientSide()) return;
 
