@@ -70,8 +70,6 @@ public class MagnetItem extends Item {
     super(settings);
   }
 
-  public static final String LEVEL_KEY = "PowerLevel";
-
   @Override
   public boolean overrideStackedOnOther(
       ItemStack stack, Slot slot, ClickAction clickType, Player player) {
@@ -81,9 +79,10 @@ public class MagnetItem extends Item {
         removeFirst(stack);
         this.playRemoveOneSound(player);
       } else {
-        addFirst(stack, itemStack);
-        ITEM_PARTICLES.accept(itemStack, player);
-        this.playInsertSound(player);
+        if (addFirst(stack, itemStack)) {
+          ITEM_PARTICLES.accept(itemStack, player);
+          this.playInsertSound(player);
+        }
       }
       return true;
     }
@@ -103,9 +102,10 @@ public class MagnetItem extends Item {
         removeFirst(stack);
         this.playRemoveOneSound(player);
       } else {
-        addFirst(stack, otherStack);
-        ITEM_PARTICLES.accept(otherStack, player);
-        this.playInsertSound(player);
+        if (addFirst(stack, otherStack)) {
+          ITEM_PARTICLES.accept(otherStack, player);
+          this.playInsertSound(player);
+        }
       }
       return true;
     }
@@ -209,13 +209,17 @@ public class MagnetItem extends Item {
     return stack.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT).level();
   }
 
-  public static void addFirst(ItemStack bundle, ItemStack other) {
-    bundle.update(
-        COMPONENT_TYPE.get(),
-        MagnetContents.DEFAULT,
-        component -> component.withItems(
-            Stream.concat(Stream.of(other.getItem()), component.items().stream())
-                .collect(ImmutableList.toImmutableList())));
+  public static boolean addFirst(ItemStack bundle, ItemStack other) {
+    var contents = bundle.getOrDefault(COMPONENT_TYPE.get(), MagnetContents.DEFAULT);
+
+    if (!contents.items().contains(other.getItem())) {
+      bundle.set(
+          COMPONENT_TYPE.get(),
+          contents.withItems(Stream.concat(Stream.of(other.getItem()), contents.items().stream())
+              .collect(ImmutableList.toImmutableList())));
+      return true;
+    }
+    return false;
   }
 
   private static void removeFirst(ItemStack stack) {
