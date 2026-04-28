@@ -33,7 +33,7 @@ abstract class CreativeInventoryScreenMixin
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;handleCreativeModeItemAdd(Lnet/minecraft/world/item/ItemStack;I)V",
+                  "Lnet/minecraft/world/inventory/Slot;set(Lnet/minecraft/world/item/ItemStack;)V",
               ordinal = 0,
               shift = At.Shift.BEFORE),
       method = "slotClicked")
