@@ -1,5 +1,6 @@
 package dev.zenfyr.andromeda.modules.gui.item_frame_tooltips;
 
+import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.util.Utilities;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.ArrayList;
@@ -11,13 +12,15 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.phys.EntityHitResult;
@@ -27,6 +30,7 @@ import org.joml.Vector2i;
 
 public class Client {
 
+  public static final ResourceLocation TOOLTIP_HUD = Andromeda.id("tooltip_hud");
   private Supplier<List<ClientTooltipComponent>> action;
   private float tooltipFlow;
   private float oldTooltipFlow;
@@ -51,15 +55,16 @@ public class Client {
   }
 
   private void inGameTooltips() {
-    HudRenderCallback.EVENT.register((context, delta) -> {
-      if (Minecraft.getInstance().screen == null) {
-        var client = Minecraft.getInstance();
+    HudElementRegistry.attachElementAfter(
+        VanillaHudElements.CROSSHAIR, TOOLTIP_HUD, (context, tickCounter) -> {
+          if (Minecraft.getInstance().screen == null) {
+            var client = Minecraft.getInstance();
 
-        if (action != null) {
-          renderFromComponents(client, context, action.get());
-        }
-      }
-    });
+            if (action != null) {
+              renderFromComponents(client, context, action.get());
+            }
+          }
+        });
 
     registerEntityTooltip(
         entityHitResult -> entityHitResult.getEntity() instanceof ItemFrame ife
@@ -109,12 +114,11 @@ public class Client {
       Minecraft client, GuiGraphics context, List<ClientTooltipComponent> components) {
     if (components.isEmpty()) return;
 
-    float flow = Mth.lerp(client.getFrameTimeNs(), oldTooltipFlow, tooltipFlow);
+    float flow = Mth.lerp(client.getDeltaTracker().getGameTimeDeltaPartialTick(false), oldTooltipFlow, tooltipFlow);
     Matrix3x2fStack matrices = context.pose();
 
     matrices.pushMatrix();
-    // matrices.translate(0, 0, -450);
-    matrices.scale(1, 1);
+    // TODO
     // RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
 
     context.renderTooltip(
@@ -124,12 +128,11 @@ public class Client {
         0,
         (screenWidth, screenHeight, sameX, sameY, width, height) -> {
           float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
-          float smoothY = ((client.getWindow().getGuiScaledHeight() - height) / 2f);
-          matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY);
-          return new Vector2i((int) smoothX, (int) smoothY);
+          int y = (client.getWindow().getGuiScaledHeight() - height) / 2;
+          matrices.translate(smoothX - (int) smoothX, 0);
+          return new Vector2i((int) smoothX, y);
         },
         null);
-    // RenderSystem.setShaderColor(1, 1, 1, 1);
     matrices.popMatrix();
   }
 }
