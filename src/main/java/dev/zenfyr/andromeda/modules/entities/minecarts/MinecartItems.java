@@ -129,7 +129,7 @@ public class MinecartItems {
           JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity) MakeSure.notNull(
               world.getBlockEntity(pos), "Block has no block entity. %s".formatted(pos));
 
-          ItemStack record = jukeboxBlockEntity.getItem(0);
+          ItemStack record = jukeboxBlockEntity.getTheItem();
           ItemStack jukeboxMinecart = new ItemStack(JUKEBOX_MINECART.orThrow());
 
           if (!record.isEmpty()) {
@@ -144,8 +144,8 @@ public class MinecartItems {
             jukeboxMinecart.set(
                 DataComponents.ENTITY_DATA,
                 TypedEntityData.of(MinecartEntities.JUKEBOX_MINECART_ENTITY.orThrow(), nbt));
+            jukeboxBlockEntity.setTheItem(ItemStack.EMPTY);
           }
-          jukeboxBlockEntity.clearContent();
           return jukeboxMinecart;
         });
       }

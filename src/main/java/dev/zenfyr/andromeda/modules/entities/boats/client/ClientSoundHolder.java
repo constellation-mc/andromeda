@@ -8,11 +8,11 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.JukeboxSong;
 
 public class ClientSoundHolder {
 
@@ -34,19 +34,13 @@ public class ClientSoundHolder {
         return;
       }
 
-      var playable = payload.record().get(DataComponents.JUKEBOX_PLAYABLE);
-      var songOptional = playable
-          .song()
-          .unwrap(context
-              .client()
-              .getConnection()
-              .registryAccess()
-              .lookupOrThrow(Registries.JUKEBOX_SONG));
+      var songOptional =
+          JukeboxSong.fromStack(client.getConnection().registryAccess(), payload.record());
       if (songOptional.isEmpty()) return;
       var song = songOptional.get();
       soundInstanceMap.computeIfAbsent(payload.entity(), uuid -> {
         var instance = new PersistentMovingSoundInstance(
-            song.soundEvent().value(),
+            song.value().soundEvent().value(),
             SoundSource.RECORDS,
             uuid,
             client.level,
@@ -56,7 +50,7 @@ public class ClientSoundHolder {
       });
 
       if (client.player != null && entity != null && entity.distanceTo(client.player) < 76) {
-        client.gui.setNowPlaying(song.description());
+        client.gui.setNowPlaying(song.value().description());
       }
     });
 
