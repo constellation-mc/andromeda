@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.CactusBlock;
 import net.minecraft.world.level.block.GrowingPlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -97,7 +98,9 @@ public final class PlantTemperatureData {
   record NewHolder(boolean replace, Map<Block, float[]> temperatures) {}
 
   public static boolean isPlant(Block block) {
-    return block instanceof GrowingPlantBlock || block instanceof BonemealableBlock;
+    return block instanceof GrowingPlantBlock
+        || block instanceof BonemealableBlock
+        || block instanceof CactusBlock;
   }
 
   public static void init() {
