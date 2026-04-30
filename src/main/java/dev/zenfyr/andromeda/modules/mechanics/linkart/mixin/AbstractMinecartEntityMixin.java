@@ -100,10 +100,8 @@ public abstract class AbstractMinecartEntityMixin extends Entity implements Link
 
   @Inject(at = @At("RETURN"), method = "addAdditionalSaveData")
   private void linkart$write(ValueOutput output, CallbackInfo ci) {
-    if (linkart$followingUUID != null)
-      output.store("LK-Following", MiscUtil.UUID_CODEC, linkart$followingUUID);
-    if (linkart$followerUUID != null)
-      output.store("LK-Follower", MiscUtil.UUID_CODEC, linkart$followerUUID);
+    output.storeNullable("LK-Following", MiscUtil.UUID_CODEC, linkart$followingUUID);
+    output.storeNullable("LK-Follower", MiscUtil.UUID_CODEC, linkart$followerUUID);
     output.store("LK-ItemStack", ItemStack.OPTIONAL_CODEC, this.linkart$itemStack);
   }
 

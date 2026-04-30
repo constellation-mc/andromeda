@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.common.util;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -16,10 +16,8 @@ import net.minecraft.world.phys.Vec3;
 
 public class MiscUtil {
 
-  public static final Codec<UUID> UUID_CODEC = Codec.pair(Codec.LONG, Codec.LONG)
-      .xmap(
-          pair -> new UUID(pair.getFirst(), pair.getSecond()),
-          uuid -> new Pair<>(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits()));
+  public static final Codec<UUID> UUID_CODEC = Codec.STRING.xmap(UUID::fromString, UUID::toString);
+
   public static final StreamCodec<ByteBuf, UUID> UUID_PACKET_CODEC = StreamCodec.composite(
       ByteBufCodecs.VAR_LONG,
       UUID::getMostSignificantBits,
