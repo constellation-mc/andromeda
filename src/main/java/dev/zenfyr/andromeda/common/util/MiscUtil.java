@@ -1,7 +1,6 @@
 package dev.zenfyr.andromeda.common.util;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
