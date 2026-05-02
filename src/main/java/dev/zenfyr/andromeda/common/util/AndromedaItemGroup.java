@@ -5,11 +5,13 @@ import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.creativetab.CreativeModeTabBuilder;
+import dev.zenfyr.pulsar.creativetab.PulsarEntries;
 import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -60,6 +62,8 @@ public interface AndromedaItemGroup {
             sign.set(
                 DataComponents.ITEM_NAME,
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
+
+            entries.addAll(itemStacks, PulsarEntries.Visibility.SEARCH);
             stacks.add(sign);
             stacks.addAll(itemStacks);
             stacks.add(ItemStack.EMPTY);
@@ -70,8 +74,10 @@ public interface AndromedaItemGroup {
             sign.set(
                 DataComponents.ITEM_NAME,
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
-            itemStacks.add(0, sign);
-            entries.appendStacks(itemStacks);
+
+            entries.addAll(itemStacks, PulsarEntries.Visibility.SEARCH);
+            entries.appendStacks(
+                Stream.concat(Stream.of(sign), itemStacks.stream()).toList());
           });
         })
         .displayName(TextUtil.translatable("itemGroup.andromeda.items"))
