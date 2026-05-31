@@ -17,6 +17,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,11 +40,14 @@ abstract class ItemMixin {
       CallbackInfoReturnable<Boolean> cir) {
     if (clickType == ClickAction.SECONDARY && stack.is(Items.LAVA_BUCKET)) {
       var damageResistant = otherStack.get(DataComponents.DAMAGE_RESISTANT);
-      // if (damageResistant != null) {}
+      if (damageResistant != null
+          && damageResistant.isResistantTo(player.level.damageSources().inFire())) {
+        return;
+      }
 
-      // if (otherStack.has(DataComponents.DAMAGE_RESISTANT)
-      //    || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION, otherStack)
-      //        > 0) return;
+      if (EnchantmentHelper.getItemEnchantmentLevel(
+              player.level.registryAccess().getOrThrow(Enchantments.FIRE_PROTECTION), otherStack)
+          > 0) return;
 
       cursorStackReference.set(ItemStack.EMPTY);
       if (player.level.isClientSide())
