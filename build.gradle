@@ -1,15 +1,16 @@
 import me.modmuss50.mpp.ReleaseType
-import net.fabricmc.loom.api.RemapConfigurationSettings
 
 plugins {
     alias libs.plugins.fabric.loom
     id 'maven-publish'
+    id 'signing'
     alias libs.plugins.lombok
     alias libs.plugins.spotless
     alias libs.plugins.modmuss50.publish
 }
 
 def local = !System.getenv().containsKey("GITHUB_RUN_NUMBER")
+def shouldSign = System.getenv().containsKey("SIGNING_PGP_KEY_ID")
 
 version = "${project.mod_version}-${project.minecraft_version}-${local ? 'local' : "build.${System.getenv("GITHUB_RUN_NUMBER")}"}"
 group = project.maven_group
@@ -174,9 +175,27 @@ publishing {
     }
 }
 
+signing {
+    required = shouldSign
+
+    def signingKeyId = System.getenv("SIGNING_PGP_KEY_ID")
+    def signingKey = System.getenv("SIGNING_PGP_KEY")
+    def signingPassword = System.getenv("SIGNING_PGP_PASSWORD")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+
+    sign publishing.publications.mavenJava
+    sign remapJar
+    sign remapSourcesJar
+}
+
 publishMods {
     file = remapJar.archiveFile
     additionalFiles.from(remapSourcesJar.archiveFile)
+
+    if (shouldSign) {
+        additionalFiles.from(tasks.named("signRemapJar").map { it.outputs.files })
+        additionalFiles.from(tasks.named("signRemapSourcesJar").map { it.outputs.files })
+    }
 
     changelog = file("CHANGELOG.md").text
     type = ReleaseType.valueOf(providers.environmentVariable("VERSION_TYPE").getOrElse("BETA"))
