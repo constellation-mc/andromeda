@@ -6,19 +6,25 @@ import java.util.List;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector2f;
 
 public class BoatTypes {
 
   private static final List<BoatType> BOAT_TYPES = new ArrayList<>();
   private static final List<BoatVariant> BOAT_VARIANTS = new ArrayList<>();
 
-  public static final BoatVariant FURNACE = BoatVariant.of("furnace");
-  public static final BoatVariant HOPPER = BoatVariant.of("hopper");
-  public static final BoatVariant JUKEBOX = BoatVariant.of("jukebox");
-  public static final BoatVariant TNT = BoatVariant.of("tnt");
+  public static final BoatVariant FURNACE =
+      BoatVariant.of("furnace", Blocks.FURNACE.defaultBlockState());
+  public static final BoatVariant HOPPER =
+      BoatVariant.of("hopper", Blocks.HOPPER.defaultBlockState());
+  public static final BoatVariant JUKEBOX =
+      BoatVariant.of("jukebox", Blocks.JUKEBOX.defaultBlockState());
+  public static final BoatVariant TNT = BoatVariant.of("tnt", Blocks.TNT.defaultBlockState());
 
-  public static final BoatModel BOAT = BoatModel.of("boat");
-  public static final BoatModel RAFT = BoatModel.of("raft");
+  public static final BoatModel BOAT = BoatModel.of("boat", new Vector2f(0.25f, 1.0f), 0.333333333);
+  public static final BoatModel RAFT = BoatModel.of("raft", new Vector2f(0.635f, 1.09f), 0.8888889);
 
   public static final BoatType OAK = BoatType.of("oak", BOAT);
   public static final BoatType SPRUCE = BoatType.of("spruce", BOAT);
@@ -50,15 +56,15 @@ public class BoatTypes {
     return BOAT_TYPES;
   }
 
-  public record BoatModel(String name) {
-    public static BoatModel of(String name) {
-      return new BoatModel(name);
+  public record BoatModel(String name, Vector2f offset, double rideHeight) {
+    public static BoatModel of(String name, Vector2f offset, double rideHeight) {
+      return new BoatModel(name, offset, rideHeight);
     }
   }
 
-  public record BoatVariant(String name) {
-    public static BoatVariant of(String name) {
-      var variant = new BoatVariant(name);
+  public record BoatVariant(String name, BlockState state) {
+    public static BoatVariant of(String name, BlockState state) {
+      var variant = new BoatVariant(name, state);
       BOAT_VARIANTS.add(variant);
       return variant;
     }

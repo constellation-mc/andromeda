@@ -12,7 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -25,8 +25,11 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
       SynchedEntityData.defineId(FurnaceBoatEntity.class, EntityDataSerializers.INT);
 
   public FurnaceBoatEntity(
-      EntityType<? extends Boat> entityType, Level world, Supplier<Item> dropItem) {
-    super(entityType, world, dropItem);
+      EntityType<? extends AbstractBoat> entityType,
+      Level world,
+      BoatRideHeightFactory rideHeight,
+      Supplier<Item> dropItem) {
+    super(entityType, world, rideHeight, dropItem);
   }
 
   @Override

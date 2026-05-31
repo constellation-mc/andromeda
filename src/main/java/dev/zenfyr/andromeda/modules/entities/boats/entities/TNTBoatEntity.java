@@ -19,7 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -35,8 +35,11 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   public int fuseTicks = -1;
 
   public TNTBoatEntity(
-      EntityType<? extends Boat> entityType, Level world, Supplier<Item> dropItem) {
-    super(entityType, world, dropItem);
+      EntityType<? extends AbstractBoat> entityType,
+      Level world,
+      BoatRideHeightFactory rideHeight,
+      Supplier<Item> dropItem) {
+    super(entityType, world, rideHeight, dropItem);
   }
 
   private final Runnable explode = SupportUtil.support(

@@ -20,19 +20,26 @@ import net.minecraft.world.level.Level;
 public class BoatEntities {
 
   private interface Factory<T extends AbstractBoat> {
-    T create(EntityType<T> entityType, Level level, Supplier<Item> dropItem);
+    T create(
+        EntityType<T> entityType,
+        Level level,
+        BoatRideHeightFactory rideHeight,
+        Supplier<Item> dropItem);
   }
 
   private static <T extends AbstractBoat> void boatType(
       BoatTypes.BoatType type, BoatTypes.BoatVariant variant, Factory<T> factory) {
     var location = BoatTypes.location(type, variant);
     Supplier<Item> dropItem = () -> BuiltInRegistries.ITEM.getValue(location);
+    BoatRideHeightFactory rideHeight =
+        dimensions -> dimensions.height() * type.model().rideHeight();
+
     var key = ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), location);
     Registry.register(
         BuiltInRegistries.ENTITY_TYPE,
         key,
         EntityType.Builder.<T>of(
-                (entityType, level) -> factory.create(entityType, level, dropItem),
+                (entityType, level) -> factory.create(entityType, level, rideHeight, dropItem),
                 MobCategory.MISC)
             .sized(1.375F, 0.5625F)
             .build(key));
