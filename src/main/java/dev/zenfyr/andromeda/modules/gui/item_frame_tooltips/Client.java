@@ -1,6 +1,7 @@
 package dev.zenfyr.andromeda.modules.gui.item_frame_tooltips;
 
 import dev.zenfyr.andromeda.common.Andromeda;
+import dev.zenfyr.andromeda.common.client.GlobalAlphaController;
 import dev.zenfyr.pulsar.util.Utilities;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.ArrayList;
@@ -117,23 +118,29 @@ public class Client {
     float flow = Mth.lerp(
         client.getDeltaTracker().getGameTimeDeltaPartialTick(false), oldTooltipFlow, tooltipFlow);
     Matrix3x2fStack matrices = context.pose();
-
     matrices.pushMatrix();
-    // TODO
-    // RenderSystem.setShaderColor(1, 1, 1, Math.min(flow, 0.8f));
 
-    context.renderTooltip(
-        client.font,
-        components,
-        0,
-        0,
-        (screenWidth, screenHeight, sameX, sameY, width, height) -> {
-          float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
-          int y = (client.getWindow().getGuiScaledHeight() - height) / 2;
-          matrices.translate(smoothX - (int) smoothX, 0);
-          return new Vector2i((int) smoothX, y);
-        },
-        null);
+    try {
+      GlobalAlphaController.MODIFIER.set(key -> {
+        float flowAlpha = Math.min(flow, 0.8f);
+        return key * flowAlpha;
+      });
+
+      context.renderTooltip(
+          client.font,
+          components,
+          0,
+          0,
+          (screenWidth, screenHeight, sameX, sameY, width, height) -> {
+            float smoothX = ((screenWidth / 2f) - (flow * 15)) + 27;
+            int y = (client.getWindow().getGuiScaledHeight() - height) / 2;
+            matrices.translate(smoothX - (int) smoothX, 0);
+            return new Vector2i((int) smoothX, y);
+          },
+          null);
+    } finally {
+      GlobalAlphaController.MODIFIER.remove();
+    }
     matrices.popMatrix();
   }
 }

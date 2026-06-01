@@ -1,5 +1,6 @@
 package dev.zenfyr.andromeda.modules.gui.name_tooltips.mixin;
 
+import dev.zenfyr.andromeda.common.client.GlobalAlphaController;
 import dev.zenfyr.pulsar.util.MakeSure;
 import dev.zenfyr.pulsar.util.Utilities;
 import java.util.ArrayList;
@@ -55,38 +56,47 @@ abstract class InGameHudMixin {
 
         Matrix3x2fStack matrices = context.pose();
         matrices.pushMatrix();
-        // matrices.translate(0, 0, -450);
         matrices.scale(1, 1);
-        // RenderSystem.setShaderColor(1, 1, 1, Math.min(l / 255f, 0.8f));
-        var list = Screen.getTooltipFromItem(Minecraft.getInstance(), this.lastToolHighlight);
-        List<ClientTooltipComponent> list1 = list.stream()
-            .map(Component::getVisualOrderText)
-            .map(ClientTooltipComponent::create)
-            .collect(Collectors.toCollection(ArrayList::new));
 
-        this.lastToolHighlight
-            .getTooltipImage()
-            .ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
-              ClientTooltipComponent component =
-                  TooltipComponentCallback.EVENT.invoker().getComponent(datax);
-              if (component == null) component = ClientTooltipComponent.create(datax);
-              return component;
-            })));
+        try {
+          int finalK = k;
+          int finalL = l;
 
-        int finalK = k;
-        int finalL = l;
-        context.renderTooltip(
-            minecraft.font,
-            list1,
-            0,
-            0,
-            (screenWidth, screenHeight, x, y, width, height) -> {
-              float smoothX = ((screenWidth - width) / 2f);
-              float smoothY = (finalK - height + (finalL / 255f * 2)) + 6;
-              matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY);
-              return new Vector2i((int) smoothX, (int) smoothY);
-            },
-            null);
+          GlobalAlphaController.MODIFIER.set(key -> {
+            float flowAlpha = Math.min(Math.min(finalL / 255f, 0.8f), 0.8f);
+            return key * flowAlpha;
+          });
+
+          var list = Screen.getTooltipFromItem(Minecraft.getInstance(), this.lastToolHighlight);
+          List<ClientTooltipComponent> list1 = list.stream()
+              .map(Component::getVisualOrderText)
+              .map(ClientTooltipComponent::create)
+              .collect(Collectors.toCollection(ArrayList::new));
+
+          this.lastToolHighlight
+              .getTooltipImage()
+              .ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
+                ClientTooltipComponent component =
+                    TooltipComponentCallback.EVENT.invoker().getComponent(datax);
+                if (component == null) component = ClientTooltipComponent.create(datax);
+                return component;
+              })));
+
+          context.renderTooltip(
+              minecraft.font,
+              list1,
+              0,
+              0,
+              (screenWidth, screenHeight, x, y, width, height) -> {
+                float smoothX = ((screenWidth - width) / 2f);
+                float smoothY = (finalK - height + (finalL / 255f * 2)) + 6;
+                matrices.translate(smoothX - (int) smoothX, smoothY - (int) smoothY);
+                return new Vector2i((int) smoothX, (int) smoothY);
+              },
+              null);
+        } finally {
+          GlobalAlphaController.MODIFIER.remove();
+        }
         matrices.popMatrix();
       }
     }
