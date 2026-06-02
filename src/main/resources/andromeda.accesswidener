@@ -28,8 +28,8 @@ accessible method net/minecraft/world/entity/vehicle/AbstractBoat getDropItem ()
 
 # entities/boats (furnaceBoat)
 #accessible field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;
-#accessible field net/minecraft/world/entity/vehicle/Boat status Lnet/minecraft/world/entity/vehicle/Boat$Status;
-#extendable method net/minecraft/world/entity/vehicle/Boat floatBoat ()V
+accessible field net/minecraft/world/entity/vehicle/AbstractBoat status Lnet/minecraft/world/entity/vehicle/AbstractBoat$Status;
+extendable method net/minecraft/world/entity/vehicle/AbstractBoat floatBoat ()V
 
 # gui/gui_particles (furnaceScreen)
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I

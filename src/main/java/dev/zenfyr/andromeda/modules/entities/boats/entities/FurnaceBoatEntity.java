@@ -57,18 +57,17 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     }
   }
 
-  // TODO: fix boat movement
-  //  @Override
-  //  public void floatBoat() {
-  //    super.floatBoat();
-  //    Vec3 vec3d = this.getDeltaMovement();
-  //    if (this.getFuel() > 0) {
-  //      Vec3 rotationVec = this.getViewVector(1.0F);
-  //      if (this.status == Status.ON_LAND)
-  //        this.setDeltaMovement(rotationVec.x() * 0.1, vec3d.y, rotationVec.z() * 0.1);
-  //      else this.setDeltaMovement(rotationVec.x() * 0.4, vec3d.y, rotationVec.z() * 0.4);
-  //    }
-  //  }
+  @Override
+  public void floatBoat() {
+    super.floatBoat();
+    Vec3 vec3d = this.getDeltaMovement();
+    if (this.getFuel() > 0) {
+      Vec3 rotationVec = this.getViewVector(1.0F);
+      if (this.status == Status.ON_LAND)
+        this.setDeltaMovement(rotationVec.x() * 0.1, vec3d.y, rotationVec.z() * 0.1);
+      else this.setDeltaMovement(rotationVec.x() * 0.4, vec3d.y, rotationVec.z() * 0.4);
+    }
+  }
 
   @Override
   public InteractionResult interact(Player player, InteractionHand hand) {
