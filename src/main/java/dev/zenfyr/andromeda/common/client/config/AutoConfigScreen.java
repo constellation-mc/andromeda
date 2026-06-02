@@ -17,6 +17,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -86,7 +87,14 @@ public class AutoConfigScreen {
 
     ConfigBuilder builder = ConfigBuilder.create()
         .setParentScreen(parent)
-        .setTitle(TextUtil.translatable("config.andromeda.title", "67"))
+        .setTitle(TextUtil.translatable(
+            "config.andromeda.title",
+            FabricLoader.getInstance()
+                .getModContainer("andromeda")
+                .orElseThrow()
+                .getMetadata()
+                .getVersion()
+                .getFriendlyString()))
         .setSavingRunnable(() -> {
           saveQueue.values().forEach(Runnable::run);
           saveQueue.clear();
