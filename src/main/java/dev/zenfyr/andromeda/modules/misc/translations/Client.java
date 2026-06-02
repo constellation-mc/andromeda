@@ -37,8 +37,7 @@ public final class Client {
       Set<String> languages = Sets.newHashSet("en_us");
       Client.getSelectedLanguage(module).ifPresent(languages::add);
       CompletableFuture.runAsync(
-              () -> Client.downloadTranslations(languages, module, manager),
-              ForkJoinPool.commonPool())
+              () -> Client.downloadTranslations(languages, module), ForkJoinPool.commonPool())
           .handle((unused, throwable) -> {
             if (throwable != null)
               module.logger().error("Failed to download translations!", throwable);
@@ -48,7 +47,7 @@ public final class Client {
   }
 
   static boolean shouldUpdate(ModuleManager manager) {
-    if (NetUtils.get().allow) return false;
+    if (!NetUtils.get().allow) return false;
     if (Files.exists(Translations.EN_US)) {
       try {
         if (ChronoUnit.HOURS.between(
@@ -66,14 +65,13 @@ public final class Client {
       languageCode = code;
       Set<String> languages = Sets.newHashSet("en_us");
       languages.add(code);
-      downloadTranslations(languages, module, ModuleManager.get());
+      downloadTranslations(languages, module);
     }
   }
 
-  public static void downloadTranslations(
-      Set<String> languages, Translations module, ModuleManager manager) {
+  public static void downloadTranslations(Set<String> languages, Translations module) {
     for (String language : languages) {
-      String file = downloadLang(language, module, manager);
+      String file = downloadLang(language, module);
       if (!file.isEmpty()) {
         try {
           if (!Files.exists(Translations.LANG_PATH))
@@ -86,11 +84,11 @@ public final class Client {
     }
   }
 
-  private static String downloadLang(String language, Translations module, ModuleManager manager) {
+  private static String downloadLang(String language, Translations module) {
     try {
       HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create(URL + DataRefreshUtil.defaultBranch(manager)
-              + "/src/main/resources/assets/andromeda/lang/" + language + ".json"))
+          .uri(URI.create(URL + Translations.BRANCH + "/src/main/resources/assets/andromeda/lang/"
+              + language + ".json"))
           .GET()
           .build();
 
