@@ -14,7 +14,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class Translations extends Module implements PostBootstrapEvent {
 
   // the git branch for this version to pull translations from.
-  public static final String BRANCH = "1.20-fabric";
+  public static final String BRANCH = "1.21.10-fabric";
   public static final Path TRANSLATION_PACK = Util.HIDDEN_PATH.resolve("andromeda_translations");
   public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
   public static final Path EN_US = LANG_PATH.resolve("en_us.json");
