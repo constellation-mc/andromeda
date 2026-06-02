@@ -35,10 +35,6 @@ repositories {
     maven { url = 'https://jitpack.io' }
 }
 
-configurations.configureEach {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -49,9 +45,7 @@ dependencies {
     modImplementation libs.fabric.loader
 
     modImplementation libs.fabric.api
-    modImplementation(libs.pulsar) {
-        changing = true
-    }
+    modImplementation libs.pulsar
 
     [libs.modmenu, libs.cloth.config].each {
         modLocalRuntime it
