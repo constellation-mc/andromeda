@@ -6,22 +6,24 @@ import dev.zenfyr.andromeda.modules.mechanics.linkart.Main;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.MinecartBehavior;
-import net.minecraft.world.entity.vehicle.OldMinecartBehavior;
+import net.minecraft.world.entity.vehicle.NewMinecartBehavior;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(OldMinecartBehavior.class)
-public abstract class OldMinecartBehaviorMixin extends MinecartBehavior {
+@Mixin(NewMinecartBehavior.class)
+public abstract class NewMinecartBehaviorMixin extends MinecartBehavior {
 
-  protected OldMinecartBehaviorMixin(AbstractMinecart minecart) {
+  protected NewMinecartBehaviorMixin(AbstractMinecart minecart) {
     super(minecart);
   }
 
   // Ensure the train doesn't break apart (especially if other minecart mods increase speed)
   @ModifyArg(
-      method = "moveAlongTrack",
+      method = "stepAlongTrack",
       at =
           @At(
               value = "INVOKE",
@@ -42,8 +44,23 @@ public abstract class OldMinecartBehaviorMixin extends MinecartBehavior {
     return movement;
   }
 
+  @Inject(
+      method = "getMaxSpeed(Lnet/minecraft/server/level/ServerLevel;)D",
+      at = @At("HEAD"),
+      cancellable = true)
+  private void linkart$overrideMaxSpeed(ServerLevel level, CallbackInfoReturnable<Double> cir) {
+    if (((LinkableMinecart) this.minecart).linkart$getFollowing() != null) {
+      AbstractMinecart following = ((LinkableMinecart) this.minecart).linkart$getFollowing();
+      while (((LinkableMinecart) following).linkart$getFollowing() != null) {
+        following = ((LinkableMinecart) following).linkart$getFollowing();
+      }
+
+      cir.setReturnValue(following.getMaxSpeed(level));
+    }
+  }
+
   @ModifyExpressionValue(
-      method = "moveAlongTrack",
+      method = "calculateTrackSpeed",
       at =
           @At(
               value = "INVOKE",

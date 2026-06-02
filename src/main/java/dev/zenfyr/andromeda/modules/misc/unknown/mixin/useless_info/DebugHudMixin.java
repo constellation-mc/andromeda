@@ -30,7 +30,6 @@ abstract class DebugHudMixin {
     return r != null ? r.splash : null;
   });
 
-  // TODO: find new injection point
   @Inject(
       at =
           @At(
