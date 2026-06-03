@@ -36,8 +36,17 @@ public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> 
     if (menu.getSlot(0).hasItem()
         && menu.getSlot(1).hasItem()
         && !menu.getSlot(2).hasItem()) {
-      context.blitSprite(
-          RenderPipelines.GUI_TEXTURED, TEXTURE, x + 99, y + 45, this.imageWidth, 28, 21);
+      context.blit(
+          RenderPipelines.GUI_TEXTURED,
+          TEXTURE,
+          x + 99,
+          y + 45,
+          this.imageWidth,
+          0,
+          28,
+          21,
+          256,
+          256);
     }
   }
 

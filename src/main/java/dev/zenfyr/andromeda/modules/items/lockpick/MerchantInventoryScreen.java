@@ -39,8 +39,17 @@ public class MerchantInventoryScreen
   protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
     int i = (this.width - this.imageWidth) / 2;
     int j = (this.height - this.imageHeight) / 2;
-    context.blitSprite(
-        RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, this.imageWidth, this.imageHeight);
+    context.blit(
+        RenderPipelines.GUI_TEXTURED,
+        TEXTURE,
+        i,
+        j,
+        0,
+        0,
+        this.imageWidth,
+        this.imageHeight,
+        256,
+        256);
   }
 
   public static void onClient() {
