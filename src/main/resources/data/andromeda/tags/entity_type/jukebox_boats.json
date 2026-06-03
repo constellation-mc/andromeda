@@ -1,14 +1,44 @@
 {
   "values": [
-    "andromeda:oak_jukebox_boat",
-    "andromeda:spruce_jukebox_boat",
-    "andromeda:birch_jukebox_boat",
-    "andromeda:jungle_jukebox_boat",
-    "andromeda:acacia_jukebox_boat",
-    "andromeda:cherry_jukebox_boat",
-    "andromeda:pale_oak_jukebox_boat",
-    "andromeda:dark_oak_jukebox_boat",
-    "andromeda:mangrove_jukebox_boat",
-    "andromeda:bamboo_jukebox_raft"
+    {
+      "id": "andromeda:oak_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:spruce_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:birch_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:jungle_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:acacia_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:cherry_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:pale_oak_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:dark_oak_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:mangrove_jukebox_boat",
+      "required": false
+    },
+    {
+      "id": "andromeda:bamboo_jukebox_raft",
+      "required": false
+    }
   ]
 }

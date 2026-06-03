@@ -1,7 +1,16 @@
 {
   "values": [
-    "andromeda:anvil_minecart",
-    "andromeda:note_block_minecart",
-    "andromeda:jukebox_minecart"
+    {
+      "id": "andromeda:anvil_minecart",
+      "required": false
+    },
+    {
+      "id": "andromeda:note_block_minecart",
+      "required": false
+    },
+    {
+      "id": "andromeda:jukebox_minecart",
+      "required": false
+    }
   ]
 }
