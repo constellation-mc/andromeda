@@ -3,10 +3,12 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
 import dev.zenfyr.pulsar.util.SupportUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -40,6 +42,11 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
       BoatRideHeightFactory rideHeight,
       Supplier<Item> dropItem) {
     super(entityType, world, rideHeight, dropItem);
+  }
+
+  @Override
+  protected Component getTypeName() {
+    return TextUtil.translatable("entity.andromeda.tnt_boat");
   }
 
   private final Runnable explode = SupportUtil.support(

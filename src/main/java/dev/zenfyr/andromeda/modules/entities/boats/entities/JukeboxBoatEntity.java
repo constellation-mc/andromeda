@@ -2,9 +2,11 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.modules.entities.boats.packets.RecordPlaybackS2CPayload;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.function.Supplier;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -34,6 +36,11 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
       BoatRideHeightFactory rideHeight,
       Supplier<Item> dropItem) {
     super(entityType, world, rideHeight, dropItem);
+  }
+
+  @Override
+  protected Component getTypeName() {
+    return TextUtil.translatable("entity.andromeda.jukebox_boat");
   }
 
   @Override

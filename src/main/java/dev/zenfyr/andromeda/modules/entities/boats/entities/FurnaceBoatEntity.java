@@ -3,8 +3,10 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.function.Supplier;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -30,6 +32,11 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
       BoatRideHeightFactory rideHeight,
       Supplier<Item> dropItem) {
     super(entityType, world, rideHeight, dropItem);
+  }
+
+  @Override
+  protected Component getTypeName() {
+    return TextUtil.translatable("entity.andromeda.furnace_boat");
   }
 
   @Override

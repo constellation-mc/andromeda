@@ -81,6 +81,7 @@ loom {
 
             vmArg "-javaagent:${ configurations.compileClasspath.find { it.name.contains("sponge-mixin") } }"
             property("mixin.debug.export", "true")
+            property("fabric-tag-conventions-v2.missingTagTranslationWarning", "VERBOSE")
         }
     }
 }

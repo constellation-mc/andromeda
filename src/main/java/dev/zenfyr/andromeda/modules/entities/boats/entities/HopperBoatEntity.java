@@ -3,9 +3,11 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import static dev.zenfyr.andromeda.modules.entities.boats.entities.BoatEntityWithBlock.PIby180;
 import static dev.zenfyr.andromeda.modules.entities.boats.entities.BoatEntityWithBlock.PIby2;
 
+import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
@@ -36,6 +38,11 @@ public class HopperBoatEntity extends AbstractChestBoat implements Hopper {
     super(entityType, world, dropItem);
     this.clearItemStacks();
     this.rideHeight = rideHeight;
+  }
+
+  @Override
+  protected Component getTypeName() {
+    return TextUtil.translatable("entity.andromeda.hopper_boat");
   }
 
   @Override

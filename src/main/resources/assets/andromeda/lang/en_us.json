@@ -438,6 +438,7 @@
   "config.andromeda.misc.unknown": "???",
   "tooltip.andromeda.rose_of_the_valley": "The smell reminds you of a valley...",
   "block.andromeda.rose_of_the_valley": "Rose of the Valley",
+  "item.andromeda.rose_of_the_valley": "Rose of the Valley",
 
   "config.andromeda.misc.tiny_storage": "[EXP] Tiny Storage",
   "config.andromeda.misc.tiny_storage.@Tooltip": "Store 4 more stacks of items in the 2x2 crafting space.\nCurrently experimental, so proceed with caution!",
@@ -445,6 +446,18 @@
   "config.andromeda.misc.tiny_storage.option.transferMode.@Tooltip": "Should the items be transferred or dropped upon death.",
   "config.andromeda.misc.tiny_storage.option.TransferMode.FOLLOW_GAMERULE": "Follow Gamerule",
   "config.andromeda.misc.tiny_storage.option.TransferMode.ALWAYS_TRANSFER": "Always Transfer",
+
+  "tag.item.andromeda.linkers": "Minecart Linkers",
+  "tag.item.andromeda.villager_gifts.minor_positive": "Great Villager Gift",
+  "tag.item.andromeda.villager_gifts.major_positive": "Good Villager Gift",
+  "tag.item.andromeda.villager_gifts.minor_negative": "Bad Villager Gift",
+  "tag.item.andromeda.villager_gifts.major_negative": "Awful Villager Gift",
+  "tag.item.andromeda.tempting_for_villagers": "Tempting for Villagers",
+  "tag.item.andromeda.zombies_pick_up": "Zombies Pick Up",
+  "tag.item.andromeda.tnt_boats": "TNT Boats",
+  "tag.item.andromeda.jukebox_boats": "Jukebox Boats",
+  "tag.item.andromeda.hopper_boats": "Hopper Boats",
+  "tag.item.andromeda.furnace_boats": "Furnace Boats",
 
   "config.andromeda.base.option.sideOnlyMode": "Side-Only Mode",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "Disable all modules which require Andromeda to be present on server.",
