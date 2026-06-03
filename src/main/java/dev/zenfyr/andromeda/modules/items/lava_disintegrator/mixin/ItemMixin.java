@@ -28,7 +28,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Item.class)
 abstract class ItemMixin {
 
-  // TODO: figure out how to get fire resist state
   @Inject(at = @At("HEAD"), method = "overrideOtherStackedOnMe", cancellable = true)
   private void andromeda$onLavaClick(
       ItemStack stack,

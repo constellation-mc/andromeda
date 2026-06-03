@@ -151,7 +151,6 @@ public class MagnetItem extends Item {
     }
   }
 
-  // TODO check if equipment slot works with offhand now
   @Override
   public void inventoryTick(
       ItemStack stack,
