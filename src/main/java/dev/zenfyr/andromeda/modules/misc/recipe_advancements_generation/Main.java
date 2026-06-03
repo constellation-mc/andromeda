@@ -1,11 +1,11 @@
 package dev.zenfyr.andromeda.modules.misc.recipe_advancements_generation;
 
+import com.google.common.collect.ImmutableMap;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -60,7 +60,6 @@ public final class Main {
   public static void generateRecipeAdvancements(
       MinecraftServer server, AdvancementGeneration module, AdvancementGeneration.Config config) {
     Map<ResourceLocation, AdvancementHolder> advancementBuilders = new ConcurrentHashMap<>();
-    AtomicInteger count = new AtomicInteger();
 
     List<CompletableFuture<Void>> futures = server.getRecipeManager().getRecipes().stream()
         .filter(recipe -> {
@@ -73,24 +72,10 @@ public final class Main {
             () -> {
               var handler = RECIPE_TYPE_HANDLERS.get(recipe.value().getType());
               if (handler != null) {
-                count.getAndIncrement();
                 var r = handler.apply(new Context(recipe.value(), recipe.id()));
                 if (r != null)
                   advancementBuilders.put(
                       r.key().location(), r.builder().build(r.key().location()));
-              } else {
-                //                if (!recipe.getIngredients().isEmpty()) {
-                //                  count.getAndIncrement();
-                //                  advancementBuilders.put(
-                //                      new ResourceLocation(
-                //                          recipe.getId().getNamespace(),
-                //                          "recipes/gen/generic/" +
-                // recipe.getId().toString().replace(":", "_")),
-                //                      createAdvBuilder(
-                //                          config,
-                //                          recipe.getId(),
-                //                          recipe.getIngredients().toArray(Ingredient[]::new)));
-                //                }
               }
             },
             Util.backgroundExecutor()))
@@ -99,11 +84,13 @@ public final class Main {
     CompletableFuture<Void> future =
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
     server.managedBlock(future::isDone);
+    module.logger().info("finished generating {} recipe advancements", advancementBuilders.size());
 
+    advancementBuilders.putAll(server.getAdvancements().advancements);
+    server.getAdvancements().advancements = ImmutableMap.copyOf(advancementBuilders);
     AdvancementTree advancementManager = server.getAdvancements().tree();
     advancementManager.addAll(advancementBuilders.values());
 
-    module.logger().info("finished generating {} recipe advancements", count.get());
     advancementBuilders.clear();
   }
 
@@ -124,7 +111,7 @@ public final class Main {
       var name = String.valueOf(i);
       names.add(name);
       var predicate = ItemPredicate.Builder.item().build();
-      // TODO: hook the trigger
+      ((ItemPredicateAccessor) (Object) predicate).andromeda$setIngredient(ingredient);
       builder.addCriterion(name, InventoryChangeTrigger.TriggerInstance.hasItems(predicate));
     }
     builder.addCriterion("has_recipe", RecipeUnlockedTrigger.unlocked(id));
@@ -169,9 +156,7 @@ public final class Main {
     addRecipeTypeHandler(RecipeType.STONECUTTING, basicConsumer("stonecutting", config));
     addRecipeTypeHandler(RecipeType.SMITHING, context -> {
       if (!(context.recipe() instanceof SmithingRecipe sr)) {
-        ModuleManager.get()
-            .get(AdvancementGeneration.class)
-            .orElseThrow()
+        module
             .logger()
             .error(
                 "Smithing recipe factory requested for non smithing recipe type! {}",
@@ -188,17 +173,46 @@ public final class Main {
               sr.additionIngredient().orElse(Ingredient.of())));
     });
     addRecipeTypeHandler(RecipeType.CRAFTING, (context) -> {
-      if (!(context.recipe() instanceof CustomRecipe)) {
-        // TODO: fix crafting recipe book gen
-        //        if (!context.recipe().getIngredients().isEmpty()) {
-        //          return new Return(
-        //              idFromRecipe(context.id(), "crafting"),
-        //              createAdvBuilder(
-        //                  config,
-        //                  context.id(),
-        //                  context.recipe().getIngredients().toArray(Ingredient[]::new)));
-        //        }
+      if (!(context.recipe() instanceof CraftingRecipe)) {
+        module
+            .logger()
+            .error(
+                "Crafting recipe factory requested for non crafting recipe type! {}",
+                context.key());
+        return null;
       }
+      if (context.recipe() instanceof CustomRecipe) return null;
+
+      if (context.recipe() instanceof ShapelessRecipe recipe) {
+        if (recipe.ingredients.isEmpty()) return null;
+
+        return new Return(
+            idFromRecipe(context.key(), "crafting"),
+            createAdvBuilder(config, context.key(), recipe.ingredients.toArray(Ingredient[]::new)));
+      }
+
+      if (context.recipe() instanceof ShapedRecipe recipe) {
+        if (recipe.pattern.ingredients().isEmpty()) return null;
+
+        return new Return(
+            idFromRecipe(context.key(), "crafting"),
+            createAdvBuilder(
+                config,
+                context.key(),
+                recipe.pattern.ingredients().stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toArray(Ingredient[]::new)));
+      }
+
+      if (context.recipe() instanceof TransmuteRecipe recipe) {
+        if (recipe.input.isEmpty() && recipe.material.isEmpty()) return null;
+
+        return new Return(
+            idFromRecipe(context.key(), "crafting"),
+            createAdvBuilder(config, context.key(), recipe.input, recipe.material));
+      }
+
       return null;
     });
   }

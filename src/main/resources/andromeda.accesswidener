@@ -61,5 +61,12 @@ accessible field net/minecraft/world/level/block/entity/BeehiveBlockEntity IGNOR
 accessible method net/minecraft/world/entity/item/FallingBlockEntity readAdditionalSaveData (Lnet/minecraft/world/level/storage/ValueInput;)V
 accessible method net/minecraft/world/level/block/entity/BeehiveBlockEntity getBees ()Ljava/util/List;
 
+# misc/recipe_advancements_generation
+accessible field net/minecraft/server/ServerAdvancementManager advancements Ljava/util/Map;
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe ingredients Ljava/util/List;
+accessible field net/minecraft/world/item/crafting/ShapedRecipe pattern Lnet/minecraft/world/item/crafting/ShapedRecipePattern;
+accessible field net/minecraft/world/item/crafting/TransmuteRecipe input Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/TransmuteRecipe material Lnet/minecraft/world/item/crafting/Ingredient;
+
 # misc/unknown
 accessible field net/minecraft/client/gui/components/SplashRenderer splash Ljava/lang/String;
