@@ -30,7 +30,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public class Andromeda implements ModInitializer {
 
@@ -96,7 +95,6 @@ public class Andromeda implements ModInitializer {
 
     // Init the data pack config system
     DataConfigs.init(manager);
-    MixinEnvironment.getCurrentEnvironment().audit();
   }
 
   public void onMergedEntryPoint() {
