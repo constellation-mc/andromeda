@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.mechanics.linkart;
 
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 

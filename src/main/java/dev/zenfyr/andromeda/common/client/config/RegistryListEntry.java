@@ -8,17 +8,17 @@ import java.util.function.Supplier;
 import me.shedaniel.clothconfig2.gui.entries.TextFieldListEntry;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class RegistryListEntry<T> extends TextFieldListEntry<T> {
 
   private final Registry<T> registry;
-  private final ResourceLocation defaultKey;
+  private final Identifier defaultKey;
 
   protected RegistryListEntry(
       Component fieldName,
       Registry<T> registry,
-      ResourceLocation defaultKey,
+      Identifier defaultKey,
       T original,
       Component resetButtonKey,
       Supplier<T> defaultValue,
@@ -80,7 +80,7 @@ public class RegistryListEntry<T> extends TextFieldListEntry<T> {
     return this.registry.getValue(this.defaultKey);
   }
 
-  private static ResourceLocation tryParse(String location) {
-    return ResourceLocation.tryParse(location);
+  private static Identifier tryParse(String location) {
+    return Identifier.tryParse(location);
   }
 }

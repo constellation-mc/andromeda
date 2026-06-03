@@ -4,8 +4,8 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector2f;
@@ -37,7 +37,7 @@ public class BoatTypes {
   public static final BoatType PALE_OAK = BoatType.of("pale_oak", BOAT);
   public static final BoatType BAMBOO = BoatType.of("bamboo", RAFT);
 
-  public static ResourceLocation location(BoatType type, BoatVariant variant) {
+  public static Identifier location(BoatType type, BoatVariant variant) {
     return Andromeda.id(
         type.material() + '_' + variant.name() + '_' + type.model().name());
   }

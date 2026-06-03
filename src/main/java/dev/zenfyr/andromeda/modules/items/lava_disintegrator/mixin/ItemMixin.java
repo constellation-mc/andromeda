@@ -2,7 +2,6 @@ package dev.zenfyr.andromeda.modules.items.lava_disintegrator.mixin;
 
 import dev.zenfyr.pulsar.client.particles.ScreenParticleHelper;
 import dev.zenfyr.pulsar.util.MathUtil;
-import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -67,11 +66,13 @@ abstract class ItemMixin {
     for (int i = 0; i < count; i++) {
       ScreenParticleHelper.addParticle(ParticleTypes.LAVA, x, y, 0.0, 0.0);
     }
-    Objects.requireNonNull(client.player)
-        .playNotifySound(
-            SoundEvents.LAVA_EXTINGUISH,
-            SoundSource.AMBIENT,
-            0.8f,
-            0.8F + MathUtil.threadRandom().nextFloat() * 0.4F);
+
+    client.level.playSound(
+        client.player,
+        client.player,
+        SoundEvents.LAVA_EXTINGUISH,
+        SoundSource.AMBIENT,
+        0.8f,
+        0.8F + MathUtil.threadRandom().nextFloat() * 0.4F);
   }
 }

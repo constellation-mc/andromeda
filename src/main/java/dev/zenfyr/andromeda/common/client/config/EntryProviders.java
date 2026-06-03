@@ -18,7 +18,7 @@ import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Item;
@@ -93,8 +93,8 @@ public class EntryProviders {
         c -> "");
 
     registry.register(
-        ResourceLocation.class,
-        context -> new ResourceLocationListEntry(
+        Identifier.class,
+        context -> new IdentifierListEntry(
             i18n(context),
             context.value(),
             AutoConfigScreen.RESET_BUTTON_KEY,
@@ -102,7 +102,7 @@ public class EntryProviders {
             context.consumer(),
             null,
             false),
-        c -> ResourceLocation.withDefaultNamespace(""));
+        c -> Identifier.withDefaultNamespace(""));
 
     registry.register(
         (Class<List<Object>>) (Object) List.class,
@@ -232,7 +232,7 @@ public class EntryProviders {
   }
 
   private static <T> void forRegistry(
-      AutoConfigScreen registry, Class<T> type, Registry<T> contentRegistry, ResourceLocation def) {
+      AutoConfigScreen registry, Class<T> type, Registry<T> contentRegistry, Identifier def) {
     registry.register(
         type,
         context -> new RegistryListEntry<>(

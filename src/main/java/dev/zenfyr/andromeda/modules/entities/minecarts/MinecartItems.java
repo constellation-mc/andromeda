@@ -15,14 +15,14 @@ import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
 import dev.zenfyr.pulsar.util.MakeSure;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -150,7 +150,7 @@ public class MinecartItems {
     }
   }
 
-  @Nullable private static ResourceLocation andromeda$getEntityId(SpawnerBlockEntity mobSpawnerBlockEntity) {
+  @Nullable private static Identifier andromeda$getEntityId(SpawnerBlockEntity mobSpawnerBlockEntity) {
     var entry = mobSpawnerBlockEntity.getSpawner().nextSpawnData;
     if (entry == null) return BuiltInRegistries.ENTITY_TYPE.getDefaultKey();
     String identifier = entry.entityToSpawn().getString("id").orElse("");
@@ -158,8 +158,8 @@ public class MinecartItems {
     try {
       return StringUtils.isEmpty(identifier)
           ? BuiltInRegistries.ENTITY_TYPE.getDefaultKey()
-          : ResourceLocation.tryParse(identifier);
-    } catch (ResourceLocationException e) {
+          : Identifier.tryParse(identifier);
+    } catch (IdentifierException e) {
       BlockPos blockPos = mobSpawnerBlockEntity.getBlockPos();
       ModuleManager.get()
           .get(Minecarts.class)
@@ -170,7 +170,7 @@ public class MinecartItems {
               identifier,
               Objects.requireNonNull(mobSpawnerBlockEntity.getLevel())
                   .dimension()
-                  .location(),
+                  .identifier(),
               blockPos.getX(),
               blockPos.getY(),
               blockPos.getZ());

@@ -12,7 +12,7 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @ModuleInfo(name = "recipe_advancements_generation", category = "misc", env = Environment.SERVER)
 public final class AdvancementGeneration extends Module implements PostBootstrapEvent {
@@ -32,6 +32,6 @@ public final class AdvancementGeneration extends Module implements PostBootstrap
     public boolean requireAllItems = true;
     public boolean ignoreRecipesHiddenInTheRecipeBook = true;
     public List<String> namespaceBlacklist = Arrays.asList("minecraft", "andromeda", "extshape");
-    public List<ResourceLocation> recipeBlacklist = new ArrayList<>();
+    public List<Identifier> recipeBlacklist = new ArrayList<>();
   }
 }

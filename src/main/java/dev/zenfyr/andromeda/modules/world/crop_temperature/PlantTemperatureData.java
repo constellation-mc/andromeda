@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.Block;
@@ -106,7 +106,7 @@ public final class PlantTemperatureData {
   public static void init() {
     var module = ModuleManager.get().get(PlantTemperature.class).orElseThrow();
     ServerReloadersEvent.EVENT.register(
-        context -> context.register(RELOADER.location(), new Reloader(module)));
+        context -> context.register(RELOADER.identifier(), new Reloader(module)));
   }
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
@@ -152,7 +152,7 @@ public final class PlantTemperatureData {
     private final PlantTemperature module;
 
     protected Reloader(PlantTemperature module) {
-      super(RELOADER.location(), MERGED_CODEC);
+      super(RELOADER.identifier(), MERGED_CODEC);
       this.module = module;
     }
 
@@ -161,7 +161,7 @@ public final class PlantTemperatureData {
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, NewHolder> data, ResourceManager manager) {
+    protected void apply(Map<Identifier, NewHolder> data, ResourceManager manager) {
       IdentityHashMap<Block, float[]> replace = new IdentityHashMap<>();
       IdentityHashMap<Block, float[]> result = new IdentityHashMap<>();
 

@@ -11,13 +11,13 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 @Environment(EnvType.CLIENT)
 public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> {
 
-  private static final ResourceLocation TEXTURE = Andromeda.id("textures/gui/fletching.png");
+  private static final Identifier TEXTURE = Andromeda.id("textures/gui/fletching.png");
 
   public FletchingScreen(
       FletchingScreenHandler handler, Inventory playerInventory, Component title) {

@@ -18,18 +18,18 @@ accessible method net/minecraft/server/level/ServerLevel getEntities ()Lnet/mine
 accessible class net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon
 
 # entities/bee_flower_duplication
-accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal isPollinating ()Z
-accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal hasPollinatedLongEnough ()Z
+accessible method net/minecraft/world/entity/animal/bee/Bee$BeePollinateGoal isPollinating ()Z
+accessible method net/minecraft/world/entity/animal/bee/Bee$BeePollinateGoal hasPollinatedLongEnough ()Z
 accessible method net/minecraft/world/level/block/DoublePlantBlock canSurvive (Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z
 accessible method net/minecraft/world/level/block/VegetationBlock canSurvive (Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z
 
 # entities/boats
-accessible method net/minecraft/world/entity/vehicle/AbstractBoat getDropItem ()Lnet/minecraft/world/item/Item;
+accessible method net/minecraft/world/entity/vehicle/boat/AbstractBoat getDropItem ()Lnet/minecraft/world/item/Item;
 
 # entities/boats (furnaceBoat)
 #accessible field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;
-accessible field net/minecraft/world/entity/vehicle/AbstractBoat status Lnet/minecraft/world/entity/vehicle/AbstractBoat$Status;
-extendable method net/minecraft/world/entity/vehicle/AbstractBoat floatBoat ()V
+accessible field net/minecraft/world/entity/vehicle/boat/AbstractBoat status Lnet/minecraft/world/entity/vehicle/boat/AbstractBoat$Status;
+extendable method net/minecraft/world/entity/vehicle/boat/AbstractBoat floatBoat ()V
 
 # gui/gui_particles (furnaceScreen)
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
@@ -43,7 +43,7 @@ accessible field net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen s
 #accessible field net/minecraft/server/ServerAdvancementManager advancements Lnet/minecraft/advancements/AdvancementList;
 
 # items/minecart_block_picking
-accessible field net/minecraft/world/entity/vehicle/MinecartFurnace fuel I
+accessible field net/minecraft/world/entity/vehicle/minecart/MinecartFurnace fuel I
 accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTimeRemaining I
 accessible field net/minecraft/world/level/BaseSpawner nextSpawnData Lnet/minecraft/world/level/SpawnData;
 
@@ -51,7 +51,7 @@ accessible field net/minecraft/world/level/BaseSpawner nextSpawnData Lnet/minecr
 accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
 
 # mechanics/linkart
-accessible method net/minecraft/world/entity/vehicle/AbstractMinecart getMaxSpeed (Lnet/minecraft/server/level/ServerLevel;)D
+accessible method net/minecraft/world/entity/vehicle/minecart/AbstractMinecart getMaxSpeed (Lnet/minecraft/server/level/ServerLevel;)D
 
 # mechanics/throwable_items
 #accessible method net/minecraft/world/level/storage/loot/parameters/LootContextParamSets register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/world/level/storage/loot/parameters/LootContextParamSet;
@@ -69,4 +69,4 @@ accessible field net/minecraft/world/item/crafting/TransmuteRecipe input Lnet/mi
 accessible field net/minecraft/world/item/crafting/TransmuteRecipe material Lnet/minecraft/world/item/crafting/Ingredient;
 
 # misc/unknown
-accessible field net/minecraft/client/gui/components/SplashRenderer splash Ljava/lang/String;
+accessible field net/minecraft/client/gui/components/SplashRenderer splash Lnet/minecraft/network/chat/Component;

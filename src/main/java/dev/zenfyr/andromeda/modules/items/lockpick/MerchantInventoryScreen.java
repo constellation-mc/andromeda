@@ -8,15 +8,14 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 @Environment(EnvType.CLIENT)
 public class MerchantInventoryScreen
     extends AbstractContainerScreen<MerchantInventoryScreenHandler> {
 
-  private static final ResourceLocation TEXTURE =
-      Andromeda.id("textures/gui/merchant_inventory.png");
+  private static final Identifier TEXTURE = Andromeda.id("textures/gui/merchant_inventory.png");
 
   public MerchantInventoryScreen(
       MerchantInventoryScreenHandler handler, Inventory inventory, Component title) {

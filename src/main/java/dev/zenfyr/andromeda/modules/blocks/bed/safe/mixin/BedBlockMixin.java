@@ -1,11 +1,10 @@
 package dev.zenfyr.andromeda.modules.blocks.bed.safe.mixin;
 
-import static net.minecraft.world.level.block.BedBlock.canSetSpawn;
-
 import dev.zenfyr.andromeda.modules.blocks.bed.safe.Safe;
 import dev.zenfyr.pulsar.util.TextUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
@@ -34,7 +33,10 @@ abstract class BedBlockMixin extends Block {
       CallbackInfoReturnable<InteractionResult> cir) {
     if (world.isClientSide()) return;
 
-    if (!canSetSpawn(world)) {
+    if (world
+        .environmentAttributes()
+        .getValue(EnvironmentAttributes.BED_RULE, blockPos)
+        .explodes()) {
       if (world.am$get(Safe.CONFIG).available) {
         player.displayClientMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
         cir.setReturnValue(InteractionResult.SUCCESS);

@@ -33,7 +33,7 @@ abstract class LootableContainerBlockEntityMixin extends BaseContainerBlockEntit
     if (monsters.isEmpty() || player.getAbilities().instabuild || checkLockPicking(this, player))
       return locked;
 
-    handleLockedContainer(player, monsters);
+    handleLockedContainer(player, this.getBlockPos().getCenter(), monsters);
     return true;
   }
 }

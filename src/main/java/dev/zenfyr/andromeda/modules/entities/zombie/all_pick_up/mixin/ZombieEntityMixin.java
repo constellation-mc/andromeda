@@ -6,7 +6,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +25,7 @@ abstract class ZombieEntityMixin extends Monster {
       at =
           @At(
               value = "INVOKE",
-              target = "Lnet/minecraft/world/entity/monster/Zombie;setCanPickUpLoot(Z)V",
+              target = "Lnet/minecraft/world/entity/monster/zombie/Zombie;setCanPickUpLoot(Z)V",
               shift = At.Shift.AFTER),
       method = "finalizeSpawn")
   private void andromeda$initialize(

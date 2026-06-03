@@ -52,7 +52,7 @@ public class PouchItem extends Item implements ProjectileItem {
       TooltipFlag flag) {
     if (flag.isAdvanced() && Util.isDev()) {
       consumer.accept(
-          TextUtil.literal("Loot: " + this.getType().getLootId(stack).location())
+          TextUtil.literal("Loot: " + this.getType().getLootId(stack).identifier())
               .withStyle(ChatFormatting.GRAY));
     }
   }

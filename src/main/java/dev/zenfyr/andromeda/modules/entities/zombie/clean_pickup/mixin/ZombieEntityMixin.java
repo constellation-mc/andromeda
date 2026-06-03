@@ -5,7 +5,7 @@ import dev.zenfyr.andromeda.modules.entities.zombie.clean_pickup.Pickup;
 import dev.zenfyr.andromeda.modules.entities.zombie.clean_pickup.PickupTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;

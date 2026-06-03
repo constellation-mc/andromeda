@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.PlaceBehaviorHandler;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.MinecartDispenseItemBehavior;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +19,7 @@ abstract class ItemDispenserBehaviorMixin {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/entity/vehicle/AbstractMinecart;createMinecart(Lnet/minecraft/world/level/Level;DDDLnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/entity/EntitySpawnReason;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/entity/vehicle/AbstractMinecart;",
+                  "Lnet/minecraft/world/entity/vehicle/minecart/AbstractMinecart;createMinecart(Lnet/minecraft/world/level/Level;DDDLnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/entity/EntitySpawnReason;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/entity/vehicle/minecart/AbstractMinecart;",
               shift = At.Shift.BEFORE),
       method = "execute",
       cancellable = true)

@@ -6,15 +6,15 @@ import dev.zenfyr.andromeda.modules.mechanics.trading_goat_horn.GoatHorn;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.InstrumentItem;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,12 +39,11 @@ abstract class GoatHornMixin {
       @Local Optional<? extends Holder<Instrument>> optional) {
     if (world.isClientSide()) return;
 
-    ResourceLocation identifier =
-        optional.orElseThrow().unwrapKey().orElseThrow().location();
+    Identifier identifier = optional.orElseThrow().unwrapKey().orElseThrow().identifier();
     if (!Objects.equals(identifier, world.am$get(GoatHorn.CONFIG).instrumentId)) return;
 
     ServerLevel sw = (ServerLevel) world;
-    if (!sw.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) return;
+    if (!sw.getGameRules().get(GameRules.SPAWN_MOBS)) return;
     var cfg = world.am$get(GoatHorn.CONFIG);
     if (!cfg.available) return;
 

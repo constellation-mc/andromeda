@@ -62,7 +62,7 @@ abstract class ServerWorldMixin extends Level implements DataConfigs.AttachmentG
         getServer().storageSource.getDimensionPath(this.dimension()).resolve("world_config"),
         RegisterConfigEvent.GAME);
 
-    DataConfigs.get(this.getServer()).applyConfigs(this, this.dimension().location());
+    DataConfigs.get(this.getServer()).applyConfigs(this, this.dimension().identifier());
   }
 
   @Override

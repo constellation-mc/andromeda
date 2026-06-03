@@ -15,8 +15,8 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -29,9 +29,8 @@ public final class Main {
   public static final Keeper<Item> INFINITE_TOTEM = Keeper.create();
   public static final Keeper<SimpleParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.create();
 
-  public static final ResourceLocation USED_CUSTOM_TOTEM = Andromeda.id("used_custom_totem");
-  public static final ResourceLocation NOTIFY_CLIENT =
-      Andromeda.id("notify_client_about_stuff_please");
+  public static final Identifier USED_CUSTOM_TOTEM = Andromeda.id("used_custom_totem");
+  public static final Identifier NOTIFY_CLIENT = Andromeda.id("notify_client_about_stuff_please");
 
   static void init() {
     var module = ModuleManager.get().get(InfiniteTotem.class).orElseThrow();

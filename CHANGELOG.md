@@ -1,6 +1,6 @@
 # What's New:
 
-- Updated to Minecraft 1.21.10! This is the first release, there Will be bugs!
+- Updated to Minecraft 1.21.11! This is the first release, there Will be bugs!
 
 **This update changes the boat identifiers!** 
 e.g. What was `acacia_boat_with_furnace` is now `acacia_furnace_boat`. 

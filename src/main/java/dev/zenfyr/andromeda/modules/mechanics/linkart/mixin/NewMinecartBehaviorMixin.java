@@ -4,9 +4,9 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkableMinecart;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.Main;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.MinecartBehavior;
-import net.minecraft.world.entity.vehicle.NewMinecartBehavior;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.MinecartBehavior;
+import net.minecraft.world.entity.vehicle.minecart.NewMinecartBehavior;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +28,7 @@ public abstract class NewMinecartBehaviorMixin extends MinecartBehavior {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/entity/vehicle/AbstractMinecart;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V",
+                  "Lnet/minecraft/world/entity/vehicle/minecart/AbstractMinecart;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V",
               ordinal = 0))
   private Vec3 modifiedMovement(Vec3 movement) {
     if (((LinkableMinecart) this.minecart).linkart$lastMovementLength() < movement.length()) {
@@ -65,7 +65,7 @@ public abstract class NewMinecartBehaviorMixin extends MinecartBehavior {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/entity/vehicle/AbstractMinecart;getMaxSpeed(Lnet/minecraft/server/level/ServerLevel;)D"))
+                  "Lnet/minecraft/world/entity/vehicle/minecart/AbstractMinecart;getMaxSpeed(Lnet/minecraft/server/level/ServerLevel;)D"))
   private double linkart$skipVelocityClamping(double original) {
     if (((LinkableMinecart) this.minecart).linkart$getFollowing() != null) {
       AbstractMinecart following = ((LinkableMinecart) this.minecart).linkart$getFollowing();

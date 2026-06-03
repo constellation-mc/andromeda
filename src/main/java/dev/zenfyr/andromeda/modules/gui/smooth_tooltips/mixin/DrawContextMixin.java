@@ -12,7 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
@@ -93,7 +93,7 @@ abstract class DrawContextMixin {
       int i,
       int j,
       ClientTooltipPositioner clientTooltipPositioner,
-      @Nullable ResourceLocation resourceLocation,
+      @Nullable Identifier resourceLocation,
       CallbackInfo ci,
       @Share("popMatrix") LocalBooleanRef popMatrix) {
     if (popMatrix.get()) this.pose.popMatrix();

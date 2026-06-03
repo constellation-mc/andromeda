@@ -7,9 +7,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.MinecartSpawner;
+import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -34,7 +34,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<MinecartSpawner> 
         consumer.accept(TextUtil.translatable(
                 "tooltip.andromeda.spawner_minecart.filled",
                 BuiltInRegistries.ENTITY_TYPE
-                    .getValue(ResourceLocation.tryParse(nbt.getStringOr("Entity", "minecraft:pig")))
+                    .getValue(Identifier.tryParse(nbt.getStringOr("Entity", "minecraft:pig")))
                     .getDescription())
             .withStyle(ChatFormatting.GRAY));
       }
@@ -51,7 +51,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<MinecartSpawner> 
             .getSpawner()
             .setEntityId(
                 BuiltInRegistries.ENTITY_TYPE.getValue(
-                    ResourceLocation.tryParse(nbt.getStringOr("Entity", "minecraft:pig"))),
+                    Identifier.tryParse(nbt.getStringOr("Entity", "minecraft:pig"))),
                 entity.level,
                 entity.level.random,
                 entity.blockPosition());

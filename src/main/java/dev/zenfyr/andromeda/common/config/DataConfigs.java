@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Set;
 import lombok.CustomLog;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -33,7 +33,7 @@ import net.minecraft.world.level.Level;
 @CustomLog
 public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
 
-  public static final ResourceLocation DEFAULT = Andromeda.id("default");
+  public static final Identifier DEFAULT = Andromeda.id("default");
   public static final ReloaderType<DataConfigs> RELOADER =
       ReloaderType.create(Andromeda.id("scoped_config"));
 
@@ -42,20 +42,20 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
   }
 
   private final ModuleManager moduleManager;
-  public Map<ResourceLocation, Map<Module, Set<Data>>> configs;
+  public Map<Identifier, Map<Module, Set<Data>>> configs;
   public Map<Module, Set<Data>> defaultConfigs;
 
   public DataConfigs(ModuleManager moduleManager) {
-    super(RELOADER.location(), ExtraCodecs.JSON);
+    super(RELOADER.identifier(), ExtraCodecs.JSON);
     this.moduleManager = moduleManager;
   }
 
   @Override
-  protected void apply(Map<ResourceLocation, JsonElement> data, ResourceManager manager) {
-    Map<ResourceLocation, Map<Module, Set<Data>>> parsed = new HashMap<>();
+  protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager) {
+    Map<Identifier, Map<Module, Set<Data>>> parsed = new HashMap<>();
 
     for (var entry : Maps.transformValues(data, JsonElement::getAsJsonObject).entrySet()) {
-      ResourceLocation id = entry.getKey();
+      Identifier id = entry.getKey();
       JsonObject json = entry.getValue();
       // Modules must be loaded to apply their configs.
       var module = this.moduleManager
@@ -65,7 +65,7 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
       var type = Andromeda.GAME.getDefinition(module).supplier().get();
 
       Maps.transformValues(json.asMap(), JsonElement::getAsJsonObject).forEach((string, value) -> {
-        var dimension = ResourceLocation.parse(string);
+        var dimension = Identifier.parse(string);
         var cfg = Andromeda.GAME.gson().fromJson(value, type);
 
         // Parse the fields that must be modified during `apply`
@@ -89,7 +89,7 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
     this.configs = parsed;
   }
 
-  public void applyConfigs(AttachmentGetter getter, ResourceLocation dimension) {
+  public void applyConfigs(AttachmentGetter getter, Identifier dimension) {
     Objects.requireNonNull(configs);
 
     var handler = getter.andromeda$getConfigs();
@@ -97,7 +97,7 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
     handler.forEach((module, baseConfig) -> this.applyDataPacks(baseConfig, module, dimension));
   }
 
-  void applyDataPacks(BaseConfig config, Module module, ResourceLocation dimension) {
+  void applyDataPacks(BaseConfig config, Module module, Identifier dimension) {
     if (defaultConfigs != null) {
       var forModule = defaultConfigs.get(module);
       if (forModule != null) for (Data data : forModule) this.apply(config, data);
@@ -130,7 +130,7 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
     default <T extends BaseConfig> T am$get(ConfigDefinition<T> definition) {
       log.error(
           "Scoped configs requested on client in world '{}'! Returning un-scoped!",
-          ((Level) this).dimension().location());
+          ((Level) this).dimension().identifier());
       return Andromeda.MAIN.get(definition); // Stub implementation. DNI
     }
   }
@@ -141,14 +141,14 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
 
   public static void init(ModuleManager manager) {
     ServerReloadersEvent.EVENT.register(
-        context -> context.register(RELOADER.location(), new DataConfigs(manager)));
+        context -> context.register(RELOADER.identifier(), new DataConfigs(manager)));
 
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
       if (!success) return;
 
       var configs = DataConfigs.get(server);
       for (ServerLevel world : server.getAllLevels()) {
-        configs.applyConfigs((AttachmentGetter) world, world.dimension().location());
+        configs.applyConfigs((AttachmentGetter) world, world.dimension().identifier());
       }
     });
   }

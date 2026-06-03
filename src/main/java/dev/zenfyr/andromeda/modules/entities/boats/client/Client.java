@@ -6,9 +6,9 @@ import dev.zenfyr.andromeda.modules.entities.boats.Boats;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 
 public class Client {
 
@@ -17,8 +17,8 @@ public class Client {
     var location = BoatTypes.location(type, variant);
     EntityType<T> entityType = (EntityType<T>) BuiltInRegistries.ENTITY_TYPE.getValue(location);
 
-    var modelLocation = new ModelLayerLocation(
-        ResourceLocation.tryBuild("minecraft", "boat/" + type.material()), "main");
+    var modelLocation =
+        new ModelLayerLocation(Identifier.tryBuild("minecraft", "boat/" + type.material()), "main");
 
     EntityRenderers.register(
         entityType,

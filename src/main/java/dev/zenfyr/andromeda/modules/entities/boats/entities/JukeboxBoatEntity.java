@@ -16,12 +16,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -56,7 +56,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
       boolean bl = source.getEntity() instanceof Player player && player.getAbilities().instabuild;
       if (bl || this.getDamage() > 40.0F) {
         this.stopPlaying();
-        if (!bl && level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (!bl && level.getGameRules().get(GameRules.ENTITY_DROPS)) {
           this.spawnAtLocation(level, this.getDropItem());
         }
 

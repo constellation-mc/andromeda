@@ -12,15 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 abstract class BedBlockMixin {
 
   @ModifyExpressionValue(
-      at =
-          @At(
-              value = "INVOKE",
-              target =
-                  "Lnet/minecraft/world/level/block/BedBlock;canSetSpawn(Lnet/minecraft/world/level/Level;)Z"),
+      at = @At(value = "INVOKE", target = "Lnet/minecraft/world/attribute/BedRule;explodes()Z"),
       method = "useWithoutItem")
   private boolean andromeda$explode(boolean original, @Local(argsOnly = true) Level world) {
     if (world.isClientSide()) return original;
 
-    return original && !world.am$get(Unsafe.CONFIG).available;
+    return original || world.am$get(Unsafe.CONFIG).available;
   }
 }

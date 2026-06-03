@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.misc.tiny_storage;
 import dev.zenfyr.andromeda.common.Andromeda;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 
 public final class Main {
   static void init() {
@@ -11,7 +11,7 @@ public final class Main {
       if (alive
           || Andromeda.MAIN.get(TinyStorage.CONFIG).transferMode
               == TinyStorage.TransferMode.ALWAYS_TRANSFER
-          || newPlayer.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)
+          || newPlayer.level().getGameRules().get(GameRules.KEEP_INVENTORY)
           || oldPlayer.isSpectator()) {
         copyInputs(oldPlayer, newPlayer);
       }

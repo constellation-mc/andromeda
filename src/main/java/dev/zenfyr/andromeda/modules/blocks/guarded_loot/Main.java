@@ -9,6 +9,9 @@ import java.util.function.BiPredicate;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -23,6 +26,7 @@ import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class Main {
 
@@ -37,7 +41,7 @@ public final class Main {
               == GuardedLoot.BreakingHandler.UNBREAKABLE) {
         var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
         if (monsters.isEmpty() || checkLockPicking(blockEntity, player)) return true;
-        handleLockedContainer(player, monsters);
+        handleLockedContainer(player, pos.getCenter(), monsters);
         return false;
       }
       return true;
@@ -67,10 +71,23 @@ public final class Main {
     return false;
   }
 
-  public static void handleLockedContainer(Player player, Collection<LivingEntity> monsters) {
+  public static void handleLockedContainer(
+      Player player, Vec3 pos, Collection<LivingEntity> monsters) {
     player.displayClientMessage(
         TextUtil.translatable("andromeda.container.guarded").withStyle(ChatFormatting.RED), true);
-    player.playNotifySound(SoundEvents.CHEST_LOCKED, SoundSource.BLOCKS, 1.0F, 1.0F);
+
+    if (!player.level.isClientSide()) {
+      ((ServerPlayer) player)
+          .connection.send(new ClientboundSoundPacket(
+              BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.CHEST_LOCKED),
+              SoundSource.BLOCKS,
+              pos.x(),
+              pos.y(),
+              pos.z(),
+              1,
+              1,
+              player.getRandom().nextLong()));
+    }
     player.gameEvent(GameEvent.CONTAINER_OPEN);
 
     for (LivingEntity livingEntity : monsters) {

@@ -9,9 +9,9 @@ import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.pulsar.creativetab.CreativeModeTabAnimaton;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 public class AndromedaClient implements ClientModInitializer {
 
@@ -22,9 +22,8 @@ public class AndromedaClient implements ClientModInitializer {
       FabricLoader.getInstance().getConfigDir(),
       "client",
       RegisterConfigEvent.CLIENT);
-  private static final ResourceLocation BACKGROUND_TEXTURE =
-      Andromeda.id("textures/gui/background.png");
-  private static final ResourceLocation GALAXY_TEXTURE = Andromeda.id("textures/gui/galaxy.png");
+  private static final Identifier BACKGROUND_TEXTURE = Andromeda.id("textures/gui/background.png");
+  private static final Identifier GALAXY_TEXTURE = Andromeda.id("textures/gui/galaxy.png");
 
   @Override
   public void onInitializeClient() {

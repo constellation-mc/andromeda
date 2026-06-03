@@ -22,14 +22,15 @@ import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public class Andromeda implements ModInitializer {
 
@@ -59,8 +60,8 @@ public class Andromeda implements ModInitializer {
         RegisterConfigEvent.GAME);
   }
 
-  public static ResourceLocation id(String path) {
-    return ResourceLocation.tryBuild(MODID, path);
+  public static Identifier id(String path) {
+    return Identifier.tryBuild(MODID, path);
   }
 
   public static <T> ResourceKey<T> key(ResourceKey<? extends Registry<T>> registry, String path) {
@@ -95,6 +96,7 @@ public class Andromeda implements ModInitializer {
 
     // Init the data pack config system
     DataConfigs.init(manager);
+    MixinEnvironment.getCurrentEnvironment().audit();
   }
 
   public void onMergedEntryPoint() {
@@ -111,10 +113,8 @@ public class Andromeda implements ModInitializer {
   }
 
   public static void appendCommonGsonTypes(GsonBuilder builder) {
-    builder.registerTypeHierarchyAdapter(
-        ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
-    builder.registerTypeHierarchyAdapter(
-        ResourceLocation.class, GsonCodecContext.of(ResourceLocation.CODEC));
+    builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
+    builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
     builder.registerTypeHierarchyAdapter(
         MobEffect.class, GsonCodecContext.of(BuiltInRegistries.MOB_EFFECT.byNameCodec()));
     builder.registerTypeHierarchyAdapter(

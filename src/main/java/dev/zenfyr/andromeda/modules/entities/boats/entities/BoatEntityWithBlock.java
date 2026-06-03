@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import java.util.function.Supplier;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 

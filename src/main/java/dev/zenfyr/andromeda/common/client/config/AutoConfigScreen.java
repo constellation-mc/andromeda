@@ -20,7 +20,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,7 +100,7 @@ public class AutoConfigScreen {
           saveQueue.clear();
         })
         .setDefaultBackgroundTexture(
-            ResourceLocation.tryBuild("minecraft", "textures/block/amethyst_block.png"));
+            Identifier.tryBuild("minecraft", "textures/block/amethyst_block.png"));
 
     var bootstrapHandler = ModuleManager.get().configHandler();
 

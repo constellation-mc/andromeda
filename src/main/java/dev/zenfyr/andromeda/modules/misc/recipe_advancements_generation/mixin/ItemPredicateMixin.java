@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.misc.recipe_advancements_generation.mixin;
 
 import dev.zenfyr.andromeda.modules.misc.recipe_advancements_generation.ItemPredicateAccessor;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.spongepowered.asm.mixin.Mixin;

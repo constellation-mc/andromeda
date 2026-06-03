@@ -14,7 +14,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -134,7 +134,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
 
     if (Debug.get().isModLoaded(module, "additionaladditions")) {
       BuiltInRegistries.ITEM
-          .getOptional(ResourceLocation.tryBuild("additionaladditions", "crossbow_with_spyglass"))
+          .getOptional(Identifier.tryBuild("additionaladditions", "crossbow_with_spyglass"))
           .ifPresent(item -> {
             tightable.add(item);
             FletchingScreenHandler.addRecipe(

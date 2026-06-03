@@ -2,10 +2,10 @@ package dev.zenfyr.andromeda.modules.entities.minecart_speed_control.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.zenfyr.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.MinecartBehavior;
-import net.minecraft.world.entity.vehicle.MinecartFurnace;
-import net.minecraft.world.entity.vehicle.OldMinecartBehavior;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.MinecartBehavior;
+import net.minecraft.world.entity.vehicle.minecart.MinecartFurnace;
+import net.minecraft.world.entity.vehicle.minecart.OldMinecartBehavior;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

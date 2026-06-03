@@ -9,22 +9,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.Util;
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.crafting.*;
 import org.jetbrains.annotations.NotNull;
 
 public final class Main {
   private static final Map<RecipeType<?>, Function<Context, Return>> RECIPE_TYPE_HANDLERS =
       new HashMap<>();
-  private static final List<BiPredicate<ResourceLocation, Recipe<?>>> FILTERS =
+  private static final List<BiPredicate<Identifier, Recipe<?>>> FILTERS =
       Collections.synchronizedList(new ArrayList<>());
 
   public static Function<Context, Return> basicConsumer(
@@ -48,9 +48,9 @@ public final class Main {
       ResourceKey<Recipe<?>> recipe, String typeName) {
     return ResourceKey.create(
         Registries.RECIPE,
-        ResourceLocation.fromNamespaceAndPath(
-            recipe.location().getNamespace(),
-            "recipes/gen/" + typeName + "/" + recipe.location().toString().replace(":", "_")));
+        Identifier.fromNamespaceAndPath(
+            recipe.identifier().getNamespace(),
+            "recipes/gen/" + typeName + "/" + recipe.identifier().toString().replace(":", "_")));
   }
 
   public static void addRecipeTypeHandler(RecipeType<?> type, Function<Context, Return> consumer) {
@@ -59,12 +59,12 @@ public final class Main {
 
   public static void generateRecipeAdvancements(
       MinecraftServer server, AdvancementGeneration module, AdvancementGeneration.Config config) {
-    Map<ResourceLocation, AdvancementHolder> advancementBuilders = new ConcurrentHashMap<>();
+    Map<Identifier, AdvancementHolder> advancementBuilders = new ConcurrentHashMap<>();
 
     List<CompletableFuture<Void>> futures = server.getRecipeManager().getRecipes().stream()
         .filter(recipe -> {
-          for (BiPredicate<ResourceLocation, Recipe<?>> filter : FILTERS) {
-            if (filter.test(recipe.id().location(), recipe.value())) return false;
+          for (BiPredicate<Identifier, Recipe<?>> filter : FILTERS) {
+            if (filter.test(recipe.id().identifier(), recipe.value())) return false;
           }
           return true;
         })
@@ -75,7 +75,7 @@ public final class Main {
                 var r = handler.apply(new Context(recipe.value(), recipe.id()));
                 if (r != null)
                   advancementBuilders.put(
-                      r.key().location(), r.builder().build(r.key().location()));
+                      r.key().identifier(), r.builder().build(r.key().identifier()));
               }
             },
             Util.backgroundExecutor()))
@@ -98,7 +98,7 @@ public final class Main {
       AdvancementGeneration.Config config, ResourceKey<Recipe<?>> id, Ingredient... ingredients) {
     MakeSure.notEmpty(ingredients); // shouldn't really happen
     var builder = Advancement.Builder.recipeAdvancement();
-    builder.parent(ResourceLocation.tryBuild("minecraft", "recipes/root"));
+    builder.parent(Identifier.tryBuild("minecraft", "recipes/root"));
 
     List<String> names = new ArrayList<>();
     Set<Ingredient> elements = new HashSet<>();

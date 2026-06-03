@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,7 +26,7 @@ abstract class DebugHudMixin {
   @Final
   private Minecraft minecraft;
 
-  @Unique private static final Supplier<String> SPLASH = Memoize.supplier(() -> {
+  @Unique private static final Supplier<Component> SPLASH = Memoize.supplier(() -> {
     var r = Minecraft.getInstance().getSplashManager().getSplash();
     return r != null ? r.splash : null;
   });
@@ -39,7 +40,8 @@ abstract class DebugHudMixin {
               shift = At.Shift.BEFORE),
       method = "render")
   private void andromeda$leftText(
-      GuiGraphics guiGraphics, CallbackInfo ci, @Local(index = 5) List<String> list) {
-    if (this.minecraft.debugEntries.isF3Visible() && SPLASH.get() != null) list.add(SPLASH.get());
+      GuiGraphics guiGraphics, CallbackInfo ci, @Local(index = 6) List<String> list) {
+    if (this.minecraft.debugEntries.isOverlayVisible() && SPLASH.get() != null)
+      list.add(SPLASH.get().getString());
   }
 }

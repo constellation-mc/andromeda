@@ -21,7 +21,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.phys.EntityHitResult;
@@ -31,7 +31,7 @@ import org.joml.Vector2i;
 
 public class Client {
 
-  public static final ResourceLocation TOOLTIP_HUD = Andromeda.id("tooltip_hud");
+  public static final Identifier TOOLTIP_HUD = Andromeda.id("tooltip_hud");
   private Supplier<List<ClientTooltipComponent>> action;
   private float tooltipFlow;
   private float oldTooltipFlow;

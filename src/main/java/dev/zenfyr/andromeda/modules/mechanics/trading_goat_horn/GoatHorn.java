@@ -8,7 +8,7 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.common.config.GameConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @ModuleInfo(name = "trading_goat_horn", category = "mechanics", env = Environment.SERVER)
 public final class GoatHorn extends Module implements PostBootstrapEvent {
@@ -26,7 +26,7 @@ public final class GoatHorn extends Module implements PostBootstrapEvent {
 
   public static class Config extends GameConfig {
     public int cooldown = 48000;
-    public ResourceLocation instrumentId = ResourceLocation.tryBuild("minecraft", "sing_goat_horn");
+    public Identifier instrumentId = Identifier.tryBuild("minecraft", "sing_goat_horn");
     public boolean highlightTrader = false;
   }
 }

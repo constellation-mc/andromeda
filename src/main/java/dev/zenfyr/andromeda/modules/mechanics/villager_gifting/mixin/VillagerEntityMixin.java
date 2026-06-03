@@ -9,8 +9,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.entity.ai.gossip.GossipType;
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -42,7 +42,7 @@ abstract class VillagerEntityMixin extends AbstractVillager {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/entity/npc/Villager;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;",
+                  "Lnet/minecraft/world/entity/npc/villager/Villager;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;",
               shift = At.Shift.BEFORE),
       cancellable = true,
       method = "mobInteract")

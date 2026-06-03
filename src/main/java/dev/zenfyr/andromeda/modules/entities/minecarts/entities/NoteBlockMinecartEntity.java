@@ -14,7 +14,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -57,7 +57,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   }
 
   @Override
-  public void activateMinecart(int x, int y, int z, boolean powered) {
+  public void activateMinecart(ServerLevel level, int x, int y, int z, boolean powered) {
     if (powered && !this.isPowered) {
       playNote(this.level, new Vec3(getX(), getY(), getZ()));
     }
@@ -72,18 +72,20 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
       --j;
     }
 
-    BlockPos blockPos = new BlockPos(i, j, k);
-    BlockState blockState = this.level.getBlockState(blockPos);
-    if (BaseRailBlock.isRail(blockState)) {
-      if (blockState.is(Blocks.ACTIVATOR_RAIL)) {
-        if (blockState.getValue(PoweredRailBlock.POWERED)) {
-          this.activateMinecart(i, j, k, true);
-          this.isPowered = true;
+    if (!level.isClientSide()) {
+      BlockPos blockPos = new BlockPos(i, j, k);
+      BlockState blockState = this.level.getBlockState(blockPos);
+      if (BaseRailBlock.isRail(blockState)) {
+        if (blockState.is(Blocks.ACTIVATOR_RAIL)) {
+          if (blockState.getValue(PoweredRailBlock.POWERED)) {
+            this.activateMinecart((ServerLevel) level, i, j, k, true);
+            this.isPowered = true;
+          } else {
+            this.isPowered = false;
+          }
         } else {
           this.isPowered = false;
         }
-      } else {
-        this.isPowered = false;
       }
     }
     super.tick();

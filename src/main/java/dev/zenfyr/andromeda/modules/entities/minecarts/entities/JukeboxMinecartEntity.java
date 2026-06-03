@@ -15,14 +15,14 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -41,7 +41,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   }
 
   @Override
-  public void activateMinecart(int x, int y, int z, boolean powered) {
+  public void activateMinecart(ServerLevel level, int x, int y, int z, boolean powered) {
     if (powered && !this.record.isEmpty()) {
       ItemStackUtil.spawnVelocity(
           new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
@@ -89,7 +89,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   @Override
   public void destroy(ServerLevel level, DamageSource damageSource) {
     super.destroy(level, damageSource);
-    if (level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+    if (level.getGameRules().get(GameRules.ENTITY_DROPS)) {
       this.spawnAtLocation(level, record.getItem());
     }
   }
