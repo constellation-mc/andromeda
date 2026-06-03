@@ -1,9 +1,14 @@
 package dev.zenfyr.andromeda.modules.items.mending_tweaks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.zenfyr.andromeda.modules.items.mending_tweaks.Utils;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +24,17 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
       ContainerLevelAccess containerLevelAccess,
       ItemCombinerMenuSlotDefinition itemCombinerMenuSlotDefinition) {
     super(menuType, i, inventory, containerLevelAccess, itemCombinerMenuSlotDefinition);
+  }
+
+  @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getOrDefault(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"), method = "createResult")
+  private Object andromeda$setCostLimit(ItemStack instance, DataComponentType<Integer> dataComponentType, Object o, Operation<Object> original) {
+    if (!DataComponents.REPAIR_COST.equals(dataComponentType)) return original.call(instance, dataComponentType, o);
+
+    int value = (int) original.call(instance, dataComponentType, o);
+    if (value >= 52) {
+      return Utils.hasMending(instance) ? 52 : value;
+    }
+    return value;
   }
 
   @ModifyExpressionValue(
