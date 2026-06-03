@@ -133,7 +133,6 @@ public class MinecartItems {
           ItemStack jukeboxMinecart = new ItemStack(JUKEBOX_MINECART.orThrow());
 
           if (!record.isEmpty()) {
-            world.levelEvent(LevelEvent.SOUND_PLAY_JUKEBOX_SONG, pos, 0);
             var nbt = CompoundTagBuilder.create()
                 .put(
                     "Items",
