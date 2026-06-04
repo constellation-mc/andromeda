@@ -34,13 +34,12 @@ abstract class SlimeEntityMixin extends Mob {
 
   @Inject(at = @At("TAIL"), method = "registerGoals")
   private void andromeda$newGoal(CallbackInfo ci) {
-    var config = this.level.am$get(Slimes.CONFIG);
     this.targetSelector.addGoal(
         2,
         new NearestAttackableTargetGoal<>(
             (Slime) (Object) this, Slime.class, 5, true, false, (livingEntity, level) -> {
-              if (!config.available) return false;
-              if (!config.merge) return false;
+              var config = this.level.am$get(Slimes.CONFIG);
+              if (!config.available || !config.merge) return false;
               if (this.andromeda$mergeCD > 0) return false;
               float d = livingEntity.distanceTo(this);
               return d <= 6
@@ -51,12 +50,11 @@ abstract class SlimeEntityMixin extends Mob {
   @Inject(at = @At("TAIL"), method = "push")
   private void andromeda$push(Entity entity, CallbackInfo ci) {
     var config = this.level.am$get(Slimes.CONFIG);
-    if (!config.available) return;
-
-    if (!config.merge) return;
+    if (!config.available || !config.merge) return;
 
     if (getTarget() instanceof Slime slime && slime == entity && this.andromeda$mergeCD == 0) {
-      int size = (int) Math.round(slime.getSize() * 0.75 + getSize() * 0.75);
+      int largest = Math.max(slime.getSize(), getSize());
+      int size = (int) Math.max(largest, Math.round(slime.getSize() * 0.75 + getSize() * 0.75));
 
       slime.discard();
       this.setSize(size, true);
