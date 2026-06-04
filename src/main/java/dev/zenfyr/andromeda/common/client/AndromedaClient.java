@@ -32,10 +32,9 @@ public class AndromedaClient implements ClientModInitializer {
 
   @Override
   public void onInitializeClient() {
-    Andromeda.get().onMergedEntryPoint();
-    instance = this;
-
     var manager = ModuleManager.get();
+    Andromeda.get().onMergedEntryPoint(manager);
+    instance = this;
 
     CLIENT.loadAll();
     CLIENT.saveAll();
