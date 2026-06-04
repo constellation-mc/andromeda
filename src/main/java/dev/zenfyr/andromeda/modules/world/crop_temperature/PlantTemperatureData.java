@@ -85,15 +85,13 @@ public final class PlantTemperatureData {
       ReloaderType.create(Andromeda.id("crop_temperatures"));
 
   public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
-    if (isPlant(state.getBlock())) {
-      float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlock());
-      if (data != null) {
-        if (!world.am$get(PlantTemperature.CONFIG).available) return true;
+    float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlock());
+    if (data != null) {
+      if (!world.am$get(PlantTemperature.CONFIG).available) return true;
 
-        if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
-          return MathUtil.nextInt(0, 1) != 0;
-        } else return !(temp > data[3]) && !(temp < data[0]);
-      }
+      if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
+        return MathUtil.nextInt(0, 1) != 0;
+      } else return !(temp > data[3]) && !(temp < data[0]);
     }
     return true;
   }
