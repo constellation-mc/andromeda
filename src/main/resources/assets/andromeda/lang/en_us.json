@@ -384,8 +384,7 @@
   "config.andromeda.gui.smooth_tooltips.option.deltaY": "Vertical delta",
 
   "config.andromeda.category.misc": "Misc",
-  "config.andromeda.misc.damage_backport": "/damage backport",
-  "config.andromeda.misc.damage_backport.@Tooltip": "A backport of the /damage command. Not a 1-1 copy!",
+
   "config.andromeda.misc.translations": "Auto Update Translations",
   "config.andromeda.misc.translations.@Tooltip": "Try to download latest translations from GitHub.",
 
