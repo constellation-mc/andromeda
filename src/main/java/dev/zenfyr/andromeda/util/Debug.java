@@ -21,6 +21,8 @@ public class Debug extends BaseConfig {
 
   public boolean enableAllModules = false;
   public Map<String, Set<String>> skipModIntegration = new HashMap<>();
+  public boolean verbose = false;
+  public boolean mixinAudit = false;
 
   public boolean skipIntegration(Module module, String mod) {
     var set = this.skipModIntegration.get(ModuleHelper.id(module));
@@ -43,6 +45,18 @@ public class Debug extends BaseConfig {
       }
     }
     return false;
+  }
+
+  public boolean isEnableAllModules() {
+    return this.enableAllModules;
+  }
+
+  public boolean isVerbose() {
+    return this.verbose || Util.isDev();
+  }
+
+  public boolean isMixinAudit() {
+    return this.mixinAudit || Util.isDev();
   }
 
   public static Debug get() {
