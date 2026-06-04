@@ -9,7 +9,6 @@ import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.CustomPouchComponent;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
-import dev.zenfyr.andromeda.util.Debug;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
 import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.lang.reflect.Field;
@@ -174,7 +173,8 @@ public final class Main {
   }
 
   static void testBlocks() {
-    var module = ModuleManager.get().get(Pouches.class).orElseThrow();
+    var manager = ModuleManager.get();
+    var module = manager.get(Pouches.class).orElseThrow();
     for (BlockEntityType<?> type : BuiltInRegistries.BLOCK_ENTITY_TYPE) {
       var o = type.validBlocks.stream().findAny();
       if (o.isPresent()) {
@@ -194,7 +194,7 @@ public final class Main {
       }
     }
 
-    if (Debug.get().isVerbose()) {
+    if (manager.debug().isVerbose()) {
       StringBuilder b = new StringBuilder();
       b.append("Viewable block entities:");
       Main.VIEWABLE_VIEW.forEach((blockEntityType, field) -> {

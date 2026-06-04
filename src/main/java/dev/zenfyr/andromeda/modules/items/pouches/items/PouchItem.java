@@ -1,9 +1,9 @@
 package dev.zenfyr.andromeda.modules.items.pouches.items;
 
+import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.items.pouches.Main;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
-import dev.zenfyr.andromeda.util.Debug;
 import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.function.Consumer;
 import lombok.Getter;
@@ -50,7 +50,7 @@ public class PouchItem extends Item implements ProjectileItem {
       TooltipDisplay display,
       Consumer<Component> consumer,
       TooltipFlag flag) {
-    if (flag.isAdvanced() && Debug.get().isVerbose()) {
+    if (flag.isAdvanced() && ModuleManager.get().debug().isVerbose()) {
       consumer.accept(
           TextUtil.literal("Loot: " + this.getType().getLootId(stack).location())
               .withStyle(ChatFormatting.GRAY));

@@ -15,7 +15,6 @@ import dev.zenfyr.andromeda.common.util.GsonCodecContext;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.common.util.condition.ItemsRegisteredCondition;
 import dev.zenfyr.andromeda.common.util.condition.ModulesLoadedCondition;
-import dev.zenfyr.andromeda.util.Debug;
 import lombok.Getter;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -98,7 +97,7 @@ public class Andromeda implements ModInitializer {
     // Init the data pack config system
     DataConfigs.init(manager);
 
-    if (Debug.get().isMixinAudit()) {
+    if (manager.debug().isMixinAudit()) {
       MixinEnvironment.getCurrentEnvironment().audit();
     }
   }

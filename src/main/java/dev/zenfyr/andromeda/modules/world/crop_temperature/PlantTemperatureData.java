@@ -7,7 +7,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.util.Debug;
 import dev.zenfyr.pulsar.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.codec.JsonCodecDataLoader;
 import dev.zenfyr.pulsar.resources.ReloaderType;
@@ -102,9 +101,10 @@ public final class PlantTemperatureData {
   }
 
   public static void init() {
-    var module = ModuleManager.get().get(PlantTemperature.class).orElseThrow();
+    var manager = ModuleManager.get();
+    var module = manager.get(PlantTemperature.class).orElseThrow();
     ServerReloadersEvent.EVENT.register(
-        context -> context.register(RELOADER.location(), new Reloader(module)));
+        context -> context.register(RELOADER.location(), new Reloader(manager, module)));
   }
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
@@ -147,10 +147,12 @@ public final class PlantTemperatureData {
 
     @Nullable private IdentityHashMap<Block, float[]> map;
 
+    private final ModuleManager manager;
     private final PlantTemperature module;
 
-    protected Reloader(PlantTemperature module) {
+    protected Reloader(ModuleManager manager, PlantTemperature module) {
       super(RELOADER.location(), MERGED_CODEC);
+      this.manager = manager;
       this.module = module;
     }
 
@@ -171,7 +173,7 @@ public final class PlantTemperatureData {
       result.putAll(replace);
       this.map = result;
 
-      if (Debug.get().isVerbose()) verifyPostLoad(module, this);
+      if (this.manager.debug().isVerbose()) verifyPostLoad(module, this);
     }
   }
 }
