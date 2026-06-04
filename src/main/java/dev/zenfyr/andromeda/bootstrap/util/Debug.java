@@ -1,10 +1,10 @@
-package dev.zenfyr.andromeda.util;
+package dev.zenfyr.andromeda.bootstrap.util;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
-import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
+import dev.zenfyr.andromeda.util.Util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -57,9 +57,5 @@ public class Debug extends BaseConfig {
 
   public boolean isMixinAudit() {
     return this.mixinAudit || Util.isDev();
-  }
-
-  public static Debug get() {
-    return ModuleManager.get().modConfig().get(KEY);
   }
 }

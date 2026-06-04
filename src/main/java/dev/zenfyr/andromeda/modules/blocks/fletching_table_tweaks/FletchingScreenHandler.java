@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.andromeda.util.Debug;
 import java.util.*;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
@@ -115,7 +114,8 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
   }
 
   static void init() {
-    var module = ModuleManager.get().get(FletchingTableTweaks.class).orElseThrow();
+    var manager = ModuleManager.get();
+    var module = manager.get(FletchingTableTweaks.class).orElseThrow();
     FletchingScreenHandler.FLETCHING.init(Registry.register(
         BuiltInRegistries.MENU,
         id("fletching"),
@@ -123,7 +123,7 @@ public class FletchingScreenHandler extends ItemCombinerMenu {
 
     Set<Item> tightable = Sets.newHashSet(Items.BOW, Items.CROSSBOW);
 
-    if (Debug.get().isModLoaded(module, "additionaladditions")) {
+    if (manager.debug().isModLoaded(module, "additionaladditions")) {
       BuiltInRegistries.ITEM
           .getOptional(ResourceLocation.tryBuild("additionaladditions", "crossbow_with_spyglass"))
           .ifPresent(item -> {

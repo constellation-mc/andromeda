@@ -1,11 +1,14 @@
 package dev.zenfyr.andromeda.bootstrap;
 
+import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.BootstrapConfigHandler;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
 import dev.zenfyr.andromeda.bootstrap.event.BootstrapConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.event.PostModuleInitEvent;
+import dev.zenfyr.andromeda.bootstrap.util.Debug;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
+import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinHandler;
 import dev.zenfyr.andromeda.modules.ModuleDiscovery;
 import dev.zenfyr.andromeda.util.*;
@@ -29,7 +32,16 @@ public class ModuleManager implements PreLaunchEntrypoint {
       FabricLoader.getInstance().getModContainer(AndromedaConstants.MODID).orElseThrow();
 
   @Getter
-  private final ModConfigHandler modConfig = ModConfigHandler.load();
+  private final ModConfigHandler modConfig;
+
+  @Getter
+  private final ModInitConfig modInitConfig;
+
+  @Getter
+  private final NetUtils netUtils;
+
+  @Getter
+  private final Debug debug;
 
   @Getter
   private final BootstrapConfigHandler configHandler = new BootstrapConfigHandler();
@@ -48,11 +60,18 @@ public class ModuleManager implements PreLaunchEntrypoint {
 
   private static ModuleManager instance;
 
+  public ModuleManager() {
+    this.modConfig = ModConfigHandler.load();
+    this.modInitConfig = this.modConfig().get(ModInitConfig.KEY);
+    this.netUtils = this.modConfig().get(NetUtils.KEY);
+    this.debug = this.modConfig().get(Debug.KEY);
+  }
+
   @Override
   public void onPreLaunch() {
     instance = this;
-    this.modConfig.save();
-    DataRefreshUtil.initialize(this);
+    this.modConfig().save();
+    this.netUtils().initialize(this);
 
     List<Class<? extends Module>> moduleClasses = new ModuleDiscovery()
         .discoverModules().stream()
@@ -95,7 +114,7 @@ public class ModuleManager implements PreLaunchEntrypoint {
       ModuleHelper.runAndDropBus(
           value, BootstrapConfigEvent.ID, event -> event.bootstrapConfig(config));
 
-      if (config.enabled || Debug.get().isEnableAllModules()) {
+      if (config.enabled || this.debug().isEnableAllModules()) {
         this.modules.put(value.getClass(), value);
         this.modulesByName.put(ModuleHelper.id(value.meta()), value);
       }
