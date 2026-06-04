@@ -6,4 +6,4 @@
 - Fixed Furnace Minecart place logic.
 - Fixed slimes sometimes shrinking on merge.
 - Dropped unused translation keys. Added tag translations.
-- The translations module now supports custom URLs.
+- The translations module now supports custom URLs. Fixed the module possibly not `connections.allow` on reloads.
