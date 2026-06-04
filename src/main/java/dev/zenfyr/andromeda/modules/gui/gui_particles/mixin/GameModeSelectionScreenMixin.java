@@ -50,11 +50,13 @@ abstract class GameModeSelectionScreenMixin extends Screen {
   @Unique private static final Map<GameModeSwitcherScreen.GameModeIcon, Supplier<ItemStack>>
       ANDROMEDA$GAME_MODE_STACKS =
           Utilities.supply(new EnumMap<>(GameModeSwitcherScreen.GameModeIcon.class), map -> {
-            map.put(GameModeSwitcherScreen.GameModeIcon.CREATIVE, () -> BuiltInRegistries.ITEM
-                .getRandom(RandomSource.create())
-                .orElseThrow()
-                .value()
-                .getDefaultInstance());
+            map.put(
+                GameModeSwitcherScreen.GameModeIcon.CREATIVE,
+                () -> BuiltInRegistries.ITEM
+                    .getRandom(RandomSource.create())
+                    .orElseThrow()
+                    .value()
+                    .getDefaultInstance());
             map.put(
                 GameModeSwitcherScreen.GameModeIcon.ADVENTURE,
                 () -> Utilities.pickAtRandom(ANDROMEDA$ADVENTURE));
