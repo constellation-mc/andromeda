@@ -4,8 +4,6 @@
 
   "itemGroup.andromeda.items": "Andromeda",
 
-  "andromeda.game_rule.category": " (Andromeda)",
-
   "config.andromeda.title": "Andromeda (%s)",
   "config.andromeda.option.enabled": "Enabled",
   "config.andromeda.option.available": "Available",
@@ -21,13 +19,11 @@
   "andromeda.config.option_manager.reason.andromeda.module_conflict": "Conflicting module enabled!",
   "andromeda.config.option_manager.reason.andromeda.iceberg": "Conflicts with Iceberg versions <1.1.13.",
   "andromeda.config.option_manager.reason.andromeda.side_only_enabled": "Module disabled in side-only mode!",
-  "andromeda.config.option_manager.reason.andromeda.missing_commander": "This module requires Commander!",
 
   "andromeda.config.tooltip.environment.client": "[E] Client",
   "andromeda.config.tooltip.environment.server": "[E] Server",
   "andromeda.config.tooltip.environment.both": "[E] Client and Server",
   "andromeda.config.tooltip.origin": "[@] Taken from or based on %s by %s",
-  "andromeda.config.tooltip.game_rule": "This option is a default for a game rule!",
   "andromeda.config.tooltip.deprecated": "[!!!] This feature is deprecated and will be removed in a future version!",
   "andromeda.config.tooltip.withheld": "[!!!] This feature has been withheld!\nIt may be available in a future update.",
 
@@ -75,14 +71,6 @@
 
   "config.andromeda.blocks.cactus_bottle_filling": "Cactus Bottle Filling",
   "config.andromeda.blocks.cactus_bottle_filling.@Tooltip": "Lets you fill glass bottles with water using cacti. \nThe top cactus will break and drop a dead bush after 3 uses.",
-
-  "config.andromeda.blocks.incubator": "Incubator Settings",
-  "config.andromeda.blocks.incubator.@Tooltip": "Various Incubator settings.",
-  "config.andromeda.blocks.incubator.option.randomness": "Random Incubator Hatch Times",
-  "config.andromeda.blocks.incubator.option.randomness.@Tooltip": "Incubator hatch times will be more random.",
-  "block.andromeda.incubator": "Incubator",
-  "tooltip.andromeda.incubator[0]": "A handy little device that is helpful for hatching eggs.",
-  "tooltip.andromeda.incubator[1]": "Courtesy of \"Bad Software & Hardware LLC\"®",
 
   "config.andromeda.blocks.fletching_table_tweaks": "Fletching Table Tweaks",
   "config.andromeda.blocks.fletching_table_tweaks.@Tooltip": "Gives the fletching table a GUI where you can tighten the string of your bow for improved accuracy.",
@@ -331,9 +319,6 @@
   "config.andromeda.bugfixes.advancement_shadow": "Frame-Independent Advancement Shadow",
   "config.andromeda.bugfixes.advancement_shadow.@Tooltip": "You know that shadow in the advancements menu when you hover over any advancement? \nNow it won't speed up/slowdown when your frame rate changes.",
 
-  "config.andromeda.bugfixes.aligned_alternatives": "Properly Aligned Recipe Alternatives",
-  "config.andromeda.bugfixes.aligned_alternatives.@Tooltip": "Recipe groups won't look janky when there are a lot of recipes in a group.",
-
   "config.andromeda.category.mechanics": "Mechanics",
 
   "config.andromeda.mechanics.linkart": "Linkart",
@@ -361,17 +346,6 @@
   "config.andromeda.mechanics.dragon_fight.option.shorterCrystalTrackRange.@Tooltip": "Changes the crystal tracking range from 32 to 24 blocks.",
   "config.andromeda.mechanics.dragon_fight.option.shorterSpikes": "Shorter Spikes",
   "config.andromeda.mechanics.dragon_fight.option.shorterSpikes.@Tooltip": "Newly generated obsidian spikes will be shorter.",
-
-  "config.andromeda.mechanics.throwable_items": "Throwable Items",
-  "config.andromeda.mechanics.throwable_items.@Tooltip": "Allows throwing certain items, which would otherwise be useless*",
-  "config.andromeda.mechanics.throwable_items.option.blacklist": "Throwable Items Blacklist",
-  "config.andromeda.mechanics.throwable_items.option.blacklist.@Tooltip": "Block all behaviors of items with following IDs",
-  "config.andromeda.mechanics.throwable_items.option.canZombiesThrowItems": "Can Zombies Throw Items?",
-  "config.andromeda.mechanics.throwable_items.option.canZombiesThrowItems.@Tooltip": "Allows zombies to throw items with behaviors.",
-  "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval": "Throw Interval",
-  "config.andromeda.mechanics.throwable_items.option.zombieThrowInterval.@Tooltip": "In addition to the cooldown, zombies have an interval between throws.",
-  "config.andromeda.mechanics.throwable_items.option.tooltip": "Show tooltip",
-  "tooltip.andromeda.throwable_item": "This item can be thrown.",
 
   "config.andromeda.mechanics.trading_goat_horn": "Wandering Trader Horn",
   "config.andromeda.mechanics.trading_goat_horn.@Tooltip": "By default, every 2 days you can blow the \"sing\" horn to summon a wandering trader. \nPlease note, wandering traders will still spawn naturally. \nYou can disable the \"doTraderSpawning\" gamerule if you don't want them to.",
@@ -429,11 +403,11 @@
   "config.andromeda.misc.minor_inconvenience": "Minor Inconvenience",
   "config.andromeda.misc.minor_inconvenience.@Tooltip": "Players will explode after taking any damage.",
   "death.attack.andromeda_agony": "%s died from agony",
-  "death.attack.andromeda_bricked": "%1$s was bricked by %2$s",
 
   "config.andromeda.misc.unknown": "???",
   "tooltip.andromeda.rose_of_the_valley": "The smell reminds you of a valley...",
   "block.andromeda.rose_of_the_valley": "Rose of the Valley",
+  "item.andromeda.rose_of_the_valley": "Rose of the Valley",
 
   "config.andromeda.misc.tiny_storage": "[EXP] Tiny Storage",
   "config.andromeda.misc.tiny_storage.@Tooltip": "Store 4 more stacks of items in the 2x2 crafting space.\nCurrently experimental, so proceed with caution!",
@@ -447,38 +421,5 @@
   "config.andromeda.base.option.itemGroup": "Item Group",
   "config.andromeda.base.option.itemGroup.@Tooltip": "Enable Andromeda's display item group.\nYou can still find items in vanilla groups even if this is disabled.",
   "config.andromeda.base.option.sendCrashReports": "Send Crash Reports",
-  "config.andromeda.base.option.sendCrashReports.@Tooltip": "Data sent at crash: \n- Environment (e.g. client), \n- OS version (e.g. Windows 11), \n- Platform (e.g. Fabric), \n- Java (e.g. 17 Oracle Corp), \n- Bootstrap status (e.g Discovery), \n- Certain loaded mods. \nCrash reports don't have a unique profile attached.",
-  "config.andromeda.base.option.debugMessages": "Enable debug messages?",
-  "config.andromeda.base.option.debugMessages.@Tooltip": "If enabled, log messages could get spammy.",
-
-  "config.andromeda.lab.title": "Andromeda Lab 🧪",
-  "config.andromeda.button.lab.tooltip": "Try experimental features!",
-  "config.andromeda.lab.option.scopedConfigs": "Scoped Configs",
-  "config.andromeda.lab.option.scopedConfigs.@Tooltip": "Separate module configs on a per-world/dimension basis.\nConfigs can be overridden by data packs and interacted with via KubeJS.\nConsult the wiki for more info!",
-  "config.andromeda.lab.option.persistentScopedConfigs": "Persistent Scoped Configs",
-  "config.andromeda.lab.option.persistentScopedConfigs.@Tooltip": "Save scoped module configs to dimension directories.\nPer-dimension configs are not affected by changes to the main config.",
-  "config.andromeda.lab.option.showAvailableOption": "Show 'Available' Option",
-  "config.andromeda.lab.option.showAvailableOption.@Tooltip": "Show the 'Available' option for modules with 'game' configs.\nThe option is always visible if Commander is installed!",
-  "config.andromeda.lab.option.hideSidedModulesInSideOnly": "Hide Sided Modules in Side-Only",
-  "config.andromeda.lab.option.hideSidedModulesInSideOnly.@Tooltip": "Hide modules which require Andromeda to be present on the other side, if side-only mode is enabled.",
-
-  "commands.andromeda.damage.invulnerable": "Target is invulnerable to the given damage type.",
-  "commands.andromeda.damage.success": "Applied %s damage to %s",
-
-  "andromeda.bootstrap.no_modules": "Andromeda couldn't discover any modules! This should not happen!",
-  "andromeda.bootstrap.loading": "Andromeda(%s) on %s(%s)",
-
-  "andromeda.module_manager.invalid_scope": "%s Module '%s' has an invalid scope (%s), must be %s",
-  "andromeda.module_manager.removed_unlinked_config": "Removed %s as it doesn't belong to any module!",
-  "andromeda.module_manager.loading_modules": "Loading %s modules:",
-  "andromeda.module_manager.custom_modules": "Custom modules/categories not provided by Andromeda.",
-  "andromeda.module_manager.no_modules": "No modules loaded!",
-
-  "andromeda.exception.scoped_configs.no_reloader": "Couldn't get Scoped Configs reloader! Have you restarted the game as you were asked to?",
-
-  "andromeda.exception.mixin_processor.config_notice": "## Mixin configs are internal mod components and are not the same as user configs! ##",
-  "andromeda.exception.mixin_processor.handler_failed": "Andromeda module caught a mixin handler exception! There's no guarantee that this is Andromeda's fault.",
-
-  "andromeda.exception.module_manager.scoped_configs_disabled": "Module '%s' has an invalid scope (%s), enable the 'scopedConfigs' experiment first!",
-  "andromeda.exception.module_manager.requires_commander": "This module requires Commander to be installed! Get it here: %s"
+  "config.andromeda.base.option.sendCrashReports.@Tooltip": "Data sent at crash: \n- Environment (e.g. client), \n- OS version (e.g. Windows 11), \n- Platform (e.g. Fabric), \n- Java (e.g. 17 Oracle Corp), \n- Bootstrap status (e.g Discovery), \n- Certain loaded mods. \nCrash reports don't have a unique profile attached."
 }
