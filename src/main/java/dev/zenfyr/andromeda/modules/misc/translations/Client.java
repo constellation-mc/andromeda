@@ -8,7 +8,6 @@ import dev.zenfyr.andromeda.util.NetUtils;
 import dev.zenfyr.andromeda.util.Util;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
@@ -26,8 +25,6 @@ public final class Client {
 
   private static final String URL =
       DataRefreshUtil.RAW_URL + "/" + DataRefreshUtil.OWNER + "/" + DataRefreshUtil.REPO + "/";
-  private static final HttpClient CLIENT =
-      HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
 
   private static String languageCode = "en_us";
 
@@ -62,7 +59,7 @@ public final class Client {
   }
 
   public static void onResourceReload(String code, Translations module) {
-    if (!languageCode.equals(code)) {
+    if (NetUtils.get().allow && !languageCode.equals(code)) {
       languageCode = code;
       Set<String> languages = Sets.newHashSet("en_us");
       languages.add(code);
@@ -102,7 +99,8 @@ public final class Client {
           .GET()
           .build();
 
-      HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+      HttpResponse<String> response =
+          NetUtils.get().getClient().send(request, HttpResponse.BodyHandlers.ofString());
 
       if (response.statusCode() != 200) {
         module
