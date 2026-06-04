@@ -1,3 +1,9 @@
+
+> [!NOTE]
+> This is a legacy branch left due to older versions 
+> of the mod using it to update translations. 
+> See other branches for actual code.
+
 # Andromeda
 
 [![Available on Modrinth](https://raw.githubusercontent.com/melontini/mini-badges/main/minecraft/modrinth.svg)](https://modrinth.com/mod/andromeda)
