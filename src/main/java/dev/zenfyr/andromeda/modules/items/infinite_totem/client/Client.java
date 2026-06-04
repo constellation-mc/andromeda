@@ -14,7 +14,8 @@ public class Client {
 
   public static void init() {
     ClientPlayNetworking.registerGlobalReceiver(
-        UsedCustomTotemPayload.ID, (payload, context) -> context.client().execute(() -> {
+        UsedCustomTotemPayload.ID,
+        (payload, context) -> context.client().execute(() -> {
           var world = MakeSure.notNull(context.client().level, "client.world");
           Entity entity = world.getEntities().get(payload.uuid());
 
@@ -39,7 +40,8 @@ public class Client {
         }));
 
     ClientPlayNetworking.registerGlobalReceiver(
-        NotifyClientPayload.ID, (payload, context) -> context.client().execute(() -> {
+        NotifyClientPayload.ID,
+        (payload, context) -> context.client().execute(() -> {
           ItemEntity entity = (ItemEntity) MakeSure.notNull(context.client().level, "client.world")
               .getEntities()
               .get(payload.entity());
