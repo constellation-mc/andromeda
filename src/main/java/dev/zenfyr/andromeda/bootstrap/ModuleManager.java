@@ -161,9 +161,11 @@ public class ModuleManager implements PreLaunchEntrypoint {
   }
 
   private void printModuleStats() {
-    Map<String, Set<Module>> categories = Utilities.supply(new LinkedHashMap<>(), map -> loaded()
-        .forEach(m ->
-            map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>()).add(m)));
+    Map<String, Set<Module>> categories = Utilities.supply(
+        new LinkedHashMap<>(),
+        map -> loaded()
+            .forEach(m -> map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>())
+                .add(m)));
 
     StringBuilder builder = new StringBuilder();
     categories.forEach((s, strings) -> {

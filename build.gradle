@@ -51,7 +51,7 @@ dependencies {
 spotless {
     java {
         removeUnusedImports()
-        palantirJavaFormat('2.47.0').style("GOOGLE")
+        palantirJavaFormat('2.91.0').style("GOOGLE")
         trimTrailingWhitespace()
         formatAnnotations()
     }
