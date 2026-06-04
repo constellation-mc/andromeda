@@ -10,6 +10,7 @@ public final class NetUtils extends BaseConfig {
 
   public static final ModConfigHandler.Key<NetUtils> KEY =
       new ModConfigHandler.Key<>("connections", NetUtils.class);
+
   private static final HttpClient CLIENT = HttpClient.newBuilder()
       .followRedirects(HttpClient.Redirect.NORMAL)
       .connectTimeout(Duration.ofSeconds(5))
