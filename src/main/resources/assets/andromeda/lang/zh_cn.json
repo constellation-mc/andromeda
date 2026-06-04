@@ -374,8 +374,7 @@
     "config.andromeda.gui.smooth_tooltips.option.deltaY": "垂直移速系数",
     
     "config.andromeda.category.misc": "杂项",
-    "config.andromeda.misc.damage_backport": "/damage 指令复刻",
-    "config.andromeda.misc.damage_backport.@Tooltip": "对高版本 /damage 指令的非完全复刻！",
+
     "config.andromeda.misc.translations": "翻译更新",
     "config.andromeda.misc.translations.@Tooltip": "尝试从 github 下载最新版的翻译文件。",
 
