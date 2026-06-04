@@ -2,7 +2,6 @@ package dev.zenfyr.andromeda.modules.items.minecart_block_picking.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.PlaceBehaviorHandler;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.ItemStack;
@@ -30,11 +29,11 @@ abstract class ItemDispenserBehaviorMixin {
       @Local(index = 5) double d,
       @Local(index = 7) double e,
       @Local(index = 9) double f,
-      @Local(index = 14) double g,
-      @Local BlockPos blockPos) {
+      @Local(index = 14) double g) {
     PlaceBehaviorHandler.getPlaceBehavior(stack.getItem()).ifPresent(b -> {
       if (!pointer.getLevel().isClientSide()) {
-        AbstractMinecart entity = b.dispense(stack, pointer.getLevel(), d, e, f, g, blockPos);
+        AbstractMinecart entity =
+            b.dispense(stack, pointer.getLevel(), d, e, f, g, pointer.getPos());
         if (entity == null) return;
 
         pointer.getLevel().addFreshEntity(entity);
