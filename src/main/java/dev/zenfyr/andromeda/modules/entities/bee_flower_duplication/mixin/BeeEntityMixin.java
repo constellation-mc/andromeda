@@ -1,7 +1,6 @@
 package dev.zenfyr.andromeda.modules.entities.bee_flower_duplication.mixin;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.entities.bee_flower_duplication.BeeFlowerDuplication;
 import dev.zenfyr.andromeda.modules.misc.unknown.RoseOfTheValley;
 import dev.zenfyr.andromeda.modules.misc.unknown.Unknown;
@@ -74,8 +73,6 @@ abstract class BeeEntityMixin extends Animal {
     if (this.savedFlowerPos != null) {
       BlockState flowerState = level.getBlockState(savedFlowerPos);
       var config = level.am$get(BeeFlowerDuplication.CONFIG);
-      var supplier =
-          LootContextBuilder.block(level, builder -> builder.origin(position()).state(flowerState));
       if (!config.available) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
