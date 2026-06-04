@@ -54,13 +54,6 @@ public class MinecartItems {
           new SpawnerMinecartItem(new FabricItemSettings().stacksTo(1))));
     }
 
-    if (config.isSpawnerMinecartOn) {
-      SPAWNER_MINECART.init(Registry.register(
-          BuiltInRegistries.ITEM,
-          id("spawner_minecart"),
-          new SpawnerMinecartItem(new FabricItemSettings().stacksTo(1))));
-    }
-
     if (config.isAnvilMinecartOn) {
       ANVIL_MINECART.init(Registry.register(
           BuiltInRegistries.ITEM,
