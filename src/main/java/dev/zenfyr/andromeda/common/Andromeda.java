@@ -45,19 +45,15 @@ public class Andromeda implements ModInitializer {
   private @Nullable MinecraftServer currentServer;
 
   static {
+    var manager = ModuleManager.get();
+
     GsonBuilderEvent.BUS.listen(Andromeda::appendCommonGsonTypes);
 
     MAIN = new MultiConfigHandler(
-        ModuleManager.get(),
-        FabricLoader.getInstance().getConfigDir(),
-        "main",
-        RegisterConfigEvent.MAIN);
+        manager, FabricLoader.getInstance().getConfigDir(), "main", RegisterConfigEvent.MAIN);
 
     GAME = new MultiConfigHandler(
-        ModuleManager.get(),
-        FabricLoader.getInstance().getConfigDir(),
-        "game",
-        RegisterConfigEvent.GAME);
+        manager, FabricLoader.getInstance().getConfigDir(), "game", RegisterConfigEvent.GAME);
   }
 
   public static ResourceLocation id(String path) {
@@ -102,9 +98,7 @@ public class Andromeda implements ModInitializer {
     }
   }
 
-  public void onMergedEntryPoint() {
-    var manager = ModuleManager.get();
-
+  public void onMergedEntryPoint(ModuleManager manager) {
     GAME.loadAll();
     GAME.saveAll();
 
