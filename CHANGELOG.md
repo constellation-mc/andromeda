@@ -1,5 +1,9 @@
 # What's New:
 
-- Update dependencies.
-- Fixed the version number in the config screen title.
-- Fixed the `misc/translations` module never actually downloading anything.
+- Added convention tags for boats and minecarts, `escapable_vehicles` tag now uses those convention tags.
+- Fixed spawner minecart item crash.
+- Fixed Andromeda items missing in the search tab.
+- Fixed Furnace Minecart place logic.
+- Fixed slimes sometimes shrinking on merge.
+- Dropped unused translation keys. Added tag translations.
+- The translations module now supports custom URLs.
