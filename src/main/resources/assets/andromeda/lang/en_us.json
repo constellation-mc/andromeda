@@ -417,6 +417,14 @@
   "config.andromeda.misc.tiny_storage.option.TransferMode.FOLLOW_GAMERULE": "Follow Gamerule",
   "config.andromeda.misc.tiny_storage.option.TransferMode.ALWAYS_TRANSFER": "Always Transfer",
 
+  "tag.item.andromeda.linkers": "Minecart Linkers",
+  "tag.item.andromeda.villager_gifts.minor_positive": "Great Villager Gift",
+  "tag.item.andromeda.villager_gifts.major_positive": "Good Villager Gift",
+  "tag.item.andromeda.villager_gifts.minor_negative": "Bad Villager Gift",
+  "tag.item.andromeda.villager_gifts.major_negative": "Awful Villager Gift",
+  "tag.item.andromeda.tempting_for_villagers": "Tempting for Villagers",
+  "tag.item.andromeda.zombies_pick_up": "Zombies Pick Up",
+
   "config.andromeda.base.option.sideOnlyMode": "Side-Only Mode",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "Disable all modules which require Andromeda to be present on server.",
   "config.andromeda.base.option.itemGroup": "Item Group",
