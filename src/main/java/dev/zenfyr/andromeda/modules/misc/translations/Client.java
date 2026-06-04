@@ -2,6 +2,7 @@ package dev.zenfyr.andromeda.modules.misc.translations;
 
 import com.google.common.collect.Sets;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.util.DataRefreshUtil;
 import dev.zenfyr.andromeda.util.NetUtils;
 import dev.zenfyr.andromeda.util.Util;
@@ -84,11 +85,20 @@ public final class Client {
     }
   }
 
+  private static String normalizeBaseUrl(String baseUrl) {
+    return baseUrl.endsWith("/") ? baseUrl : baseUrl + '/';
+  }
+
   private static String downloadLang(String language, Translations module) {
     try {
+      var config = AndromedaClient.CLIENT.get(Translations.CONFIG);
+      String baseUrl = normalizeBaseUrl(
+          "default".equals(config.baseUrl)
+              ? URL + Translations.BRANCH + "/src/main/resources/assets/andromeda/lang/"
+              : config.baseUrl);
+
       HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create(URL + Translations.BRANCH + "/src/main/resources/assets/andromeda/lang/"
-              + language + ".json"))
+          .uri(URI.create(baseUrl + language + ".json"))
           .GET()
           .build();
 

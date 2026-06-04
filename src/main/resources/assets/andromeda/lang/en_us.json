@@ -387,6 +387,8 @@
 
   "config.andromeda.misc.translations": "Auto Update Translations",
   "config.andromeda.misc.translations.@Tooltip": "Try to download latest translations from GitHub.",
+  "config.andromeda.misc.translations.option.baseUrl": "Base URL",
+  "config.andromeda.misc.translations.option.baseUrl.@Tooltip": "By default, the mod will download translations from GitHub, this option allows setting a different base URL. \nThe full url must end with [lang code].json, e.g. baseUrl + 'en_us.json'",
 
   "config.andromeda.misc.recipe_advancements_generation": "Auto-generate Recipe Advancements",
   "config.andromeda.misc.recipe_advancements_generation.@Tooltip": "Tries to automatically generate recipe advancements for most recipes.",

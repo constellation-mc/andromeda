@@ -2,6 +2,9 @@ package dev.zenfyr.andromeda.modules.misc.translations;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
+import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
+import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
+import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.CreateBootstrapConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
@@ -20,12 +23,20 @@ public final class Translations extends Module implements PostBootstrapEvent {
   public static final Path EN_US = LANG_PATH.resolve("en_us.json");
   public static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
 
+  public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
+
   Translations() {
     CreateBootstrapConfigEvent.get(this).listen(() -> true);
+    RegisterConfigEvent.get(this, RegisterConfigEvent.CLIENT).listen(() -> CONFIG);
   }
 
   @Override
   public void postBootstrap() {
     InitEvents.CLIENT.listen(() -> Client::init);
+  }
+
+  public static final class Config extends BaseConfig {
+
+    public String baseUrl = "default";
   }
 }
