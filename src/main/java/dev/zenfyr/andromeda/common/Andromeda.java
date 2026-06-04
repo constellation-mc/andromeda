@@ -14,6 +14,7 @@ import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.GsonCodecContext;
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.andromeda.util.Debug;
 import lombok.Getter;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -30,6 +31,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public class Andromeda implements ModInitializer {
 
@@ -105,6 +107,10 @@ public class Andromeda implements ModInitializer {
 
     // Init the data pack config system
     DataConfigs.init(manager);
+
+    if (Debug.get().isMixinAudit()) {
+      MixinEnvironment.getCurrentEnvironment().audit();
+    }
   }
 
   public void onMergedEntryPoint() {

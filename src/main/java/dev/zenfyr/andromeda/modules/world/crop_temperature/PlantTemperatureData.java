@@ -12,7 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
-import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.andromeda.util.Debug;
 import dev.zenfyr.pulsar.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.resources.ReloaderType;
 import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
@@ -180,7 +180,7 @@ public final class PlantTemperatureData {
       result.putAll(replace);
       this.map = result;
 
-      if (Util.isDev()) verifyPostLoad(module, this);
+      if (Debug.get().isVerbose()) verifyPostLoad(module, this);
     }
   }
 }

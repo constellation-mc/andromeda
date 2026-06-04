@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.items.pouches.items;
 import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.items.pouches.Main;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
-import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.andromeda.util.Debug;
 import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.List;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class PouchItem extends Item {
   @Override
   public void appendHoverText(
       ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-    if (context.isAdvanced() && Util.isDev()) {
+    if (context.isAdvanced() && Debug.get().isVerbose()) {
       tooltip.add(TextUtil.literal("Loot: " + this.getType().getLootId(stack))
           .withStyle(ChatFormatting.GRAY));
     }

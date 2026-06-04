@@ -8,7 +8,7 @@ import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
-import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.andromeda.util.Debug;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
 import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.lang.reflect.Field;
@@ -183,7 +183,7 @@ public final class Main {
       }
     }
 
-    if (Util.isDev()) {
+    if (Debug.get().isVerbose()) {
       StringBuilder b = new StringBuilder();
       b.append("Viewable block entities:");
       Main.VIEWABLE_VIEW.forEach((blockEntityType, field) -> {

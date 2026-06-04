@@ -95,7 +95,7 @@ public class ModuleManager implements PreLaunchEntrypoint {
       ModuleHelper.runAndDropBus(
           value, BootstrapConfigEvent.ID, event -> event.bootstrapConfig(config));
 
-      if (config.enabled || Debug.get().enableAllModules) {
+      if (config.enabled || Debug.get().isEnableAllModules()) {
         this.modules.put(value.getClass(), value);
         this.modulesByName.put(ModuleHelper.id(value.meta()), value);
       }
