@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "andromeda:anvil_minecart",
+      "required": false
+    },
+    {
+      "id": "andromeda:note_block_minecart",
+      "required": false
+    },
+    {
+      "id": "andromeda:jukebox_minecart",
+      "required": false
+    }
+  ]
+}
