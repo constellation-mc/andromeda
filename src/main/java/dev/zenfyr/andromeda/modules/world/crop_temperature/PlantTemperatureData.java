@@ -7,7 +7,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.util.Util;
 import dev.zenfyr.pulsar.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.codec.JsonCodecDataLoader;
 import dev.zenfyr.pulsar.resources.ReloaderType;
@@ -80,15 +79,13 @@ public final class PlantTemperatureData {
       ReloaderType.create(Andromeda.id("crop_temperatures"));
 
   public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
-    if (isPlant(state.getBlock())) {
-      float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlock());
-      if (data != null) {
-        if (!world.am$get(PlantTemperature.CONFIG).available) return true;
+    float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlock());
+    if (data != null) {
+      if (!world.am$get(PlantTemperature.CONFIG).available) return true;
 
-        if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
-          return MathUtil.nextInt(0, 1) != 0;
-        } else return !(temp > data[3]) && !(temp < data[0]);
-      }
+      if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
+        return MathUtil.nextInt(0, 1) != 0;
+      } else return !(temp > data[3]) && !(temp < data[0]);
     }
     return true;
   }
@@ -104,9 +101,10 @@ public final class PlantTemperatureData {
   }
 
   public static void init() {
-    var module = ModuleManager.get().get(PlantTemperature.class).orElseThrow();
+    var manager = ModuleManager.get();
+    var module = manager.get(PlantTemperature.class).orElseThrow();
     ServerReloadersEvent.EVENT.register(
-        context -> context.register(RELOADER.identifier(), new Reloader(module)));
+        context -> context.register(RELOADER.identifier(), new Reloader(manager, module)));
   }
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
@@ -149,10 +147,12 @@ public final class PlantTemperatureData {
 
     @Nullable private IdentityHashMap<Block, float[]> map;
 
+    private final ModuleManager manager;
     private final PlantTemperature module;
 
-    protected Reloader(PlantTemperature module) {
+    protected Reloader(ModuleManager manager, PlantTemperature module) {
       super(RELOADER.identifier(), MERGED_CODEC);
+      this.manager = manager;
       this.module = module;
     }
 
@@ -173,7 +173,7 @@ public final class PlantTemperatureData {
       result.putAll(replace);
       this.map = result;
 
-      if (Util.isDev()) verifyPostLoad(module, this);
+      if (this.manager.debug().isVerbose()) verifyPostLoad(module, this);
     }
   }
 }

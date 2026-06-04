@@ -1,10 +1,10 @@
-package dev.zenfyr.andromeda.util;
+package dev.zenfyr.andromeda.bootstrap.util;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
-import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
+import dev.zenfyr.andromeda.util.Util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +21,8 @@ public class Debug extends BaseConfig {
 
   public boolean enableAllModules = false;
   public Map<String, Set<String>> skipModIntegration = new HashMap<>();
+  public boolean verbose = false;
+  public boolean mixinAudit = false;
 
   public boolean skipIntegration(Module module, String mod) {
     var set = this.skipModIntegration.get(ModuleHelper.id(module));
@@ -45,7 +47,15 @@ public class Debug extends BaseConfig {
     return false;
   }
 
-  public static Debug get() {
-    return ModuleManager.get().modConfig().get(KEY);
+  public boolean isEnableAllModules() {
+    return this.enableAllModules;
+  }
+
+  public boolean isVerbose() {
+    return this.verbose || Util.isDev();
+  }
+
+  public boolean isMixinAudit() {
+    return this.mixinAudit || Util.isDev();
   }
 }

@@ -128,10 +128,8 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
 
   public interface WorldExtension {
     default <T extends BaseConfig> T am$get(ConfigDefinition<T> definition) {
-      log.error(
-          "Scoped configs requested on client in world '{}'! Returning un-scoped!",
-          ((Level) this).dimension().identifier());
-      return Andromeda.MAIN.get(definition); // Stub implementation. DNI
+      throw new IllegalStateException("Game configs requested in client world '%s'!"
+          .formatted(((Level) this).dimension().identifier()));
     }
   }
 

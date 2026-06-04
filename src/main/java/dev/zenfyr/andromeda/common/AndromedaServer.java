@@ -8,9 +8,9 @@ public class AndromedaServer implements DedicatedServerModInitializer {
 
   @Override
   public void onInitializeServer() {
-    Andromeda.get().onMergedEntryPoint();
-
     var manager = ModuleManager.get();
+
+    Andromeda.get().onMergedEntryPoint(manager);
     InitEvents.SERVER.invoker().onModuleServerInit().runEntrypoint();
   }
 }

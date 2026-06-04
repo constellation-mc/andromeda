@@ -83,6 +83,8 @@ public class AutoConfigScreen {
   }
 
   public Screen getScreen(Screen parent) {
+    var manager = ModuleManager.get();
+
     Map<Object, Runnable> saveQueue = new IdentityHashMap<>();
 
     ConfigBuilder builder = ConfigBuilder.create()
@@ -102,11 +104,10 @@ public class AutoConfigScreen {
         .setDefaultBackgroundTexture(
             Identifier.tryBuild("minecraft", "textures/block/amethyst_block.png"));
 
-    var bootstrapHandler = ModuleManager.get().configHandler();
+    var bootstrapHandler = manager.configHandler();
 
-    for (Module module : ModuleManager.get().all().stream()
-        .sorted(Comparator.comparing(ModuleHelper::id))
-        .toList()) {
+    for (Module module :
+        manager.all().stream().sorted(Comparator.comparing(ModuleHelper::id)).toList()) {
       var category = builder.getOrCreateCategory(TextUtil.translatable(
           "config.andromeda.category.%s".formatted(module.meta().category())));
 

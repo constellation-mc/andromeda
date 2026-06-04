@@ -30,6 +30,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public class Andromeda implements ModInitializer {
 
@@ -44,19 +45,15 @@ public class Andromeda implements ModInitializer {
   private @Nullable MinecraftServer currentServer;
 
   static {
+    var manager = ModuleManager.get();
+
     GsonBuilderEvent.BUS.listen(Andromeda::appendCommonGsonTypes);
 
     MAIN = new MultiConfigHandler(
-        ModuleManager.get(),
-        FabricLoader.getInstance().getConfigDir(),
-        "main",
-        RegisterConfigEvent.MAIN);
+        manager, FabricLoader.getInstance().getConfigDir(), "main", RegisterConfigEvent.MAIN);
 
     GAME = new MultiConfigHandler(
-        ModuleManager.get(),
-        FabricLoader.getInstance().getConfigDir(),
-        "game",
-        RegisterConfigEvent.GAME);
+        manager, FabricLoader.getInstance().getConfigDir(), "game", RegisterConfigEvent.GAME);
   }
 
   public static Identifier id(String path) {
@@ -95,11 +92,13 @@ public class Andromeda implements ModInitializer {
 
     // Init the data pack config system
     DataConfigs.init(manager);
+
+    if (manager.debug().isMixinAudit()) {
+      MixinEnvironment.getCurrentEnvironment().audit();
+    }
   }
 
-  public void onMergedEntryPoint() {
-    var manager = ModuleManager.get();
-
+  public void onMergedEntryPoint(ModuleManager manager) {
     GAME.loadAll();
     GAME.saveAll();
 
