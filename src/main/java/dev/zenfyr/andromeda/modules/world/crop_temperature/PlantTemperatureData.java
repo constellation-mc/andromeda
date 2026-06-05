@@ -16,6 +16,7 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.util.*;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -31,7 +32,9 @@ public final class PlantTemperatureData {
 
   private static final Codec<OldHolder> OLD_CODEC = RecordCodecBuilder.create(data -> data.group(
           ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(OldHolder::replace),
-          ExtraCodecs.list(BuiltInRegistries.BLOCK.byNameCodec())
+          ExtraCodecs.list(BuiltInRegistries.BLOCK
+                  .holderByNameCodec()
+                  .xmap(Holder::value, BuiltInRegistries.BLOCK::wrapAsHolder))
               .fieldOf("identifier")
               .forGetter(OldHolder::blocks),
           Codec.FLOAT.fieldOf("min").forGetter(o -> o.temperatures()[1]),
@@ -54,7 +57,11 @@ public final class PlantTemperatureData {
 
   private static final Codec<NewHolder> BASE_HOLDER = RecordCodecBuilder.create(data -> data.group(
           ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(NewHolder::replace),
-          Codec.unboundedMap(BuiltInRegistries.BLOCK.byNameCodec(), FLOAT_ARRAY_CODEC)
+          Codec.unboundedMap(
+                  BuiltInRegistries.BLOCK
+                      .holderByNameCodec()
+                      .xmap(Holder::value, BuiltInRegistries.BLOCK::wrapAsHolder),
+                  FLOAT_ARRAY_CODEC)
               .fieldOf("entries")
               .forGetter(NewHolder::temperatures))
       .apply(data, NewHolder::new));
