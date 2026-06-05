@@ -20,6 +20,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -110,13 +111,22 @@ public class Andromeda implements ModInitializer {
   }
 
   public static void appendCommonGsonTypes(GsonBuilder builder) {
-    builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
-    builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
     builder.registerTypeHierarchyAdapter(
-        MobEffect.class, GsonCodecContext.of(BuiltInRegistries.MOB_EFFECT.byNameCodec()));
+            Identifier.class, GsonCodecContext.of(Identifier.CODEC));
     builder.registerTypeHierarchyAdapter(
-        Item.class, GsonCodecContext.of(BuiltInRegistries.ITEM.byNameCodec()));
+        MobEffect.class,
+        GsonCodecContext.of(BuiltInRegistries.MOB_EFFECT
+            .holderByNameCodec()
+            .xmap(Holder::value, BuiltInRegistries.MOB_EFFECT::wrapAsHolder)));
     builder.registerTypeHierarchyAdapter(
-        Block.class, GsonCodecContext.of(BuiltInRegistries.BLOCK.byNameCodec()));
+        Item.class,
+        GsonCodecContext.of(BuiltInRegistries.ITEM
+            .holderByNameCodec()
+            .xmap(Holder::value, BuiltInRegistries.ITEM::wrapAsHolder)));
+    builder.registerTypeHierarchyAdapter(
+        Block.class,
+        GsonCodecContext.of(BuiltInRegistries.BLOCK
+            .holderByNameCodec()
+            .xmap(Holder::value, BuiltInRegistries.BLOCK::wrapAsHolder)));
   }
 }
