@@ -86,7 +86,7 @@ loom {
     }
 }
 
-loom.mods.register(project.name) {
+loom.mods.register(project.archives_base_name) {
     sourceSet project.sourceSets.main
 }
 
