@@ -111,8 +111,7 @@ public class Andromeda implements ModInitializer {
   }
 
   public static void appendCommonGsonTypes(GsonBuilder builder) {
-    builder.registerTypeHierarchyAdapter(
-            Identifier.class, GsonCodecContext.of(Identifier.CODEC));
+    builder.registerTypeHierarchyAdapter(Identifier.class, GsonCodecContext.of(Identifier.CODEC));
     builder.registerTypeHierarchyAdapter(
         MobEffect.class,
         GsonCodecContext.of(BuiltInRegistries.MOB_EFFECT
