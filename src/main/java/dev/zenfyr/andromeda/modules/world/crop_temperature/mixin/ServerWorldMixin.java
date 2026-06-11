@@ -22,6 +22,6 @@ abstract class ServerWorldMixin {
   private boolean andromeda$tickPlants(
       BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
     return PlantTemperatureData.roll(
-        pos, state, world.getBiome(pos).value().getBaseTemperature(), world);
+        state, world.getBiome(pos).value().getBaseTemperature(), world);
   }
 }

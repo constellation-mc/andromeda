@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "blocks": "minecraft:cactus",
+      "temperatures": [
+        1.2,
+        1.5,
+        2.0,
+        2.0
+      ]
+    }
+  ]
+}
