@@ -22,7 +22,7 @@ abstract class AnvilScreenMixin extends AbstractContainerScreen<AnvilMenu> {
   }
 
   @ModifyExpressionValue(
-      method = "renderLabels",
+      method = "extractLabels",
       at = @At(value = "CONSTANT", args = "intValue=40"))
   private int andromeda$setRepairLimit(int constant) {
     if (!this.menu.getSlot(1).getItem().is(Items.ENCHANTED_BOOK)) {

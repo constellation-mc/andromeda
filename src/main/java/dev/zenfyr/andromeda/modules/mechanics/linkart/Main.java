@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.spongepowered.asm.mixin.Unique;
 
 public class Main {
@@ -37,7 +38,7 @@ public class Main {
         .persistent(LoadingCarts.CODEC)
         .buildAndRegister(id("loading_carts")));
 
-    ServerTickEvents.START_WORLD_TICK.register(level -> {
+    ServerTickEvents.START_LEVEL_TICK.register(level -> {
       var cfg = level.am$get(Linkart.CONFIG);
       if (cfg.chunkloading) {
         level.getAttachedOrCreate(ATTACHMENT.get()).tick(level);
@@ -105,7 +106,9 @@ public class Main {
       ((ServerLevel) entity.level())
           .sendParticles(
               new ItemParticleOption(
-                  ParticleTypes.ITEM, ((LinkableMinecart) entity).linkart$getLinkItem()),
+                  ParticleTypes.ITEM,
+                  ItemStackTemplate.fromNonEmptyStack(
+                      ((LinkableMinecart) entity).linkart$getLinkItem())),
               entity.getX(),
               entity.getY() + 0.3,
               entity.getZ(),

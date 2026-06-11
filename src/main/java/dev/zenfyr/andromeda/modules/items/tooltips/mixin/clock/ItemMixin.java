@@ -36,8 +36,8 @@ abstract class ItemMixin {
       if (stack.getItem() == Items.CLOCK) {
         // totally not stolen from here
         // https://bukkit.org/threads/how-can-i-convert-minecraft-long-time-to-real-hours-and-minutes.122912/
-        int i = MathUtil.fastFloor((world.getDayTime() / 1000d + 8) % 24);
-        int j = MathUtil.fastFloor(60 * (world.getDayTime() % 1000d) / 1000);
+        int i = MathUtil.fastFloor((world.getDefaultClockTime() / 1000d + 8) % 24);
+        int j = MathUtil.fastFloor(60 * (world.getDefaultClockTime() % 1000d) / 1000);
         tooltipAdder.accept(
             TextUtil.translatable("tooltip.andromeda.clock", String.format("%02d:%02d", i, j))
                 .withStyle(ChatFormatting.GRAY));

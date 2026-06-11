@@ -43,14 +43,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.tooltip.BundleTooltip;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -147,7 +141,13 @@ public class MagnetItem extends Item {
           * (double) client.getWindow().getGuiScaledHeight()
           / (double) client.getWindow().getScreenHeight());
       ScreenParticleHelper.addScreenParticles(
-          new ItemParticleOption(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7);
+          new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
+          x,
+          y,
+          0.5,
+          0.5,
+          0.1,
+          7);
     }
   }
 
@@ -179,8 +179,10 @@ public class MagnetItem extends Item {
 
   @Override
   public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-    return Optional.of(new BundleTooltip(new BundleContents(
-        magnetable(stack).stream().map(Item::getDefaultInstance).toList())));
+    // TODO use templates?
+    return Optional.empty();
+    //    return Optional.of(new BundleTooltip(new BundleContents(
+    //        magnetable(stack).stream().map(Item::getDefaultInstance).toList())));
   }
 
   @Override

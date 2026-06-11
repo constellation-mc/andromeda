@@ -5,7 +5,7 @@ import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.NotifyClientPay
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.UsedCustomTotemPayload;
 import dev.zenfyr.pulsar.util.MakeSure;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -49,7 +49,7 @@ public class Client {
         }));
 
     if (Main.KNOCKOFF_TOTEM_PARTICLE.isPresent()) {
-      ParticleFactoryRegistry.getInstance()
+      ParticleProviderRegistry.getInstance()
           .register(Main.KNOCKOFF_TOTEM_PARTICLE.orThrow(), KnockoffTotemParticle.Factory::new);
     }
   }

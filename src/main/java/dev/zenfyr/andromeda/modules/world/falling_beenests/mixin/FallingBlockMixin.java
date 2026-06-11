@@ -79,7 +79,7 @@ abstract class FallingBlockMixin extends Entity {
         if (bee == null) continue;
 
         try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(
-            ChunkAccess.problemPath(new ChunkPos(blockPos)), LogUtils.getLogger())) {
+            ChunkAccess.problemPath(ChunkPos.containing(blockPos)), LogUtils.getLogger())) {
           bee.load(TagValueInput.create(scopedCollector, level.registryAccess(), entityData));
         }
 

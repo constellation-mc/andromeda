@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.items.lockpick;
 import dev.zenfyr.andromeda.common.Andromeda;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -23,19 +23,20 @@ public class MerchantInventoryScreen
   }
 
   @Override
-  public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-    this.renderBackground(context, mouseX, mouseY, delta);
-    super.render(context, mouseX, mouseY, delta);
-    this.renderTooltip(context, mouseX, mouseY);
+  public void extractRenderState(
+      GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    this.extractBackground(context, mouseX, mouseY, delta);
+    super.extractRenderState(context, mouseX, mouseY, delta);
+    this.extractTooltip(context, mouseX, mouseY);
   }
 
   @Override
-  protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
-    context.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 42107532, false);
+  protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+    context.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 42107532, false);
   }
 
   @Override
-  protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
+  public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float a) {
     int i = (this.width - this.imageWidth) / 2;
     int j = (this.height - this.imageHeight) / 2;
     context.blit(

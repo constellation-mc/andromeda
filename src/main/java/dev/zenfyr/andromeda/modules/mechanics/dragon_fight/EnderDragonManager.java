@@ -11,8 +11,8 @@ import java.util.*;
 import lombok.Getter;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -118,12 +118,12 @@ public class EnderDragonManager {
         .persistent(EnderDragonManager.CODEC)
         .buildAndRegister(id("ender_dragon_data")));
 
-    ServerWorldEvents.LOAD.register((server, world) -> {
+    ServerLevelEvents.LOAD.register((server, world) -> {
       if (world.dimension() == Level.END)
         world.getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get());
     });
 
-    ServerTickEvents.END_WORLD_TICK.register(world -> {
+    ServerTickEvents.END_LEVEL_TICK.register(world -> {
       if (world.dimension() == Level.END)
         world.getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get()).tick(world);
     });

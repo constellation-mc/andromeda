@@ -53,7 +53,7 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<MinecartSpawner> 
                 BuiltInRegistries.ENTITY_TYPE.getValue(
                     Identifier.tryParse(nbt.getStringOr("Entity", "minecraft:pig"))),
                 entity.level,
-                entity.level.random,
+                entity.level.getRandom(),
                 entity.blockPosition());
       }
     }

@@ -49,8 +49,10 @@ public final class Main {
         id("knockoff_totem_particles"),
         FabricParticleTypes.simple()));
 
-    PayloadTypeRegistry.playS2C().register(UsedCustomTotemPayload.ID, UsedCustomTotemPayload.CODEC);
-    PayloadTypeRegistry.playS2C().register(NotifyClientPayload.ID, NotifyClientPayload.CODEC);
+    PayloadTypeRegistry.clientboundPlay()
+        .register(UsedCustomTotemPayload.ID, UsedCustomTotemPayload.CODEC);
+    PayloadTypeRegistry.clientboundPlay()
+        .register(NotifyClientPayload.ID, NotifyClientPayload.CODEC);
 
     AndromedaItemGroup.BUS.listen(
         acceptor -> acceptor.keeper(module, CreativeModeTabs.COMBAT, INFINITE_TOTEM));

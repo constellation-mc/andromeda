@@ -9,7 +9,7 @@ import dev.zenfyr.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.resources.Identifier;
@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 abstract class DrawContextMixin {
 
   @Shadow
@@ -46,7 +46,7 @@ abstract class DrawContextMixin {
               value = "INVOKE",
               target =
                   "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"),
-      method = "renderTooltip")
+      method = "tooltip")
   private Vector2ic andromeda$smoothTooltip(
       Vector2ic vic,
       @Local(argsOnly = true, ordinal = 0) int x,
@@ -86,7 +86,7 @@ abstract class DrawContextMixin {
     return (int) mY == y;
   }
 
-  @Inject(at = @At(value = "TAIL"), method = "renderTooltip")
+  @Inject(at = @At(value = "TAIL"), method = "tooltip")
   private void andromeda$popMatrix(
       Font font,
       List<ClientTooltipComponent> list,

@@ -48,7 +48,7 @@ public class BeeUtil {
 
     // Thanks AccessWidener!
     try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(
-        ChunkAccess.problemPath(new ChunkPos(pos)), MOJLOGGER)) {
+        ChunkAccess.problemPath(ChunkPos.containing(pos)), MOJLOGGER)) {
       fallingBlock.readAdditionalSaveData(TagValueInput.create(
           scopedCollector,
           world.registryAccess(),

@@ -7,7 +7,7 @@ import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.function.Consumer;
 import lombok.Getter;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -26,10 +26,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ProjectileItem;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
@@ -68,7 +65,7 @@ public class PouchItem extends Item implements ProjectileItem {
         SoundEvents.SNOWBALL_THROW,
         SoundSource.NEUTRAL,
         0.5F,
-        0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+        0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
     if (!world.isClientSide()) {
       var entity = Main.POUCH.orThrow().create(world, EntitySpawnReason.DISPENSER);
       entity.setPouchType(this.type);
@@ -99,16 +96,17 @@ public class PouchItem extends Item implements ProjectileItem {
             itemStack -> Main.tryInsertItem(user.level(), player.position(), itemStack, storage));
         success = true;
       } else if (entity instanceof InventoryCarrier io) {
-        var storage = InventoryStorage.of(io.getInventory(), null);
+        var storage = ContainerStorage.of(io.getInventory(), null);
         stacks.forEach(
             itemStack -> Main.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
         success = true;
       }
 
       if (success) {
-        if (user.level() instanceof ServerLevel sw) {
+        if (user.level() instanceof ServerLevel sw && !stack.isEmpty()) {
           sw.sendParticles(
-              new ItemParticleOption(ParticleTypes.ITEM, stack),
+              new ItemParticleOption(
+                  ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
               entity.getX(),
               entity.getY(),
               entity.getZ(),

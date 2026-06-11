@@ -76,7 +76,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
   }
 
   @Override
-  public InteractionResult interact(Player player, InteractionHand hand) {
+  public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
     ItemStack stackInHand = player.getItemInHand(hand);
     if (!level.isClientSide())
       if (!this.record.isEmpty() && player.isShiftKeyDown()) {
@@ -100,7 +100,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
         player.awardStat(Stats.PLAY_RECORD);
         return InteractionResult.SUCCESS;
       }
-    super.interact(player, hand);
+    super.interact(player, hand, location);
     return InteractionResult.SUCCESS;
   }
 

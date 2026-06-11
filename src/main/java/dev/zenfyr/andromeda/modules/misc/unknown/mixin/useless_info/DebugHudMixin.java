@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
@@ -38,9 +38,9 @@ abstract class DebugHudMixin {
               target = "Ljava/util/List;isEmpty()Z",
               ordinal = 0,
               shift = At.Shift.BEFORE),
-      method = "render")
+      method = "extractRenderState")
   private void andromeda$leftText(
-      GuiGraphics guiGraphics, CallbackInfo ci, @Local(index = 6) List<String> list) {
+      GuiGraphicsExtractor guiGraphics, CallbackInfo ci, @Local(index = 6) List<String> list) {
     if (this.minecraft.debugEntries.isOverlayVisible() && SPLASH.get() != null)
       list.add(SPLASH.get().getString());
   }

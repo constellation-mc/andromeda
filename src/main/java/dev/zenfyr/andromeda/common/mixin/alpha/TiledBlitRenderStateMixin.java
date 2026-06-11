@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
 import dev.zenfyr.andromeda.common.client.GlobalAlphaController;
 import dev.zenfyr.pulsar.util.ColorUtil;
 import net.fabricmc.api.EnvType;
-import net.minecraft.client.gui.render.state.TiledBlitRenderState;
+import net.minecraft.client.renderer.state.gui.TiledBlitRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

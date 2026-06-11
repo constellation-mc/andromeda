@@ -24,7 +24,6 @@ public final class Pouches extends Module implements PostBootstrapEvent {
   public void postBootstrap() {
     InitEvents.MAIN.listen(() -> Main::init);
     InitEvents.CLIENT.listen(() -> Client::init);
-    InitEvents.MERGED.listen(() -> Main::testBlocks);
   }
 
   public static class Config extends BaseConfig {

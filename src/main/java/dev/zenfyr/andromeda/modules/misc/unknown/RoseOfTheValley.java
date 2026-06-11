@@ -7,10 +7,8 @@ import dev.zenfyr.pulsar.util.TextUtil;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -54,10 +52,7 @@ public class RoseOfTheValley extends BlockItem {
   }
 
   @Environment(EnvType.CLIENT)
-  static void onClient() {
-    BlockRenderLayerMap.putBlocks(
-        ChunkSectionLayer.CUTOUT, RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow());
-  }
+  static void onClient() {}
 
   @Override
   public void appendHoverText(

@@ -32,7 +32,7 @@
   "accessWidener": "andromeda.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": "${minecraft_version}",
     "pulsar": ">=${pulsar_version}"
   },
@@ -42,7 +42,7 @@
   },
   "custom": {
     "loom:injected_interfaces": {
-      "net/minecraft/class_1937": [
+      "net/minecraft/world/level/Level": [
         "dev/zenfyr/andromeda/common/config/DataConfigs\u0024WorldExtension"
       ]
     }

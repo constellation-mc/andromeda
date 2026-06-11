@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -99,7 +100,13 @@ abstract class BundleItemMixin {
             * (double) client.getWindow().getGuiScaledHeight()
             / (double) client.getWindow().getScreenHeight());
         ScreenParticleHelper.addScreenParticles(
-            new ItemParticleOption(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7);
+            new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
+            x,
+            y,
+            0.5,
+            0.5,
+            0.1,
+            7);
       }
     }
   }

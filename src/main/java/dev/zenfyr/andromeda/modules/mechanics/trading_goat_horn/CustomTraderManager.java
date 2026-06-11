@@ -11,8 +11,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
@@ -99,7 +99,7 @@ public class CustomTraderManager {
       spawnLlama(world, this.trader);
     }
 
-    properties.setWanderingTraderId(this.trader.getUUID());
+    // properties.setWanderingTraderId(this.trader.getUUID());
     this.trader.setDespawnDelay(tCooldown);
     this.trader.setWanderTarget(blockPos2);
     this.trader.setHomeTo(blockPos2, 16);
@@ -151,12 +151,12 @@ public class CustomTraderManager {
         .persistent(CustomTraderManager.CODEC)
         .buildAndRegister(id("trader_state_manager")));
 
-    ServerWorldEvents.LOAD.register((server, world) -> {
+    ServerLevelEvents.LOAD.register((server, world) -> {
       if (Level.OVERWORLD.equals(world.dimension()))
         world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get());
     });
 
-    ServerTickEvents.END_WORLD_TICK.register(world -> {
+    ServerTickEvents.END_LEVEL_TICK.register(world -> {
       if (Level.OVERWORLD.equals(world.dimension()))
         world.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get()).tick();
     });

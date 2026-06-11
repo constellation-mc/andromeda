@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.minecart.MinecartFurnace;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -65,9 +66,9 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
               int itemFuel = level.fuelValues().burnDuration(stack);
               if ((this.fuel + (itemFuel * 2.25))
                   <= Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel) {
-                ItemStack reminder = stack.getRecipeRemainder();
-                if (!reminder.isEmpty())
-                  ItemStackUtil.spawn(entity.position(), stack.getRecipeRemainder(), level);
+                ItemStackTemplate reminder = stack.getCraftingRemainder();
+                if (reminder != null)
+                  ItemStackUtil.spawn(entity.position(), reminder.create(), level);
                 stack.shrink(1);
 
                 this.fuel += (int) (itemFuel * 2.25);

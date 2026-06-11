@@ -23,6 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public class AnvilMinecartEntity extends AbstractMinecart {
   public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, Level world) {
@@ -34,7 +35,7 @@ public class AnvilMinecartEntity extends AbstractMinecart {
   }
 
   @Override
-  public InteractionResult interact(Player player, InteractionHand hand) {
+  public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
     return InteractionResult.SUCCESS;
   }
 

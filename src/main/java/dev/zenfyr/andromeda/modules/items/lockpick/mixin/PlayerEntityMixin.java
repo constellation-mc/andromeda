@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -25,14 +26,18 @@ abstract class PlayerEntityMixin extends LivingEntity {
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/world/entity/Entity;interact(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResult;"),
+                  "Lnet/minecraft/world/entity/Entity;interact(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/InteractionResult;"),
       method = "interactOn")
   private InteractionResult andromeda$stopInteract(
-      Entity entity, Player player, InteractionHand hand, Operation<InteractionResult> original) {
+      Entity entity,
+      Player player,
+      InteractionHand hand,
+      Vec3 location,
+      Operation<InteractionResult> original) {
     if (getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof LockpickItem
         || getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof LockpickItem) {
       return InteractionResult.PASS;
     }
-    return original.call(entity, player, hand);
+    return original.call(entity, player, hand, location);
   }
 }

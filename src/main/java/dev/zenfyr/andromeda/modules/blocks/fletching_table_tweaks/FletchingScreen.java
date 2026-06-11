@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -27,12 +27,12 @@ public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> 
   }
 
   @Override
-  protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
-    super.renderLabels(context, mouseX, mouseY);
+  protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+    super.extractLabels(context, mouseX, mouseY);
   }
 
   @Override
-  protected void renderErrorIcon(GuiGraphics context, int x, int y) {
+  protected void extractErrorIcon(GuiGraphicsExtractor context, int x, int y) {
     if (menu.getSlot(0).hasItem()
         && menu.getSlot(1).hasItem()
         && !menu.getSlot(2).hasItem()) {

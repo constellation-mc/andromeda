@@ -66,7 +66,8 @@ public class BoatEntities {
     }
 
     if (config.isTNTBoatOn) {
-      PayloadTypeRegistry.playC2S().register(ExplodeBoatC2SPayload.ID, ExplodeBoatC2SPayload.CODEC);
+      PayloadTypeRegistry.serverboundPlay()
+          .register(ExplodeBoatC2SPayload.ID, ExplodeBoatC2SPayload.CODEC);
 
       // This sucks
       ServerPlayNetworking.registerGlobalReceiver(ExplodeBoatC2SPayload.ID, (payload, context) -> {

@@ -1,14 +1,14 @@
 [libraries]
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.19.2" }
 
-fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.141.4+1.21.11" }
-pulsar = { group = "dev.zenfyr", name = "pulsar", version = "0.2.2-1.21.11-build.23" }
+fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.151.0+26.1.2" }
+pulsar = { group = "dev.zenfyr", name = "pulsar", version = "0.2.3-26.1.2-build.25" }
 
-modmenu = { group = "com.terraformersmc", name = "modmenu", version = "17.0.0" }
-cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "21.11.153" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version = "18.0.0-beta.1" }
+cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "26.1.154" }
 
 [plugins]
-fabric-loom = { id = "fabric-loom", version = "1.16.1" }
+fabric-loom = { id = "net.fabricmc.fabric-loom", version = "1.16.1" }
 lombok = { id = "io.freefair.lombok", version = "9.4.0"}
 spotless = { id = "com.diffplug.spotless", version = "8.4.0" }
 modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "1.1.0" }

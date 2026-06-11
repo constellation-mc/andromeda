@@ -22,10 +22,10 @@ public final class Main {
       Level world = entity.level();
       if (world.am$get(VehicleUnentrapment.CONFIG).available) {
         if (source.getEntity() == null || entity instanceof Player) return true;
-        if (!entity.getType().is(ESCAPE_VEHICLES_ON_HIT)) return true;
+        if (!entity.typeHolder().is(ESCAPE_VEHICLES_ON_HIT)) return true;
 
         Entity vehicle = entity.getVehicle();
-        if (vehicle == null || !vehicle.getType().is(ESCAPABLE_VEHICLES)) return true;
+        if (vehicle == null || !vehicle.typeHolder().is(ESCAPABLE_VEHICLES)) return true;
         entity.stopRiding();
       }
       return true;

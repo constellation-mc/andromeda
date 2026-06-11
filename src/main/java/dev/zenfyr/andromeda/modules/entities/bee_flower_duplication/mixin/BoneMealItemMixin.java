@@ -26,7 +26,8 @@ abstract class BoneMealItemMixin {
     if (!config.available || !config.tallFlowers) return;
 
     if (blockState.getBlock() instanceof TallFlowerBlock) {
-      if (ModuleManager.get().get("misc.unknown").isPresent() && world.random.nextInt(100) == 0) {
+      if (ModuleManager.get().get("misc.unknown").isPresent()
+          && world.getRandom().nextInt(100) == 0) {
         world.explode(
             null,
             pos.getX() + 0.5,

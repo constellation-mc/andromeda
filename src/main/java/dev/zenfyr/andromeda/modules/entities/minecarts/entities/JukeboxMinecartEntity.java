@@ -101,7 +101,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   }
 
   @Override
-  public InteractionResult interact(Player player, InteractionHand hand) {
+  public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
     ItemStack stackInHand = player.getItemInHand(hand);
     if (!level.isClientSide())
       if (!this.record.isEmpty()) {

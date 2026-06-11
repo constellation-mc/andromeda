@@ -8,7 +8,7 @@ public class SoundPayloadHolder {
 
   public static void init() {
     if (done) return;
-    PayloadTypeRegistry.playS2C()
+    PayloadTypeRegistry.clientboundPlay()
         .register(RecordPlaybackS2CPayload.ID, RecordPlaybackS2CPayload.CODEC);
     done = true;
   }

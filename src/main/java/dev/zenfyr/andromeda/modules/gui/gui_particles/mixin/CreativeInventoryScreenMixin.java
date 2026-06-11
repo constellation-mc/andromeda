@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,8 +40,8 @@ abstract class CreativeInventoryScreenMixin
   private void andromeda$clickDeleteParticles(
       Slot slot,
       int slotId,
-      int button,
-      ClickType actionType,
+      int buttonNum,
+      ContainerInput containerInput,
       CallbackInfo ci,
       @Local(ordinal = 2) int index) {
     var config = AndromedaClient.CLIENT.get(GuiParticles.CONFIG);

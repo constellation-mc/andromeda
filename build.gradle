@@ -38,18 +38,14 @@ repositories {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.layered() {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
-    }
-    modImplementation libs.fabric.loader
+    implementation libs.fabric.loader
 
-    modImplementation libs.fabric.api
-    modImplementation libs.pulsar
+    implementation libs.fabric.api
+    implementation libs.pulsar
 
     [libs.modmenu, libs.cloth.config].each {
-        modLocalRuntime it
-        modCompileOnly it
+        localRuntime it
+        compileOnly it
     }
 }
 
@@ -108,7 +104,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 17
+def targetJavaVersion = 25
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
     it.options.release = targetJavaVersion
@@ -169,8 +165,8 @@ publishing {
 }
 
 publishMods {
-    file = remapJar.archiveFile
-    additionalFiles.from(remapSourcesJar.archiveFile)
+    file = jar.archiveFile
+    additionalFiles.from(sourcesJar.archiveFile)
 
     changelog = file("CHANGELOG.md").text
     type = ReleaseType.valueOf(providers.environmentVariable("VERSION_TYPE").getOrElse("BETA"))

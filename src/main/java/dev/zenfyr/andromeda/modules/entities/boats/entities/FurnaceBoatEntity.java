@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -50,7 +51,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     super.tick();
     if (this.getFuel() > 0) {
       this.setFuel(this.getFuel() - 1);
-      if (this.level.random.nextInt(4) == 0) {
+      if (this.level.getRandom().nextInt(4) == 0) {
         Vec3 vec3d = new Vec3(-0.8, 0.0, 0.0).yRot(-this.getYRot() * PIby180 - PIby2);
         this.level.addParticle(
             ParticleTypes.CAMPFIRE_COSY_SMOKE,
@@ -77,7 +78,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
   }
 
   @Override
-  public InteractionResult interact(Player player, InteractionHand hand) {
+  public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
     ItemStack stack = player.getItemInHand(hand);
     if (level.fuelValues().isFuel(stack)) {
       int itemFuel = level.fuelValues().burnDuration(stack);
@@ -87,9 +88,8 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
               .map(m -> Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel)
               .orElse(45000)) {
         if (!player.getAbilities().instabuild) {
-          ItemStack reminder = stack.getRecipeRemainder();
-          if (!reminder.isEmpty())
-            player.getInventory().placeItemBackInInventory(stack.getRecipeRemainder());
+          ItemStackTemplate reminder = stack.getCraftingRemainder();
+          if (reminder != null) player.getInventory().placeItemBackInInventory(reminder.create());
           stack.shrink(1);
         }
 
@@ -97,7 +97,7 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
         return InteractionResult.SUCCESS;
       }
     }
-    return super.interact(player, hand);
+    return super.interact(player, hand, location);
   }
 
   @Override

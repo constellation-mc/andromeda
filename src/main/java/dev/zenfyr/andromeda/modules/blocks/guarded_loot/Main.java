@@ -73,8 +73,8 @@ public final class Main {
 
   public static void handleLockedContainer(
       Player player, Vec3 pos, Collection<LivingEntity> monsters) {
-    player.displayClientMessage(
-        TextUtil.translatable("andromeda.container.guarded").withStyle(ChatFormatting.RED), true);
+    player.sendOverlayMessage(
+        TextUtil.translatable("andromeda.container.guarded").withStyle(ChatFormatting.RED));
 
     if (!player.level.isClientSide()) {
       ((ServerPlayer) player)

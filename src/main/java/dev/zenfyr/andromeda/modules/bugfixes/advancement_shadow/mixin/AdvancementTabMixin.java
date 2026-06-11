@@ -21,7 +21,7 @@ abstract class AdvancementTabMixin {
   @ModifyArg(
       at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F", ordinal = 0),
       index = 0,
-      method = "drawTooltips")
+      method = "extractTooltips")
   private float andromeda$draw(float value) {
     return this.fade + (0.04F * minecraft.getDeltaTracker().getGameTimeDeltaTicks());
   }
@@ -29,7 +29,7 @@ abstract class AdvancementTabMixin {
   @ModifyArg(
       at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F", ordinal = 1),
       index = 0,
-      method = "drawTooltips")
+      method = "extractTooltips")
   private float andromeda$draw1(float value) {
     return this.fade - (0.06F * minecraft.getDeltaTracker().getGameTimeDeltaTicks());
   }

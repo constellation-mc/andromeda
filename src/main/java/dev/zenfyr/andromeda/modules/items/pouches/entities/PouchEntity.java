@@ -10,7 +10,7 @@ import dev.zenfyr.pulsar.util.Utilities;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Objects;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -27,6 +27,7 @@ import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
@@ -54,9 +55,9 @@ public class PouchEntity extends ThrowableItemProjectile {
     ItemStack stack = getItem();
     if (type == HitResult.Type.ENTITY) {
       this.onHitEntity((EntityHitResult) hitResult);
-      if (level instanceof ServerLevel sw) {
+      if (level instanceof ServerLevel sw && !stack.isEmpty()) {
         sw.sendParticles(
-            new ItemParticleOption(ParticleTypes.ITEM, stack),
+            new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
             getX(),
             getY(),
             getZ(),
@@ -69,9 +70,9 @@ public class PouchEntity extends ThrowableItemProjectile {
       this.discard();
     } else if (type == HitResult.Type.BLOCK) {
       this.onHitBlock((BlockHitResult) hitResult);
-      if (level instanceof ServerLevel sw) {
+      if (level instanceof ServerLevel sw && !stack.isEmpty()) {
         sw.sendParticles(
-            new ItemParticleOption(ParticleTypes.ITEM, stack),
+            new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
             getX(),
             getY(),
             getZ(),
@@ -99,11 +100,11 @@ public class PouchEntity extends ThrowableItemProjectile {
         stacks.forEach(stack -> pe.getInventory().placeItemBackInInventory(stack));
         return;
       } else if (entity instanceof InventoryCarrier io) {
-        var storage = InventoryStorage.of(io.getInventory(), null);
+        var storage = ContainerStorage.of(io.getInventory(), null);
         stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
         return;
       } else if (entity instanceof Container inv) {
-        var storage = InventoryStorage.of(inv, null);
+        var storage = ContainerStorage.of(inv, null);
         stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
         return;
       }

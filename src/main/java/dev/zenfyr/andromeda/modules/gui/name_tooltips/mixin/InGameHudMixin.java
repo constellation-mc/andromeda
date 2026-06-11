@@ -6,10 +6,10 @@ import dev.zenfyr.pulsar.util.Utilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -36,8 +36,8 @@ abstract class InGameHudMixin {
   @Shadow
   private ItemStack lastToolHighlight;
 
-  @Inject(at = @At("HEAD"), method = "renderSelectedItemName", cancellable = true)
-  private void andromeda$renderTooltip(GuiGraphics context, CallbackInfo ci) {
+  @Inject(at = @At("HEAD"), method = "extractSelectedItemName", cancellable = true)
+  private void andromeda$renderTooltip(GuiGraphicsExtractor context, CallbackInfo ci) {
     Profiler.get().push("selectedItemName");
 
     if (this.toolHighlightTimer > 0
@@ -77,12 +77,12 @@ abstract class InGameHudMixin {
               .getTooltipImage()
               .ifPresent(datax -> list1.add(1, Utilities.supply(() -> {
                 ClientTooltipComponent component =
-                    TooltipComponentCallback.EVENT.invoker().getComponent(datax);
+                    ClientTooltipComponentCallback.EVENT.invoker().getClientComponent(datax);
                 if (component == null) component = ClientTooltipComponent.create(datax);
                 return component;
               })));
 
-          context.renderTooltip(
+          context.tooltip(
               minecraft.font,
               list1,
               0,

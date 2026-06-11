@@ -120,7 +120,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   }
 
   @Override
-  public InteractionResult interact(Player player, InteractionHand hand) {
+  public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
     ItemStack stack = player.getItemInHand(hand);
     if (hand == InteractionHand.MAIN_HAND
         && (stack.is(Items.FLINT_AND_STEEL) || stack.is(Items.FIRE_CHARGE))) {
@@ -134,7 +134,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
       }
       return InteractionResult.SUCCESS;
     }
-    return super.interact(player, hand);
+    return super.interact(player, hand, location);
   }
 
   @Override

@@ -7,13 +7,13 @@ import dev.zenfyr.andromeda.modules.world.moist_control.MoistControl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(FarmBlock.class)
+@Mixin(FarmlandBlock.class)
 abstract class FarmlandMixin {
 
   @Inject(at = @At("HEAD"), method = "isNearWater")

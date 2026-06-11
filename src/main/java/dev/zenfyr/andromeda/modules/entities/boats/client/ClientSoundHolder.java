@@ -34,8 +34,7 @@ public class ClientSoundHolder {
         return;
       }
 
-      var songOptional =
-          JukeboxSong.fromStack(client.getConnection().registryAccess(), payload.record());
+      var songOptional = JukeboxSong.fromStack(payload.record());
       if (songOptional.isEmpty()) return;
       var song = songOptional.get();
       soundInstanceMap.computeIfAbsent(payload.entity(), uuid -> {

@@ -4,20 +4,26 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.BoatRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 
 public class BoatWithBlockRenderer extends BoatRenderer {
 
+  public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
   private final BlockState blockState;
   private final Vector2f offset;
+  private final BlockModelResolver blockModelResolver;
 
   public BoatWithBlockRenderer(
       EntityRendererProvider.Context context,
@@ -27,6 +33,7 @@ public class BoatWithBlockRenderer extends BoatRenderer {
     super(context, modelLayer);
     this.blockState = blockState;
     this.offset = offset;
+    this.blockModelResolver = context.getBlockModelResolver();
   }
 
   @Override
@@ -36,8 +43,9 @@ public class BoatWithBlockRenderer extends BoatRenderer {
       SubmitNodeCollector submitNodeCollector,
       CameraRenderState cameraRenderState) {
     super.submit(boatRenderState, poseStack, submitNodeCollector, cameraRenderState);
-
-    if (blockState == null) return;
+    BlockModelRenderState displayBlockModel =
+        ((RenderStateDuck) boatRenderState).andromeda$blockRenderState();
+    if (blockState == null || displayBlockModel.isEmpty()) return;
 
     poseStack.pushPose();
     // poseStack.translate(0.0F, 0.375F, 0.0F);
@@ -57,13 +65,22 @@ public class BoatWithBlockRenderer extends BoatRenderer {
     poseStack.translate(0.5f, offset.x(), offset.y());
     poseStack.mulPose(Axis.YP.rotationDegrees(-180.0f));
 
-    submitNodeCollector.submitBlock(
+    displayBlockModel.submit(
         poseStack,
-        this.blockState,
+        submitNodeCollector,
         boatRenderState.lightCoords,
         OverlayTexture.NO_OVERLAY,
         boatRenderState.outlineColor);
 
     poseStack.popPose();
+  }
+
+  @Override
+  public void extractRenderState(AbstractBoat entity, BoatRenderState state, float partialTicks) {
+    super.extractRenderState(entity, state, partialTicks);
+    this.blockModelResolver.update(
+        ((RenderStateDuck) state).andromeda$blockRenderState(),
+        this.blockState,
+        BLOCK_DISPLAY_CONTEXT);
   }
 }

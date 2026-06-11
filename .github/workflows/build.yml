@@ -6,5 +6,5 @@ jobs:
   build:
     uses: constellation-mc/actions/.github/workflows/gradle-build.yml@main
     with:
-      java: 21
+      java: 25
       gradle_tasks: check

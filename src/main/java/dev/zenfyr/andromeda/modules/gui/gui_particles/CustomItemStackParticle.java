@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles;
 
 import dev.zenfyr.pulsar.client.particles.ItemStackParticle;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix3x2fStack;
@@ -12,7 +12,8 @@ public class CustomItemStackParticle extends ItemStackParticle {
   }
 
   @Override
-  public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+  public void extractRenderState(
+      GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
     float x = (float) Mth.lerp(delta, prevX, this.x);
     float y = (float) Mth.lerp(delta, prevY, this.y);
     Matrix3x2fStack matrixStack = context.pose();
@@ -20,8 +21,8 @@ public class CustomItemStackParticle extends ItemStackParticle {
     matrixStack.translate(x, y);
     double angle = Math.atan2(velY, velX) * 0.5;
     matrixStack.rotate((float) angle);
-    context.renderItem(this.stack, -8, -8);
-    context.renderItemDecorations(client.font, this.stack, -8, -8);
+    context.item(this.stack, -8, -8);
+    context.itemDecorations(client.font, this.stack, -8, -8);
     matrixStack.popMatrix();
   }
 }

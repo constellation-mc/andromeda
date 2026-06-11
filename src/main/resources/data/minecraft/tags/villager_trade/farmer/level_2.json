@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "andromeda:farmer/2/flower_pouch",
+      "required": false
+    },
+    {
+      "id": "andromeda:farmer/2/sapling_pouch",
+      "required": false
+    },
+    {
+      "id": "andromeda:farmer/2/seed_pouch",
+      "required": false
+    }
+  ]
+}

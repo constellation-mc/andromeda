@@ -13,11 +13,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -84,7 +84,7 @@ public class Client {
               .getTooltipImage()
               .ifPresent(datax -> components.add(1, Utilities.supply(() -> {
                 ClientTooltipComponent component =
-                    TooltipComponentCallback.EVENT.invoker().getComponent(datax);
+                    ClientTooltipComponentCallback.EVENT.invoker().getClientComponent(datax);
                 if (component == null) component = ClientTooltipComponent.create(datax);
                 return component;
               })));
@@ -112,7 +112,7 @@ public class Client {
   }
 
   private void renderFromComponents(
-      Minecraft client, GuiGraphics context, List<ClientTooltipComponent> components) {
+      Minecraft client, GuiGraphicsExtractor context, List<ClientTooltipComponent> components) {
     if (components.isEmpty()) return;
 
     float flow = Mth.lerp(
@@ -126,7 +126,7 @@ public class Client {
         return key * flowAlpha;
       });
 
-      context.renderTooltip(
+      context.tooltip(
           client.font,
           components,
           0,

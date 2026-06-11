@@ -1,0 +1,21 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "andromeda:items_registered",
+      "values": [
+        "andromeda:flower_pouch"
+      ]
+    }
+  ],
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 4
+  },
+  "gives": {
+    "id": "andromeda:flower_pouch",
+    "count": 1
+  },
+  "max_uses": 12,
+  "xp": 4.0,
+  "reputation_discount": 0.06
+}

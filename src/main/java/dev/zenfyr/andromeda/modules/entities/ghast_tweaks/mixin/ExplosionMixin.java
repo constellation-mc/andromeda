@@ -41,7 +41,7 @@ abstract class ExplosionMixin implements GhastExplosionDuck {
       @Local(index = 22) BlockPos pos,
       @Local(index = 23) BlockState state) {
     if (!affectObsidian || state.getBlock() != Blocks.OBSIDIAN) return;
-    if (h - 0.64 > 0 && level.random.nextFloat() >= 0.2f) affectedObsidian.add(pos);
+    if (h - 0.64 > 0 && level.getRandom().nextFloat() >= 0.2f) affectedObsidian.add(pos);
   }
 
   @Inject(

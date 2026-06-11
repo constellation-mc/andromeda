@@ -38,7 +38,7 @@ abstract class BedBlockMixin extends Block {
         .getValue(EnvironmentAttributes.BED_RULE, blockPos)
         .explodes()) {
       if (world.am$get(Safe.CONFIG).available) {
-        player.displayClientMessage(TextUtil.translatable("action.andromeda.safebeds"), true);
+        player.sendOverlayMessage(TextUtil.translatable("action.andromeda.safebeds"));
         cir.setReturnValue(InteractionResult.SUCCESS);
       }
     }

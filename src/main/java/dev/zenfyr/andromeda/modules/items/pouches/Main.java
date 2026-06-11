@@ -13,6 +13,7 @@ import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
 import dev.zenfyr.pulsar.util.ExceptionUtil;
 import java.lang.reflect.Field;
 import java.util.*;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
@@ -135,8 +136,6 @@ public final class Main {
             .networkSynchronized(CustomPouchComponent.PACKET_CODEC)
             .build()));
 
-    Trades.register();
-
     List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
     AndromedaItemGroup.BUS.listen(acceptor ->
         acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, new ArrayList<>(l)));
@@ -146,6 +145,8 @@ public final class Main {
         DispenserBlock.registerBehavior(
             pouchItemKeeper.orThrow(), new ProjectileDispenseBehavior(pouchItemKeeper.orThrow()));
     }
+
+    ServerLifecycleEvents.SERVER_STARTING.register(server -> testBlocks());
   }
 
   private static void test(BlockEntity be, Pouches module) {

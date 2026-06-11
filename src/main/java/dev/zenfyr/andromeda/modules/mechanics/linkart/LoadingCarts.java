@@ -42,7 +42,9 @@ public class LoadingCarts {
   public void tick(ServerLevel level) {
     if (!this.reloads.isEmpty()) {
       for (BlockPos reload : this.reloads) {
-        level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(reload), 4);
+        level
+            .getChunkSource()
+            .addTicketWithRadius(TicketType.PORTAL, ChunkPos.containing(reload), 4);
       }
       this.reloads.clear();
     }
