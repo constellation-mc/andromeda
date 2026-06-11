@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {
+      "blocks": "minecraft:campfire",
+      "range": 10.0,
+      "affectsPassive": true,
+      "effects": [
+        {
+          "effect": "minecraft:regeneration",
+          "amplifier": 0
+        }
+      ]
+    }
+  ]
+}

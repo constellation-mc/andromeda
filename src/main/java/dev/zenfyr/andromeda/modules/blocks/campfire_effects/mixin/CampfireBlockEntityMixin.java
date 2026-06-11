@@ -1,6 +1,7 @@
 package dev.zenfyr.andromeda.modules.blocks.campfire_effects.mixin;
 
 import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffects;
+import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffectsData;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -28,21 +29,24 @@ abstract class CampfireBlockEntityMixin {
       if (state.getValue(CampfireBlock.LIT)) {
         var config = world.am$get(CampfireEffects.CONFIG);
         if (!config.available) return;
+        var data = world.getServer().pulsar$getReloader(CampfireEffectsData.RELOADER);
+        if (data == null) return;
+        var campfireEffect = data.get(state.getBlockHolder());
+        if (campfireEffect == null) return;
 
         List<LivingEntity> entities = new ArrayList<>();
-        double rad = config.effectsRange;
-        boolean affectsPassive = config.affectsPassive;
-        world.getEntities().get(new AABB(pos).inflate(rad), entity -> {
-          if ((entity instanceof AgeableMob && affectsPassive) || entity instanceof Player) {
+        world.getEntities().get(new AABB(pos).inflate(campfireEffect.range()), entity -> {
+          if ((entity instanceof AgeableMob && campfireEffect.affectsPassive())
+              || entity instanceof Player) {
             entities.add((LivingEntity) entity);
           }
         });
-        List<CampfireEffects.Config.Effect> effects = config.effectList;
+        var campfireEffects = campfireEffect.effects();
 
         for (LivingEntity player : entities) {
-          for (CampfireEffects.Config.Effect effect : effects) {
-            MobEffectInstance effectInstance =
-                new MobEffectInstance(effect.identifier, 200, effect.amplifier, true, false, true);
+          for (var effect : campfireEffects) {
+            MobEffectInstance effectInstance = new MobEffectInstance(
+                effect.effect().value(), 200, effect.amplifier(), true, false, true);
             player.addEffect(effectInstance);
           }
         }
