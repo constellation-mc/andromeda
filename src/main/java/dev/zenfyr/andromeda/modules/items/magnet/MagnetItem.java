@@ -34,10 +34,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -153,28 +151,22 @@ public class MagnetItem extends Item {
 
   @Override
   public void inventoryTick(
-      ItemStack stack,
-      ServerLevel serverLevel,
-      Entity entity,
-      @Nullable EquipmentSlot equipmentSlot) {
-    if (entity instanceof LivingEntity pe) { // selected doesn't account for offhand
-      if (!ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.MAIN_HAND))
-          && !ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.OFF_HAND))) return;
-    } else if (equipmentSlot == null) return;
-
-    Set<Item> magnetables = magnetable(stack);
-    int level = getLevel(stack);
-    serverLevel
-        .getEntitiesOfClass(
-            ItemEntity.class,
-            new AABB(entity.blockPosition())
-                .inflate(level * serverLevel.am$get(Magnet.CONFIG).rangeMultiplier),
-            ie -> magnetables.contains(
-                ie.getEntityData().get(ItemEntity.DATA_ITEM).getItem()))
-        .forEach(ie -> {
-          Vec3 vel = ie.position().vectorTo(entity.position()).normalize().scale(0.05f * level);
-          ie.push(vel.x, vel.y, vel.z);
-        });
+      ItemStack stack, ServerLevel serverLevel, Entity entity, @Nullable EquipmentSlot slot) {
+    if (slot != null && slot.getType() == EquipmentSlot.Type.HAND) {
+      Set<Item> magnetables = magnetable(stack);
+      int level = getLevel(stack);
+      serverLevel
+          .getEntitiesOfClass(
+              ItemEntity.class,
+              new AABB(entity.blockPosition())
+                  .inflate(level * serverLevel.am$get(Magnet.CONFIG).rangeMultiplier),
+              ie -> magnetables.contains(
+                  ie.getEntityData().get(ItemEntity.DATA_ITEM).getItem()))
+          .forEach(ie -> {
+            Vec3 vel = ie.position().vectorTo(entity.position()).normalize().scale(0.05f * level);
+            ie.push(vel.x, vel.y, vel.z);
+          });
+    }
   }
 
   @Override
