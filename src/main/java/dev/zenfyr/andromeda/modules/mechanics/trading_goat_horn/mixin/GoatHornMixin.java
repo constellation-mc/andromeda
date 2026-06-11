@@ -3,10 +3,8 @@ package dev.zenfyr.andromeda.modules.mechanics.trading_goat_horn.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.mechanics.trading_goat_horn.CustomTraderManager;
 import dev.zenfyr.andromeda.modules.mechanics.trading_goat_horn.GoatHorn;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,9 +36,7 @@ abstract class GoatHornMixin {
       CallbackInfoReturnable<InteractionResult> cir,
       @Local Optional<? extends Holder<Instrument>> optional) {
     if (world.isClientSide()) return;
-
-    Identifier identifier = optional.orElseThrow().unwrapKey().orElseThrow().identifier();
-    if (!Objects.equals(identifier, world.am$get(GoatHorn.CONFIG).instrumentId)) return;
+    if (optional.filter(holder -> holder.is(CustomTraderManager.TRADER_SONGS)).isEmpty()) return;
 
     ServerLevel sw = (ServerLevel) world;
     if (!sw.getGameRules().get(GameRules.SPAWN_MOBS)) return;
