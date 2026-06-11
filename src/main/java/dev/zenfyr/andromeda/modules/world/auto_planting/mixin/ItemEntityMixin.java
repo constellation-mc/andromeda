@@ -1,6 +1,7 @@
 package dev.zenfyr.andromeda.modules.world.auto_planting.mixin;
 
 import dev.zenfyr.andromeda.modules.world.auto_planting.AutoPlanting;
+import dev.zenfyr.andromeda.modules.world.auto_planting.Main;
 import dev.zenfyr.pulsar.util.MathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -39,7 +40,7 @@ abstract class ItemEntityMixin {
     var config = world.am$get(AutoPlanting.CONFIG);
     if (!config.available) return;
     if (!world.getFluidState(pos).isEmpty()) return;
-    if (config.blacklistMode == config.idList.contains(stack.getItem())) return;
+    if (config.blacklistMode == stack.is(Main.ITEM_LIST)) return;
 
     blockItem.place(new BlockPlaceContext(
         world,
