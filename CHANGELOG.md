@@ -1,6 +1,4 @@
 # What's New:
 
-- Fixed slimes sometimes shrinking on merge.
-- Dropped unused translation keys. Added tag translations.
-- The translations module now supports custom URLs. Fixed the module possibly not respecting `connections.allow` on reloads.
-- All random tick block are now supported in `world/crop_temperature`, not sure about the performance impact here.
+- Fixed registry entries in configs and data packs not raising an error for missing blocks/items and instead falling back to the default value.
+- Fixed `items/magent` activating all magnets in the inventory if any are selected.
