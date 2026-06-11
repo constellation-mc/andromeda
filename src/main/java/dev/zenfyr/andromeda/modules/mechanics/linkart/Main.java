@@ -33,10 +33,10 @@ public class Main {
   public static final Keeper<AttachmentType<LoadingCarts>> ATTACHMENT = Keeper.create();
 
   public static void init() {
-    ATTACHMENT.init(AttachmentRegistry.<LoadingCarts>builder()
-        .initializer(() -> new LoadingCarts(Set.of()))
-        .persistent(LoadingCarts.CODEC)
-        .buildAndRegister(id("loading_carts")));
+    ATTACHMENT.init(AttachmentRegistry.create(
+        id("loading_carts"),
+        builder ->
+            builder.initializer(() -> new LoadingCarts(Set.of())).persistent(LoadingCarts.CODEC)));
 
     ServerTickEvents.START_LEVEL_TICK.register(level -> {
       var cfg = level.am$get(Linkart.CONFIG);

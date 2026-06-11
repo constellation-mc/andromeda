@@ -113,10 +113,11 @@ public class EnderDragonManager {
   }
 
   static void init() {
-    EnderDragonManager.ATTACHMENT.init(AttachmentRegistry.<EnderDragonManager>builder()
-        .initializer(() -> new EnderDragonManager(1, Collections.emptyList()))
-        .persistent(EnderDragonManager.CODEC)
-        .buildAndRegister(id("ender_dragon_data")));
+    EnderDragonManager.ATTACHMENT.init(AttachmentRegistry.create(
+        id("ender_dragon_data"),
+        builder -> builder
+            .initializer(() -> new EnderDragonManager(1, Collections.emptyList()))
+            .persistent(EnderDragonManager.CODEC)));
 
     ServerLevelEvents.LOAD.register((server, world) -> {
       if (world.dimension() == Level.END)

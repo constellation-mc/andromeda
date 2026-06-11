@@ -146,10 +146,11 @@ public class CustomTraderManager {
   }
 
   static void init() {
-    CustomTraderManager.ATTACHMENT.init(AttachmentRegistry.<CustomTraderManager>builder()
-        .initializer(() -> new CustomTraderManager(0))
-        .persistent(CustomTraderManager.CODEC)
-        .buildAndRegister(id("trader_state_manager")));
+    CustomTraderManager.ATTACHMENT.init(AttachmentRegistry.create(
+        id("trader_state_manager"),
+        builder -> builder
+            .initializer(() -> new CustomTraderManager(0))
+            .persistent(CustomTraderManager.CODEC)));
 
     ServerLevelEvents.LOAD.register((server, world) -> {
       if (Level.OVERWORLD.equals(world.dimension()))
