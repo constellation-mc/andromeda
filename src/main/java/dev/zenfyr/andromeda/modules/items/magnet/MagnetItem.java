@@ -33,7 +33,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
@@ -149,12 +148,10 @@ public class MagnetItem extends Item {
   @Override
   public void inventoryTick(
       ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-    if (!world.isClientSide()) {
-      if (entity instanceof LivingEntity pe) { // selected doesn't account for offhand
-        if (!ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.MAIN_HAND))
-            && !ItemStack.isSameItem(stack, pe.getItemInHand(InteractionHand.OFF_HAND))) return;
-      } else if (!selected) return;
+    if (world.isClientSide()) return;
 
+    // selected doesn't account for offhand
+    if (selected || (entity instanceof LivingEntity living && living.getOffhandItem() == stack)) {
       Set<Item> magnetables = magnetable(stack);
       int level = getLevel(stack);
       world
