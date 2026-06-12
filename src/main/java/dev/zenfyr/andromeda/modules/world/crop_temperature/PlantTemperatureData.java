@@ -1,30 +1,24 @@
 package dev.zenfyr.andromeda.modules.world.crop_temperature;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
-import dev.zenfyr.pulsar.codec.ExtraCodecs;
+import dev.zenfyr.pulsar.codec.JsonCodecDataLoader;
 import dev.zenfyr.pulsar.resources.ReloaderType;
 import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import dev.zenfyr.pulsar.util.MathUtil;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.util.*;
-import net.minecraft.core.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -37,29 +31,32 @@ public final class PlantTemperatureData {
           floats -> {
             if (floats.size() != 4)
               return DataResult.error(() -> "temperature array must contain exactly 4 floats!");
-            return DataResult.success(new FloatArrayList(floats).toArray(new float[4]));
+            var array = new FloatArrayList(floats).toArray(new float[4]);
+            if (!isValidEntry(array)) {
+              return DataResult.error(
+                  () ->
+                      "temperature array must not contain NaN and values must be amin <= min <= max <= amax");
+            }
+            return DataResult.success(array);
           },
           floats -> Lists.newArrayList(floats[0], floats[1], floats[2], floats[3]));
 
   private static final Codec<TemperatureEntry> ENTRY_CODEC =
       RecordCodecBuilder.create(data -> data.group(
-              ExtraCodecs.list(BuiltInRegistries.BLOCK.holderByNameCodec())
-                  .fieldOf("blocks")
-                  .forGetter(TemperatureEntry::blocks),
               FLOAT_ARRAY_CODEC.fieldOf("temperatures").forGetter(TemperatureEntry::temperatures))
           .apply(data, TemperatureEntry::new));
 
-  private static final Codec<NewHolder> HOLDER_CODEC = RecordCodecBuilder.create(
-      data -> data.group(Codec.list(ENTRY_CODEC).fieldOf("entries").forGetter(NewHolder::entries))
-          .apply(data, NewHolder::new));
+  private static final Codec<Map<Holder<Block>, TemperatureEntry>> BASE_HOLDER =
+      Codec.unboundedMap(BuiltInRegistries.BLOCK.holderByNameCodec(), ENTRY_CODEC);
 
   public static final ReloaderType<Reloader> RELOADER =
       ReloaderType.create(Andromeda.id("crop_temperatures"));
 
-  public static boolean roll(BlockState state, float temp, ServerLevel world) {
-    float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlockHolder());
-    if (data != null) {
+  public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
+    var entry = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlockHolder());
+    if (entry != null) {
       if (!world.am$get(PlantTemperature.CONFIG).available) return true;
+      var data = entry.temperatures();
 
       if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
         return MathUtil.nextInt(0, 1) != 0;
@@ -68,21 +65,25 @@ public final class PlantTemperatureData {
     return true;
   }
 
-  record TemperatureEntry(List<Holder<Block>> blocks, float[] temperatures) {}
+  private static boolean isValidEntry(float[] data) {
+    if (data == null || data.length != 4) return false;
+    for (float f : data) if (Float.isNaN(f)) return false;
+    return data[0] <= data[1] && data[1] <= data[2] && data[2] <= data[3];
+  }
 
-  record NewHolder(List<TemperatureEntry> entries) {}
+  public record TemperatureEntry(float[] temperatures) {}
 
   public static boolean isPlant(Block block) {
     return block instanceof BushBlock
         || block instanceof GrowingPlantBlock
-        || block instanceof BonemealableBlock;
+        || block instanceof BonemealableBlock
+        || block instanceof CactusBlock;
   }
 
   public static void init() {
     var manager = ModuleManager.get();
     var module = manager.get(PlantTemperature.class).orElseThrow();
-    ServerReloadersEvent.EVENT.register(
-        context -> context.register(new Reloader(manager, module, context.registryAccess())));
+    ServerReloadersEvent.EVENT.register(context -> context.register(new Reloader(manager, module)));
   }
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
@@ -129,42 +130,32 @@ public final class PlantTemperatureData {
         && methodInHierarchyUntil(cls.getSuperclass(), name, stopClass);
   }
 
-  public static class Reloader extends IdentifiedJsonDataLoader {
+  public static class Reloader extends JsonCodecDataLoader<Map<Holder<Block>, TemperatureEntry>> {
 
-    @Nullable private HashMap<Holder<Block>, float[]> map;
+    @Nullable private Map<Holder<Block>, TemperatureEntry> map;
 
     private final ModuleManager manager;
     private final PlantTemperature module;
-    private final RegistryAccess registryAccess;
 
-    protected Reloader(
-        ModuleManager manager, PlantTemperature module, RegistryAccess registryAccess) {
-      super(RELOADER.location());
+    protected Reloader(ModuleManager manager, PlantTemperature module) {
+      super(RELOADER.location(), BASE_HOLDER);
       this.manager = manager;
       this.module = module;
-      this.registryAccess = registryAccess;
     }
 
-    public float @Nullable [] get(Holder<Block> block) {
+    public TemperatureEntry get(Holder<Block> block) {
       return Objects.requireNonNull(this.map).get(block);
     }
 
     @Override
     protected void apply(
-        Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
-      HashMap<Holder<Block>, float[]> result = new HashMap<>();
+        Map<ResourceLocation, Map<Holder<Block>, TemperatureEntry>> data, ResourceManager manager) {
 
-      RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, this.registryAccess);
-      Maps.transformValues(
-              data,
-              input -> HOLDER_CODEC.parse(ops, input).getOrThrow(false, string -> {
-                throw new JsonParseException(string);
-              }))
-          .values()
-          .forEach(newHolder -> newHolder
-              .entries()
-              .forEach(entry ->
-                  entry.blocks().forEach(block -> result.put(block, entry.temperatures()))));
+      Map<Holder<Block>, TemperatureEntry> result = new HashMap<>();
+      for (Map.Entry<ResourceLocation, Map<Holder<Block>, TemperatureEntry>> entry :
+          data.entrySet()) {
+        result.putAll(entry.getValue());
+      }
       this.map = result;
 
       if (this.manager.debug().isVerbose()) verifyPostLoad(module, this);

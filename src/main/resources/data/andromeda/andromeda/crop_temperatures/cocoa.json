@@ -1,13 +1,10 @@
 {
-  "entries": [
-    {
-      "blocks": "minecraft:cocoa",
-      "temperatures": [
-        0.8,
-        0.8,
-        1.2,
-        1.5
-      ]
-    }
-  ]
+  "minecraft:cocoa": {
+    "temperatures": [
+      0.8,
+      0.8,
+      1.2,
+      1.5
+    ]
+  }
 }

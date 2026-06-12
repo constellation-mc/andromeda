@@ -1,19 +1,42 @@
 {
-  "entries": [
-    {
-      "blocks": [
-        "minecraft:nether_wart",
-        "minecraft:twisting_vines",
-        "minecraft:twisting_vines_plant",
-        "minecraft:weeping_vines",
-        "minecraft:weeping_vines_plant"
-      ],
-      "temperatures": [
-        1.6,
-        1.8,
-        2.0,
-        2.0
-      ]
-    }
-  ]
+  "minecraft:nether_wart": {
+    "temperatures": [
+      1.6,
+      1.8,
+      2.0,
+      2.0
+    ]
+  },
+  "minecraft:twisting_vines": {
+    "temperatures": [
+      1.6,
+      1.8,
+      2.0,
+      2.0
+    ]
+  },
+  "minecraft:twisting_vines_plant": {
+    "temperatures": [
+      1.6,
+      1.8,
+      2.0,
+      2.0
+    ]
+  },
+  "minecraft:weeping_vines": {
+    "temperatures": [
+      1.6,
+      1.8,
+      2.0,
+      2.0
+    ]
+  },
+  "minecraft:weeping_vines_plant": {
+    "temperatures": [
+      1.6,
+      1.8,
+      2.0,
+      2.0
+    ]
+  }
 }
