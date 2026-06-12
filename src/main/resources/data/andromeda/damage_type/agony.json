@@ -1,4 +1,12 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "andromeda:modules_loaded",
+      "values": [
+        "misc/minor_inconvenience"
+      ]
+    }
+  ],
   "exhaustion": 0.1,
   "message_id": "andromeda_agony",
   "scaling": "never"
