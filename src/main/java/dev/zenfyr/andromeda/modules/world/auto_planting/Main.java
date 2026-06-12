@@ -8,5 +8,5 @@ import net.minecraft.world.item.Item;
 
 public class Main {
   public static final TagKey<Item> ITEM_LIST =
-      TagKey.create(BuiltInRegistries.ITEM.key(), id("auto_planting/items"));
+      TagKey.create(BuiltInRegistries.ITEM.key(), id("auto_planting"));
 }
