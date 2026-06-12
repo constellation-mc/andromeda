@@ -1,11 +1,14 @@
 package dev.zenfyr.andromeda.common.util;
 
+import com.mojang.serialization.Codec;
+import dev.zenfyr.pulsar.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.util.functions.Memoize;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -18,14 +21,23 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.SerializerType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 // Wrapper for a LootContextParameterSet.Builder to add our utility methods.
 public class LootContextBuilder {
+
+  public static final Codec<LootItemCondition> CONDITION_CODEC = ExtraCodecs.jsonSerializerDispatch(
+      "condition",
+      BuiltInRegistries.LOOT_CONDITION_TYPE.byNameCodec(),
+      LootItemCondition::getType,
+      SerializerType::getSerializer,
+      MiscUtil.lootContext);
 
   LootParams.Builder builder;
 
