@@ -1,3 +1,4 @@
 # What's New:
 
-- Fixed registry entries in configs and data packs not raising an error for missing blocks/items and instead falling back to the default value.
+- Updated to Minecraft 26.1.2, based on Andromeda 2.2.0! This is the first release, there Will be bugs!
+- `items/pouches` are now using vanilla datapack villager trades.
