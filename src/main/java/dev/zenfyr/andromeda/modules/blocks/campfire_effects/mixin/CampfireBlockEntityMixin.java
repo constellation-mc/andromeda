@@ -1,5 +1,6 @@
 package dev.zenfyr.andromeda.modules.blocks.campfire_effects.mixin;
 
+import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffectsData;
 import java.util.ArrayList;
@@ -9,8 +10,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -26,25 +27,48 @@ abstract class CampfireBlockEntityMixin {
   private static void andromeda$litServerTick(
       Level world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
     if (world.getGameTime() % 180 == 0) {
-      if (state.getValue(CampfireBlock.LIT)) {
-        var config = world.am$get(CampfireEffects.CONFIG);
-        if (!config.available) return;
-        var data = world.getServer().pulsar$getReloader(CampfireEffectsData.RELOADER);
-        if (data == null) return;
-        var campfireEffect = data.get(state.getBlockHolder());
-        if (campfireEffect == null) return;
+      var config = world.am$get(CampfireEffects.CONFIG);
+      if (!config.available) return;
+      var data = world.getServer().pulsar$getReloader(CampfireEffectsData.RELOADER);
+      if (data == null) return;
+      var campfireEffect = data.get(state.getBlockHolder());
+      if (campfireEffect == null) return;
 
-        List<LivingEntity> entities = new ArrayList<>();
-        world.getEntities().get(new AABB(pos).inflate(campfireEffect.range()), entity -> {
-          if ((entity instanceof AgeableMob && campfireEffect.affectsPassive())
-              || entity instanceof Player) {
-            entities.add((LivingEntity) entity);
-          }
-        });
-        var campfireEffects = campfireEffect.effects();
+      boolean accept = campfireEffect
+          .condition()
+          .map(condition -> condition.test(LootContextBuilder.block(
+                  world,
+                  builder ->
+                      builder.origin(pos).state(state).tool(ItemStack.EMPTY).blockEntity(campfire))
+              .get()))
+          .orElse(true);
+      if (!accept) return;
 
-        for (LivingEntity player : entities) {
-          for (var effect : campfireEffects) {
+      List<LivingEntity> entities = new ArrayList<>();
+      world.getEntities().get(new AABB(pos).inflate(campfireEffect.range()), entity -> {
+        if ((entity instanceof AgeableMob && campfireEffect.affectsPassive())
+            || entity instanceof Player) {
+          entities.add((LivingEntity) entity);
+        }
+      });
+      var campfireEffects = campfireEffect.effects();
+
+      for (LivingEntity player : entities) {
+        for (var effect : campfireEffects) {
+          boolean apply = effect
+              .condition()
+              .map(condition -> condition.test(LootContextBuilder.block(
+                      world,
+                      builder -> builder
+                          .origin(pos)
+                          .state(state)
+                          .tool(ItemStack.EMPTY)
+                          .thisEntity(player)
+                          .blockEntity(campfire))
+                  .get()))
+              .orElse(true);
+
+          if (apply) {
             MobEffectInstance effectInstance = new MobEffectInstance(
                 effect.effect().value(), 200, effect.amplifier(), true, false, true);
             player.addEffect(effectInstance);
