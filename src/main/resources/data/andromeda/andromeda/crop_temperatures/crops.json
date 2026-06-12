@@ -1,45 +1,56 @@
 {
-  "replace": false,
-  "entries": {
-    "minecraft:beetroots": [
-      0.2,
-      0.3,
+  "minecraft:beetroots": {
+    "temperatures": [
+      -0.5,
+      -0.3,
       1.0,
       1.0
-    ],
-    "minecraft:carrots": [
-      0.6,
-      0.7,
+    ]
+  },
+  "minecraft:carrots": {
+    "temperatures": [
+      -0.5,
+      -0.3,
       1.0,
       1.2
-    ],
-    "minecraft:melon_stem": [
+    ]
+  },
+  "minecraft:melon_stem": {
+    "temperatures": [
       0.8,
       0.8,
       1.2,
       1.5
-    ],
-    "minecraft:potatoes": [
-      0.5,
-      0.7,
+    ]
+  },
+  "minecraft:potatoes": {
+    "temperatures": [
+      -0.9,
+      -0.4,
       1.2,
       1.5
-    ],
-    "minecraft:pumpkin_stem": [
-      0.2,
-      0.3,
+    ]
+  },
+  "minecraft:pumpkin_stem": {
+    "temperatures": [
+      -0.6,
+      -0.3,
       1.0,
       1.0
-    ],
-    "minecraft:sweet_berry_bush": [
-      0.0,
-      0.3,
+    ]
+  },
+  "minecraft:sweet_berry_bush": {
+    "temperatures": [
+      -0.6,
+      -0.3,
       0.5,
       0.6
-    ],
-    "minecraft:wheat": [
-      0.6,
-      0.7,
+    ]
+  },
+  "minecraft:wheat": {
+    "temperatures": [
+      -0.5,
+      -0.3,
       1.0,
       1.2
     ]

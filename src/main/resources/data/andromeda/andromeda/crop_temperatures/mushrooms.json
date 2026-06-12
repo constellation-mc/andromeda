@@ -1,13 +1,14 @@
 {
-  "replace": false,
-  "entries": {
-    "minecraft:red_mushroom": [
+  "minecraft:red_mushroom": {
+    "temperatures": [
       0.6,
       0.8,
       1.0,
       1.2
-    ],
-    "minecraft:brown_mushroom": [
+    ]
+  },
+  "minecraft:brown_mushroom": {
+    "temperatures": [
       0.6,
       0.8,
       1.0,

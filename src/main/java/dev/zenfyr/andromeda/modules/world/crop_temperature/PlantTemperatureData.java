@@ -1,49 +1,29 @@
 package dev.zenfyr.andromeda.modules.world.crop_temperature;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.pulsar.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.codec.JsonCodecDataLoader;
 import dev.zenfyr.pulsar.resources.ReloaderType;
 import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import dev.zenfyr.pulsar.util.MathUtil;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.util.*;
-import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.CactusBlock;
-import net.minecraft.world.level.block.GrowingPlantBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public final class PlantTemperatureData {
-
-  private static final Codec<OldHolder> OLD_CODEC = RecordCodecBuilder.create(data -> data.group(
-          ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(OldHolder::replace),
-          ExtraCodecs.list(BuiltInRegistries.BLOCK
-                  .holderByNameCodec()
-                  .xmap(Holder::value, BuiltInRegistries.BLOCK::wrapAsHolder))
-              .fieldOf("identifier")
-              .forGetter(OldHolder::blocks),
-          Codec.FLOAT.fieldOf("min").forGetter(o -> o.temperatures()[1]),
-          Codec.FLOAT.fieldOf("max").forGetter(o -> o.temperatures()[2]),
-          Codec.FLOAT.fieldOf("aMin").forGetter(o -> o.temperatures()[0]),
-          Codec.FLOAT.fieldOf("aMax").forGetter(o -> o.temperatures()[3]))
-      .apply(
-          data,
-          (o, blocks, f1, f2, f3, f4) -> new OldHolder(o, blocks, new float[] {f1, f2, f3, f4})));
 
   public static final Codec<float[]> FLOAT_ARRAY_CODEC = Codec.FLOAT
       .listOf()
@@ -51,44 +31,32 @@ public final class PlantTemperatureData {
           floats -> {
             if (floats.size() != 4)
               return DataResult.error(() -> "temperature array must contain exactly 4 floats!");
-            return DataResult.success(new FloatArrayList(floats).toArray(new float[4]));
+            var array = new FloatArrayList(floats).toArray(new float[4]);
+            if (!isValidEntry(array)) {
+              return DataResult.error(
+                  () ->
+                      "temperature array must not contain NaN and values must be amin <= min <= max <= amax");
+            }
+            return DataResult.success(array);
           },
           floats -> Lists.newArrayList(floats[0], floats[1], floats[2], floats[3]));
 
-  private static final Codec<NewHolder> BASE_HOLDER = RecordCodecBuilder.create(data -> data.group(
-          ExtraCodecs.optional("replace", Codec.BOOL, false).forGetter(NewHolder::replace),
-          Codec.unboundedMap(
-                  BuiltInRegistries.BLOCK
-                      .holderByNameCodec()
-                      .xmap(Holder::value, BuiltInRegistries.BLOCK::wrapAsHolder),
-                  FLOAT_ARRAY_CODEC)
-              .fieldOf("entries")
-              .forGetter(NewHolder::temperatures))
-      .apply(data, NewHolder::new));
+  private static final Codec<TemperatureEntry> ENTRY_CODEC =
+      RecordCodecBuilder.create(data -> data.group(
+              FLOAT_ARRAY_CODEC.fieldOf("temperatures").forGetter(TemperatureEntry::temperatures))
+          .apply(data, TemperatureEntry::new));
 
-  private static final Codec<NewHolder> MERGED_CODEC = ExtraCodecs.either(
-          OLD_CODEC.xmap(
-              pair -> {
-                Map<Block, float[]> map = new LinkedHashMap<>();
-                pair.blocks().forEach(block1 -> map.put(block1, pair.temperatures));
-                return new NewHolder(pair.replace(), map);
-              },
-              newHolder -> new OldHolder(
-                  newHolder.replace(),
-                  List.copyOf(newHolder.temperatures.keySet()),
-                  newHolder.temperatures.values().stream()
-                      .findFirst()
-                      .orElseGet(() -> new float[4]))),
-          BASE_HOLDER)
-      .xmap(e -> e.map(Function.identity(), Function.identity()), Either::left);
+  private static final Codec<Map<Holder<Block>, TemperatureEntry>> BASE_HOLDER =
+      Codec.unboundedMap(BuiltInRegistries.BLOCK.holderByNameCodec(), ENTRY_CODEC);
 
   public static final ReloaderType<Reloader> RELOADER =
       ReloaderType.create(Andromeda.id("crop_temperatures"));
 
   public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
-    float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlock());
-    if (data != null) {
+    var entry = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlockHolder());
+    if (entry != null) {
       if (!world.am$get(PlantTemperature.CONFIG).available) return true;
+      var data = entry.temperatures();
 
       if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {
         return MathUtil.nextInt(0, 1) != 0;
@@ -97,9 +65,13 @@ public final class PlantTemperatureData {
     return true;
   }
 
-  record OldHolder(boolean replace, List<Block> blocks, float[] temperatures) {}
+  private static boolean isValidEntry(float[] data) {
+    if (data == null || data.length != 4) return false;
+    for (float f : data) if (Float.isNaN(f)) return false;
+    return data[0] <= data[1] && data[1] <= data[2] && data[2] <= data[3];
+  }
 
-  record NewHolder(boolean replace, Map<Block, float[]> temperatures) {}
+  public record TemperatureEntry(float[] temperatures) {}
 
   public static boolean isPlant(Block block) {
     return block instanceof GrowingPlantBlock
@@ -115,12 +87,12 @@ public final class PlantTemperatureData {
   }
 
   private static void verifyPostLoad(PlantTemperature module, Reloader reloader) {
-    List<Block> override = new ArrayList<>();
-    List<Block> blocks = new ArrayList<>();
+    List<Holder.Reference<Block>> override = new ArrayList<>();
+    List<Holder.Reference<Block>> blocks = new ArrayList<>();
 
-    BuiltInRegistries.BLOCK.forEach(block -> {
-      if (isPlant(block) && reloader.get(block) == null) {
-        if (methodInHierarchyUntil(block.getClass(), "randomTick", Block.class)) {
+    BuiltInRegistries.BLOCK.listElements().forEach(block -> {
+      if (isPlant(block.value()) && reloader.get(block) == null) {
+        if (methodInHierarchyUntil(block.value().getClass(), "randomTick", Block.class)) {
           override.add(block);
           return;
         }
@@ -133,13 +105,21 @@ public final class PlantTemperatureData {
           .logger()
           .warn(
               "Missing crop temperatures: {}",
-              override.stream().map(BuiltInRegistries.BLOCK::getKey).sorted().toList());
+              override.stream()
+                  .map(Holder.Reference::key)
+                  .map(ResourceKey::identifier)
+                  .sorted()
+                  .toList());
     if (!blocks.isEmpty())
       module
           .logger()
           .warn(
               "Possible missing crop temperatures: {}",
-              blocks.stream().map(BuiltInRegistries.BLOCK::getKey).sorted().toList());
+              blocks.stream()
+                  .map(Holder.Reference::key)
+                  .map(ResourceKey::identifier)
+                  .sorted()
+                  .toList());
   }
 
   private static boolean methodInHierarchyUntil(Class<?> cls, String name, Class<?> stopClass) {
@@ -150,34 +130,31 @@ public final class PlantTemperatureData {
         && methodInHierarchyUntil(cls.getSuperclass(), name, stopClass);
   }
 
-  public static class Reloader extends JsonCodecDataLoader<NewHolder> {
+  public static class Reloader extends JsonCodecDataLoader<Map<Holder<Block>, TemperatureEntry>> {
 
-    @Nullable private IdentityHashMap<Block, float[]> map;
+    @Nullable private Map<Holder<Block>, TemperatureEntry> map;
 
     private final ModuleManager manager;
     private final PlantTemperature module;
 
     protected Reloader(ModuleManager manager, PlantTemperature module) {
-      super(RELOADER.identifier(), MERGED_CODEC);
+      super(RELOADER.identifier(), BASE_HOLDER);
       this.manager = manager;
       this.module = module;
     }
 
-    public float @Nullable [] get(Block block) {
+    public TemperatureEntry get(Holder<Block> block) {
       return Objects.requireNonNull(this.map).get(block);
     }
 
     @Override
-    protected void apply(Map<Identifier, NewHolder> data, ResourceManager manager) {
-      IdentityHashMap<Block, float[]> replace = new IdentityHashMap<>();
-      IdentityHashMap<Block, float[]> result = new IdentityHashMap<>();
+    protected void apply(
+        Map<Identifier, Map<Holder<Block>, TemperatureEntry>> data, ResourceManager manager) {
 
-      data.forEach((location, holder) -> {
-        if (holder.replace()) replace.putAll(holder.temperatures());
-        else result.putAll(holder.temperatures());
-      });
-
-      result.putAll(replace);
+      Map<Holder<Block>, TemperatureEntry> result = new HashMap<>();
+      for (Map.Entry<Identifier, Map<Holder<Block>, TemperatureEntry>> entry : data.entrySet()) {
+        result.putAll(entry.getValue());
+      }
       this.map = result;
 
       if (this.manager.debug().isVerbose()) verifyPostLoad(module, this);
