@@ -3,9 +3,9 @@ package dev.zenfyr.andromeda.modules.blocks.campfire_effects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.pulsar.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.codec.JsonCodecDataLoader;
+import dev.zenfyr.pulsar.loot.LootCodecs;
 import dev.zenfyr.pulsar.resources.ReloaderType;
 import dev.zenfyr.pulsar.resources.ServerReloadersEvent;
 import java.util.*;
@@ -27,7 +27,7 @@ public class CampfireEffectsData {
                   .fieldOf("effect")
                   .forGetter(CampfireEffect::effect),
               ExtraCodecs.optional("amplifier", Codec.INT, 0).forGetter(CampfireEffect::amplifier),
-              LootContextBuilder.CONDITION_CODEC
+              LootCodecs.ITEM_CONDITION_CODEC
                   .optionalFieldOf("condition")
                   .forGetter(CampfireEffect::condition))
           .apply(data, CampfireEffect::new));
@@ -38,7 +38,7 @@ public class CampfireEffectsData {
                   .forGetter(CampfireEffectsEntry::range),
               ExtraCodecs.optional("affectsPassive", Codec.BOOL, true)
                   .forGetter(CampfireEffectsEntry::affectsPassive),
-              LootContextBuilder.CONDITION_CODEC
+              LootCodecs.ITEM_CONDITION_CODEC
                   .optionalFieldOf("condition")
                   .forGetter(CampfireEffectsEntry::condition),
               Codec.list(EFFECT_CODEC).fieldOf("effects").forGetter(CampfireEffectsEntry::effects))
