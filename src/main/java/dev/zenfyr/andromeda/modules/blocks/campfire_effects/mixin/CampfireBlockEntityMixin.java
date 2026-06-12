@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.blocks.campfire_effects.mixin;
 
-import dev.zenfyr.andromeda.common.util.LootContextBuilder;
 import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffectsData;
+import dev.zenfyr.pulsar.loot.LootContextBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -45,10 +45,9 @@ abstract class CampfireBlockEntityMixin {
       boolean accept = campfireEffect
           .condition()
           .map(condition -> condition.test(LootContextBuilder.block(
-                  level,
-                  builder ->
-                      builder.origin(pos).state(state).tool(ItemStack.EMPTY).blockEntity(campfire))
-              .get()))
+              level,
+              builder ->
+                  builder.origin(pos).state(state).tool(ItemStack.EMPTY).blockEntity(campfire))))
           .orElse(true);
       if (!accept) return;
 
@@ -66,14 +65,13 @@ abstract class CampfireBlockEntityMixin {
           boolean apply = effect
               .condition()
               .map(condition -> condition.test(LootContextBuilder.block(
-                      level,
-                      builder -> builder
-                          .origin(pos)
-                          .state(state)
-                          .tool(ItemStack.EMPTY)
-                          .thisEntity(player)
-                          .blockEntity(campfire))
-                  .get()))
+                  level,
+                  builder -> builder
+                      .origin(pos)
+                      .state(state)
+                      .tool(ItemStack.EMPTY)
+                      .thisEntity(player)
+                      .blockEntity(campfire))))
               .orElse(true);
 
           if (apply) {
