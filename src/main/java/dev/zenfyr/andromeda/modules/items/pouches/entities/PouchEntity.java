@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.items.pouches.entities;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.andromeda.common.util.LootContextBuilder;
+import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.pouches.Main;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
@@ -93,7 +93,7 @@ public class PouchEntity extends ThrowableItemProjectile {
   @Override
   protected void onHitEntity(EntityHitResult entityHitResult) {
     if (!level.isClientSide()) {
-      var stacks = LootContextBuilder.prepareLoot(level, this.getPouchType().getLootId(getItem()));
+      var stacks = MiscUtil.prepareLoot(level, this.getPouchType().getLootId(getItem()));
 
       Entity entity = entityHitResult.getEntity();
       if (entity instanceof Player pe) {
@@ -116,7 +116,7 @@ public class PouchEntity extends ThrowableItemProjectile {
   @Override
   protected void onHitBlock(BlockHitResult blockHitResult) {
     if (!level.isClientSide()) {
-      var stacks = LootContextBuilder.prepareLoot(level, this.getPouchType().getLootId(getItem()));
+      var stacks = MiscUtil.prepareLoot(level, this.getPouchType().getLootId(getItem()));
 
       var be = level.getBlockEntity(blockHitResult.getBlockPos());
       if ((be != null && Main.getViewCount(be) > 0)) {

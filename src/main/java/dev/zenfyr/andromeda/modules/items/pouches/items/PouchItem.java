@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.pouches.items;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.common.util.LootContextBuilder;
+import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.pouches.Main;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.pulsar.util.TextUtil;
@@ -87,7 +87,7 @@ public class PouchItem extends Item implements ProjectileItem {
   public InteractionResult interactLivingEntity(
       ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
     if (!user.level().isClientSide()) {
-      var stacks = LootContextBuilder.prepareLoot(user.level(), type.getLootId(stack));
+      var stacks = MiscUtil.prepareLoot(user.level(), type.getLootId(stack));
 
       boolean success = false;
       if (entity instanceof Player player) {

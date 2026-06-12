@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.world.falling_beenests.mixin;
 
 import com.mojang.logging.LogUtils;
-import dev.zenfyr.andromeda.common.util.LootContextBuilder;
+import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.world.falling_beenests.BeeUtil;
 import dev.zenfyr.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
@@ -92,7 +92,7 @@ abstract class FallingBlockMixin extends Entity {
           .getEntitiesOfClass(Bee.class, new AABB(blockPosition()).inflate(50))
           .forEach(bee -> bee.setTarget(player)));
 
-      for (ItemStack stack : LootContextBuilder.prepareLoot(level, BeeUtil.BEE_LOOT_ID)) {
+      for (ItemStack stack : MiscUtil.prepareLoot(level, BeeUtil.BEE_LOOT_ID)) {
         ItemStackUtil.spawnVelocity(this.position(), stack, level, -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
       }
     }
