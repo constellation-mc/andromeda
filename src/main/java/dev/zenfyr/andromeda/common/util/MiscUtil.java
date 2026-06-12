@@ -1,11 +1,11 @@
 package dev.zenfyr.andromeda.common.util;
 
 import com.google.gson.*;
-import java.util.List;
-import lombok.NonNull;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
+import java.util.List;
 import java.util.UUID;
+import lombok.NonNull;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -65,14 +65,14 @@ public class MiscUtil {
   public static List<ItemStack> prepareLoot(
       @NonNull Level world, @NonNull ResourceKey<LootTable> lootId) {
     return world
-            .getServer()
-            .reloadableRegistries()
-            .lookup()
-            .lookup(Registries.LOOT_TABLE)
-            .flatMap(reg -> reg.get(lootId))
-            .map(Holder.Reference::value)
-            .<List<ItemStack>>map(loot -> loot.getRandomItems(
-                    new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY)))
-            .orElse(List.of());
+        .getServer()
+        .reloadableRegistries()
+        .lookup()
+        .lookup(Registries.LOOT_TABLE)
+        .flatMap(reg -> reg.get(lootId))
+        .map(Holder.Reference::value)
+        .<List<ItemStack>>map(loot -> loot.getRandomItems(
+            new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY)))
+        .orElse(List.of());
   }
 }
