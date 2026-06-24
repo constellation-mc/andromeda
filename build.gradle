@@ -128,21 +128,10 @@ sourcesJar {
     from delombok
 }
 
-tasks.register('printVersionName') {
-    doLast {
-        println "${project.mod_version} (${project.minecraft_version})"
-    }
-}
-
-tasks.register('printVersion') {
-    doLast {
-        println version
-    }
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = project.archives_base_name
             from components.java
         }
     }
