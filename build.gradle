@@ -8,13 +8,14 @@ plugins {
     alias libs.plugins.modmuss50.publish
 }
 
+def targetJavaVersion = Integer.parseInt(java_version)
 def local = !System.getenv().containsKey("GITHUB_RUN_NUMBER")
 
-version = "${project.mod_version}-${project.minecraft_version}-${local ? 'local' : "build.${System.getenv("GITHUB_RUN_NUMBER")}"}"
+version = "${mod_version}+mc${minecraft_version}"
 group = project.maven_group
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = "${project.mod_id}-${loader_id}"
 }
 
 apply from: "https://raw.githubusercontent.com/constellation-mc/artifacts/main/artifacts.groovy"
@@ -67,10 +68,10 @@ loom {
 
     runs {
         client {
-            runDir("run_client")
+            runDir("run/client")
         }
         server {
-            runDir("run_server")
+            runDir("run/server")
         }
     }
 
@@ -86,14 +87,15 @@ loom {
     }
 }
 
-loom.mods.register(project.archives_base_name) {
+loom.mods.register(mod_id) {
     sourceSet project.sourceSets.main
 }
 
 processResources {
     def map = [
             "version": project.version,
-            "minecraft_version": project.minecraft_version,
+            "mod_id": mod_id,
+            "minecraft_version": minecraft_version,
             "loader_version": libs.fabric.loader.get().version,
             "fabric_version": libs.fabric.api.get().version,
             "cloth_version": libs.cloth.config.get().version,
@@ -108,7 +110,6 @@ processResources {
     }
 }
 
-def targetJavaVersion = 17
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
     it.options.release = targetJavaVersion
@@ -124,7 +125,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${base.archivesName.get()}" }
+        rename { "${it}_${mod_id}" }
     }
 }
 
@@ -138,7 +139,7 @@ sourcesJar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = project.archives_base_name
+            artifactId = "${mod_id}-${loader_id}"
             from components.java
         }
     }
@@ -163,14 +164,14 @@ publishMods {
 
     changelog = file("CHANGELOG.md").text
     type = ReleaseType.valueOf(providers.environmentVariable("VERSION_TYPE").getOrElse("BETA"))
-    modLoaders.add("fabric")
+    modLoaders.add(loader_id)
 
-    displayName = "${project.mod_version} (${project.minecraft_version})"
+    displayName = "${mod_version} (${minecraft_version})"
 
     modrinth {
         projectId = "TseYlb0f"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        minecraftVersions.add("${project.minecraft_version}")
+        minecraftVersions.add("${minecraft_version}")
 
         requires("fabric-api")
         requires("pulsar")
@@ -180,7 +181,7 @@ publishMods {
     curseforge {
         projectId = "639198"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        minecraftVersions.add("${project.minecraft_version}")
+        minecraftVersions.add("${minecraft_version}")
 
         requires("fabric-api")
         requires("pulsar")
@@ -190,7 +191,7 @@ publishMods {
     github {
         repository = "constellation-mc/andromeda"
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        commitish = providers.environmentVariable("GITHUB_SHA").getOrElse("${project.minecraft_version}-fabric")
+        commitish = providers.environmentVariable("GITHUB_SHA").getOrElse("${minecraft_version}-${loader_id}")
 
         type = STABLE
     }
