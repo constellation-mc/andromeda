@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.bootstrap.event;
 
-import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
+import dev.zenfyr.pulsar.api.event.Bus;
 
 public final class InitEvents {
 

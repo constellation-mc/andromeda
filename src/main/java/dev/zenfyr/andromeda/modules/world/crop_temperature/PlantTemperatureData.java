@@ -82,7 +82,7 @@ public final class PlantTemperatureData {
   public static void init() {
     var manager = ModuleManager.get();
     var module = manager.get(PlantTemperature.class).orElseThrow();
-    ServerReloadersEvent.EVENT.register(
+    ServerReloadersEvent.EVENT.listen(
         context -> context.register(RELOADER.identifier(), new Reloader(manager, module)));
   }
 
