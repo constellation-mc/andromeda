@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;

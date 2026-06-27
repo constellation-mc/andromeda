@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.UsedCustomTotemPayload;
-import dev.zenfyr.pulsar.util.PlayerUtil;
+import dev.zenfyr.pulsar.api.util.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

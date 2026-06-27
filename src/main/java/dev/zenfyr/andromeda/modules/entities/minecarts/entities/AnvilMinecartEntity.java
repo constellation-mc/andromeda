@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.modules.entities.minecart_speed_control.MinecartSpeedControl;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartItems;
-import dev.zenfyr.pulsar.util.MathUtil;
+import dev.zenfyr.pulsar.api.util.MathUtil;
 import java.util.Optional;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

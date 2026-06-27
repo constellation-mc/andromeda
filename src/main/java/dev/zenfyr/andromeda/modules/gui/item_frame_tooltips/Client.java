@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.gui.item_frame_tooltips;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.client.GlobalAlphaController;
-import dev.zenfyr.pulsar.util.Utilities;
+import dev.zenfyr.pulsar.api.util.Utilities;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collections;

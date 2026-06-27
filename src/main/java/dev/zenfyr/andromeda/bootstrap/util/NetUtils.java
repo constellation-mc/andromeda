@@ -5,7 +5,7 @@ import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
 import dev.zenfyr.andromeda.util.AndromedaConstants;
 import dev.zenfyr.andromeda.util.Util;
-import dev.zenfyr.pulsar.util.ExceptionUtil;
+import dev.zenfyr.pulsar.api.util.ExceptionUtil;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import lombok.CustomLog;

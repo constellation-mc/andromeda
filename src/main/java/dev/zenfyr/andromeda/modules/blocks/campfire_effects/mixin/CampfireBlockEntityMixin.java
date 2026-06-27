@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.blocks.campfire_effects.mixin;
 
 import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffects;
 import dev.zenfyr.andromeda.modules.blocks.campfire_effects.CampfireEffectsData;
-import dev.zenfyr.pulsar.loot.LootContextBuilder;
+import dev.zenfyr.pulsar.api.loot.LootContextBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;

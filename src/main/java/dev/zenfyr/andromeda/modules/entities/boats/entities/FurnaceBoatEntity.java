@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Supplier;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
