@@ -6,7 +6,8 @@ import com.google.common.collect.ImmutableSet;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.SupportUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
@@ -126,7 +127,10 @@ public class MagnetItem extends Item {
       int y = (int) (client.mouseHandler.ypos()
           * (double) client.getWindow().getGuiScaledHeight()
           / (double) client.getWindow().getScreenHeight());
-      ScreenParticleHelper.addScreenParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 7);
+      ScreenParticles.get(client)
+          .addParticles(
+              client.screen,
+              VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 7));
     }
   }
 
@@ -140,8 +144,11 @@ public class MagnetItem extends Item {
       int y = (int) (client.mouseHandler.ypos()
           * (double) client.getWindow().getGuiScaledHeight()
           / (double) client.getWindow().getScreenHeight());
-      ScreenParticleHelper.addScreenParticles(
-          new ItemParticleOption(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7);
+      ScreenParticles.get(client)
+          .addParticles(
+              client.screen,
+              VanillaParticles.create(
+                  new ItemParticleOption(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7));
     }
   }
 

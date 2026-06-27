@@ -4,8 +4,9 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.CustomItemStackParticle;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
 import dev.zenfyr.pulsar.api.util.MathUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -48,12 +49,15 @@ abstract class CreativeInventoryScreenMixin
 
     if (index >= this.menu.slots.size()) return;
     Slot slot1 = this.menu.slots.get(index);
-    ScreenParticleHelper.addScreenParticle(new CustomItemStackParticle(
-        this.leftPos + slot1.x + 8,
-        this.topPos + slot1.y + 8,
-        MathUtil.nextDouble(
-            -config.creativeScreenParticlesVelX, config.creativeScreenParticlesVelX),
-        0.6,
-        slot1.getItem()));
+    ScreenParticles.get(Minecraft.getInstance())
+        .addParticle(
+            this,
+            new CustomItemStackParticle(
+                this.leftPos + slot1.x + 8,
+                this.topPos + slot1.y + 8,
+                MathUtil.nextDouble(
+                    -config.creativeScreenParticlesVelX, config.creativeScreenParticlesVelX),
+                0.6,
+                slot1.getItem()));
   }
 }

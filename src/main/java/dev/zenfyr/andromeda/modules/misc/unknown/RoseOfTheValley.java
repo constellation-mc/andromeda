@@ -3,7 +3,8 @@ package dev.zenfyr.andromeda.modules.misc.unknown;
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -80,7 +81,10 @@ public class RoseOfTheValley extends BlockItem {
       int y = (int) (client.mouseHandler.ypos()
           * (double) client.getWindow().getGuiScaledHeight()
           / (double) client.getWindow().getScreenHeight());
-      ScreenParticleHelper.addParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.08, 10);
+      ScreenParticles.get(client)
+          .addParticles(
+              client.screen,
+              VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.08, 10));
     }
   }
 }

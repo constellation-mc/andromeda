@@ -2,7 +2,8 @@ package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,8 +30,12 @@ abstract class BundleItemMixin {
         int y = (int) (client.mouseHandler.ypos()
             * (double) client.getWindow().getGuiScaledHeight()
             / (double) client.getWindow().getScreenHeight());
-        ScreenParticleHelper.addScreenParticles(
-            new ItemParticleOption(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7);
+
+        ScreenParticles.get(client)
+            .addParticles(
+                client.screen,
+                VanillaParticles.create(
+                    new ItemParticleOption(ParticleTypes.ITEM, stack), x, y, 0.5, 0.5, 0.1, 7));
       }
     }
   }

@@ -60,7 +60,8 @@ public class CampfireEffectsData {
       List<CampfireEffect> effects) {}
 
   public static void init() {
-    ServerReloadersEvent.EVENT.listen(context -> context.register(new Reloader()));
+    ServerReloadersEvent.EVENT.listen(
+        context -> context.register(RELOADER.location(), new Reloader()));
   }
 
   public static class Reloader
