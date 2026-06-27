@@ -8,7 +8,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class SpawnerMinecartItem extends AndromedaMinecartItem<MinecartSpawner> {
 
   public SpawnerMinecartItem(Properties settings) {
-    super(Keeper.now(EntityType.SPAWNER_MINECART), settings);
+    super(Keeper.now(EntityTypes.SPAWNER_MINECART), settings);
   }
 
   @Override

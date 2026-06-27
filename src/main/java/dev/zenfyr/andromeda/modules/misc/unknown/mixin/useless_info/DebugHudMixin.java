@@ -27,7 +27,7 @@ abstract class DebugHudMixin {
   private Minecraft minecraft;
 
   @Unique private static final Supplier<Component> SPLASH = Memoize.supplier(() -> {
-    var r = Minecraft.getInstance().getSplashManager().getSplash();
+    var r = Minecraft.getInstance().gui.splashManager().getSplash();
     return r != null ? r.splash : null;
   });
 

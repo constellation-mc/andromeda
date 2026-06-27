@@ -14,6 +14,7 @@ import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
@@ -75,7 +76,7 @@ abstract class FallingBlockMixin extends Entity {
       for (int i = 0; i < nbeetlist.size(); ++i) {
         CompoundTag entityData = nbeetlist.getCompoundOrEmpty(i).getCompoundOrEmpty("EntityData");
         BeehiveBlockEntity.IGNORED_BEE_TAGS.forEach(entityData::remove);
-        Bee bee = EntityType.BEE.create(level, EntitySpawnReason.EVENT);
+        Bee bee = EntityTypes.BEE.create(level, EntitySpawnReason.EVENT);
         if (bee == null) continue;
 
         try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(

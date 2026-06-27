@@ -23,7 +23,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -97,7 +97,7 @@ public class MinecartItems {
                 .putString("Entity", String.valueOf(andromeda$getEntityId(mobSpawnerBlockEntity)))
                 .build();
             spawnerMinecart.set(
-                DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.SPAWNER_MINECART, nbt));
+                DataComponents.ENTITY_DATA, TypedEntityData.of(EntityTypes.SPAWNER_MINECART, nbt));
             return spawnerMinecart;
           }
           return null;

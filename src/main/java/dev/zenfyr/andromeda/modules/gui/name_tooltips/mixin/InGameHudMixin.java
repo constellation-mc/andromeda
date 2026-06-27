@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 abstract class InGameHudMixin {
   @Shadow
   @Final
@@ -42,7 +42,7 @@ abstract class InGameHudMixin {
 
     if (this.toolHighlightTimer > 0
         && !this.lastToolHighlight.isEmpty()
-        && Minecraft.getInstance().screen == null) {
+        && Minecraft.getInstance().gui.screen() == null) {
       int l = (int) ((float) this.toolHighlightTimer * 256.0F / 10.0F);
       if (l > 255) {
         l = 255;

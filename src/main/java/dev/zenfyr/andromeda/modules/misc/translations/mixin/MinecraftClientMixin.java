@@ -26,7 +26,7 @@ abstract class MinecraftClientMixin {
               target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V",
               shift = At.Shift.BEFORE),
       method =
-          "reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;")
+          "reloadResourcePacks(ZLnet/minecraft/client/GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;")
   private void andromeda$downloadLangFiles(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
     Client.onResourceReload(this.options.languageCode, ModuleManager.get());
   }

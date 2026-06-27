@@ -1,11 +1,11 @@
 [libraries]
-fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.19.2" }
+fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.19.3" }
 
-fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.151.0+26.1.2" }
-pulsar = { group = "dev.zenfyr", name = "pulsar", version = "0.3.0-26.1.2-build.29" }
+fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.153.0+26.2" }
+pulsar = { group = "dev.zenfyr", name = "pulsar-fabric", version = "0.3.3+mc26.2" }
 
-modmenu = { group = "com.terraformersmc", name = "modmenu", version = "18.0.0-beta.1" }
-cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "26.1.154" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version = "20.0.0-beta.4" }
+cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "26.2.155" }
 
 [plugins]
 fabric-loom = { id = "net.fabricmc.fabric-loom", version = "1.16.1" }

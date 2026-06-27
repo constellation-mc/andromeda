@@ -58,7 +58,7 @@ public class Client {
   private void inGameTooltips() {
     HudElementRegistry.attachElementAfter(
         VanillaHudElements.CROSSHAIR, TOOLTIP_HUD, (context, tickCounter) -> {
-          if (Minecraft.getInstance().screen == null) {
+          if (Minecraft.getInstance().gui.screen() == null) {
             var client = Minecraft.getInstance();
 
             if (action != null) {

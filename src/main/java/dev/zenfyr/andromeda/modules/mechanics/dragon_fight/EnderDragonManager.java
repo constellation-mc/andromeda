@@ -17,7 +17,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -60,7 +60,7 @@ public class EnderDragonManager {
     for (Crystal pair : crystals) {
       if (pair.timer().decrementAndGet() > 0) continue;
 
-      LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, world);
+      LightningBolt lightning = new LightningBolt(EntityTypes.LIGHTNING_BOLT, world);
       lightning.setVisualOnly(true);
       lightning.setPosRaw(pair.pos().x, pair.pos().y, pair.pos().z);
       world.addFreshEntity(lightning);

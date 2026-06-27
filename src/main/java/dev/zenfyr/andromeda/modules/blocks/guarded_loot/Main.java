@@ -41,7 +41,7 @@ public final class Main {
               == GuardedLoot.BreakingHandler.UNBREAKABLE) {
         var monsters = checkMonsterLock(world, state, player, pos, blockEntity);
         if (monsters.isEmpty() || checkLockPicking(blockEntity, player)) return true;
-        handleLockedContainer(player, pos.getCenter(), monsters);
+        handleLockedContainer(player, Vec3.atCenterOf(pos), monsters);
         return false;
       }
       return true;

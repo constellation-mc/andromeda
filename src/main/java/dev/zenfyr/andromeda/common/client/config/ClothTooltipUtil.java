@@ -10,7 +10,7 @@ import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
@@ -29,7 +29,7 @@ public class ClothTooltipUtil {
   public static <T extends AbstractConfigListEntry<?>> T setModuleTooltip(T e, Module module) {
     if (e instanceof TooltipListEntry<?> t) {
       String s = "config.andromeda.%s.@Tooltip".formatted(ModuleHelper.dotted(module));
-      if (!I18n.exists(s)) return e;
+      if (!Language.getInstance().has(s)) return e;
 
       var opt = Optional.of(new Component[] {TextUtil.translatable(s)});
       t.setTooltipSupplier(() -> opt);
@@ -39,7 +39,7 @@ public class ClothTooltipUtil {
 
   public static <T extends AbstractConfigListEntry<?>> T setEntryTooltip(T e, String option) {
     if (e instanceof TooltipListEntry<?> t) {
-      if (I18n.exists(option)) {
+      if (Language.getInstance().has(option)) {
         var opt = Optional.of(new Component[] {TextUtil.translatable(option)});
         t.setTooltipSupplier(() -> opt);
         return e;

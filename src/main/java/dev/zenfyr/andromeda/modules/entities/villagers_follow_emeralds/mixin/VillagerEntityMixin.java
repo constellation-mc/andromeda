@@ -2,14 +2,12 @@ package dev.zenfyr.andromeda.modules.entities.villagers_follow_emeralds.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.zenfyr.andromeda.modules.entities.villagers_follow_emeralds.VillagerTemptGoal;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,16 +26,10 @@ abstract class VillagerEntityMixin extends AbstractVillager {
       at =
           @At(
               value = "INVOKE",
-              target =
-                  "Lnet/minecraft/world/entity/npc/villager/Villager;setVillagerData(Lnet/minecraft/world/entity/npc/villager/VillagerData;)V",
+              target = "Lnet/minecraft/world/entity/npc/villager/Villager;setCanPickUpLoot(Z)V",
               shift = At.Shift.AFTER),
-      method =
-          "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/Holder;)V")
-  private void andromeda$init(
-      EntityType<? extends Villager> entityType,
-      Level level,
-      Holder<VillagerType> holder,
-      CallbackInfo ci) {
+      method = "<init>")
+  private void andromeda$init(EntityType<?> entityType, Level level, CallbackInfo ci) {
     level
         .registryAccess()
         .lookup(Registries.ITEM)

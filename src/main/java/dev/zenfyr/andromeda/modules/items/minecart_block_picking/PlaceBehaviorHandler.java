@@ -10,7 +10,7 @@ import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.minecart.MinecartChest;
 import net.minecraft.world.entity.vehicle.minecart.MinecartFurnace;
@@ -37,7 +37,7 @@ public class PlaceBehaviorHandler {
   public static void init() {
     registerPlaceBehavior(Items.CHEST_MINECART, (stack, world, d, e, f, g, pos) -> {
       MinecartChest chestMinecart = AbstractMinecart.createMinecart(
-          world, d, e + g, f, EntityType.CHEST_MINECART, EntitySpawnReason.DISPENSER, stack, null);
+          world, d, e + g, f, EntityTypes.CHEST_MINECART, EntitySpawnReason.DISPENSER, stack, null);
 
       var nbt = stack.get(DataComponents.ENTITY_DATA);
       if (nbt != null) NbtUtil.readInventoryFromTag(nbt.copyTagWithoutId(), chestMinecart);
@@ -46,7 +46,14 @@ public class PlaceBehaviorHandler {
 
     registerPlaceBehavior(Items.HOPPER_MINECART, (stack, world, d, e, f, g, pos) -> {
       MinecartHopper hopperMinecart = AbstractMinecart.createMinecart(
-          world, d, e + g, f, EntityType.HOPPER_MINECART, EntitySpawnReason.DISPENSER, stack, null);
+          world,
+          d,
+          e + g,
+          f,
+          EntityTypes.HOPPER_MINECART,
+          EntitySpawnReason.DISPENSER,
+          stack,
+          null);
 
       var nbt = stack.get(DataComponents.ENTITY_DATA);
       if (nbt != null) NbtUtil.readInventoryFromTag(nbt.copyTagWithoutId(), hopperMinecart);
@@ -59,7 +66,7 @@ public class PlaceBehaviorHandler {
           d,
           e + g,
           f,
-          EntityType.FURNACE_MINECART,
+          EntityTypes.FURNACE_MINECART,
           EntitySpawnReason.DISPENSER,
           stack,
           null);

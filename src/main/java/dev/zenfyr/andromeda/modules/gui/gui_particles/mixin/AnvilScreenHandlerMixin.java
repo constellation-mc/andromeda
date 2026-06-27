@@ -43,7 +43,7 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
   private void andromeda$particles(Player player, ItemStack stack, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).anvilScreenParticles) return;
     if (Minecraft.getInstance().isSameThread()
-        && Minecraft.getInstance().screen instanceof AnvilScreen anvilScreen) {
+        && Minecraft.getInstance().gui.screen() instanceof AnvilScreen anvilScreen) {
       BlockState state = Blocks.ANVIL.defaultBlockState();
       var slot = this.slots.get(2);
       boolean enchant = this.slots.get(1).getItem().is(Items.ENCHANTED_BOOK);

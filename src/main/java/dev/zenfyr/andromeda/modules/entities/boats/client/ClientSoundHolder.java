@@ -49,7 +49,7 @@ public class ClientSoundHolder {
       });
 
       if (client.player != null && entity != null && entity.distanceTo(client.player) < 76) {
-        client.gui.setNowPlaying(song.value().description());
+        client.gui.hud.setNowPlaying(song.value().description());
       }
     });
 

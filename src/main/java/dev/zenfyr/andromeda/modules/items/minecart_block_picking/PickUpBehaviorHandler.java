@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.TypedEntityData;
@@ -45,10 +45,10 @@ public class PickUpBehaviorHandler {
               NbtUtil.writeInventoryToTag(new CompoundTag(), chestBlockEntity))
           .putString(
               "id",
-              BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.CHEST_MINECART).toString())
+              BuiltInRegistries.ENTITY_TYPE.getKey(EntityTypes.CHEST_MINECART).toString())
           .build();
       chestMinecart.set(
-          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.CHEST_MINECART, nbt));
+          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityTypes.CHEST_MINECART, nbt));
       chestBlockEntity.clearContent();
       return chestMinecart;
     });
@@ -64,10 +64,10 @@ public class PickUpBehaviorHandler {
           .putInt("Fuel", (int) (furnaceBlock.litTimeRemaining * 2.25))
           .putString(
               "id",
-              BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.FURNACE_MINECART).toString())
+              BuiltInRegistries.ENTITY_TYPE.getKey(EntityTypes.FURNACE_MINECART).toString())
           .build();
       furnaceMinecart.set(
-          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.FURNACE_MINECART, nbt));
+          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityTypes.FURNACE_MINECART, nbt));
       return furnaceMinecart;
     });
 
@@ -80,10 +80,10 @@ public class PickUpBehaviorHandler {
               NbtUtil.writeInventoryToTag(new CompoundTag(), hopperBlockEntity))
           .putString(
               "id",
-              BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.HOPPER_MINECART).toString())
+              BuiltInRegistries.ENTITY_TYPE.getKey(EntityTypes.HOPPER_MINECART).toString())
           .build();
       hopperMinecart.set(
-          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityType.HOPPER_MINECART, nbt));
+          DataComponents.ENTITY_DATA, TypedEntityData.of(EntityTypes.HOPPER_MINECART, nbt));
       hopperBlockEntity.clearContent();
       return hopperMinecart;
     });

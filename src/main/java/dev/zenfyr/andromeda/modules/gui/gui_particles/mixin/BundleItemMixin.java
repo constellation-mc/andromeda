@@ -92,7 +92,7 @@ abstract class BundleItemMixin {
   @Unique private void andromeda$renderParticles(ItemStack stack) {
     if (AndromedaClient.CLIENT.get(GuiParticles.CONFIG).bundleInputParticles) {
       var client = Minecraft.getInstance();
-      if (client.isSameThread() && client.screen != null) {
+      if (client.isSameThread() && client.gui.screen() != null) {
         int x = (int) (client.mouseHandler.xpos()
             * (double) client.getWindow().getGuiScaledWidth()
             / (double) client.getWindow().getScreenWidth());

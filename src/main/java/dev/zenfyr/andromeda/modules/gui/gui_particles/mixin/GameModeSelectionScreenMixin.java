@@ -85,7 +85,7 @@ abstract class GameModeSelectionScreenMixin extends Screen {
       Minecraft client, GameModeSwitcherScreen.GameModeIcon gameMode, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).gameModeSwitcherParticles) return;
 
-    if (client.screen instanceof GameModeSwitcherScreen gameModeSelectionScreen) {
+    if (client.gui.screen() instanceof GameModeSwitcherScreen gameModeSelectionScreen) {
       List<GameModeSwitcherScreen.GameModeSlot> buttonWidgets =
           new ArrayList<>(gameModeSelectionScreen.slots);
       buttonWidgets.removeIf(buttonWidget -> buttonWidget.icon != gameMode);

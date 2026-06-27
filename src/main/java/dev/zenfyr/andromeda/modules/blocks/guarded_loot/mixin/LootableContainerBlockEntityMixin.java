@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -33,7 +34,7 @@ abstract class LootableContainerBlockEntityMixin extends BaseContainerBlockEntit
     if (monsters.isEmpty() || player.getAbilities().instabuild || checkLockPicking(this, player))
       return locked;
 
-    handleLockedContainer(player, this.getBlockPos().getCenter(), monsters);
+    handleLockedContainer(player, Vec3.atCenterOf(this.getBlockPos()), monsters);
     return true;
   }
 }
