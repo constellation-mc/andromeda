@@ -105,13 +105,14 @@ abstract class BundleItemMixin {
             .addParticles(
                 client.screen,
                 VanillaParticles.create(
-                    new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
-            x,
-            y,
-            0.5,
-            0.5,
-            0.1,
-            7));
+                    new ItemParticleOption(
+                        ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
+                    x,
+                    y,
+                    0.5,
+                    0.5,
+                    0.1,
+                    7));
       }
     }
   }
