@@ -7,8 +7,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.api.codec.JsonCodecDataLoader;
-import dev.zenfyr.pulsar.api.resources.ReloaderType;
-import dev.zenfyr.pulsar.api.resources.ServerReloadersEvent;
+import dev.zenfyr.pulsar.api.resources.ReloadListenerType;
+import dev.zenfyr.pulsar.api.resources.ServerReloadListenersEvent;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.util.*;
@@ -49,11 +49,11 @@ public final class PlantTemperatureData {
   private static final Codec<Map<Holder<Block>, TemperatureEntry>> BASE_HOLDER =
       Codec.unboundedMap(BuiltInRegistries.BLOCK.holderByNameCodec(), ENTRY_CODEC);
 
-  public static final ReloaderType<Reloader> RELOADER =
-      ReloaderType.create(Andromeda.id("crop_temperatures"));
+  public static final ReloadListenerType<Reloader> RELOADER =
+      ReloadListenerType.create(Andromeda.id("crop_temperatures"));
 
   public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
-    var entry = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlockHolder());
+    var entry = world.getServer().pulsar$getReloadListener(RELOADER).get(state.getBlockHolder());
     if (entry != null) {
       if (!world.am$get(PlantTemperature.CONFIG).available) return true;
       var data = entry.temperatures();
@@ -82,7 +82,7 @@ public final class PlantTemperatureData {
   public static void init() {
     var manager = ModuleManager.get();
     var module = manager.get(PlantTemperature.class).orElseThrow();
-    ServerReloadersEvent.EVENT.listen(
+    ServerReloadListenersEvent.EVENT.listen(
         context -> context.register(RELOADER.identifier(), new Reloader(manager, module)));
   }
 
