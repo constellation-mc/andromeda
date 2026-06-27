@@ -2,10 +2,10 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
-import dev.zenfyr.pulsar.api.util.TextUtil;
-import java.util.function.Supplier;
 import dev.zenfyr.pulsar.api.platform.CEnvType;
 import dev.zenfyr.pulsar.api.platform.SupportUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
+import java.util.function.Supplier;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
