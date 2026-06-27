@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles;
 
-import dev.zenfyr.pulsar.client.particles.ItemStackParticle;
+import dev.zenfyr.pulsar.api.client.particles.ItemStackParticle;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;

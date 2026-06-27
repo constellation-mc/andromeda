@@ -12,7 +12,7 @@ import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinHandler;
 import dev.zenfyr.andromeda.modules.ModuleDiscovery;
 import dev.zenfyr.andromeda.util.*;
-import dev.zenfyr.pulsar.util.Utilities;
+import dev.zenfyr.pulsar.api.util.Utilities;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import lombok.CustomLog;

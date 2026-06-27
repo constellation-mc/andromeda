@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.entities.minecarts.entities;
 import dev.zenfyr.andromeda.modules.entities.boats.packets.RecordPlaybackS2CPayload;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartEntities;
 import dev.zenfyr.andromeda.modules.entities.minecarts.MinecartItems;
-import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;

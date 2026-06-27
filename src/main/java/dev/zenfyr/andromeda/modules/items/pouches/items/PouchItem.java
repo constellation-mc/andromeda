@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.pouches.Main;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Consumer;
 import lombok.Getter;
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;

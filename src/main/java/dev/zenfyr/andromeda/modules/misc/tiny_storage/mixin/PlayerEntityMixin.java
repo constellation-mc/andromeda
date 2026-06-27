@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.misc.tiny_storage.mixin;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.misc.tiny_storage.TinyStorage;
-import dev.zenfyr.pulsar.nbt.NbtUtil;
+import dev.zenfyr.pulsar.api.nbt.NbtUtil;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
