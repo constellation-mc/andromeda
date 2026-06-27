@@ -139,7 +139,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
   }
 
   public static void init(ModuleManager manager) {
-    ServerReloadersEvent.EVENT.register(context -> context.register(new DataConfigs(manager)));
+    ServerReloadersEvent.EVENT.listen(context -> context.register(new DataConfigs(manager)));
 
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
       if (!success) return;

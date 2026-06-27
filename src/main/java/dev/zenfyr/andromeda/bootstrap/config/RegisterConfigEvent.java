@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.bootstrap.config;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.event.EventMarker;
-import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
+import dev.zenfyr.pulsar.api.event.Bus;
 
 public interface RegisterConfigEvent {
 
