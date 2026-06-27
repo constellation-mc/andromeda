@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.misc.recipe_advancements_generation;
 
 import com.google.common.collect.ImmutableMap;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;

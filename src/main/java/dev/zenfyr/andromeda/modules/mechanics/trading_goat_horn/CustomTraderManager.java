@@ -5,7 +5,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.util.MathUtil;
+import dev.zenfyr.pulsar.api.util.MathUtil;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.NonNull;

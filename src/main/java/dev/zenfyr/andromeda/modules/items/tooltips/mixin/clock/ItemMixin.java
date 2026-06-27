@@ -2,8 +2,8 @@ package dev.zenfyr.andromeda.modules.items.tooltips.mixin.clock;
 
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
-import dev.zenfyr.pulsar.util.MathUtil;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.MathUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

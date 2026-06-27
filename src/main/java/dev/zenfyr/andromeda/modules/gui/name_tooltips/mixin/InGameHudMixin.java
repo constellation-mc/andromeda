@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.gui.name_tooltips.mixin;
 
 import dev.zenfyr.andromeda.common.client.GlobalAlphaController;
-import dev.zenfyr.pulsar.util.MakeSure;
-import dev.zenfyr.pulsar.util.Utilities;
+import dev.zenfyr.pulsar.api.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.Utilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

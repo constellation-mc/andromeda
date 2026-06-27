@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.bootstrap;
 import dev.zenfyr.andromeda.bootstrap.event.EventMarker;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
-import dev.zenfyr.pulsar.util.functions.Memoize;
+import dev.zenfyr.pulsar.api.util.functions.Memoize;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Supplier;

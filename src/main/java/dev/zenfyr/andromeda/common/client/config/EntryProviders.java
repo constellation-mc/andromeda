@@ -1,9 +1,9 @@
 package dev.zenfyr.andromeda.common.client.config;
 
 import dev.zenfyr.andromeda.common.util.TranslationKeyProvider;
-import dev.zenfyr.pulsar.util.ExceptionUtil;
-import dev.zenfyr.pulsar.util.TextUtil;
-import dev.zenfyr.pulsar.util.Utilities;
+import dev.zenfyr.pulsar.api.util.ExceptionUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.Utilities;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;

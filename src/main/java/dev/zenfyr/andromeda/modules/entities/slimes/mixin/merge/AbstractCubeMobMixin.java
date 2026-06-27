@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.entities.slimes.mixin.merge;
 
 import dev.zenfyr.andromeda.modules.entities.slimes.SlimeMergeDuck;
 import dev.zenfyr.andromeda.modules.entities.slimes.Slimes;
-import dev.zenfyr.pulsar.util.MathUtil;
+import dev.zenfyr.pulsar.api.util.MathUtil;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

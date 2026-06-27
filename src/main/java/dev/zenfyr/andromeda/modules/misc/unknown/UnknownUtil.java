@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.misc.unknown;
 
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;

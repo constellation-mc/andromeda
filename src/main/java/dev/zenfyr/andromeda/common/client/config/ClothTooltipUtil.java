@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.common.client.config;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

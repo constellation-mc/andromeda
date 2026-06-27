@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.entities.minecarts.items;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;

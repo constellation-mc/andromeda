@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.informative_item_names.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

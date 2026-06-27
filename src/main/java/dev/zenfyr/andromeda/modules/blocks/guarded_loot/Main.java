@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.blocks.guarded_loot;
 
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

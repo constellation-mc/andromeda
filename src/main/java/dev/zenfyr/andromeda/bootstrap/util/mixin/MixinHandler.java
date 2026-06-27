@@ -8,7 +8,7 @@ import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.util.Util;
-import dev.zenfyr.pulsar.mixin.VirtualMixins;
+import dev.zenfyr.pulsar.api.mixin.VirtualMixins;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
