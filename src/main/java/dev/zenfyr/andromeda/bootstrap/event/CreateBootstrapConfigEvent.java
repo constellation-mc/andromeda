@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.bootstrap.event;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
-import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
+import dev.zenfyr.pulsar.api.event.Bus;
 
 // Executed when the BCH needs to create a fresh config. Use to enable configs by default.
 public interface CreateBootstrapConfigEvent {

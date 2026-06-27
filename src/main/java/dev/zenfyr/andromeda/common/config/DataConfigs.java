@@ -138,7 +138,7 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
   }
 
   public static void init(ModuleManager manager) {
-    ServerReloadersEvent.EVENT.register(
+    ServerReloadersEvent.EVENT.listen(
         context -> context.register(RELOADER.identifier(), new DataConfigs(manager)));
 
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {

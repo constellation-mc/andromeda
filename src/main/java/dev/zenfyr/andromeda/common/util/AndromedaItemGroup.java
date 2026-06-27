@@ -2,10 +2,10 @@ package dev.zenfyr.andromeda.common.util;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
-import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.api.creativetab.CreativeModeTabBuilder;
 import dev.zenfyr.pulsar.api.creativetab.PulsarEntries;
+import dev.zenfyr.pulsar.api.event.Bus;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

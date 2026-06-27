@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.bootstrap.event;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
-import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
+import dev.zenfyr.pulsar.api.event.Bus;
 
 // Executed right after all modules finish initializing. (last module's constructor has been called)
 public interface PostModuleInitEvent {
