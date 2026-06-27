@@ -6,7 +6,7 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
-import dev.zenfyr.pulsar.creativetab.CreativeModeTabAnimaton;
+import dev.zenfyr.pulsar.api.creativetab.CreativeModeTabAnimaton;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.Util;

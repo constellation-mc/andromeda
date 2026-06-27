@@ -2,7 +2,7 @@
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.19.2" }
 
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.138.4+1.21.10" }
-pulsar = { group = "dev.zenfyr", name = "pulsar", version = "0.2.2-1.21.10-build.21" }
+pulsar = { group = "dev.zenfyr", name = "pulsar-fabric", version = "1.0.0+mc1.21.10" }
 
 modmenu = { group = "com.terraformersmc", name = "modmenu", version = "16.0.1" }
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "20.0.149" }

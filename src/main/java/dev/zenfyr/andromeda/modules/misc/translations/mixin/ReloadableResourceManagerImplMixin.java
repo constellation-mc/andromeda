@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.misc.translations.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.zenfyr.andromeda.modules.misc.translations.Translations;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

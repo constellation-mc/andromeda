@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.modules.entities.boats.packets.RecordPlaybackS2CPayload;
-import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Supplier;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.component.DataComponents;

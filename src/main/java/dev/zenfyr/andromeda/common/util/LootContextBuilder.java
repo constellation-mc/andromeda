@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.common.util;
 
-import dev.zenfyr.pulsar.util.functions.Memoize;
+import dev.zenfyr.pulsar.api.util.functions.Memoize;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

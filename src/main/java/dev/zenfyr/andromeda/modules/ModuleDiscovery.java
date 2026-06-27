@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin;
 import dev.zenfyr.andromeda.util.ClassPath;
-import dev.zenfyr.pulsar.util.ExceptionUtil;
+import dev.zenfyr.pulsar.api.util.ExceptionUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
