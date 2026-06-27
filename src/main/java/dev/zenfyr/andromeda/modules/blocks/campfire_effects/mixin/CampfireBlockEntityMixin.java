@@ -37,7 +37,7 @@ abstract class CampfireBlockEntityMixin {
     if (level.getGameTime() % 180 == 0) {
       var config = level.am$get(CampfireEffects.CONFIG);
       if (!config.available) return;
-      var data = level.getServer().pulsar$getReloader(CampfireEffectsData.RELOADER);
+      var data = level.getServer().pulsar$getReloadListener(CampfireEffectsData.RELOADER);
       if (data == null) return;
       var campfireEffect = data.get(state.typeHolder());
       if (campfireEffect == null) return;

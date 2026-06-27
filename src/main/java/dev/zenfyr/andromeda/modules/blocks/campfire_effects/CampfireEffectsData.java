@@ -6,8 +6,8 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.api.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.api.codec.JsonCodecDataLoader;
 import dev.zenfyr.pulsar.api.loot.LootCodecs;
-import dev.zenfyr.pulsar.api.resources.ReloaderType;
-import dev.zenfyr.pulsar.api.resources.ServerReloadersEvent;
+import dev.zenfyr.pulsar.api.resources.ReloadListenerType;
+import dev.zenfyr.pulsar.api.resources.ServerReloadListenersEvent;
 import java.util.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -47,8 +47,8 @@ public class CampfireEffectsData {
   private static final Codec<Map<Holder<Block>, CampfireEffectsEntry>> BASE_HOLDER =
       Codec.unboundedMap(BuiltInRegistries.BLOCK.holderByNameCodec(), ENTRY_CODEC);
 
-  public static final ReloaderType<Reloader> RELOADER =
-      ReloaderType.create(Andromeda.id("campfire_effects"));
+  public static final ReloadListenerType<Reloader> RELOADER =
+      ReloadListenerType.create(Andromeda.id("campfire_effects"));
 
   public record CampfireEffect(
       Holder<MobEffect> effect, int amplifier, Optional<LootItemCondition> condition) {}
@@ -60,7 +60,7 @@ public class CampfireEffectsData {
       List<CampfireEffect> effects) {}
 
   public static void init() {
-    ServerReloadersEvent.EVENT.listen(
+    ServerReloadListenersEvent.EVENT.listen(
         context -> context.register(RELOADER.identifier(), new Reloader()));
   }
 
