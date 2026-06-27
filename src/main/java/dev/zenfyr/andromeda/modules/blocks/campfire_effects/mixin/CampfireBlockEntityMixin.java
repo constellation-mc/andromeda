@@ -41,7 +41,7 @@ abstract class CampfireBlockEntityMixin {
         List<LivingEntity> entities = new ArrayList<>();
         double rad = config.effectsRange;
         boolean affectsPassive = config.affectsPassive;
-        world.getEntities().get(new AABB(pos).inflate(rad), entity -> {
+        world.getEntities(null, new AABB(pos).inflate(rad)).forEach(entity -> {
           if ((entity instanceof AgeableMob && affectsPassive) || entity instanceof Player) {
             entities.add((LivingEntity) entity);
           }

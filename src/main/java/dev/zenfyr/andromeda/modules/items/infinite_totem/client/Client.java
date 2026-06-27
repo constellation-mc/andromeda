@@ -42,9 +42,8 @@ public class Client {
     ClientPlayNetworking.registerGlobalReceiver(
         NotifyClientPayload.ID,
         (payload, context) -> context.client().execute(() -> {
-          ItemEntity entity = (ItemEntity) MakeSure.notNull(context.client().level, "client.world")
-              .getEntities()
-              .get(payload.entity());
+          ItemEntity entity = (ItemEntity)
+              MakeSure.notNull(context.client().level, "client.world").getEntity(payload.entity());
           if (entity != null) entity.getEntityData().set(ItemEntity.DATA_ITEM, payload.stack());
         }));
 
