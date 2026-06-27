@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import dev.zenfyr.andromeda.util.ClassPath;
 import dev.zenfyr.andromeda.util.Util;
 import dev.zenfyr.pulsar.api.mixin.AsmUtil;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import dev.zenfyr.pulsar.api.util.ExceptionUtil;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,7 +90,7 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
   public List<String> getMixins() {
     return discoverInPackage(this.mixinPackage).stream()
         .filter(mixinClassName -> !CLOTH_MIXINS.contains(mixinClassName)
-            || FabricLoader.getInstance().isModLoaded("cloth-config"))
+            || Platform.getPlatform().isModLoaded("cloth-config"))
         .toList();
   }
 

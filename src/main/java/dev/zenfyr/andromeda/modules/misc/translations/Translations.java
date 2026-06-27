@@ -10,8 +10,8 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import java.nio.file.Path;
-import net.fabricmc.loader.api.FabricLoader;
 
 @ModuleInfo(name = "translations", category = "misc", env = Environment.CLIENT)
 public final class Translations extends Module implements PostBootstrapEvent {
@@ -21,7 +21,7 @@ public final class Translations extends Module implements PostBootstrapEvent {
   public static final Path TRANSLATION_PACK = Util.HIDDEN_PATH.resolve("andromeda_translations");
   public static final Path LANG_PATH = TRANSLATION_PACK.resolve("assets/andromeda/lang");
   public static final Path EN_US = LANG_PATH.resolve("en_us.json");
-  public static final Path OPTIONS = FabricLoader.getInstance().getGameDir().resolve("options.txt");
+  public static final Path OPTIONS = Platform.getPlatform().getGameDir().resolve("options.txt");
 
   public static final ConfigDefinition<Config> CONFIG = new ConfigDefinition<>(() -> Config.class);
 

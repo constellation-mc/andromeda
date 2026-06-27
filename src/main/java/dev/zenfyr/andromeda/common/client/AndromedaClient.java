@@ -6,9 +6,9 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
-import dev.zenfyr.pulsar.api.creativetab.CreativeModeTabAnimaton;
+import dev.zenfyr.pulsar.api.client.creativetab.CreativeModeTabAnimation;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
@@ -19,7 +19,7 @@ public class AndromedaClient implements ClientModInitializer {
 
   public static final MultiConfigHandler CLIENT = new MultiConfigHandler(
       ModuleManager.get(),
-      FabricLoader.getInstance().getConfigDir(),
+      Platform.getPlatform().getConfigDir(),
       "client",
       RegisterConfigEvent.CLIENT);
   private static final Identifier BACKGROUND_TEXTURE = Andromeda.id("textures/gui/background.png");
@@ -37,7 +37,7 @@ public class AndromedaClient implements ClientModInitializer {
     InitEvents.CLIENT.invoker().onModuleClientInit().runEntrypoint();
 
     if (Andromeda.GROUP.isPresent()) {
-      CreativeModeTabAnimaton.setIconAnimation(
+      CreativeModeTabAnimation.setIconAnimation(
           Andromeda.GROUP.orThrow(), (tab, graphics, x, y, selected, isTopRow) -> {
             var pose = graphics.pose();
             pose.pushMatrix();
