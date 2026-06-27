@@ -130,7 +130,7 @@ public class MagnetItem extends Item {
           / (double) client.getWindow().getScreenHeight());
       ScreenParticles.get(client)
           .addParticles(
-              client.screen,
+              client.gui.screen(),
               VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 7));
     }
   }
@@ -147,7 +147,7 @@ public class MagnetItem extends Item {
           / (double) client.getWindow().getScreenHeight());
       ScreenParticles.get(client)
           .addParticles(
-              client.screen,
+              client.gui.screen(),
               VanillaParticles.create(
                   new ItemParticleOption(
                       ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),

@@ -66,7 +66,8 @@ abstract class ItemMixin {
         / (double) client.getWindow().getScreenHeight());
     for (int i = 0; i < count; i++) {
       ScreenParticles.get(client)
-          .addParticle(client.screen, VanillaParticles.create(ParticleTypes.LAVA, x, y, 0.0, 0.0));
+          .addParticle(
+              client.gui.screen(), VanillaParticles.create(ParticleTypes.LAVA, x, y, 0.0, 0.0));
     }
 
     client.level.playSound(

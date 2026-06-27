@@ -80,7 +80,7 @@ public class RoseOfTheValley extends BlockItem {
           / (double) client.getWindow().getScreenHeight());
       ScreenParticles.get(client)
           .addParticles(
-              client.screen,
+              client.gui.screen(),
               VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.08, 10));
     }
   }

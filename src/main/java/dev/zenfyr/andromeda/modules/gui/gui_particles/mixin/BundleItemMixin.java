@@ -103,7 +103,7 @@ abstract class BundleItemMixin {
 
         ScreenParticles.get(client)
             .addParticles(
-                client.screen,
+                client.gui.screen(),
                 VanillaParticles.create(
                     new ItemParticleOption(
                         ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
