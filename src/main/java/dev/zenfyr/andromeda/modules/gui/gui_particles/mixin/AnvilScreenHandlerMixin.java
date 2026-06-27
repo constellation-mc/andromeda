@@ -2,7 +2,8 @@ package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -47,7 +48,8 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
       BlockState state = Blocks.ANVIL.defaultBlockState();
       var slot = this.slots.get(2);
       boolean enchant = this.slots.get(1).getItem().is(Items.ENCHANTED_BOOK);
-      ScreenParticleHelper.addScreenParticles(
+
+      var particle = VanillaParticles.create(
           !enchant ? new BlockParticleOption(ParticleTypes.BLOCK, state) : ParticleTypes.END_ROD,
           anvilScreen.leftPos + slot.x + 8,
           anvilScreen.topPos + slot.y + 8,
@@ -55,6 +57,7 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
           0.5,
           !enchant ? 0.5 : 0.07,
           5);
+      ScreenParticles.get(Minecraft.getInstance()).addParticles(anvilScreen, particle);
     }
   }
 }

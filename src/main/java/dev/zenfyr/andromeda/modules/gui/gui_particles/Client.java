@@ -1,7 +1,8 @@
 package dev.zenfyr.andromeda.modules.gui.gui_particles;
 
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
@@ -17,15 +18,18 @@ public class Client {
           && config.furnaceScreenParticles) {
         ScreenEvents.afterTick(abstractFurnaceScreen).register(screen -> {
           AbstractFurnaceScreen<?> furnaceScreen = (AbstractFurnaceScreen<?>) screen;
-          if (furnaceScreen.getMenu().isLit() && MathUtil.threadRandom().nextInt(10) == 0) {
-            ScreenParticleHelper.addScreenParticle(
-                screen,
-                ParticleTypes.FLAME,
-                MathUtil.nextDouble(furnaceScreen.leftPos + 56, furnaceScreen.leftPos + 56 + 14),
-                furnaceScreen.topPos + 36 + 13,
-                MathUtil.nextDouble(-0.01, 0.01),
-                0.05);
-          }
+          if (!furnaceScreen.getMenu().isLit() || MathUtil.threadRandom().nextInt(10) != 0) return;
+
+          ScreenParticles.get(client)
+              .addParticle(
+                  screen,
+                  VanillaParticles.create(
+                      ParticleTypes.FLAME,
+                      MathUtil.nextDouble(
+                          furnaceScreen.leftPos + 56, furnaceScreen.leftPos + 56 + 14),
+                      furnaceScreen.topPos + 36 + 13,
+                      MathUtil.nextDouble(-0.01, 0.01),
+                      0.05));
         });
       }
     });

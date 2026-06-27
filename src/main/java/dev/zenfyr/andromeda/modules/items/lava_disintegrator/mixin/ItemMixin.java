@@ -1,6 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.lava_disintegrator.mixin;
 
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
@@ -65,7 +66,8 @@ abstract class ItemMixin {
         * (double) client.getWindow().getGuiScaledHeight()
         / (double) client.getWindow().getScreenHeight());
     for (int i = 0; i < count; i++) {
-      ScreenParticleHelper.addParticle(ParticleTypes.LAVA, x, y, 0.0, 0.0);
+      ScreenParticles.get(client)
+          .addParticle(client.screen, VanillaParticles.create(ParticleTypes.LAVA, x, y, 0.0, 0.0));
     }
     Objects.requireNonNull(client.player)
         .playNotifySound(
