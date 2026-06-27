@@ -10,20 +10,20 @@ import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
 import dev.zenfyr.andromeda.bootstrap.util.Debug;
 import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import lombok.CustomLog;
-import net.fabricmc.loader.api.FabricLoader;
 
 @CustomLog
 public class ModConfigHandler {
 
   private static final List<Key<?>> KEYS = new ArrayList<>();
   private static final Path PATH =
-      FabricLoader.getInstance().getConfigDir().resolve(MODID + "/mod.json");
+      Platform.getPlatform().getConfigDir().resolve(MODID + "/mod.json");
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
   static {

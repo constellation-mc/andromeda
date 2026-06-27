@@ -15,11 +15,11 @@ import dev.zenfyr.andromeda.common.util.GsonCodecContext;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.common.util.condition.ItemsRegisteredCondition;
 import dev.zenfyr.andromeda.common.util.condition.ModulesLoadedCondition;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import lombok.Getter;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -51,10 +51,10 @@ public class Andromeda implements ModInitializer {
     GsonBuilderEvent.BUS.listen(Andromeda::appendCommonGsonTypes);
 
     MAIN = new MultiConfigHandler(
-        manager, FabricLoader.getInstance().getConfigDir(), "main", RegisterConfigEvent.MAIN);
+        manager, Platform.getPlatform().getConfigDir(), "main", RegisterConfigEvent.MAIN);
 
     GAME = new MultiConfigHandler(
-        manager, FabricLoader.getInstance().getConfigDir(), "game", RegisterConfigEvent.GAME);
+        manager, Platform.getPlatform().getConfigDir(), "game", RegisterConfigEvent.GAME);
   }
 
   public static ResourceLocation id(String path) {

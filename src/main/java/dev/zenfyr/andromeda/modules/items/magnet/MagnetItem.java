@@ -11,7 +11,8 @@ import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
 import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
-import dev.zenfyr.pulsar.api.util.SupportUtil;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
+import dev.zenfyr.pulsar.api.platform.SupportUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -61,9 +62,9 @@ public class MagnetItem extends Item {
   public static final Keeper<MagnetItem> MAGNET = Keeper.create();
   public static final Keeper<DataComponentType<MagnetContents>> COMPONENT_TYPE = Keeper.create();
   private static final BiConsumer<ItemStack, Player> ITEM_PARTICLES = SupportUtil.support(
-      EnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
+      CEnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
   private static final Consumer<Player> UPGRADE_PARTICLES =
-      SupportUtil.support(EnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
+      SupportUtil.support(CEnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
 
   public MagnetItem(Properties settings) {
     super(settings);
