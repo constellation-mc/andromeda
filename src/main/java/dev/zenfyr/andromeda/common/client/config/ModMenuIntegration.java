@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.common.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dev.zenfyr.pulsar.util.Utilities;
+import dev.zenfyr.pulsar.api.util.Utilities;
 import java.util.function.Function;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;

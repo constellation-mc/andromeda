@@ -7,7 +7,7 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;

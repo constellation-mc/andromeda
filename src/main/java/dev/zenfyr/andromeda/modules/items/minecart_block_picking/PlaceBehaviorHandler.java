@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.items.minecart_block_picking;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.furnace_minecart_tweaks.FurnaceMinecartTweaks;
-import dev.zenfyr.pulsar.nbt.NbtUtil;
+import dev.zenfyr.pulsar.api.nbt.NbtUtil;
 import java.util.IdentityHashMap;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;

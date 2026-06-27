@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.BeaconUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
-import dev.zenfyr.pulsar.util.tuple.Tuple;
+import dev.zenfyr.pulsar.api.util.tuple.Tuple;
 import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;

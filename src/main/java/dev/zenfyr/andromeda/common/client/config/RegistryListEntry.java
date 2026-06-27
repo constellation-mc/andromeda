@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.common.client.config;
 
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;

@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.util;
 
 import com.google.gson.*;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.misc.unknown.mixin.wakeup;
 
 import dev.zenfyr.andromeda.modules.misc.unknown.UnknownUtil;
-import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
+import dev.zenfyr.pulsar.api.nbt.CompoundTagBuilder;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;

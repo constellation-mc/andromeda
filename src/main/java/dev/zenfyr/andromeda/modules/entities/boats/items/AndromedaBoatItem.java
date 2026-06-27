@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.entities.boats.items;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;

@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.world.falling_beenests;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
+import dev.zenfyr.pulsar.api.nbt.CompoundTagBuilder;
 import java.util.List;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;

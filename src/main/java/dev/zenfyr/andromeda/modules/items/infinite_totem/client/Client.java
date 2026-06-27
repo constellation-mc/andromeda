@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.client;
 
 import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.UUID;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;

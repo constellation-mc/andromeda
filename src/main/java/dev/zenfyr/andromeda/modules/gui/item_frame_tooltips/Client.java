@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.gui.item_frame_tooltips;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.zenfyr.pulsar.util.Utilities;
+import dev.zenfyr.pulsar.api.util.Utilities;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collections;

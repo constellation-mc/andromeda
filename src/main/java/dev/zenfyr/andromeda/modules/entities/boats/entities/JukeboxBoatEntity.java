@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
 import dev.zenfyr.andromeda.modules.entities.boats.client.ClientSoundHolder;
-import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.registries.BuiltInRegistries;

@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
 import dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
 import dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.Main;
-import dev.zenfyr.pulsar.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;

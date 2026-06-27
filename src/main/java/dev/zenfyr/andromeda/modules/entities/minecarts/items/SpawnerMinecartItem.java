@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.entities.minecarts.items;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;

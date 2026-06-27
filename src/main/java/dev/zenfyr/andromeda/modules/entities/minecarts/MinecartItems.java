@@ -13,8 +13,8 @@ import dev.zenfyr.andromeda.modules.entities.minecarts.items.NoteBlockMinecartIt
 import dev.zenfyr.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
-import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.nbt.CompoundTagBuilder;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.List;
 import java.util.Objects;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;

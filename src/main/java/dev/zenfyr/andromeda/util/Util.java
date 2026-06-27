@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.util;
 import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 
 import com.google.common.base.Splitter;
-import dev.zenfyr.pulsar.util.Utilities;
+import dev.zenfyr.pulsar.api.util.Utilities;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Function;

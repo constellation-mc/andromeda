@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.items.minecart_block_picking;
 
-import dev.zenfyr.pulsar.nbt.CompoundTagBuilder;
-import dev.zenfyr.pulsar.nbt.NbtUtil;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.nbt.CompoundTagBuilder;
+import dev.zenfyr.pulsar.api.nbt.NbtUtil;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.IdentityHashMap;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;

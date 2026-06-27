@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
-import dev.zenfyr.pulsar.util.SupportUtil;
+import dev.zenfyr.pulsar.api.util.SupportUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;

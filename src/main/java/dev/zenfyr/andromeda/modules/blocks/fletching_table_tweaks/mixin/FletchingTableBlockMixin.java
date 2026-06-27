@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.mixin;
 
 import dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks.FletchingScreenHandler;
-import dev.zenfyr.pulsar.util.TextUtil;
+import dev.zenfyr.pulsar.api.util.TextUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.entities.boats.client;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.pulsar.util.MakeSure;
+import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
