@@ -10,6 +10,7 @@ import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.config.BootstrapConfig;
 import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +18,6 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 import lombok.CustomLog;
-import net.fabricmc.loader.api.FabricLoader;
 
 // Loads and saves bootstrap configs.
 // This handler is different to the AbstractConfigHandler's in the sense that it must not rely on
@@ -25,7 +25,7 @@ import net.fabricmc.loader.api.FabricLoader;
 @CustomLog
 public final class BootstrapConfigHandler {
 
-  private final Path basePath = FabricLoader.getInstance().getConfigDir().resolve(MODID);
+  private final Path basePath = Platform.getPlatform().getConfigDir().resolve(MODID);
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private final Map<Class<?>, BootstrapConfig> configs = new IdentityHashMap<>();
 

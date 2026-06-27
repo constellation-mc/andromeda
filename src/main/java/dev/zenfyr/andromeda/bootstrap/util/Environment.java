@@ -1,5 +1,6 @@
 package dev.zenfyr.andromeda.bootstrap.util;
 
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import net.fabricmc.api.EnvType;
 
 public enum Environment {
@@ -20,6 +21,10 @@ public enum Environment {
 
   public boolean allows(EnvType envType) {
     return allows(envType == EnvType.CLIENT ? CLIENT : SERVER);
+  }
+
+  public boolean allows(CEnvType envType) {
+    return allows(envType == CEnvType.CLIENT ? CLIENT : SERVER);
   }
 
   public boolean allows(Environment environment) {
