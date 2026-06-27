@@ -2,7 +2,9 @@ package dev.zenfyr.andromeda.modules.gui.gui_particles.mixin;
 
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -35,13 +37,16 @@ abstract class EnchantmentScreenMixin extends AbstractContainerScreen<Enchantmen
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).enchantmentScreenParticles) return;
 
     Slot slot = this.menu.slots.get(0);
-    ScreenParticleHelper.addScreenParticles(
-        ParticleTypes.END_ROD,
-        this.leftPos + slot.x + 8,
-        this.topPos + slot.y + 8,
-        0.5,
-        0.5,
-        0.07,
-        10);
+    ScreenParticles.get(Minecraft.getInstance())
+        .addParticles(
+            this,
+            VanillaParticles.create(
+                ParticleTypes.END_ROD,
+                this.leftPos + slot.x + 8,
+                this.topPos + slot.y + 8,
+                0.5,
+                0.5,
+                0.07,
+                10));
   }
 }
