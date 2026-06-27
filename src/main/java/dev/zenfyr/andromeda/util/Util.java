@@ -3,12 +3,12 @@ package dev.zenfyr.andromeda.util;
 import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 
 import com.google.common.base.Splitter;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import dev.zenfyr.pulsar.api.util.Utilities;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,15 +16,14 @@ public class Util {
 
   private static final Splitter SPLITTER = Splitter.on(".");
 
-  public static final Path HIDDEN_PATH =
-      FabricLoader.getInstance().getGameDir().resolve("." + MODID);
+  public static final Path HIDDEN_PATH = Platform.getPlatform().getGameDir().resolve("." + MODID);
 
   public static Logger logger() {
     return LogManager.getLogger(getCaller());
   }
 
   public static boolean isDev() {
-    return FabricLoader.getInstance().isDevelopmentEnvironment();
+    return Platform.getPlatform().isDev();
   }
 
   public static RuntimeException create(String msg) {

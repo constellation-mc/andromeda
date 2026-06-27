@@ -12,13 +12,14 @@ import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinHandler;
 import dev.zenfyr.andromeda.modules.ModuleDiscovery;
 import dev.zenfyr.andromeda.util.*;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import dev.zenfyr.pulsar.api.util.Utilities;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
@@ -80,7 +81,7 @@ public class ModuleManager implements PreLaunchEntrypoint {
                 throw Util.create("%s has no ModuleInfo annotation", IllegalStateException::new);
             })
             .filter(cls -> {
-              if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+              if (Platform.getPlatform().getEnvironment() == CEnvType.CLIENT)
                 return true; // Every module is allowed on client.
               return ModuleHelper.getMeta(cls).env().allows(Environment.SERVER);
             })
