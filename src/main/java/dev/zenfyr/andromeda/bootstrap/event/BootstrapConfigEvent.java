@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.bootstrap.event;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.config.BootstrapConfig;
-import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
+import dev.zenfyr.pulsar.api.event.Bus;
 
 // Executed right after the config for a module is loaded.
 public interface BootstrapConfigEvent {

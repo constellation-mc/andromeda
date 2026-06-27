@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.common.config;
 
 import com.google.gson.GsonBuilder;
-import dev.zenfyr.andromeda.bootstrap.event.bus.Bus;
+import dev.zenfyr.pulsar.api.event.Bus;
 
 public interface GsonBuilderEvent {
 
