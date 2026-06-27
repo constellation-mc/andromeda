@@ -3,8 +3,8 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
-import dev.zenfyr.pulsar.api.util.SupportUtil;
-import net.fabricmc.api.EnvType;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
+import dev.zenfyr.pulsar.api.platform.SupportUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.core.particles.ParticleTypes;
@@ -48,7 +48,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   }
 
   private final Runnable explode = SupportUtil.support(
-      EnvType.CLIENT,
+      CEnvType.CLIENT,
       () -> () -> {
         FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());
         ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);

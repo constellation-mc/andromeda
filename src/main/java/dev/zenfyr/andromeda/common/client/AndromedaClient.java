@@ -9,9 +9,9 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.pulsar.api.client.creativetab.CreativeModeTabAnimation;
+import dev.zenfyr.pulsar.api.platform.Platform;
 import java.util.function.Consumer;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +23,7 @@ public class AndromedaClient implements ClientModInitializer {
 
   public static final MultiConfigHandler CLIENT = new MultiConfigHandler(
       ModuleManager.get(),
-      FabricLoader.getInstance().getConfigDir(),
+      Platform.getPlatform().getConfigDir(),
       "client",
       RegisterConfigEvent.CLIENT);
   private static final ResourceLocation BACKGROUND_TEXTURE =
