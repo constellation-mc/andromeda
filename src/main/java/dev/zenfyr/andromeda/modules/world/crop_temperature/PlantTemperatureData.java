@@ -9,8 +9,8 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.api.codec.ExtraCodecs;
 import dev.zenfyr.pulsar.api.codec.JsonCodecDataLoader;
-import dev.zenfyr.pulsar.api.resources.ReloaderType;
-import dev.zenfyr.pulsar.api.resources.ServerReloadersEvent;
+import dev.zenfyr.pulsar.api.resources.ReloadListenerType;
+import dev.zenfyr.pulsar.api.resources.ServerReloadListenersEvent;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.util.*;
@@ -82,11 +82,11 @@ public final class PlantTemperatureData {
           BASE_HOLDER)
       .xmap(e -> e.map(Function.identity(), Function.identity()), Either::left);
 
-  public static final ReloaderType<Reloader> RELOADER =
-      ReloaderType.create(Andromeda.id("crop_temperatures"));
+  public static final ReloadListenerType<Reloader> RELOADER =
+      ReloadListenerType.create(Andromeda.id("crop_temperatures"));
 
   public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
-    float[] data = world.getServer().pulsar$getReloader(RELOADER).get(state.getBlock());
+    float[] data = world.getServer().pulsar$getReloadListener(RELOADER).get(state.getBlock());
     if (data != null) {
       if (!world.am$get(PlantTemperature.CONFIG).available) return true;
 
@@ -110,7 +110,7 @@ public final class PlantTemperatureData {
   public static void init() {
     var manager = ModuleManager.get();
     var module = manager.get(PlantTemperature.class).orElseThrow();
-    ServerReloadersEvent.EVENT.listen(
+    ServerReloadListenersEvent.EVENT.listen(
         context -> context.register(RELOADER.location(), new Reloader(manager, module)));
   }
 

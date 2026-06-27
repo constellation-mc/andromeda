@@ -11,8 +11,8 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.GameConfigHandler;
 import dev.zenfyr.andromeda.util.Util;
 import dev.zenfyr.pulsar.api.codec.JsonCodecDataLoader;
-import dev.zenfyr.pulsar.api.resources.ReloaderType;
-import dev.zenfyr.pulsar.api.resources.ServerReloadersEvent;
+import dev.zenfyr.pulsar.api.resources.ReloadListenerType;
+import dev.zenfyr.pulsar.api.resources.ServerReloadListenersEvent;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.lang.reflect.Field;
@@ -34,11 +34,11 @@ import net.minecraft.world.level.Level;
 public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
 
   public static final ResourceLocation DEFAULT = Andromeda.id("default");
-  public static final ReloaderType<DataConfigs> RELOADER =
-      ReloaderType.create(Andromeda.id("scoped_config"));
+  public static final ReloadListenerType<DataConfigs> RELOADER =
+      ReloadListenerType.create(Andromeda.id("scoped_config"));
 
   public static DataConfigs get(MinecraftServer server) {
-    return server.pulsar$getReloader(RELOADER);
+    return server.pulsar$getReloadListener(RELOADER);
   }
 
   private final ModuleManager moduleManager;
@@ -138,7 +138,7 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
   }
 
   public static void init(ModuleManager manager) {
-    ServerReloadersEvent.EVENT.listen(
+    ServerReloadListenersEvent.EVENT.listen(
         context -> context.register(RELOADER.location(), new DataConfigs(manager)));
 
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
