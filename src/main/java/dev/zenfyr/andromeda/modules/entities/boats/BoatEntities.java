@@ -57,7 +57,7 @@ public class BoatEntities {
           TNTBoatEntity.EXPLODE_BOAT_ON_SERVER, (server, player, handler, buf, responseSender) -> {
             UUID id = buf.readUUID();
             server.execute(() -> {
-              Entity entity = player.level.getEntities().get(id);
+              Entity entity = player.serverLevel().getEntity(id);
               if (entity instanceof TNTBoatEntity boat
                   && boat.isAlive()
                   && player == boat.getFirstPassenger()) boat.explode();

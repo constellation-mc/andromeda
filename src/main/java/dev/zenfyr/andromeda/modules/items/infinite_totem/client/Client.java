@@ -46,8 +46,8 @@ public class Client {
           int uuid = packetByteBuf.readVarInt();
           ItemStack stack = packetByteBuf.readItem();
           client.execute(() -> {
-            ItemEntity entity = (ItemEntity)
-                MakeSure.notNull(client.level, "client.world").getEntities().get(uuid);
+            ItemEntity entity =
+                (ItemEntity) MakeSure.notNull(client.level, "client.world").getEntity(uuid);
             if (entity != null) entity.getEntityData().set(ItemEntity.DATA_ITEM, stack);
           });
         });

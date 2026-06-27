@@ -14,10 +14,21 @@ accessible field net/minecraft/world/entity/Entity level Lnet/minecraft/world/le
 # gui/no_more_adventure
 accessible class net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon
 
-# entities/boats (furnaceBoat)
+# entities/boats
 accessible field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;
 accessible field net/minecraft/world/entity/vehicle/Boat status Lnet/minecraft/world/entity/vehicle/Boat$Status;
 extendable method net/minecraft/world/entity/vehicle/Boat floatBoat ()V
+accessible method net/minecraft/client/multiplayer/ClientLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
+
+# entities/minecarts
+accessible method net/minecraft/world/entity/vehicle/AbstractMinecart getDropItem ()Lnet/minecraft/world/item/Item;
+
+# entities/villagers_follow_emeralds
+accessible field net/minecraft/world/entity/ai/goal/TemptGoal calmDown I
+accessible field net/minecraft/world/entity/ai/goal/TemptGoal targetingConditions Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;
+
+# gui
+accessible method net/minecraft/client/gui/GuiGraphics renderTooltipInternal (Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V
 
 # gui/gui_particles (furnaceScreen)
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
@@ -30,10 +41,16 @@ accessible field net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen s
 # misc/recipe_advancements_generation
 accessible field net/minecraft/server/ServerAdvancementManager advancements Lnet/minecraft/advancements/AdvancementList;
 
+# items/magnet
+accessible field net/minecraft/world/entity/item/ItemEntity DATA_ITEM Lnet/minecraft/network/syncher/EntityDataAccessor;
+
 # items/minecart_block_picking
 accessible field net/minecraft/world/entity/vehicle/MinecartFurnace fuel I
 accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity litTime I
 accessible field net/minecraft/world/level/BaseSpawner nextSpawnData Lnet/minecraft/world/level/SpawnData;
+
+# items/pouches
+accessible field net/minecraft/world/level/block/entity/BlockEntityType validBlocks Ljava/util/Set;
 
 # entities/villagers_follow_emeralds  mechanics/throwable_items
 accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
@@ -49,6 +66,7 @@ accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal isPolli
 accessible method net/minecraft/world/entity/animal/Bee$BeePollinateGoal hasPollinatedLongEnough ()Z
 
 # world/falling_beenests
+accessible method net/minecraft/world/entity/item/FallingBlockEntity <init> (Lnet/minecraft/world/level/Level;DDDLnet/minecraft/world/level/block/state/BlockState;)V
 accessible method net/minecraft/world/entity/item/FallingBlockEntity readAdditionalSaveData (Lnet/minecraft/nbt/CompoundTag;)V
 accessible method net/minecraft/world/level/block/entity/BeehiveBlockEntity removeIgnoredBeeTags (Lnet/minecraft/nbt/CompoundTag;)V
 

@@ -44,7 +44,7 @@ abstract class CampfireBlockEntityMixin {
       if (!accept) return;
 
       List<LivingEntity> entities = new ArrayList<>();
-      world.getEntities().get(new AABB(pos).inflate(campfireEffect.range()), entity -> {
+      world.getEntities(null, new AABB(pos).inflate(campfireEffect.range())).forEach(entity -> {
         if ((entity instanceof AgeableMob && campfireEffect.affectsPassive())
             || entity instanceof Player) {
           entities.add((LivingEntity) entity);

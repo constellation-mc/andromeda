@@ -22,6 +22,7 @@ apply from: "https://raw.githubusercontent.com/constellation-mc/artifacts/main/a
 constellationRepo(project, "pulsar")
 
 repositories {
+    mavenLocal()
     maven { url = "https://maven.shedaniel.me/" }
     maven { url = "https://maven.terraformersmc.com/releases/" }
     mavenCentral()
