@@ -4,7 +4,8 @@ import com.google.common.collect.Lists;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
 import dev.zenfyr.pulsar.api.client.particles.ItemStackParticle;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticleHelper;
+import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
+import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.Utilities;
 import java.util.*;
@@ -97,17 +98,19 @@ abstract class GameModeSelectionScreenMixin extends Screen {
         double x = widget.getX() + widget.getWidth() / 2d;
         double y = widget.getY() + widget.getHeight() / 2d;
 
+        var particles = ScreenParticles.get(client);
         if (ANDROMEDA$GAME_MODE_STACKS.containsKey(gameMode)) {
-          ScreenParticleHelper.addParticles(
-              () -> new ItemStackParticle(
-                  x,
-                  y,
-                  MathUtil.nextDouble(-2, 2),
-                  MathUtil.nextDouble(-2, 2),
-                  ANDROMEDA$GAME_MODE_STACKS.get(gameMode).get()),
-              5);
+          for (int i = 0; i < 5; i++) {
+            particles.addParticle(new ItemStackParticle(
+                x,
+                y,
+                MathUtil.nextDouble(-2, 2),
+                MathUtil.nextDouble(-2, 2),
+                ANDROMEDA$GAME_MODE_STACKS.get(gameMode).get()));
+          }
         } else {
-          ScreenParticleHelper.addParticles(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 10);
+          particles.addParticles(
+              VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 10));
         }
       }
     }
