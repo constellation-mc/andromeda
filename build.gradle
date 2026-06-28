@@ -156,6 +156,7 @@ publishing {
 publishMods {
     file = jar.archiveFile
     additionalFiles.from(sourcesJar.archiveFile)
+    version = "${mod_version}+mc${minecraft_version}+${loader_id}"
 
     changelog = file("CHANGELOG.md").text
     type = ReleaseType.valueOf(providers.environmentVariable("VERSION_TYPE").getOrElse("BETA"))
