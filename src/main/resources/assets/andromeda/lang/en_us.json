@@ -64,6 +64,8 @@
   "config.andromeda.blocks.guarded_loot.option.breakingHandler.@Tooltip": "Choose what happens when players try to break a guarded container.",
   "config.andromeda.blocks.guarded_loot.option.BreakingHandler.NONE": "None",
   "config.andromeda.blocks.guarded_loot.option.BreakingHandler.UNBREAKABLE": "Unbreakable",
+  "config.andromeda.blocks.guarded_loot.option.checkReach": "Check Reach",
+  "config.andromeda.blocks.guarded_loot.option.checkReach.@Tooltip": "Verify that any of the entities in the range can actually find a path to the container.",
   "andromeda.container.guarded": "Can't open! The container is guarded!",
 
   "config.andromeda.blocks.falling_propagule": "Falling Propagule",
