@@ -23,15 +23,25 @@ constellationRepo(project, "pulsar")
 
 repositories {
     mavenLocal()
-    maven { url = "https://maven.shedaniel.me/" }
-    maven { url = "https://maven.terraformersmc.com/releases/" }
-    mavenCentral()
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content { includeGroup "maven.modrinth" }
+    exclusiveContent {
+        forRepository {
+            maven { url = 'https://maven.parchmentmc.org/' }
+        }
+        filter { includeGroup('org.parchmentmc.data') }
     }
-    maven { url = 'https://jitpack.io' }
+    exclusiveContent {
+        forRepository {
+            maven { url = 'https://maven.shedaniel.me/' }
+        }
+        filter { includeGroupAndSubgroups('me.shedaniel') }
+    }
+    exclusiveContent {
+        forRepository {
+            maven { url = 'https://maven.terraformersmc.com/releases/' }
+        }
+        filter { includeGroup('com.terraformersmc') }
+    }
+    mavenCentral()
 }
 
 dependencies {
