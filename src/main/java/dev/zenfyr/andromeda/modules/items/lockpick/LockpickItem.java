@@ -4,7 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLoot;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.Main;
@@ -87,7 +87,7 @@ public class LockpickItem extends Item {
           new MenuType<>(MerchantInventoryScreenHandler::new, FeatureFlagSet.of())));
     }
 
-    AndromedaItemGroup.BUS.listen(acceptor ->
+    AndromedaCreativeTab.BUS.listen(acceptor ->
         acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, LockpickItem.INSTANCE));
 
     ModuleManager.get().get(GuardedLoot.class).ifPresent(gl -> {
