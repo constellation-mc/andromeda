@@ -18,6 +18,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -48,7 +49,6 @@ public final class Main {
     });
   }
 
-  // TODO fix igloos. Maybe check reach?
   public static List<LivingEntity> checkMonsterLock(
       Level world, BlockState state, Player player, BlockPos pos, BlockEntity be) {
     var config = world.am$get(GuardedLoot.CONFIG);
@@ -58,7 +58,14 @@ public final class Main {
         .getEntitiesOfClass(
             LivingEntity.class, new AABB(pos).inflate(config.range), Entity::isAlive)
         .stream()
-        .filter(Enemy.class::isInstance)
+        .filter(living -> living instanceof PathfinderMob)
+        .filter(living -> living instanceof Enemy)
+        .filter(living -> {
+          if (!config.checkReach) return true;
+          var navigation = ((PathfinderMob) living).getNavigation();
+          var path = navigation.createPath(pos, 1);
+          return path != null && path.canReach();
+        })
         .toList();
   }
 
