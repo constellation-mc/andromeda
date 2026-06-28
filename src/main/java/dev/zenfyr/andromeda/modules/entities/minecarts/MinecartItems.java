@@ -4,7 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import dev.zenfyr.andromeda.modules.entities.minecarts.items.AndromedaMinecartItem;
@@ -77,7 +77,7 @@ public class MinecartItems {
     }
 
     var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
-    AndromedaItemGroup.BUS.listen(
+    AndromedaCreativeTab.BUS.listen(
         acceptor -> acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, List.copyOf(l)));
 
     if (ModuleManager.get().get(MinecartBlockPicking.class).isPresent()) {

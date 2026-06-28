@@ -11,7 +11,7 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.common.config.DataConfigs;
 import dev.zenfyr.andromeda.common.config.GsonBuilderEvent;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.GsonCodecContext;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.pulsar.api.platform.Platform;
@@ -95,7 +95,7 @@ public class Andromeda implements ModInitializer {
             .filter(JsonElement::isJsonPrimitive)
             .allMatch(e -> manager.get(e.getAsString()).isPresent()));
 
-    GROUP.init(AndromedaItemGroup.create());
+    GROUP.init(AndromedaCreativeTab.create());
 
     // Keep a reference to the currently running server.
     ServerLifecycleEvents.SERVER_STARTING.register(server -> this.currentServer = server);

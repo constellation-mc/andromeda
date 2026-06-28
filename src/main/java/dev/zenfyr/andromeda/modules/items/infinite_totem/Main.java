@@ -4,7 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -38,7 +38,7 @@ public final class Main {
         id("knockoff_totem_particles"),
         FabricParticleTypes.simple()));
 
-    AndromedaItemGroup.BUS.listen(
+    AndromedaCreativeTab.BUS.listen(
         acceptor -> acceptor.keeper(module, CreativeModeTabs.COMBAT, INFINITE_TOTEM));
   }
 }

@@ -4,7 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import com.google.common.collect.ImmutableSet;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
 import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
@@ -269,7 +269,7 @@ public class MagnetItem extends Item {
         id("magnet"),
         new MagnetItem(new FabricItemSettings().stacksTo(1))));
 
-    AndromedaItemGroup.BUS.listen(acceptor ->
+    AndromedaCreativeTab.BUS.listen(acceptor ->
         acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, MagnetItem.MAGNET));
   }
 }

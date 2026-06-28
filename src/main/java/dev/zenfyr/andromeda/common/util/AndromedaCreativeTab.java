@@ -18,26 +18,26 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
-public interface AndromedaItemGroup {
+public interface AndromedaCreativeTab {
 
-  Bus<AndromedaItemGroup> BUS = Bus.create(AndromedaItemGroup.class, events -> acceptor -> {
-    for (AndromedaItemGroup event : events) {
-      event.onCreateItemGroup(acceptor);
+  Bus<AndromedaCreativeTab> BUS = Bus.create(AndromedaCreativeTab.class, events -> acceptor -> {
+    for (AndromedaCreativeTab event : events) {
+      event.onCreateCreativeTab(acceptor);
     }
   });
 
-  void onCreateItemGroup(Acceptor acceptor);
+  void onCreateCreativeTab(Acceptor acceptor);
 
   static CreativeModeTab create() {
     return CreativeModeTabBuilder.create(Andromeda.id("group"))
         .entries(entries -> {
           Map<Module, List<ItemStack>> stackMap = new LinkedHashMap<>();
-          AndromedaItemGroup.Acceptor acceptor = (module, main, stack) -> {
+          AndromedaCreativeTab.Acceptor acceptor = (module, main, stack) -> {
             if (!stack.isEmpty()) {
               stackMap.computeIfAbsent(module, module1 -> new ArrayList<>()).add(stack);
             }
           };
-          BUS.invoker().onCreateItemGroup(acceptor);
+          BUS.invoker().onCreateCreativeTab(acceptor);
           Map<Module, List<ItemStack>> small = new LinkedHashMap<>();
           Map<Module, List<ItemStack>> big = new LinkedHashMap<>();
           if (stackMap.isEmpty()) {
@@ -77,6 +77,7 @@ public interface AndromedaItemGroup {
                 Stream.concat(Stream.of(sign), itemStacks.stream()).toList());
           });
         })
+        .icon(() -> Items.AMETHYST_BLOCK)
         .displayName(TextUtil.translatable("itemGroup.andromeda.items"))
         .build();
   }

@@ -4,7 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.modules.entities.boats.items.AndromedaBoatItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class BoatItems {
                 BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().stacksTo(1))));
       }
     }
-    AndromedaItemGroup.BUS.listen(
+    AndromedaCreativeTab.BUS.listen(
         acceptor -> acceptor.items(module, CreativeModeTabs.TOOLS_AND_UTILITIES, list));
   }
 

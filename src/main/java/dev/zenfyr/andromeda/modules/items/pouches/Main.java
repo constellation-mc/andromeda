@@ -4,7 +4,7 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaItemGroup;
+import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
@@ -119,7 +119,7 @@ public final class Main {
     Trades.register();
 
     List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
-    AndromedaItemGroup.BUS.listen(acceptor ->
+    AndromedaCreativeTab.BUS.listen(acceptor ->
         acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, new ArrayList<>(l)));
 
     var behavior = new AbstractProjectileDispenseBehavior() {
