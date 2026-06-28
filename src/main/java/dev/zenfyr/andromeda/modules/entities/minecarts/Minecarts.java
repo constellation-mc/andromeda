@@ -29,19 +29,15 @@ public final class Minecarts extends Module implements PostBootstrapEvent {
 
   public static final class Config extends BaseConfig {
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isAnvilMinecartOn = false;
 
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isNoteBlockMinecartOn = false;
 
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isJukeboxMinecartOn = false;
 
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isSpawnerMinecartOn = false;
   }
 }
