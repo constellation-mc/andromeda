@@ -30,19 +30,15 @@ public final class Boats extends Module implements PostBootstrapEvent {
   public static final class Config extends BaseConfig {
 
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isFurnaceBoatOn = false;
 
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isTNTBoatOn = false;
 
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isJukeboxBoatOn = false;
 
     @ConfigEntry.Gui.RequiresRestart
-    // TODO @SpecialEnvironment(Environment.BOTH)
     public boolean isHopperBoatOn = false;
   }
 }
