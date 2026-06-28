@@ -63,21 +63,21 @@ loom {
 
     runs {
         client {
-            runDir("run/client")
+            runDirectory = file("run/client")
         }
         server {
-            runDir("run/server")
+            runDirectory = file("run/server")
         }
     }
 
     //https://gist.github.com/maityyy/3dbcd558d58a6412c3a2a38c72706e8e
     afterEvaluate {
         loom.runs.configureEach {
-            vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
+            jvmArguments.addAll(["-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition"])
+            jvmArguments.add("-javaagent:${ configurations.compileClasspath.find { it.name.contains("sponge-mixin") } }")
 
-            vmArg "-javaagent:${ configurations.compileClasspath.find { it.name.contains("sponge-mixin") } }"
-            property("mixin.debug.export", "true")
-            property("fabric-tag-conventions-v2.missingTagTranslationWarning", "VERBOSE")
+            systemProperties.put("mixin.debug.export", "true")
+            systemProperties.put("fabric-tag-conventions-v2.missingTagTranslationWarning", "VERBOSE")
         }
     }
 }
