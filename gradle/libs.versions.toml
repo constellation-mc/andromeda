@@ -8,7 +8,7 @@ modmenu = { group = "com.terraformersmc", name = "modmenu", version = "7.2.2" }
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version = "11.1.136" }
 
 [plugins]
-fabric-loom = { id = "fabric-loom", version = "1.17.12" }
+fabric-loom = { id = "net.fabricmc.fabric-loom-remap", version = "1.17.12" }
 lombok = { id = "io.freefair.lombok", version = "9.4.0"}
 spotless = { id = "com.diffplug.spotless", version = "8.6.0" }
 modmuss50-publish = { id = "me.modmuss50.mod-publish-plugin", version = "2.1.1" }
