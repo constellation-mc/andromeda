@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-// TODO not use reflection
 public abstract class BaseConfig {
 
   private static final Map<Class<? extends BaseConfig>, Set<Field>> CLASS_DATA =
