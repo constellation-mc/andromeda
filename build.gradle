@@ -172,6 +172,7 @@ publishMods {
         projectId = "TseYlb0f"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         minecraftVersions.add("${minecraft_version}")
+        environment = CLIENT_OR_SERVER
 
         requires("fabric-api")
         requires("pulsar")
@@ -182,6 +183,8 @@ publishMods {
         projectId = "639198"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         minecraftVersions.add("${minecraft_version}")
+        client = true
+        server = true
 
         requires("fabric-api")
         requires("pulsar")
