@@ -23,18 +23,12 @@ import java.util.*;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 
 @CustomLog
 @Accessors(fluent = true)
 public class ModuleManager {
 
   private static final Object INIT_LOCK = new Object();
-
-  @Getter
-  private final ModContainer modContainer =
-      FabricLoader.getInstance().getModContainer(AndromedaConstants.MODID).orElseThrow();
 
   @Getter
   private final ModConfigHandler modConfig;
