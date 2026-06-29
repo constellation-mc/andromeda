@@ -1,9 +1,9 @@
 package dev.zenfyr.andromeda.bootstrap.util;
 
+import dev.zenfyr.andromeda.bootstrap.AndromedaConstants;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
-import dev.zenfyr.andromeda.util.AndromedaConstants;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import lombok.CustomLog;

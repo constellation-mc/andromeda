@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.util;
+package dev.zenfyr.andromeda.bootstrap;
 
 public class AndromedaConstants {
 

@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.bootstrap.util;
 
-import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
+import static dev.zenfyr.andromeda.bootstrap.AndromedaConstants.MODID;
 
 import com.google.common.base.Splitter;
 import dev.zenfyr.pulsar.api.platform.Platform;

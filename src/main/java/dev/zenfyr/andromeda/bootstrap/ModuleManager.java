@@ -9,7 +9,6 @@ import dev.zenfyr.andromeda.bootstrap.event.PostModuleInitEvent;
 import dev.zenfyr.andromeda.bootstrap.util.*;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin;
 import dev.zenfyr.andromeda.modules.ModuleDiscovery;
-import dev.zenfyr.andromeda.util.*;
 import dev.zenfyr.pulsar.api.platform.CEnvType;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import dev.zenfyr.pulsar.api.util.Utilities;
