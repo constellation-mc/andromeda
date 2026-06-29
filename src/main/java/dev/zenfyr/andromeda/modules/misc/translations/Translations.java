@@ -9,7 +9,7 @@ import dev.zenfyr.andromeda.bootstrap.event.CreateBootstrapConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
-import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.nio.file.Path;
 

@@ -4,7 +4,6 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
 import dev.zenfyr.andromeda.util.AndromedaConstants;
-import dev.zenfyr.andromeda.util.Util;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import lombok.CustomLog;
