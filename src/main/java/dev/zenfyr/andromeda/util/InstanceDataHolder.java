@@ -50,7 +50,7 @@ public class InstanceDataHolder {
       try (var writer = Files.newBufferedWriter(Util.HIDDEN_PATH.resolve("instance_data.json"))) {
         GSON.toJson(this.data, writer);
       } catch (IOException e) {
-        throw Util.create("Failed to save instance data!");
+        throw Util.wrap("Failed to save instance data!", e);
       }
     }
   }

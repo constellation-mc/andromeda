@@ -10,9 +10,6 @@
   "icon": "assets/andromeda/icon.png",
   "environment": "*",
   "entrypoints": {
-    "preLaunch": [
-      "dev.zenfyr.andromeda.bootstrap.ModuleManager"
-    ],
     "server": [
       "dev.zenfyr.andromeda.common.AndromedaServer"
     ],
