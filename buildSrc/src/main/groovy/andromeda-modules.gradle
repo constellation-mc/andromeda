@@ -58,7 +58,6 @@ abstract class GenerateAndromedaModulesTask extends DefaultTask {
                         package           : module.mixinPkg,
                         compatibilityLevel: "JAVA_${javaVersion.get()}",
                         plugin            : "dev.zenfyr.andromeda.bootstrap.util.mixin.ModuleMixinPlugin",
-                        refmap            : "andromeda-refmap.json",
                         mixins            : module.mixins,
                         injectors         : [defaultRequire: 1, maxShiftBy: 3]
                 ]
