@@ -7,6 +7,10 @@
 
 - Added an option to check entity reach, if an entity can find a path to the container.
 
+## `[entities/minecart_speed_control]`
+
+- Deprecated the module. Prefer the built-in experiment.
+
 ## `[mechanics/dragon_fight]`
 
 - Fixed `shorterSpikes` not actually applying.

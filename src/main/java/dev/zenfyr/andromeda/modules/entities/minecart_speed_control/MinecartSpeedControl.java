@@ -7,6 +7,7 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.common.config.GameConfig;
 
+@Deprecated
 @ModuleInfo(name = "minecart_speed_control", category = "entities", env = Environment.SERVER)
 public final class MinecartSpeedControl extends Module {
 
