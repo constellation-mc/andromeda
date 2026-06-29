@@ -7,6 +7,7 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor;
+import dev.zenfyr.andromeda.util.AndromedaConstants;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -17,7 +18,6 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -89,14 +89,7 @@ public class AutoConfigScreen {
 
     ConfigBuilder builder = ConfigBuilder.create()
         .setParentScreen(parent)
-        .setTitle(TextUtil.translatable(
-            "config.andromeda.title",
-            FabricLoader.getInstance()
-                .getModContainer("andromeda")
-                .orElseThrow()
-                .getMetadata()
-                .getVersion()
-                .getFriendlyString()))
+        .setTitle(TextUtil.translatable("config.andromeda.title", AndromedaConstants.VERSION))
         .setSavingRunnable(() -> {
           saveQueue.values().forEach(Runnable::run);
           saveQueue.clear();
