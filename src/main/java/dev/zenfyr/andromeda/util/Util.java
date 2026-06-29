@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Util {
 
@@ -19,7 +19,7 @@ public class Util {
   public static final Path HIDDEN_PATH = Platform.getPlatform().getGameDir().resolve("." + MODID);
 
   public static Logger logger() {
-    return LogManager.getLogger(getCaller());
+    return LoggerFactory.getLogger(getCaller());
   }
 
   public static boolean isDev() {
