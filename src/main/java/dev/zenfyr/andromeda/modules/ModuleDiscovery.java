@@ -1,55 +1,33 @@
 package dev.zenfyr.andromeda.modules;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import dev.zenfyr.andromeda.bootstrap.Module;
-import dev.zenfyr.andromeda.bootstrap.ModuleInfo;
-import dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin;
-import dev.zenfyr.andromeda.util.ClassPath;
-import dev.zenfyr.pulsar.api.util.ExceptionUtil;
-import java.util.ArrayList;
+import dev.zenfyr.pulsar.api.util.MakeSure;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
-import org.spongepowered.asm.util.Annotations;
 
 public class ModuleDiscovery {
 
-  public static final String PACKAGE = "dev.zenfyr.andromeda.modules";
-
+  @SuppressWarnings("unchecked")
   public List<Class<? extends Module>> discoverModules() {
-    List<CompletableFuture<Class<? extends Module>>> futures = new ArrayList<>();
+    try (var stream =
+        ModuleDiscovery.class.getClassLoader().getResourceAsStream("andromeda_modules.json")) {
+      MakeSure.notNull(stream, "Required andromeda_modules.json file not found!");
 
-    // We scanned the .jar during Mixin plugin init.
-    for (ClassPath.Info ci : AndromedaMixinPlugin.CLASS_PATH.getTopLevelRecursive(PACKAGE)) {
-      if (ci.packageName().endsWith("mixin") || ci.packageName().endsWith("client")) continue;
-
-      futures.add(CompletableFuture.supplyAsync(() -> {
-            byte[] bytes = ExceptionUtil.supply(ci::readAllBytes);
-
-            ClassReader reader = new ClassReader(bytes);
-            ClassNode node = new ClassNode();
-            reader.accept(
-                node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-
-            if (Annotations.getVisible(node, ModuleInfo.class) != null) {
-              return node.name.replace('/', '.');
+      JsonArray array = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
+      return (List<Class<? extends Module>>) (List<?>) array.asList().stream()
+          .map(element -> {
+            try {
+              return Class.forName(element.getAsString());
+            } catch (ClassNotFoundException e) {
+              throw new RuntimeException(e);
             }
-            return null;
           })
-          .thenApplyAsync(name -> {
-            if (name == null) return null;
-            return ExceptionUtil.supply(
-                () -> (Class<? extends Module>) Class.forName(name.replace('/', '.')));
-          }));
+          .toList();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-        .handle((unused, throwable) -> futures)
-        .join()
-        .stream()
-        .map(CompletableFuture::join)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toUnmodifiableList());
   }
 }

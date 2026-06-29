@@ -1,16 +1,10 @@
 package dev.zenfyr.andromeda.bootstrap.util.mixin;
 
-import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
-
-import com.google.common.collect.ImmutableList;
-import dev.zenfyr.andromeda.util.ClassPath;
+import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.util.Util;
 import dev.zenfyr.pulsar.api.mixin.AsmUtil;
 import dev.zenfyr.pulsar.api.platform.Platform;
-import dev.zenfyr.pulsar.api.util.ExceptionUtil;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
@@ -20,28 +14,30 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.util.Annotations;
 
 public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
-  public static final ClassPath CLASS_PATH = new ClassPath();
   private static final Set<String> CLOTH_MIXINS =
       Set.of("SubCategoryListEntryMixin", "MultiElementListEntryAccessor");
 
-  private String mixinPackage;
+  public static boolean shouldApply(String mixinClassName) {
+    try {
+      var node = MixinService.getService()
+          .getBytecodeProvider()
+          .getClassNode(
+              mixinClassName.replace('.', '/'),
+              false,
+              ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
-  public static List<String> discoverInPackage(String pck) {
-    return CLASS_PATH.getTopLevelRecursive(pck).stream()
-        .map(info -> {
-          ClassReader reader = new ClassReader(ExceptionUtil.supply(info::readAllBytes));
-          ClassNode node = new ClassNode();
-          reader.accept(
-              node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-          return node;
-        })
-        .filter(AndromedaMixinPlugin::testMixinEnvironment)
-        .map((n) -> n.name.replace('/', '.').substring((pck + ".").length()))
-        .collect(ImmutableList.toImmutableList());
+      if (CLOTH_MIXINS.contains(mixinClassName)
+          && !Platform.getPlatform().isModLoaded("cloth-config")) return false;
+
+      return AndromedaMixinPlugin.testMixinEnvironment(node);
+    } catch (ClassNotFoundException | IOException e) {
+      throw Util.wrap(mixinClassName, e);
+    }
   }
 
   public static boolean testMixinEnvironment(ClassNode node) {
@@ -54,33 +50,27 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
     return true;
   }
 
-  @Override
-  public void onLoad(String mixinPackage) {
-    this.mixinPackage = mixinPackage;
-
-    CLASS_PATH.addPaths(
-        FabricLoader.getInstance().getModContainer(MODID).orElseThrow().getRootPaths());
-
-    if (!Files.exists(Util.HIDDEN_PATH)) {
-      try {
-        Files.createDirectories(Util.HIDDEN_PATH);
-        if (Util.HIDDEN_PATH.getFileSystem().supportedFileAttributeViews().contains("dos"))
-          Files.setAttribute(
-              Util.HIDDEN_PATH, "dos:hidden", Boolean.TRUE, LinkOption.NOFOLLOW_LINKS);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+  public static void postApply(ClassNode targetClass) {
+    if (targetClass.visibleAnnotations != null
+        && !targetClass.visibleAnnotations.isEmpty()) { // strip our annotation from the class
+      targetClass.visibleAnnotations.removeIf(
+          node -> MixinEnvironment.MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
     }
   }
 
   @Override
+  public void onLoad(String mixinPackage) {
+    ModuleManager.tryInit();
+  }
+
+  @Override
   public String getRefMapperConfig() {
-    return "";
+    return null;
   }
 
   @Override
   public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-    return true;
+    return shouldApply(mixinClassName);
   }
 
   @Override
@@ -88,10 +78,7 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   @Override
   public List<String> getMixins() {
-    return discoverInPackage(this.mixinPackage).stream()
-        .filter(mixinClassName -> !CLOTH_MIXINS.contains(mixinClassName)
-            || Platform.getPlatform().isModLoaded("cloth-config"))
-        .toList();
+    return List.of();
   }
 
   @Override
@@ -100,5 +87,7 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   @Override
   public void postApply(
-      String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
+      String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+    AndromedaMixinPlugin.postApply(targetClass);
+  }
 }

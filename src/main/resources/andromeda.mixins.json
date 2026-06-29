@@ -5,6 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin",
   "refmap": "andromeda-refmap.json",
+  "client": [
+    "MultiElementListEntryAccessor",
+    "SubCategoryListEntryMixin"
+  ],
+  "mixins": [
+    "RegistryLoaderMixin",
+    "configs.ServerWorldMixin",
+    "configs.WorldMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
