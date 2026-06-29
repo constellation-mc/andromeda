@@ -5,11 +5,9 @@ import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
 import dev.zenfyr.andromeda.util.AndromedaConstants;
 import dev.zenfyr.andromeda.util.Util;
-import dev.zenfyr.pulsar.api.util.ExceptionUtil;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import lombok.CustomLog;
-import net.fabricmc.loader.api.Version;
 
 @CustomLog
 public final class NetUtils extends BaseConfig {
@@ -46,24 +44,17 @@ public final class NetUtils extends BaseConfig {
   }
 
   private static boolean checkUpdate(ModuleManager manager) {
-    Version current = manager.modContainer().getMetadata().getVersion();
     if (manager.dataHolder().hasData("last_version")) {
-      Version version = ExceptionUtil.supply(
-          () -> Version.parse(manager.dataHolder().getData("last_version").getAsString()));
-      if (current.compareTo(version) != 0) {
+      String version = manager.dataHolder().getData("last_version").getAsString();
+      if (AndromedaConstants.VERSION.compareTo(version) != 0) {
         log.warn(
-            "Andromeda version changed! was [{}], now [{}]",
-            version.getFriendlyString(),
-            current.getFriendlyString());
-        manager
-            .dataHolder()
-            .putData("last_version", current.getFriendlyString())
-            .save();
+            "Andromeda version changed! was '{}', now '{}'", version, AndromedaConstants.VERSION);
+        manager.dataHolder().putData("last_version", AndromedaConstants.VERSION).save();
         return true;
       }
       return false;
     } else {
-      manager.dataHolder().putData("last_version", current.getFriendlyString()).save();
+      manager.dataHolder().putData("last_version", AndromedaConstants.VERSION).save();
       return true;
     }
   }
