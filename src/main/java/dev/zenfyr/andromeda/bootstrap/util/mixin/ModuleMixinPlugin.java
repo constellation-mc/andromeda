@@ -9,25 +9,25 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class ModuleMixinPlugin implements IMixinConfigPlugin {
 
-  private static final String MIXIN_ENVIRONMENT_ANNOTATION =
-      "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
-
   private String mixinPackage;
-  private final MixinHandler processor = ModuleManager.get().mixinHandler();
+  private ModuleManager manager;
 
   @Override
   public void onLoad(String mixinPackage) {
+    ModuleManager.tryInit();
+
     this.mixinPackage = mixinPackage;
+    this.manager = ModuleManager.get();
   }
 
   @Override
   public String getRefMapperConfig() {
-    return "";
+    return null;
   }
 
   @Override
   public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-    return true;
+    return this.manager.shouldApplyMixin(this.mixinPackage, mixinClassName);
   }
 
   @Override
@@ -35,7 +35,7 @@ public class ModuleMixinPlugin implements IMixinConfigPlugin {
 
   @Override
   public List<String> getMixins() {
-    return processor.mixinsFromPackage(this.mixinPackage);
+    return List.of();
   }
 
   @Override
@@ -45,10 +45,6 @@ public class ModuleMixinPlugin implements IMixinConfigPlugin {
   @Override
   public void postApply(
       String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-    if (targetClass.visibleAnnotations != null
-        && !targetClass.visibleAnnotations.isEmpty()) { // strip our annotation from the class
-      targetClass.visibleAnnotations.removeIf(
-          node -> MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
-    }
+    AndromedaMixinPlugin.postApply(targetClass);
   }
 }

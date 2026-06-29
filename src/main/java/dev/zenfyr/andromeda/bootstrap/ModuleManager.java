@@ -9,24 +9,28 @@ import dev.zenfyr.andromeda.bootstrap.event.PostModuleInitEvent;
 import dev.zenfyr.andromeda.bootstrap.util.Debug;
 import dev.zenfyr.andromeda.bootstrap.util.Environment;
 import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
-import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinHandler;
+import dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin;
 import dev.zenfyr.andromeda.modules.ModuleDiscovery;
 import dev.zenfyr.andromeda.util.*;
 import dev.zenfyr.pulsar.api.platform.CEnvType;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import dev.zenfyr.pulsar.api.util.Utilities;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.util.*;
 import lombok.CustomLog;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
 @CustomLog
 @Accessors(fluent = true)
-public class ModuleManager implements PreLaunchEntrypoint {
+public class ModuleManager {
+
+  private static final Object INIT_LOCK = new Object();
 
   @Getter
   private final ModContainer modContainer =
@@ -48,9 +52,6 @@ public class ModuleManager implements PreLaunchEntrypoint {
   private final BootstrapConfigHandler configHandler = new BootstrapConfigHandler();
 
   @Getter
-  private final MixinHandler mixinHandler = new MixinHandler(this);
-
-  @Getter
   private final InstanceDataHolder dataHolder = InstanceDataHolder.load();
 
   private final Map<Class<?>, Module> discoveredModules = new IdentityHashMap<>();
@@ -58,6 +59,7 @@ public class ModuleManager implements PreLaunchEntrypoint {
 
   private final Map<Class<?>, Module> modules = new IdentityHashMap<>();
   private final Map<String, Module> modulesByName = new LinkedHashMap<>();
+  private final Map<String, Module> moduleByMixinPkg = new HashMap<>();
 
   private static ModuleManager instance;
 
@@ -68,9 +70,18 @@ public class ModuleManager implements PreLaunchEntrypoint {
     this.debug = this.modConfig().get(Debug.KEY);
   }
 
-  @Override
-  public void onPreLaunch() {
-    instance = this;
+  public void onInitialize() {
+    if (!Files.exists(Util.HIDDEN_PATH)) {
+      try {
+        Files.createDirectories(Util.HIDDEN_PATH);
+        if (Util.HIDDEN_PATH.getFileSystem().supportedFileAttributeViews().contains("dos"))
+          Files.setAttribute(
+              Util.HIDDEN_PATH, "dos:hidden", Boolean.TRUE, LinkOption.NOFOLLOW_LINKS);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     this.modConfig().save();
     this.netUtils().initialize(this);
 
@@ -122,15 +133,24 @@ public class ModuleManager implements PreLaunchEntrypoint {
       this.configHandler.save(value);
     }
 
-    // Inject all out mixin configs.
-    this.mixinHandler.addMixins();
+    for (Module module : this.loaded()) {
+      this.moduleByMixinPkg.put(ModuleHelper.mixinPackage(module), module);
+    }
 
     this.printModuleStats();
 
     // All modules must be available by this point.
-    for (Module value : modulesByName.values()) {
+    for (Module value : this.loaded()) {
       ModuleHelper.runAndDropBus(value, PostBootstrapEvent.ID, PostBootstrapEvent::postBootstrap);
     }
+  }
+
+  public boolean shouldApplyMixin(String mixinPkg, String mixinClassName) {
+    var module = this.moduleByMixinPkg.get(mixinPkg);
+    // the environment check is handled by the manager
+    // when modules are first loaded.
+    if (module == null) return false;
+    return AndromedaMixinPlugin.shouldApply(mixinClassName);
   }
 
   public <T extends Module> Optional<T> getDiscovered(Class<T> cls) {
@@ -159,6 +179,24 @@ public class ModuleManager implements PreLaunchEntrypoint {
 
   public static ModuleManager get() {
     return instance;
+  }
+
+  // the module manager must be initialized before any of the mixin configs
+  // but any mixin config can call the manager, so we add this to every config that uses the
+  // manager.
+  public static void tryInit() {
+    synchronized (INIT_LOCK) {
+      if (instance != null) return;
+
+      ModuleManager manager = new ModuleManager();
+      instance = manager;
+
+      try {
+        manager.onInitialize();
+      } catch (Throwable e) {
+        throw new RuntimeException("Failed to initialize the module manager!", e);
+      }
+    }
   }
 
   private void printModuleStats() {

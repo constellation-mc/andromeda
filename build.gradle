@@ -6,6 +6,7 @@ plugins {
     alias libs.plugins.lombok
     alias libs.plugins.spotless
     alias libs.plugins.modmuss50.publish
+    id 'andromeda-modules'
 }
 
 def targetJavaVersion = Integer.parseInt(java_version)
@@ -64,6 +65,8 @@ spotless {
         palantirJavaFormat('2.91.0').style("GOOGLE")
         trimTrailingWhitespace()
         formatAnnotations()
+
+        targetExclude(fileTree(layout.buildDirectory.dir("generated")))
     }
 }
 
@@ -93,6 +96,28 @@ loom {
 
 loom.mods.register(mod_id) {
     sourceSet project.sourceSets.main
+}
+
+def generatedSrcDir = layout.buildDirectory.dir("generated/templates/main/java")
+tasks.register("processJavaSources", Copy) {
+    from("src/template/java")
+    into(generatedSrcDir)
+    expand(
+            "mod_version": mod_version,
+            "mod_id": mod_id,
+            "minecraft_version": minecraft_version,
+    )
+    filteringCharset = "UTF-8"
+}
+tasks.named("compileJava") {
+    dependsOn("processJavaSources")
+}
+sourceSets {
+    main {
+        java {
+            srcDir(generatedSrcDir)
+        }
+    }
 }
 
 processResources {
@@ -134,6 +159,7 @@ jar {
 }
 
 sourcesJar {
+    dependsOn("processJavaSources")
     exclude {
         sourceSets.main.allSource.contains it.file
     }

@@ -1,0 +1,100 @@
+import groovy.json.JsonSlurper
+import io.github.classgraph.ClassGraph
+import groovy.json.JsonBuilder
+
+@CacheableTask
+abstract class GenerateAndromedaModulesTask extends DefaultTask {
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract DirectoryProperty getClassDir()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @Input
+    abstract Property<String> getJavaVersion()
+
+    @TaskAction
+    void generate() {
+        def outDir = outputDir.get().asFile
+        outDir.mkdirs()
+
+        final String ANNOTATION = 'dev.zenfyr.andromeda.bootstrap.ModuleInfo'
+
+        new ClassGraph()
+                .enableAnnotationInfo()
+                .overrideClasspath(classDir.get().asFile)
+                .ignoreClassVisibility()
+                .acceptPackages("dev.zenfyr.andromeda.modules.*")
+                .scan().withCloseable { scan ->
+            def modules = scan.getClassesWithAnnotation(ANNOTATION).collect { classInfo ->
+                def annotation = classInfo.getAnnotationInfo(ANNOTATION)
+                def params = annotation.parameterValues.collectEntries { [it.name, it.value] }
+                def mixinPkg = classInfo.name.substring(0, classInfo.name.lastIndexOf('.')) + ".mixin"
+                def mixins = scan.getAllClasses()
+                        .findAll { it.packageName.startsWith(mixinPkg) && !it.name.contains('$') }
+                        .collect { it.name.substring(mixinPkg.length() + 1) }
+                return [
+                        'class'    : classInfo.name,
+                        mixinPkg   : mixinPkg,
+                        mixinConfig: "andromeda_generated.${params.category}.${params.name.replace('/', '.')}.mixins.json",
+                        category   : params.category,
+                        name       : params.name,
+                        mixins     : mixins
+                ]
+            }
+
+            new File(outDir, "andromeda_modules.json").text =
+                    new JsonBuilder(modules.collect { it.'class' }).toPrettyString()
+
+            new File(outDir, "andromeda_mixins.json").text =
+                    new JsonBuilder(modules.findAll { !it.mixins.isEmpty() }.collect { it.mixinConfig }).toPrettyString()
+
+            modules.findAll { !it.mixins.isEmpty() }.each { module ->
+                def config = [
+                        required          : true,
+                        minVersion        : "0.8.5",
+                        package           : module.mixinPkg,
+                        compatibilityLevel: "JAVA_${javaVersion.get()}",
+                        plugin            : "dev.zenfyr.andromeda.bootstrap.util.mixin.ModuleMixinPlugin",
+                        refmap            : "andromeda-refmap.json",
+                        mixins            : module.mixins,
+                        injectors         : [defaultRequire: 1, maxShiftBy: 3]
+                ]
+                new File(outDir, module.mixinConfig).text = new JsonBuilder(config).toPrettyString()
+            }
+        }
+    }
+}
+
+def outDir = layout.buildDirectory.dir("generated/andromeda_modules")
+def generateTask = tasks.register('generateAndromedaModules', GenerateAndromedaModulesTask) {
+    dependsOn('compileJava')
+    classDir = layout.buildDirectory.dir("classes/java/main")
+    outputDir = outDir
+    javaVersion = java_version
+}
+
+sourceSets.main.output.dir(
+        generateTask.map { it.outputDir.get() },
+        builtBy: generateTask
+)
+tasks.named('processResources').configure {
+    dependsOn(generateTask)
+
+    doLast {
+        def fabricMod = file("${layout.buildDirectory.get()}/resources/main/fabric.mod.json")
+        def json = new JsonSlurper().parse(fabricMod)
+        if (!json.mixins) json.mixins = []
+
+        def mixinsFile = outDir.get().file("andromeda_mixins.json").asFile
+        new JsonSlurper().parse(mixinsFile).each { cfg ->
+            if (!json.mixins.contains(cfg)) {
+                json.mixins.add(cfg)
+            }
+        }
+
+        fabricMod.text = new JsonBuilder(json).toPrettyString()
+    }
+}
