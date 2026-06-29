@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.util;
+package dev.zenfyr.andromeda.bootstrap.util;
 
 import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
 
