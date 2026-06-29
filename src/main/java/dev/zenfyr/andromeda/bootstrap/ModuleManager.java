@@ -212,6 +212,19 @@ public class ModuleManager {
           AndromedaConstants.VERSION,
           loaded().size(),
           builder);
+
+      var deprecated = this.loaded().stream()
+          .filter(module -> module.getClass().getAnnotation(Deprecated.class) != null)
+          .toList();
+
+      if (!deprecated.isEmpty()) {
+        StringJoiner joiner = new StringJoiner(", ");
+        deprecated.forEach(module -> joiner.add(ModuleHelper.dotted(module)));
+        log.warn(
+            "Loading {} deprecated modules! Those modules might be removed without notice in a future version! Deprecated modules loading: [{}]",
+            deprecated.size(),
+            joiner);
+      }
     } else {
       log.info("No Andromeda modules loaded! ¯\\_(ツ)_/¯");
     }
