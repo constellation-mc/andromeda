@@ -52,9 +52,9 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
   }
 
   public static void postApply(ClassNode targetClass) {
-    if (targetClass.visibleAnnotations != null
-        && !targetClass.visibleAnnotations.isEmpty()) { // strip our annotation from the class
-      targetClass.visibleAnnotations.removeIf(
+    if (targetClass.invisibleAnnotations != null
+        && !targetClass.invisibleAnnotations.isEmpty()) { // strip our annotation from the class
+      targetClass.invisibleAnnotations.removeIf(
           node -> MixinEnvironment.MIXIN_ENVIRONMENT_ANNOTATION.equals(node.desc));
     }
   }
