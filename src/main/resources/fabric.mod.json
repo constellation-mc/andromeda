@@ -4,8 +4,14 @@
   "version": "${version}",
   "name": "Andromeda",
   "description": "Highly configurable, modular tweaks/additions mod!",
-  "authors": [],
-  "contact": {},
+  "authors": [
+    "zenfyr"
+  ],
+  "contact": {
+    "homepage": "https://andromeda.zenfyr.dev/",
+    "issues": "https://github.com/constellation-mc/andromeda/issues",
+    "sources": "https://github.com/constellation-mc/andromeda"
+  },
   "license": "MIT",
   "icon": "assets/andromeda/icon.png",
   "environment": "*",
