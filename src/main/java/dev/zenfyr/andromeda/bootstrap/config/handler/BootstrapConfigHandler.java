@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.bootstrap.config.handler;
 
-import static dev.zenfyr.andromeda.util.AndromedaConstants.MODID;
+import static dev.zenfyr.andromeda.bootstrap.AndromedaConstants.MODID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
