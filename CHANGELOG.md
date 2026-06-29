@@ -6,3 +6,7 @@
 ## `[blocks/guarded_loot]`
 
 - Added an option to check entity reach, if an entity can find a path to the container.
+
+## `[mechanics/dragon_fight]`
+
+- Fixed `shorterSpikes` not actually applying.
