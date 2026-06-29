@@ -194,24 +194,29 @@ public class ModuleManager {
   }
 
   private void printModuleStats() {
-    Map<String, Set<Module>> categories = Utilities.supply(
-        new LinkedHashMap<>(),
-        map -> loaded()
-            .forEach(m -> map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>())
-                .add(m)));
+    if (!this.loaded().isEmpty()) {
+      Map<String, Set<Module>> categories = Utilities.supply(
+          new LinkedHashMap<>(),
+          map -> loaded()
+              .forEach(m -> map.computeIfAbsent(m.meta().category(), s -> new LinkedHashSet<>())
+                  .add(m)));
 
-    StringBuilder builder = new StringBuilder();
-    categories.forEach((s, strings) -> {
-      builder.append("\n\t - ").append(s).append("\n\t  |-- ");
+      StringBuilder builder = new StringBuilder();
+      categories.forEach((s, strings) -> {
+        builder.append("\n\t - ").append(s).append("\n\t  |-- ");
 
-      StringJoiner joiner = new StringJoiner(", ");
-      strings.forEach(m -> joiner.add(ModuleHelper.dotted(m)));
-      builder.append(joiner);
-    });
-    if (!categories.isEmpty()) {
-      log.info("Loading {} modules: {}", loaded().size(), builder);
+        StringJoiner joiner = new StringJoiner(", ");
+        strings.forEach(m -> joiner.add(ModuleHelper.dotted(m)));
+        builder.append(joiner);
+      });
+
+      log.info(
+          "Loading Andromeda {} with {} modules: {}",
+          AndromedaConstants.VERSION,
+          loaded().size(),
+          builder);
     } else {
-      log.info("No modules loaded!");
+      log.info("No Andromeda modules loaded! ¯\\_(ツ)_/¯");
     }
   }
 }
