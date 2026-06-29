@@ -9,7 +9,7 @@ import com.google.gson.JsonParser;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.config.BootstrapConfig;
-import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.io.IOException;
 import java.nio.file.Files;

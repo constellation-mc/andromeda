@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.bootstrap.util.mixin;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.pulsar.api.mixin.AsmUtil;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.io.IOException;

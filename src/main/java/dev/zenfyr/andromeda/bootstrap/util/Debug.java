@@ -4,7 +4,6 @@ import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
-import dev.zenfyr.andromeda.util.Util;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.util.HashMap;
 import java.util.Map;

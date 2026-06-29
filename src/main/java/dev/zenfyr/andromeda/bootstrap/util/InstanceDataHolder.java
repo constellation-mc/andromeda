@@ -1,4 +1,4 @@
-package dev.zenfyr.andromeda.util;
+package dev.zenfyr.andromeda.bootstrap.util;
 
 import com.google.gson.*;
 import dev.zenfyr.pulsar.api.util.MakeSure;

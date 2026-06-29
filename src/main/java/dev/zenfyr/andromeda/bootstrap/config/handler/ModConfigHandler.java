@@ -9,7 +9,7 @@ import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
 import dev.zenfyr.andromeda.bootstrap.util.Debug;
 import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
-import dev.zenfyr.andromeda.util.Util;
+import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
