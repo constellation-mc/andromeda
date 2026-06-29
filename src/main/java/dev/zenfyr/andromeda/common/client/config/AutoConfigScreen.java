@@ -1,5 +1,6 @@
 package dev.zenfyr.andromeda.common.client.config;
 
+import dev.zenfyr.andromeda.bootstrap.AndromedaConstants;
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
@@ -7,7 +8,6 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
 import dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor;
-import dev.zenfyr.andromeda.util.AndromedaConstants;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.lang.reflect.Field;
 import java.util.*;
