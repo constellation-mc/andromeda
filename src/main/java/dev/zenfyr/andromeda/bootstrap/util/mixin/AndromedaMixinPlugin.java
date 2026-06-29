@@ -19,8 +19,9 @@ import org.spongepowered.asm.util.Annotations;
 
 public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
-  private static final Set<String> CLOTH_MIXINS =
-      Set.of("SubCategoryListEntryMixin", "MultiElementListEntryAccessor");
+  private static final Set<String> CLOTH_MIXINS = Set.of(
+      "dev.zenfyr.andromeda.common.mixin.SubCategoryListEntryMixin",
+      "dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor");
 
   public static boolean shouldApply(String mixinClassName) {
     try {
