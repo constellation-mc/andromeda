@@ -2,14 +2,16 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.zenfyr.andromeda.common.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "plugin": "dev.zenfyr.andromeda.bootstrap.util.mixin.AndromedaMixinPlugin",
   "client": [
     "MultiElementListEntryAccessor",
-    "SubCategoryListEntryMixin"
+    "SubCategoryListEntryMixin",
+    "alpha.BlitRenderStateMixin",
+    "alpha.GuiTextRenderStateMixin",
+    "alpha.TiledBlitRenderStateMixin"
   ],
   "mixins": [
-    "RegistryLoaderMixin",
     "configs.ServerWorldMixin",
     "configs.WorldMixin"
   ],
