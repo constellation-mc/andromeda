@@ -29,7 +29,7 @@ public class LoadingCarts {
           .apply(data, LoadingCarts::new));
 
   public static LoadingCarts get(Level level) {
-    return ((ServerLevel) level).getAttachedOrCreate(Main.ATTACHMENT.get());
+    return ((ServerLevel) level).getAttachedOrCreate(LinkartMain.ATTACHMENT.get());
   }
 
   private final Set<AbstractMinecart> carts = new HashSet<>();

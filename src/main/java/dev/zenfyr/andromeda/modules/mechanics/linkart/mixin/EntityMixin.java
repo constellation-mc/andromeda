@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.mechanics.linkart.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkableMinecart;
-import dev.zenfyr.andromeda.modules.mechanics.linkart.Main;
+import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkartMain;
 import java.util.List;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
@@ -23,8 +23,8 @@ public abstract class EntityMixin {
     if ((Entity) (Object) this instanceof AbstractMinecart minecart
         && !minecart.level().isClientSide()
         && reason.shouldDestroy()) {
-      Main.unlinkFromParent(minecart);
-      Main.unlinkFromParent(((LinkableMinecart) minecart).linkart$getFollower());
+      LinkartMain.unlinkFromParent(minecart);
+      LinkartMain.unlinkFromParent(((LinkableMinecart) minecart).linkart$getFollower());
     }
   }
 
@@ -36,7 +36,7 @@ public abstract class EntityMixin {
           .getEntities((Entity) (Object) this, minecart.getBoundingBox().expandTowards(movement));
 
       for (Entity entity : collisions) {
-        if (!Main.shouldCollide(minecart, entity)
+        if (!LinkartMain.shouldCollide(minecart, entity)
             && minecart.level().getBlockState(minecart.blockPosition()).getBlock()
                 instanceof BaseRailBlock) {
           cir.setReturnValue(movement);

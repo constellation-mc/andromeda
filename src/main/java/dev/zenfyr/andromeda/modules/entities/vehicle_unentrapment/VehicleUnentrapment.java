@@ -20,6 +20,6 @@ public final class VehicleUnentrapment extends Module implements PostBootstrapEv
 
   @Override
   public void postBootstrap() {
-    InitEvents.MAIN.listen(() -> Main::init);
+    InitEvents.MAIN.listen(() -> VehicleUnentrapmentMain::init);
   }
 }

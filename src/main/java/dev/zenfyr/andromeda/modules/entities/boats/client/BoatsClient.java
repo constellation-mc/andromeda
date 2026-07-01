@@ -7,7 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FurnaceBlock;
 
-public class Client {
+public class BoatsClient {
 
   public static void init() {
     var map = Map.of(

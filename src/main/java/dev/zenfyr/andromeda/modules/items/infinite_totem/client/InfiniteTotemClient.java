@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.client;
 
-import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotemMain;
 import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.UUID;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,11 +12,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 
-public class Client {
+public class InfiniteTotemClient {
 
   public static void init() {
     ClientPlayNetworking.registerGlobalReceiver(
-        Main.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
+        InfiniteTotemMain.USED_CUSTOM_TOTEM, (client, handler, buf, responseSender) -> {
           UUID id = buf.readUUID();
           ItemStack stack = buf.readItem();
           SimpleParticleType particle =
@@ -42,7 +42,7 @@ public class Client {
         });
 
     ClientPlayNetworking.registerGlobalReceiver(
-        Main.NOTIFY_CLIENT, (client, handler, packetByteBuf, responseSender) -> {
+        InfiniteTotemMain.NOTIFY_CLIENT, (client, handler, packetByteBuf, responseSender) -> {
           int uuid = packetByteBuf.readVarInt();
           ItemStack stack = packetByteBuf.readItem();
           client.execute(() -> {
@@ -52,9 +52,11 @@ public class Client {
           });
         });
 
-    if (Main.KNOCKOFF_TOTEM_PARTICLE.isPresent()) {
+    if (InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.isPresent()) {
       ParticleFactoryRegistry.getInstance()
-          .register(Main.KNOCKOFF_TOTEM_PARTICLE.orThrow(), KnockoffTotemParticle.Factory::new);
+          .register(
+              InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.orThrow(),
+              KnockoffTotemParticle.Factory::new);
     }
   }
 }

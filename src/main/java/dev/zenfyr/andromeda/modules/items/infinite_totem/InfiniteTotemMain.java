@@ -16,7 +16,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
-public final class Main {
+public final class InfiniteTotemMain {
 
   public static final Keeper<Item> INFINITE_TOTEM = Keeper.create();
   public static final Keeper<SimpleParticleType> KNOCKOFF_TOTEM_PARTICLE = Keeper.create();

@@ -26,13 +26,13 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.joml.Vector2i;
 
-public class Client {
+public class ItemFrameTooltipsClient {
 
   private Supplier<List<ClientTooltipComponent>> action;
   private float tooltipFlow;
   private float oldTooltipFlow;
 
-  Client() {
+  ItemFrameTooltipsClient() {
     inGameTooltips();
 
     ClientTickEvents.START_CLIENT_TICK.register(client -> {

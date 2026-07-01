@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 
-public final class Main {
+public final class GuardedLootMain {
 
   public static final List<BiPredicate<BlockEntity, Player>> UNLOCKERS = new ArrayList<>();
 

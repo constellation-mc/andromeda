@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotem;
-import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotemMain;
 import dev.zenfyr.pulsar.api.util.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -45,14 +45,14 @@ abstract class LivingEntityMixin extends Entity {
       boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
     return original
         || (level.am$get(InfiniteTotem.CONFIG).available
-            && itemStack.is(Main.INFINITE_TOTEM.orThrow()));
+            && itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow()));
   }
 
   @WrapWithCondition(
       method = "checkTotemDeathProtection",
       at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"))
   private boolean andromeda$infiniteFallback(ItemStack instance, int i) {
-    return !instance.is(Main.INFINITE_TOTEM.orThrow());
+    return !instance.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow());
   }
 
   @Inject(
@@ -68,15 +68,17 @@ abstract class LivingEntityMixin extends Entity {
       DamageSource source,
       CallbackInfoReturnable<Boolean> cir,
       @Local(ordinal = 0) ItemStack itemStack) {
-    if (itemStack.is(Main.INFINITE_TOTEM.orThrow())) {
+    if (itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow())) {
       if (!level.isClientSide()) {
         FriendlyByteBuf buf = PacketByteBufs.create()
             .writeUUID(this.getUUID())
-            .writeItem(new ItemStack(Main.INFINITE_TOTEM.orThrow()));
-        buf.writeId(BuiltInRegistries.PARTICLE_TYPE, Main.KNOCKOFF_TOTEM_PARTICLE.orThrow());
+            .writeItem(new ItemStack(InfiniteTotemMain.INFINITE_TOTEM.orThrow()));
+        buf.writeId(
+            BuiltInRegistries.PARTICLE_TYPE, InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.orThrow());
 
         for (Player player : PlayerUtil.findPlayersInRange(level, blockPosition(), 120)) {
-          ServerPlayNetworking.send((ServerPlayer) player, Main.USED_CUSTOM_TOTEM, buf);
+          ServerPlayNetworking.send(
+              (ServerPlayer) player, InfiniteTotemMain.USED_CUSTOM_TOTEM, buf);
         }
       }
       cir.setReturnValue(true);

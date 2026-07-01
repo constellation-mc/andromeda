@@ -22,7 +22,7 @@ public final class Linkart extends Module implements PostBootstrapEvent {
 
   @Override
   public void postBootstrap() {
-    InitEvents.MAIN.listen(() -> Main::init);
+    InitEvents.MAIN.listen(() -> LinkartMain::init);
   }
 
   public static class Config extends GameConfig {

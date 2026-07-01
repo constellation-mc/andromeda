@@ -27,6 +27,6 @@ public final class ItemFrameTooltips extends Module implements PostBootstrapEven
 
   @Override
   public void postBootstrap() {
-    InitEvents.CLIENT.listen(() -> Client::new);
+    InitEvents.CLIENT.listen(() -> ItemFrameTooltipsClient::new);
   }
 }

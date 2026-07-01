@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
-import dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.Main;
+import dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.CactusFillerMain;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CactusBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +16,6 @@ abstract class CactusBlockMixin {
   @Inject(at = @At("TAIL"), method = "createBlockStateDefinition")
   private void andromeda$appendProperties(
       StateDefinition.Builder<Block, BlockState> builder, CallbackInfo ci) {
-    builder.add(Main.WATER_LEVEL_3);
+    builder.add(CactusFillerMain.WATER_LEVEL_3);
   }
 }

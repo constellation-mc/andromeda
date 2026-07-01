@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.mechanics.linkart.mixin;
 
 import dev.zenfyr.andromeda.modules.mechanics.linkart.CartOperation;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkableMinecart;
-import dev.zenfyr.andromeda.modules.mechanics.linkart.Main;
+import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkartMain;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -38,7 +38,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
       Player player = (Player) (Object) this;
       ItemStack stack = player.getItemInHand(hand);
 
-      if (!stack.is(Main.LINKERS)) return;
+      if (!stack.is(LinkartMain.LINKERS)) return;
 
       if (this.operation != null) {
         if (this.operation.minecart() != null

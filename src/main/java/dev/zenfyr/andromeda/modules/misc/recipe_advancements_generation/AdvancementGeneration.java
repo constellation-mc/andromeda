@@ -25,7 +25,8 @@ public final class AdvancementGeneration extends Module implements PostBootstrap
 
   @Override
   public void postBootstrap() {
-    InitEvents.MAIN.listen(() -> () -> Main.init(this, Andromeda.MAIN.get(CONFIG)));
+    InitEvents.MAIN.listen(
+        () -> () -> AdvancementGenerationMain.init(this, Andromeda.MAIN.get(CONFIG)));
   }
 
   public static final class Config extends BaseConfig {

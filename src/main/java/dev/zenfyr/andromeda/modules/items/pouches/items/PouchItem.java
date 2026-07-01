@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.items.pouches.items;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
-import dev.zenfyr.andromeda.modules.items.pouches.Main;
+import dev.zenfyr.andromeda.modules.items.pouches.PouchesMain;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.List;
@@ -86,13 +86,13 @@ public class PouchItem extends Item {
       boolean success = false;
       if (entity instanceof Player player) {
         var storage = PlayerInventoryStorage.of(player);
-        stacks.forEach(
-            itemStack -> Main.tryInsertItem(user.level(), player.position(), itemStack, storage));
+        stacks.forEach(itemStack ->
+            PouchesMain.tryInsertItem(user.level(), player.position(), itemStack, storage));
         success = true;
       } else if (entity instanceof InventoryCarrier io) {
         var storage = InventoryStorage.of(io.getInventory(), null);
-        stacks.forEach(
-            itemStack -> Main.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
+        stacks.forEach(itemStack ->
+            PouchesMain.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
         success = true;
       }
 

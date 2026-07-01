@@ -4,8 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkableMinecart;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.Linkart;
+import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkartMain;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.LoadingCarts;
-import dev.zenfyr.andromeda.modules.mechanics.linkart.Main;
 import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -149,12 +149,12 @@ public abstract class AbstractMinecartEntityMixin extends Entity implements Link
     } else if (dist <= cfg.pathfindingDistance) {
       setDeltaMovement(vec3d);
     } else {
-      Main.unlinkFromParent(cast);
+      LinkartMain.unlinkFromParent(cast);
     }
 
     if (cfg.chunkloading) {
       if (linkart$getFollower() != null
-          && !Main.approximatelyZero(this.getDeltaMovement().length())) {
+          && !LinkartMain.approximatelyZero(this.getDeltaMovement().length())) {
         ((ServerLevel) this.level())
             .getChunkSource()
             .addRegionTicket(
@@ -171,7 +171,7 @@ public abstract class AbstractMinecartEntityMixin extends Entity implements Link
 
   @Inject(at = @At("HEAD"), method = "push", cancellable = true)
   void onPushAway(Entity entity, CallbackInfo ci) {
-    if (!Main.shouldCollide(this, entity)) ci.cancel();
+    if (!LinkartMain.shouldCollide(this, entity)) ci.cancel();
   }
 
   @Inject(at = @At("RETURN"), method = "addAdditionalSaveData")

@@ -26,7 +26,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.NotNull;
 
-public final class Main {
+public final class AdvancementGenerationMain {
   private static final Map<RecipeType<?>, Function<Context, Return>> RECIPE_TYPE_HANDLERS =
       new HashMap<>();
   private static final List<BiPredicate<ResourceLocation, Recipe<?>>> FILTERS =

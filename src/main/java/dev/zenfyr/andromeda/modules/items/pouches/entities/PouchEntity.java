@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.items.pouches.entities;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
-import dev.zenfyr.andromeda.modules.items.pouches.Main;
+import dev.zenfyr.andromeda.modules.items.pouches.PouchesMain;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
 import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
 import dev.zenfyr.pulsar.api.util.Utilities;
@@ -46,11 +46,11 @@ public class PouchEntity extends ThrowableItemProjectile {
   }
 
   public PouchEntity(double d, double e, double f, Level world) {
-    super(Main.POUCH.orThrow(), d, e, f, world);
+    super(PouchesMain.POUCH.orThrow(), d, e, f, world);
   }
 
   public PouchEntity(LivingEntity livingEntity, Level world) {
-    super(Main.POUCH.orThrow(), livingEntity, world);
+    super(PouchesMain.POUCH.orThrow(), livingEntity, world);
   }
 
   @Override
@@ -106,11 +106,11 @@ public class PouchEntity extends ThrowableItemProjectile {
         return;
       } else if (entity instanceof InventoryCarrier io) {
         var storage = InventoryStorage.of(io.getInventory(), null);
-        stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
+        stacks.forEach(stack -> PouchesMain.tryInsertItem(level, this.position(), stack, storage));
         return;
       } else if (entity instanceof Container inv) {
         var storage = InventoryStorage.of(inv, null);
-        stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
+        stacks.forEach(stack -> PouchesMain.tryInsertItem(level, this.position(), stack, storage));
         return;
       }
       stacks.forEach(stack -> ItemStackUtil.spawnVelocity(
@@ -124,7 +124,7 @@ public class PouchEntity extends ThrowableItemProjectile {
       var stacks = MiscUtil.prepareLoot(level, this.getPouchType().getLootId(getItem()));
 
       var be = level.getBlockEntity(blockHitResult.getBlockPos());
-      if ((be != null && Main.getViewCount(be) > 0)) {
+      if ((be != null && PouchesMain.getViewCount(be) > 0)) {
         var storage = ItemStorage.SIDED.find(
             level,
             blockHitResult.getBlockPos(),
@@ -132,7 +132,8 @@ public class PouchEntity extends ThrowableItemProjectile {
             be,
             blockHitResult.getDirection());
         if (storage != null) {
-          stacks.forEach(stack -> Main.tryInsertItem(level, this.position(), stack, storage));
+          stacks.forEach(
+              stack -> PouchesMain.tryInsertItem(level, this.position(), stack, storage));
           return;
         }
       }
@@ -173,10 +174,10 @@ public class PouchEntity extends ThrowableItemProjectile {
   }
 
   public enum Type {
-    SEED(0, Andromeda.id("pouches/seeds"), Main.SEED_POUCH),
-    SAPLING(1, Andromeda.id("pouches/saplings"), Main.SAPLING_POUCH),
-    FLOWER(2, Andromeda.id("pouches/flowers"), Main.FLOWER_POUCH),
-    CUSTOM(3, null, Main.SPECIAL_POUCH) {
+    SEED(0, Andromeda.id("pouches/seeds"), PouchesMain.SEED_POUCH),
+    SAPLING(1, Andromeda.id("pouches/saplings"), PouchesMain.SAPLING_POUCH),
+    FLOWER(2, Andromeda.id("pouches/flowers"), PouchesMain.FLOWER_POUCH),
+    CUSTOM(3, null, PouchesMain.SPECIAL_POUCH) {
       @Override
       public @NotNull ResourceLocation getLootId(ItemStack stack) {
         CompoundTag nbt = stack.getTag();

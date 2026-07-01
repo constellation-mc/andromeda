@@ -7,7 +7,7 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLoot;
-import dev.zenfyr.andromeda.modules.blocks.guarded_loot.Main;
+import dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLootMain;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -88,7 +88,7 @@ public class LockpickItem extends Item {
         acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, LockpickItem.INSTANCE));
 
     ModuleManager.get().get(GuardedLoot.class).ifPresent(gl -> {
-      Main.UNLOCKERS.add((blockEntity, player) -> {
+      GuardedLootMain.UNLOCKERS.add((blockEntity, player) -> {
         if (player.level.am$get(GuardedLoot.CONFIG).allowLockPicking) {
           if (player.getMainHandItem().is(LockpickItem.INSTANCE.orThrow())) {
             return LockpickItem.INSTANCE

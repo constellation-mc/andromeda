@@ -17,7 +17,7 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class Main {
+public class LinkartMain {
 
   public static final TagKey<Item> LINKERS =
       TagKey.create(BuiltInRegistries.ITEM.key(), id("linkers"));
@@ -115,6 +115,6 @@ public class Main {
       ((LinkableMinecart) minecart).linkart$setLinkItem(linkStack);
     }
 
-    Main.spawnChainParticles(minecart);
+    LinkartMain.spawnChainParticles(minecart);
   }
 }
