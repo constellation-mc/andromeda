@@ -146,7 +146,7 @@ public final class AdvancementGenerationMain {
 
     ServerLifecycleEvents.SERVER_STARTING.register(
         server -> generateRecipeAdvancements(server, module, config));
-    BeforeDataPackSyncEvent.EVENT.register(
+    BeforeDataPackSyncEvent.EVENT.listen(
         server -> generateRecipeAdvancements(server, module, config));
 
     addRecipeTypeHandler(RecipeType.BLASTING, basicConsumer("blasting", config));
