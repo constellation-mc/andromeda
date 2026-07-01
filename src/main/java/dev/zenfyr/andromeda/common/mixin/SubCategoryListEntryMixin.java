@@ -20,7 +20,8 @@ abstract class SubCategoryListEntryMixin {
           @At(
               value = "INVOKE",
               target =
-                  "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"))
+                  "Lme/shedaniel/clothconfig2/api/AbstractConfigListEntry;isRequiresRestart()Z"),
+      remap = false)
   private boolean andromeda$isEdited(boolean original, @Local AbstractConfigListEntry<?> e) {
     return original && e.isEdited();
   }
