@@ -2,14 +2,14 @@ package dev.zenfyr.andromeda.common.mixin.alpha;
 
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
 import dev.zenfyr.andromeda.common.client.GlobalAlphaController;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import dev.zenfyr.pulsar.api.util.ColorUtil;
-import net.fabricmc.api.EnvType;
 import net.minecraft.client.renderer.state.gui.TiledBlitRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-@MixinEnvironment(EnvType.CLIENT)
+@MixinEnvironment(CEnvType.CLIENT)
 @Mixin(TiledBlitRenderState.class)
 public class TiledBlitRenderStateMixin {
 
