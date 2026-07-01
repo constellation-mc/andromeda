@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.gamerules.GameRules;
 
-public final class Main {
+public final class TinyStorageMain {
   static void init() {
     ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
       if (alive

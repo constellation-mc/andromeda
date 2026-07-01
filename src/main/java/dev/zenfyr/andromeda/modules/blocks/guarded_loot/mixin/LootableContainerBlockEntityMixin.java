@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.blocks.guarded_loot.mixin;
 
-import static dev.zenfyr.andromeda.modules.blocks.guarded_loot.Main.*;
+import static dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLootMain.*;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;

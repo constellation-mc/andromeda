@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.core.particles.ParticleTypes;
 
-public class Client {
+public class GuiParticlesClient {
 
   static void init() {
     var config = AndromedaClient.CLIENT.get(GuiParticles.CONFIG);

@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.items.pouches.items;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
-import dev.zenfyr.andromeda.modules.items.pouches.Main;
+import dev.zenfyr.andromeda.modules.items.pouches.PouchesMain;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Consumer;
@@ -67,7 +67,7 @@ public class PouchItem extends Item implements ProjectileItem {
         0.5F,
         0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
     if (!world.isClientSide()) {
-      var entity = Main.POUCH.orThrow().create(world, EntitySpawnReason.DISPENSER);
+      var entity = PouchesMain.POUCH.orThrow().create(world, EntitySpawnReason.DISPENSER);
       entity.setPouchType(this.type);
       entity.setPosRaw(user.getX(), user.getEyeY() - 0.1F, user.getZ());
       entity.shootFromRotation(user, user.getXRot(), user.getYRot(), 0.0F, 1.5F, 1.0F);
@@ -92,13 +92,13 @@ public class PouchItem extends Item implements ProjectileItem {
       boolean success = false;
       if (entity instanceof Player player) {
         var storage = PlayerInventoryStorage.of(player);
-        stacks.forEach(
-            itemStack -> Main.tryInsertItem(user.level(), player.position(), itemStack, storage));
+        stacks.forEach(itemStack ->
+            PouchesMain.tryInsertItem(user.level(), player.position(), itemStack, storage));
         success = true;
       } else if (entity instanceof InventoryCarrier io) {
         var storage = ContainerStorage.of(io.getInventory(), null);
-        stacks.forEach(
-            itemStack -> Main.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
+        stacks.forEach(itemStack ->
+            PouchesMain.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
         success = true;
       }
 
@@ -128,7 +128,7 @@ public class PouchItem extends Item implements ProjectileItem {
 
   @Override
   public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-    var pouch = Main.POUCH.orThrow().create(level, EntitySpawnReason.DISPENSER);
+    var pouch = PouchesMain.POUCH.orThrow().create(level, EntitySpawnReason.DISPENSER);
     pouch.setPos(pos.x(), pos.y(), pos.z());
     pouch.setPouchType(((PouchItem) stack.getItem()).getType());
     return pouch;

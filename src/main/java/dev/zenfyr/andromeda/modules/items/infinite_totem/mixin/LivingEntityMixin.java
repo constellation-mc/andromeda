@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.items.infinite_totem.mixin;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotemMain;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.UsedCustomTotemPayload;
 import dev.zenfyr.pulsar.api.util.PlayerUtil;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -35,7 +35,7 @@ abstract class LivingEntityMixin extends Entity {
       method = "checkTotemDeathProtection",
       at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"))
   private boolean andromeda$infiniteFallback(ItemStack instance, int i) {
-    return !instance.is(Main.INFINITE_TOTEM.orThrow());
+    return !instance.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow());
   }
 
   @Inject(
@@ -51,12 +51,12 @@ abstract class LivingEntityMixin extends Entity {
       DamageSource source,
       CallbackInfoReturnable<Boolean> cir,
       @Local(ordinal = 0) ItemStack itemStack) {
-    if (itemStack.is(Main.INFINITE_TOTEM.orThrow())) {
+    if (itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow())) {
       if (!level.isClientSide()) {
         var payload = new UsedCustomTotemPayload(
             this.getUUID(),
-            new ItemStack(Main.INFINITE_TOTEM.orThrow()),
-            Main.KNOCKOFF_TOTEM_PARTICLE.orThrow());
+            new ItemStack(InfiniteTotemMain.INFINITE_TOTEM.orThrow()),
+            InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.orThrow());
         for (Player player : PlayerUtil.findPlayersInRange(level, blockPosition(), 120)) {
           ServerPlayNetworking.send((ServerPlayer) player, payload);
         }

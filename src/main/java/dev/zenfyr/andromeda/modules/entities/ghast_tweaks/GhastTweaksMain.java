@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.level.Level;
 
-public final class Main {
+public final class GhastTweaksMain {
 
   static void init() {
     ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {

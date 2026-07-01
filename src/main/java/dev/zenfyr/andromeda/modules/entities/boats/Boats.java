@@ -7,7 +7,7 @@ import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
 import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
-import dev.zenfyr.andromeda.modules.entities.boats.client.Client;
+import dev.zenfyr.andromeda.modules.entities.boats.client.BoatsClient;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleInfo(name = "boats", category = "entities")
@@ -24,7 +24,7 @@ public final class Boats extends Module implements PostBootstrapEvent {
   public void postBootstrap() {
     InitEvents.MAIN.listen(() -> BoatItems::init);
     InitEvents.MAIN.listen(() -> BoatEntities::init);
-    InitEvents.CLIENT.listen(() -> Client::init);
+    InitEvents.CLIENT.listen(() -> BoatsClient::init);
   }
 
   public static final class Config extends BaseConfig {

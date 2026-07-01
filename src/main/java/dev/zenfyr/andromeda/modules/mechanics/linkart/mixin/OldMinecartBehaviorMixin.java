@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.mechanics.linkart.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkableMinecart;
-import dev.zenfyr.andromeda.modules.mechanics.linkart.Main;
+import dev.zenfyr.andromeda.modules.mechanics.linkart.LinkartMain;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.minecart.MinecartBehavior;
@@ -34,7 +34,7 @@ public abstract class OldMinecartBehaviorMixin extends MinecartBehavior {
 
       // Limit the movement length
       movement = movement.scale(
-          Main.limitMovementLength(((LinkableMinecart) this.minecart), targetMovementLength)
+          LinkartMain.limitMovementLength(((LinkableMinecart) this.minecart), targetMovementLength)
               / targetMovementLength);
     }
 

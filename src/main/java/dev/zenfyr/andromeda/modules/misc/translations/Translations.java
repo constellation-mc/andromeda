@@ -32,7 +32,7 @@ public final class Translations extends Module implements PostBootstrapEvent {
 
   @Override
   public void postBootstrap() {
-    InitEvents.CLIENT.listen(() -> Client::init);
+    InitEvents.CLIENT.listen(() -> TranslationsClient::init);
   }
 
   public static final class Config extends BaseConfig {
