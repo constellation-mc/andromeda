@@ -2,10 +2,10 @@ package dev.zenfyr.andromeda.modules.misc.unknown.mixin.useless_info;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import dev.zenfyr.pulsar.api.util.functions.Memoize;
 import java.util.List;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@MixinEnvironment(EnvType.CLIENT)
+@MixinEnvironment(CEnvType.CLIENT)
 @Mixin(DebugScreenOverlay.class)
 abstract class DebugHudMixin {
 

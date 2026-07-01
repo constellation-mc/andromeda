@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.bootstrap.util.mixin;
 
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import net.fabricmc.api.EnvType;
 
 @Retention(RetentionPolicy.CLASS)
 public @interface MixinEnvironment {
@@ -10,5 +10,5 @@ public @interface MixinEnvironment {
   String MIXIN_ENVIRONMENT_ANNOTATION =
       "L" + MixinEnvironment.class.getName().replace(".", "/") + ";";
 
-  EnvType value();
+  CEnvType value();
 }
