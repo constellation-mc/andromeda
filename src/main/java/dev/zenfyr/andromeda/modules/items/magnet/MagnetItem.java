@@ -9,8 +9,7 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
-import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
+import dev.zenfyr.andromeda.modules.items.magnet.client.MagnetClient;
 import dev.zenfyr.pulsar.api.platform.CEnvType;
 import dev.zenfyr.pulsar.api.platform.SupportUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
@@ -19,14 +18,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import lombok.With;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -58,9 +52,9 @@ public class MagnetItem extends Item {
   public static final Keeper<MagnetItem> MAGNET = Keeper.create();
   public static final Keeper<DataComponentType<MagnetContents>> COMPONENT_TYPE = Keeper.create();
   private static final BiConsumer<ItemStack, Player> ITEM_PARTICLES = SupportUtil.support(
-      CEnvType.CLIENT, () -> MagnetItem::itemParticles, () -> (stack, player) -> {});
+      CEnvType.CLIENT, () -> MagnetClient::itemParticles, () -> (stack, player) -> {});
   private static final Consumer<Player> UPGRADE_PARTICLES =
-      SupportUtil.support(CEnvType.CLIENT, () -> MagnetItem::upgradeParticles, () -> stack -> {});
+      SupportUtil.support(CEnvType.CLIENT, () -> MagnetClient::upgradeParticles, () -> stack -> {});
 
   public MagnetItem(Properties settings) {
     super(settings);
@@ -116,48 +110,6 @@ public class MagnetItem extends Item {
       }
     }
     return false;
-  }
-
-  @Environment(EnvType.CLIENT)
-  private static void upgradeParticles(Player player) {
-    if (player.level.isClientSide()) {
-      var client = Minecraft.getInstance();
-      int x = (int) (client.mouseHandler.xpos()
-          * (double) client.getWindow().getGuiScaledWidth()
-          / (double) client.getWindow().getScreenWidth());
-      int y = (int) (client.mouseHandler.ypos()
-          * (double) client.getWindow().getGuiScaledHeight()
-          / (double) client.getWindow().getScreenHeight());
-      ScreenParticles.get(client)
-          .addParticles(
-              client.gui.screen(),
-              VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 7));
-    }
-  }
-
-  @Environment(EnvType.CLIENT)
-  private static void itemParticles(ItemStack stack, Player player) {
-    if (player.level.isClientSide()) {
-      var client = Minecraft.getInstance();
-      int x = (int) (client.mouseHandler.xpos()
-          * (double) client.getWindow().getGuiScaledWidth()
-          / (double) client.getWindow().getScreenWidth());
-      int y = (int) (client.mouseHandler.ypos()
-          * (double) client.getWindow().getGuiScaledHeight()
-          / (double) client.getWindow().getScreenHeight());
-      ScreenParticles.get(client)
-          .addParticles(
-              client.gui.screen(),
-              VanillaParticles.create(
-                  new ItemParticleOption(
-                      ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
-                  x,
-                  y,
-                  0.5,
-                  0.5,
-                  0.1,
-                  7));
-    }
   }
 
   @Override

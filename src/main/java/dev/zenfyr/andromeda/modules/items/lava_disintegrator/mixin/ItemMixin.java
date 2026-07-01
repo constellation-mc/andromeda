@@ -1,15 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.lava_disintegrator.mixin;
 
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
-import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
-import dev.zenfyr.pulsar.api.util.MathUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
+import dev.zenfyr.andromeda.modules.items.lava_disintegrator.client.LavaDisintegratorClient;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
@@ -20,7 +12,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -50,32 +41,9 @@ abstract class ItemMixin {
 
       cursorStackReference.set(ItemStack.EMPTY);
       if (player.level.isClientSide())
-        spawnLavaParticles((int) Math.max(2, Math.sqrt(otherStack.getCount())));
+        LavaDisintegratorClient.spawnLavaParticles(
+            (int) Math.max(2, Math.sqrt(otherStack.getCount())));
       cir.setReturnValue(true);
     }
-  }
-
-  @Unique @Environment(EnvType.CLIENT)
-  private static void spawnLavaParticles(int count) {
-    var client = Minecraft.getInstance();
-    int x = (int) (client.mouseHandler.xpos()
-        * (double) client.getWindow().getGuiScaledWidth()
-        / (double) client.getWindow().getScreenWidth());
-    int y = (int) (client.mouseHandler.ypos()
-        * (double) client.getWindow().getGuiScaledHeight()
-        / (double) client.getWindow().getScreenHeight());
-    for (int i = 0; i < count; i++) {
-      ScreenParticles.get(client)
-          .addParticle(
-              client.gui.screen(), VanillaParticles.create(ParticleTypes.LAVA, x, y, 0.0, 0.0));
-    }
-
-    client.level.playSound(
-        client.player,
-        client.player,
-        SoundEvents.LAVA_EXTINGUISH,
-        SoundSource.AMBIENT,
-        0.8f,
-        0.8F + MathUtil.threadRandom().nextFloat() * 0.4F);
   }
 }
