@@ -12,6 +12,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(MultiElementListEntry.class)
 public interface MultiElementListEntryAccessor {
 
-  @Accessor("entries")
+  @Accessor(value = "entries", remap = false)
   List<AbstractConfigListEntry<?>> pulsar$entries();
 }
