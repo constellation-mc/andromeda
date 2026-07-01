@@ -3,13 +3,13 @@ package dev.zenfyr.andromeda.common.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.gui.entries.SubCategoryListEntry;
-import net.fabricmc.api.EnvType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@MixinEnvironment(EnvType.CLIENT)
+@MixinEnvironment(CEnvType.CLIENT)
 @Mixin(SubCategoryListEntry.class)
 abstract class SubCategoryListEntryMixin {
 

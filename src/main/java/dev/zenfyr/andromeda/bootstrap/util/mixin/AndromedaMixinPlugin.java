@@ -3,12 +3,11 @@ package dev.zenfyr.andromeda.bootstrap.util.mixin;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.pulsar.api.mixin.AsmUtil;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -42,10 +41,10 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
   }
 
   public static boolean testMixinEnvironment(ClassNode node) {
-    var current = FabricLoader.getInstance().getEnvironmentType();
+    var current = Platform.getPlatform().getEnvironment();
     AnnotationNode envNode = Annotations.getInvisible(node, MixinEnvironment.class);
     if (envNode != null) {
-      EnvType value = AsmUtil.getAnnotationValue(envNode, "value", null);
+      CEnvType value = AsmUtil.getAnnotationValue(envNode, "value", null);
       return current == value;
     }
     return true;
