@@ -10,11 +10,11 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.magnet.client.MagnetClient;
-import dev.zenfyr.pulsar.api.platform.CEnvType;
-import dev.zenfyr.pulsar.api.platform.SupportUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import lombok.With;
@@ -55,10 +55,6 @@ public class MagnetItem extends Item {
   public static final ResourceKey<Item> MAGNET_KEY = Andromeda.key(Registries.ITEM, "magnet");
   public static final Keeper<MagnetItem> MAGNET = Keeper.create();
   public static final Keeper<DataComponentType<MagnetContents>> COMPONENT_TYPE = Keeper.create();
-  private static final BiConsumer<ItemStack, Player> ITEM_PARTICLES = SupportUtil.support(
-      CEnvType.CLIENT, () -> MagnetClient::itemParticles, () -> (stack, player) -> {});
-  private static final Consumer<Player> UPGRADE_PARTICLES =
-      SupportUtil.support(CEnvType.CLIENT, () -> MagnetClient::upgradeParticles, () -> stack -> {});
 
   public MagnetItem(Properties settings) {
     super(settings);
@@ -74,7 +70,9 @@ public class MagnetItem extends Item {
         this.playRemoveOneSound(player);
       } else {
         if (addFirst(stack, itemStack)) {
-          ITEM_PARTICLES.accept(itemStack, player);
+          if (player.level.isClientSide()) {
+            MagnetClient.itemParticles(itemStack, player);
+          }
           this.playInsertSound(player);
         }
       }
@@ -97,7 +95,9 @@ public class MagnetItem extends Item {
         this.playRemoveOneSound(player);
       } else {
         if (addFirst(stack, otherStack)) {
-          ITEM_PARTICLES.accept(otherStack, player);
+          if (player.level.isClientSide()) {
+            MagnetClient.itemParticles(otherStack, player);
+          }
           this.playInsertSound(player);
         }
       }
@@ -107,7 +107,9 @@ public class MagnetItem extends Item {
       if (otherStack.is(Items.HEART_OF_THE_SEA)) {
         if (incrementLevel(stack)) {
           otherStack.shrink(1);
-          UPGRADE_PARTICLES.accept(player);
+          if (player.level.isClientSide()) {
+            MagnetClient.upgradeParticles(player);
+          }
           playUpgradeSound(player);
         }
         return true;
