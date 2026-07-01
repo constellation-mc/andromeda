@@ -2,7 +2,7 @@ package dev.zenfyr.andromeda.modules.items.mending_tweaks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
-import net.fabricmc.api.EnvType;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.network.chat.Component;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@MixinEnvironment(EnvType.CLIENT)
+@MixinEnvironment(CEnvType.CLIENT)
 @Mixin(AnvilScreen.class)
 abstract class AnvilScreenMixin extends AbstractContainerScreen<AnvilMenu> {
 

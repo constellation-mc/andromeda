@@ -2,13 +2,13 @@ package dev.zenfyr.andromeda.modules.misc.unknown.mixin.nice_level;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.zenfyr.andromeda.bootstrap.util.mixin.MixinEnvironment;
+import dev.zenfyr.pulsar.api.platform.CEnvType;
 import java.util.Objects;
-import net.fabricmc.api.EnvType;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@MixinEnvironment(EnvType.CLIENT)
+@MixinEnvironment(CEnvType.CLIENT)
 @Mixin(LevelLoadingScreen.class)
 abstract class LevelLoadingScreenMixin {
 
