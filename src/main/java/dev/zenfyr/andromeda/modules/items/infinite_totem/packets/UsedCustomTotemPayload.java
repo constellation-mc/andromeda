@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.packets;
 
 import dev.zenfyr.andromeda.common.util.MiscUtil;
-import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotemMain;
 import java.util.UUID;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -13,7 +13,8 @@ import net.minecraft.world.item.ItemStack;
 public record UsedCustomTotemPayload(UUID uuid, ItemStack stack, ParticleOptions particle)
     implements CustomPacketPayload {
 
-  public static final Type<UsedCustomTotemPayload> ID = new Type<>(Main.USED_CUSTOM_TOTEM);
+  public static final Type<UsedCustomTotemPayload> ID =
+      new Type<>(InfiniteTotemMain.USED_CUSTOM_TOTEM);
   public static final StreamCodec<RegistryFriendlyByteBuf, UsedCustomTotemPayload> CODEC =
       StreamCodec.composite(
           MiscUtil.UUID_PACKET_CODEC,

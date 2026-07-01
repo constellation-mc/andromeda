@@ -29,7 +29,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public final class Main {
+public final class GuardedLootMain {
 
   public static final List<BiPredicate<BlockEntity, Player>> UNLOCKERS = new ArrayList<>();
 

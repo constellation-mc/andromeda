@@ -7,7 +7,7 @@ import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
 import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
-import dev.zenfyr.andromeda.modules.items.pouches.client.Client;
+import dev.zenfyr.andromeda.modules.items.pouches.client.PouchesClient;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @ModuleInfo(name = "pouches", category = "items")
@@ -22,8 +22,8 @@ public final class Pouches extends Module implements PostBootstrapEvent {
 
   @Override
   public void postBootstrap() {
-    InitEvents.MAIN.listen(() -> Main::init);
-    InitEvents.CLIENT.listen(() -> Client::init);
+    InitEvents.MAIN.listen(() -> PouchesMain::init);
+    InitEvents.CLIENT.listen(() -> PouchesClient::init);
   }
 
   public static class Config extends BaseConfig {

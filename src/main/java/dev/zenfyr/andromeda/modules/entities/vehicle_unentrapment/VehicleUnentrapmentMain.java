@@ -10,7 +10,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-public final class Main {
+public final class VehicleUnentrapmentMain {
 
   public static final TagKey<EntityType<?>> ESCAPE_VEHICLES_ON_HIT =
       TagKey.create(Registries.ENTITY_TYPE, id("escape_vehicles_on_hit"));

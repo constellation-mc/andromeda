@@ -32,7 +32,7 @@ public record CartOperation(Type type, AbstractMinecart minecart) {
           }
         }
 
-        Main.linkTo(minecart, operation.minecart(), stack);
+        LinkartMain.linkTo(minecart, operation.minecart(), stack);
         return InteractionResult.SUCCESS;
       }
     },
@@ -43,7 +43,7 @@ public record CartOperation(Type type, AbstractMinecart minecart) {
         if (((LinkableMinecart) operation.minecart()).linkart$getFollower() != minecart)
           return InteractionResult.FAIL;
 
-        Main.unlinkFromParent(minecart);
+        LinkartMain.unlinkFromParent(minecart);
         return InteractionResult.SUCCESS;
       }
     };

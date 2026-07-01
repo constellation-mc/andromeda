@@ -29,14 +29,14 @@ import net.minecraft.world.phys.HitResult;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2i;
 
-public class Client {
+public class ItemFrameTooltipsClient {
 
   public static final Identifier TOOLTIP_HUD = Andromeda.id("tooltip_hud");
   private Supplier<List<ClientTooltipComponent>> action;
   private float tooltipFlow;
   private float oldTooltipFlow;
 
-  Client() {
+  ItemFrameTooltipsClient() {
     inGameTooltips();
 
     ClientTickEvents.START_CLIENT_TICK.register(client -> {

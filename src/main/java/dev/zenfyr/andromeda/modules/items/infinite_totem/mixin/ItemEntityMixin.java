@@ -3,7 +3,7 @@ package dev.zenfyr.andromeda.modules.items.infinite_totem.mixin;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.BeaconUtil;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotem;
-import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotemMain;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.NotifyClientPayload;
 import dev.zenfyr.pulsar.api.util.tuple.Tuple;
 import java.util.Optional;
@@ -139,7 +139,7 @@ abstract class ItemEntityMixin extends Entity {
                 this.getX(),
                 this.getY(),
                 this.getZ(),
-                new ItemStack(Main.INFINITE_TOTEM.orThrow()));
+                new ItemStack(InfiniteTotemMain.INFINITE_TOTEM.orThrow()));
             this.discard();
             andromeda$itemEntity.discard();
             level.addFreshEntity(entity);

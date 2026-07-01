@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.misc.translations.mixin;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.modules.misc.translations.Client;
+import dev.zenfyr.andromeda.modules.misc.translations.TranslationsClient;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -28,6 +28,6 @@ abstract class MinecraftClientMixin {
       method =
           "reloadResourcePacks(ZLnet/minecraft/client/GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;")
   private void andromeda$downloadLangFiles(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-    Client.onResourceReload(this.options.languageCode, ModuleManager.get());
+    TranslationsClient.onResourceReload(this.options.languageCode, ModuleManager.get());
   }
 }
