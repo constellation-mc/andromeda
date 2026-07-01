@@ -23,7 +23,7 @@ public final class TinyStorage extends Module implements PostBootstrapEvent {
 
   @Override
   public void postBootstrap() {
-    InitEvents.MAIN.listen(() -> Main::init);
+    InitEvents.MAIN.listen(() -> TinyStorageMain::init);
   }
 
   public static class Config extends BaseConfig {

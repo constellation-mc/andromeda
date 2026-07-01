@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.mixin;
 
 import dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.CactusFiller;
-import dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.Main;
+import dev.zenfyr.andromeda.modules.blocks.cactus_bottle_filling.CactusFillerMain;
 import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -58,12 +58,12 @@ abstract class AbstractBlockMixin {
                   stack, player, PotionContents.createItemStack(Items.POTION, Potions.WATER)));
           player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 
-          if (state.getValue(Main.WATER_LEVEL_3) == 3) {
+          if (state.getValue(CactusFillerMain.WATER_LEVEL_3) == 3) {
             world.destroyBlock(pos1.below(), false, player);
             ItemStackUtil.spawnVelocity(
                 pos1, Items.DEAD_BUSH.getDefaultInstance(), world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
           } else {
-            world.setBlockAndUpdate(pos1.below(), state.cycle(Main.WATER_LEVEL_3));
+            world.setBlockAndUpdate(pos1.below(), state.cycle(CactusFillerMain.WATER_LEVEL_3));
           }
 
           ((ServerLevel) world)

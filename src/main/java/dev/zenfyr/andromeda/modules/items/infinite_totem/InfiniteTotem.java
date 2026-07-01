@@ -7,7 +7,7 @@ import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.common.config.GameConfig;
-import dev.zenfyr.andromeda.modules.items.infinite_totem.client.Client;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.client.InfiniteTotemClient;
 
 @ModuleInfo(name = "infinite_totem", category = "items")
 public final class InfiniteTotem extends Module implements PostBootstrapEvent {
@@ -20,8 +20,8 @@ public final class InfiniteTotem extends Module implements PostBootstrapEvent {
 
   @Override
   public void postBootstrap() {
-    InitEvents.MAIN.listen(() -> Main::init);
-    InitEvents.CLIENT.listen(() -> Client::init);
+    InitEvents.MAIN.listen(() -> InfiniteTotemMain::init);
+    InitEvents.CLIENT.listen(() -> InfiniteTotemClient::init);
   }
 
   public static final class Config extends GameConfig {

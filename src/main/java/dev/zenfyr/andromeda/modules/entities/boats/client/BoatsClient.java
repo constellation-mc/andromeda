@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 
-public class Client {
+public class BoatsClient {
 
   private static <T extends AbstractBoat> void renderer(
       BoatTypes.BoatType type, BoatTypes.BoatVariant variant) {

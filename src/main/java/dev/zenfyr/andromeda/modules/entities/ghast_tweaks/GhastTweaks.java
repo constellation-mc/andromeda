@@ -20,7 +20,7 @@ public final class GhastTweaks extends Module implements PostBootstrapEvent {
 
   @Override
   public void postBootstrap() {
-    InitEvents.MAIN.listen(() -> Main::init);
+    InitEvents.MAIN.listen(() -> GhastTweaksMain::init);
   }
 
   public static class Config extends GameConfig {

@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public final class Main {
+public final class PouchesMain {
 
   public static final Keeper<PouchItem> SEED_POUCH = Keeper.create();
   public static final Keeper<PouchItem> FLOWER_POUCH = Keeper.create();
@@ -53,7 +53,7 @@ public final class Main {
       Collections.unmodifiableMap(VIEWABLE_BLOCKS);
 
   public static int getViewCount(BlockEntity be) {
-    Field f = Main.VIEWABLE_VIEW.get(be.getType());
+    Field f = PouchesMain.VIEWABLE_VIEW.get(be.getType());
     if (f != null) {
       ContainerOpenersCounter vcm = (ContainerOpenersCounter) ExceptionUtil.supply(() -> f.get(be));
       return vcm.getOpenerCount();
@@ -197,7 +197,7 @@ public final class Main {
     if (manager.debug().isVerbose()) {
       StringBuilder b = new StringBuilder();
       b.append("Viewable block entities:");
-      Main.VIEWABLE_VIEW.forEach((blockEntityType, field) -> {
+      PouchesMain.VIEWABLE_VIEW.forEach((blockEntityType, field) -> {
         b.append('\n')
             .append(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntityType))
             .append(": ")

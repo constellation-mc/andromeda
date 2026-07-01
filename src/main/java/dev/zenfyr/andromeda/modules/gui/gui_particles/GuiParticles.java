@@ -20,7 +20,7 @@ public final class GuiParticles extends Module implements PostBootstrapEvent {
 
   @Override
   public void postBootstrap() {
-    InitEvents.CLIENT.listen(() -> Client::init);
+    InitEvents.CLIENT.listen(() -> GuiParticlesClient::init);
   }
 
   public static final class Config extends BaseConfig {

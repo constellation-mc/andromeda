@@ -1,6 +1,6 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.client;
 
-import dev.zenfyr.andromeda.modules.items.infinite_totem.Main;
+import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotemMain;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.NotifyClientPayload;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.UsedCustomTotemPayload;
 import dev.zenfyr.pulsar.api.util.MakeSure;
@@ -10,7 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 
-public class Client {
+public class InfiniteTotemClient {
 
   public static void init() {
     ClientPlayNetworking.registerGlobalReceiver(
@@ -47,9 +47,11 @@ public class Client {
           if (entity != null) entity.getEntityData().set(ItemEntity.DATA_ITEM, payload.stack());
         }));
 
-    if (Main.KNOCKOFF_TOTEM_PARTICLE.isPresent()) {
+    if (InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.isPresent()) {
       ParticleFactoryRegistry.getInstance()
-          .register(Main.KNOCKOFF_TOTEM_PARTICLE.orThrow(), KnockoffTotemParticle.Factory::new);
+          .register(
+              InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.orThrow(),
+              KnockoffTotemParticle.Factory::new);
     }
   }
 }

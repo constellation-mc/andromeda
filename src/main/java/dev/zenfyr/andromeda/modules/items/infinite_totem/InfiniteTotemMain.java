@@ -22,7 +22,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.DeathProtection;
 
-public final class Main {
+public final class InfiniteTotemMain {
 
   public static final ResourceKey<Item> INFINITE_TOTEM_KEY =
       Andromeda.key(Registries.ITEM, "infinite_totem");

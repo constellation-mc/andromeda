@@ -18,7 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Unique;
 
-public class Main {
+public class LinkartMain {
 
   // Used to smooth out acceleration
   @Unique private static final double SAFE_SPEEDUP_THRESHOLD = 0.4;
@@ -150,6 +150,6 @@ public class Main {
       ((LinkableMinecart) minecart).linkart$setLinkItem(linkStack);
     }
 
-    Main.spawnChainParticles(minecart);
+    LinkartMain.spawnChainParticles(minecart);
   }
 }

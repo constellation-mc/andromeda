@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 
-public final class Client {
+public final class TranslationsClient {
 
   private static final String URL =
       NetUtils.RAW_URL + "/" + NetUtils.OWNER + "/" + NetUtils.REPO + "/";
@@ -30,9 +30,9 @@ public final class Client {
 
     if (shouldUpdate(manager)) {
       Set<String> languages = Sets.newHashSet("en_us");
-      Client.getSelectedLanguage(module).ifPresent(languages::add);
+      TranslationsClient.getSelectedLanguage(module).ifPresent(languages::add);
       CompletableFuture.runAsync(
-              () -> Client.downloadTranslations(languages, manager, module),
+              () -> TranslationsClient.downloadTranslations(languages, manager, module),
               ForkJoinPool.commonPool())
           .handle((unused, throwable) -> {
             if (throwable != null)
