@@ -3,15 +3,12 @@ package dev.zenfyr.andromeda.modules.misc.unknown;
 import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.common.util.Keeper;
-import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
-import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
+import dev.zenfyr.andromeda.modules.misc.unknown.client.UnknownClient;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.List;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffects;
@@ -64,17 +61,7 @@ public class RoseOfTheValley extends BlockItem {
     stack.shrink(1);
     otherStack.shrink(1);
     if (player.level.isClientSide) {
-      var client = Minecraft.getInstance();
-      int x = (int) (client.mouseHandler.xpos()
-          * (double) client.getWindow().getGuiScaledWidth()
-          / (double) client.getWindow().getScreenWidth());
-      int y = (int) (client.mouseHandler.ypos()
-          * (double) client.getWindow().getGuiScaledHeight()
-          / (double) client.getWindow().getScreenHeight());
-      ScreenParticles.get(client)
-          .addParticles(
-              client.screen,
-              VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.08, 10));
+      UnknownClient.roseParticles();
     }
   }
 }

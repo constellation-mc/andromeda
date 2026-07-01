@@ -3,14 +3,10 @@ package dev.zenfyr.andromeda.modules.entities.boats.entities;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatEntities;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatItems;
-import dev.zenfyr.pulsar.api.platform.CEnvType;
-import dev.zenfyr.pulsar.api.platform.SupportUtil;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import dev.zenfyr.andromeda.modules.entities.boats.client.BoatsClient;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -47,14 +43,6 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     this.zo = z;
   }
 
-  private final Runnable explode = SupportUtil.support(
-      CEnvType.CLIENT,
-      () -> () -> {
-        FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());
-        ClientPlayNetworking.send(EXPLODE_BOAT_ON_SERVER, buf);
-      },
-      () -> this::explode);
-
   @Override
   public void tick() {
     if (this.fuseTicks > 0) {
@@ -73,8 +61,12 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     }
 
     if (this.horizontalCollision) {
-      if ((this.getFirstPassenger() instanceof Player)) {
-        this.explode.run();
+      if ((this.getFirstPassenger() instanceof Player player)) {
+        if (player.level.isClientSide()) {
+          BoatsClient.sendExplodePacket(this);
+        } else {
+          this.explode();
+        }
       } else {
         this.explode();
       }
