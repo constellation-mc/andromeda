@@ -1,7 +1,5 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -36,7 +34,6 @@ public class KnockoffTotemParticle extends SimpleAnimatedParticle {
     }
   }
 
-  @Environment(EnvType.CLIENT)
   public record Factory(SpriteSet spriteProvider) implements ParticleProvider<SimpleParticleType> {
 
     @Override

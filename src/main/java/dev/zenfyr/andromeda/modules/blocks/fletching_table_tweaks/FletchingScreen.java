@@ -3,8 +3,6 @@ package dev.zenfyr.andromeda.modules.blocks.fletching_table_tweaks;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.pulsar.api.util.TextUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-@Environment(EnvType.CLIENT)
 public class FletchingScreen extends ItemCombinerScreen<FletchingScreenHandler> {
 
   private static final ResourceLocation TEXTURE = Andromeda.id("textures/gui/fletching.png");

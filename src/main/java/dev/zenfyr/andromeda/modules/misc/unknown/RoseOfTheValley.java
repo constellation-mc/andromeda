@@ -7,13 +7,9 @@ import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
 import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -54,12 +50,6 @@ public class RoseOfTheValley extends BlockItem {
         new RoseOfTheValley(
             RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow(),
             new FabricItemSettings().rarity(Rarity.UNCOMMON))));
-  }
-
-  @Environment(EnvType.CLIENT)
-  static void onClient() {
-    BlockRenderLayerMap.INSTANCE.putBlocks(
-        RenderType.cutout(), RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow());
   }
 
   @Override
