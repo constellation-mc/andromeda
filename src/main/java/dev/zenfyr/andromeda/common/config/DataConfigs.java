@@ -1,6 +1,7 @@
 package dev.zenfyr.andromeda.common.config;
 
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.zenfyr.andromeda.bootstrap.Module;
@@ -10,7 +11,6 @@ import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
 import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.GameConfigHandler;
-import dev.zenfyr.andromeda.common.util.IdentifiedJsonDataLoader;
 import dev.zenfyr.pulsar.api.resources.ReloadListenerType;
 import dev.zenfyr.pulsar.api.resources.ServerReloadListenersEvent;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
@@ -26,12 +26,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 
 // Loads and applies custom config overrides from data packs
 @CustomLog
-public final class DataConfigs extends IdentifiedJsonDataLoader {
+public final class DataConfigs extends SimpleJsonResourceReloadListener {
 
   public static final ResourceLocation DEFAULT = Andromeda.id("default");
   public static final ReloadListenerType<DataConfigs> RELOADER =
@@ -46,7 +47,7 @@ public final class DataConfigs extends IdentifiedJsonDataLoader {
   public Map<Module, Set<Data>> defaultConfigs;
 
   public DataConfigs(ModuleManager moduleManager) {
-    super(RELOADER.location());
+    super(new Gson(), RELOADER.location().toString().replace(':', '/'));
     this.moduleManager = moduleManager;
   }
 
