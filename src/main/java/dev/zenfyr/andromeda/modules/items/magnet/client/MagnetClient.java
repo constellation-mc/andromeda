@@ -12,42 +12,37 @@ import net.minecraft.world.item.ItemStackTemplate;
 public class MagnetClient {
 
   public static void upgradeParticles(Player player) {
-    if (player.level.isClientSide()) {
-      var client = Minecraft.getInstance();
-      int x = (int) (client.mouseHandler.xpos()
-          * (double) client.getWindow().getGuiScaledWidth()
-          / (double) client.getWindow().getScreenWidth());
-      int y = (int) (client.mouseHandler.ypos()
-          * (double) client.getWindow().getGuiScaledHeight()
-          / (double) client.getWindow().getScreenHeight());
-      ScreenParticles.get(client)
-          .addParticles(
-              client.screen,
-              VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 7));
-    }
+    var client = Minecraft.getInstance();
+    int x = (int) (client.mouseHandler.xpos()
+        * (double) client.getWindow().getGuiScaledWidth()
+        / (double) client.getWindow().getScreenWidth());
+    int y = (int) (client.mouseHandler.ypos()
+        * (double) client.getWindow().getGuiScaledHeight()
+        / (double) client.getWindow().getScreenHeight());
+    ScreenParticles.get(client)
+        .addParticles(
+            client.screen, VanillaParticles.create(ParticleTypes.END_ROD, x, y, 0.5, 0.5, 0.07, 7));
   }
 
   public static void itemParticles(ItemStack stack, Player player) {
-    if (player.level.isClientSide()) {
-      var client = Minecraft.getInstance();
-      int x = (int) (client.mouseHandler.xpos()
-          * (double) client.getWindow().getGuiScaledWidth()
-          / (double) client.getWindow().getScreenWidth());
-      int y = (int) (client.mouseHandler.ypos()
-          * (double) client.getWindow().getGuiScaledHeight()
-          / (double) client.getWindow().getScreenHeight());
-      ScreenParticles.get(client)
-          .addParticles(
-              client.screen,
-              VanillaParticles.create(
-                  new ItemParticleOption(
-                      ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
-                  x,
-                  y,
-                  0.5,
-                  0.5,
-                  0.1,
-                  7));
-    }
+    var client = Minecraft.getInstance();
+    int x = (int) (client.mouseHandler.xpos()
+        * (double) client.getWindow().getGuiScaledWidth()
+        / (double) client.getWindow().getScreenWidth());
+    int y = (int) (client.mouseHandler.ypos()
+        * (double) client.getWindow().getGuiScaledHeight()
+        / (double) client.getWindow().getScreenHeight());
+    ScreenParticles.get(client)
+        .addParticles(
+            client.screen,
+            VanillaParticles.create(
+                new ItemParticleOption(
+                    ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
+                x,
+                y,
+                0.5,
+                0.5,
+                0.1,
+                7));
   }
 }

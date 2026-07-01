@@ -1,12 +1,9 @@
 package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
-import dev.zenfyr.pulsar.api.platform.CEnvType;
-import dev.zenfyr.pulsar.api.platform.SupportUtil;
+import dev.zenfyr.andromeda.modules.entities.boats.client.BoatsClient;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Supplier;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -48,11 +45,6 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     return TextUtil.translatable("entity.andromeda.tnt_boat");
   }
 
-  private final Runnable explode = SupportUtil.support(
-      CEnvType.CLIENT,
-      () -> () -> ClientPlayNetworking.send(new ExplodeBoatC2SPayload(this.getUUID())),
-      () -> this::explode);
-
   @Override
   public void tick() {
     if (this.fuseTicks > 0) {
@@ -71,8 +63,12 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     }
 
     if (this.horizontalCollision) {
-      if ((this.getFirstPassenger() instanceof Player)) {
-        this.explode.run();
+      if ((this.getFirstPassenger() instanceof Player player)) {
+        if (player.level.isClientSide()) {
+          BoatsClient.sendExplodePacket(this);
+        } else {
+          this.explode();
+        }
       } else {
         this.explode();
       }
