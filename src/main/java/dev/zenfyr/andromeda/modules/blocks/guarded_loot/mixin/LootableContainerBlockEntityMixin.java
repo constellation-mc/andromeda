@@ -30,7 +30,7 @@ abstract class LootableContainerBlockEntityMixin extends BaseContainerBlockEntit
       method = "canOpen")
   private boolean lockedIfMonstersNearby(boolean locked, @Local(argsOnly = true) Player player) {
     var monsters =
-        checkMonsterLock(player.level, this.getBlockState(), player, this.getBlockPos(), this);
+        checkMonsterLock(player.level(), this.getBlockState(), player, this.getBlockPos(), this);
     if (monsters.isEmpty() || player.getAbilities().instabuild || checkLockPicking(this, player))
       return locked;
 

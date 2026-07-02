@@ -36,7 +36,7 @@ abstract class AbstractCubeMobMixin extends AgeableMob implements SlimeMergeDuck
   @Inject(at = @At("TAIL"), method = "push")
   private void andromeda$push(Entity entity, CallbackInfo ci) {
     if (!((Object) this instanceof Slime)) return;
-    var config = this.level.am$get(Slimes.CONFIG);
+    var config = this.level().am$get(Slimes.CONFIG);
     if (!config.available || !config.merge) return;
 
     if (getTarget() instanceof Slime slime && slime == entity && this.andromeda$mergeCD == 0) {

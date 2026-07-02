@@ -37,11 +37,11 @@ public class LockpickItem extends Item {
   }
 
   public boolean tryUse(ItemStack stack, LivingEntity user, InteractionHand hand) {
-    var c = user.level.am$get(Lockpick.CONFIG);
+    var c = user.level().am$get(Lockpick.CONFIG);
     if (c.available && hand == InteractionHand.MAIN_HAND) {
       if (!(user instanceof Player p && p.getAbilities().instabuild)) {
         if (c.breakAfterUse) {
-          if (!user.level.isClientSide())
+          if (!user.level().isClientSide())
             user.onEquippedItemBroken(LockpickItem.INSTANCE.orThrow(), EquipmentSlot.MAINHAND);
 
           stack.shrink(1);
@@ -56,7 +56,7 @@ public class LockpickItem extends Item {
   @Override
   public InteractionResult interactLivingEntity(
       ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
-    if (user.level.isClientSide()) return InteractionResult.SUCCESS;
+    if (user.level().isClientSide()) return InteractionResult.SUCCESS;
 
     if (entity instanceof AbstractVillager merchant
         && Andromeda.MAIN.get(Lockpick.MAIN_CONFIG).villagerInventory) {
@@ -92,7 +92,7 @@ public class LockpickItem extends Item {
 
     ModuleManager.get().get(GuardedLoot.class).ifPresent(gl -> {
       GuardedLootMain.UNLOCKERS.add((blockEntity, player) -> {
-        if (player.level.am$get(GuardedLoot.CONFIG).allowLockPicking) {
+        if (player.level().am$get(GuardedLoot.CONFIG).allowLockPicking) {
           if (player.getMainHandItem().is(LockpickItem.INSTANCE.orThrow())) {
             return LockpickItem.INSTANCE
                 .orThrow()

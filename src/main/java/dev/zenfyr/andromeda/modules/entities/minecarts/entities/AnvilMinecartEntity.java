@@ -45,10 +45,11 @@ public class AnvilMinecartEntity extends AbstractMinecart {
     int i = Mth.ceil(fallDistance - 1.0F);
     if (i >= 0) {
       float f = (float) Math.min(MathUtil.fastFloor(i * 2), 40);
-      for (Entity entity : level.getEntitiesOfClass(
-          Entity.class, this.getBoundingBox().inflate(0.1), EntitySelector.NO_SPECTATORS)) {
+      for (Entity entity : level()
+          .getEntitiesOfClass(
+              Entity.class, this.getBoundingBox().inflate(0.1), EntitySelector.NO_SPECTATORS)) {
         if (!(entity instanceof AbstractMinecart)) {
-          entity.hurt(level.damageSources().anvil(this), f);
+          entity.hurt(level().damageSources().anvil(this), f);
         }
       }
     }
@@ -69,7 +70,7 @@ public class AnvilMinecartEntity extends AbstractMinecart {
     double d = (this.isInWater() ? 0.08 : 0.1) / 20.0;
     return optional
         .map(ms -> {
-          var c = level.am$get(MinecartSpeedControl.CONFIG);
+          var c = level().am$get(MinecartSpeedControl.CONFIG);
           return c.available ? d * c.modifier : d;
         })
         .orElse(d);

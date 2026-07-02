@@ -25,7 +25,7 @@ abstract class SlimeEntityMixin extends AbstractCubeMob {
         2,
         new NearestAttackableTargetGoal<>(
             (Slime) (Object) this, Slime.class, 5, true, false, (livingEntity, level) -> {
-              var config = this.level.am$get(Slimes.CONFIG);
+              var config = this.level().am$get(Slimes.CONFIG);
               if (!config.available || !config.merge) return false;
               if (((SlimeMergeDuck) this).andromeda$mergeCD() > 0) return false;
               float d = livingEntity.distanceTo(this);

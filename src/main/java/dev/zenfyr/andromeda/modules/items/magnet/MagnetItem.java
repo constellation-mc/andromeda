@@ -66,7 +66,7 @@ public class MagnetItem extends Item {
         this.playRemoveOneSound(player);
       } else {
         if (addFirst(stack, itemStack)) {
-          if (player.level.isClientSide()) {
+          if (player.level().isClientSide()) {
             MagnetClient.itemParticles(itemStack, player);
           }
           this.playInsertSound(player);
@@ -91,7 +91,7 @@ public class MagnetItem extends Item {
         this.playRemoveOneSound(player);
       } else {
         if (addFirst(stack, otherStack)) {
-          if (player.level.isClientSide()) {
+          if (player.level().isClientSide()) {
             MagnetClient.itemParticles(otherStack, player);
           }
           this.playInsertSound(player);
@@ -103,7 +103,7 @@ public class MagnetItem extends Item {
       if (otherStack.is(Items.HEART_OF_THE_SEA)) {
         if (incrementLevel(stack)) {
           otherStack.shrink(1);
-          if (player.level.isClientSide()) {
+          if (player.level().isClientSide()) {
             MagnetClient.upgradeParticles(player);
           }
           playUpgradeSound(player);

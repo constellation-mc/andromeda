@@ -27,7 +27,7 @@ abstract class MobEntityMixin extends Entity {
   private float andromeda$rotateSlime(
       float original, Entity target, float maxYawChange, float maxPitchChange) {
     if ((Mob) (Object) this instanceof Slime slime && !(target instanceof Slime)) {
-      var config = level.am$get(Slimes.CONFIG);
+      var config = level().am$get(Slimes.CONFIG);
 
       if (!slime.isTiny()) return original;
       if (!config.available) return original;

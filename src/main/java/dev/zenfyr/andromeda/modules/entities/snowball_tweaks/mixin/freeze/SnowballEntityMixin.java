@@ -23,9 +23,9 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
 
   @Inject(at = @At("TAIL"), method = "onHitEntity")
   private void andromeda$applyFreezing(EntityHitResult result, CallbackInfo ci) {
-    if (result.getEntity().level.isClientSide()) return;
+    if (result.getEntity().level().isClientSide()) return;
 
-    var config = result.getEntity().level.am$get(Snowballs.CONFIG);
+    var config = result.getEntity().level().am$get(Snowballs.CONFIG);
     if (!config.available) return;
     if (!config.freeze) return;
 

@@ -27,16 +27,16 @@ abstract class PersistentProjectileEntityMixin extends Projectile {
   @Inject(at = @At("TAIL"), method = "onHitBlock")
   private void andromeda$onBeeNestHit(BlockHitResult blockHitResult, CallbackInfo ci) {
     BlockPos pos = blockHitResult.getBlockPos();
-    BlockState state = level.getBlockState(pos);
+    BlockState state = level().getBlockState(pos);
 
-    if (state.getBlock() == Blocks.BEE_NEST && !level.isClientSide()) {
-      BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) level.getBlockEntity(pos);
+    if (state.getBlock() == Blocks.BEE_NEST && !level().isClientSide()) {
+      BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity) level().getBlockEntity(pos);
       if (beehiveBlockEntity == null) return;
 
-      if (!level.am$get(CanBeeNestsFall.CONFIG).available) return;
+      if (!level().am$get(CanBeeNestsFall.CONFIG).available) return;
 
-      if (level.getBlockState(pos.relative(Direction.DOWN)).isAir()) {
-        BeeUtil.trySpawnFallingBeeNest(level, pos, state, beehiveBlockEntity);
+      if (level().getBlockState(pos.relative(Direction.DOWN)).isAir()) {
+        BeeUtil.trySpawnFallingBeeNest(level(), pos, state, beehiveBlockEntity);
       }
     }
   }

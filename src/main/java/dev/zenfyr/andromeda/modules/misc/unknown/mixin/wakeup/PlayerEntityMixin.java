@@ -28,20 +28,20 @@ abstract class PlayerEntityMixin {
       boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
     Player player = (Player) (Object) this;
 
-    if (!player.level.isClientSide())
-      if (player.level.getRandom().nextInt(100000) == 0) {
+    if (!player.level().isClientSide())
+      if (player.level().getRandom().nextInt(100000) == 0) {
         Optional<BlockPos> optional = UnknownUtil.pickRandomSpot(
-            player.level, player.blockPosition(), 10, player.level.getRandom());
+            player.level(), player.blockPosition(), 10, player.level().getRandom());
         if (optional.isPresent()) {
           BlockPos pos = optional.get();
-          ArmorStand stand = new ArmorStand(player.level, pos.getX(), pos.getY(), pos.getZ());
+          ArmorStand stand = new ArmorStand(player.level(), pos.getX(), pos.getY(), pos.getZ());
           ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
           stack.set(
               DataComponents.PROFILE, ResolvableProfile.createResolved(player.getGameProfile()));
 
           stand.setItemSlot(EquipmentSlot.HEAD, stack);
-          player.level.addFreshEntity(stand);
+          player.level().addFreshEntity(stand);
           ((ServerPlayer) player)
               .connection.send(new ClientboundSoundPacket(
                   BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.LIGHTNING_BOLT_THUNDER),

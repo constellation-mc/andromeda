@@ -55,7 +55,7 @@ public class PouchEntity extends ThrowableItemProjectile {
     ItemStack stack = getItem();
     if (type == HitResult.Type.ENTITY) {
       this.onHitEntity((EntityHitResult) hitResult);
-      if (level instanceof ServerLevel sw && !stack.isEmpty()) {
+      if (level() instanceof ServerLevel sw && !stack.isEmpty()) {
         sw.sendParticles(
             new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
             getX(),
@@ -70,7 +70,7 @@ public class PouchEntity extends ThrowableItemProjectile {
       this.discard();
     } else if (type == HitResult.Type.BLOCK) {
       this.onHitBlock((BlockHitResult) hitResult);
-      if (level instanceof ServerLevel sw && !stack.isEmpty()) {
+      if (level() instanceof ServerLevel sw && !stack.isEmpty()) {
         sw.sendParticles(
             new ItemParticleOption(ParticleTypes.ITEM, ItemStackTemplate.fromNonEmptyStack(stack)),
             getX(),
@@ -92,8 +92,8 @@ public class PouchEntity extends ThrowableItemProjectile {
 
   @Override
   protected void onHitEntity(EntityHitResult entityHitResult) {
-    if (!level.isClientSide()) {
-      var stacks = MiscUtil.prepareLoot(level, this.getPouchType().getLootId(getItem()));
+    if (!level().isClientSide()) {
+      var stacks = MiscUtil.prepareLoot(level(), this.getPouchType().getLootId(getItem()));
 
       Entity entity = entityHitResult.getEntity();
       if (entity instanceof Player pe) {
@@ -101,39 +101,41 @@ public class PouchEntity extends ThrowableItemProjectile {
         return;
       } else if (entity instanceof InventoryCarrier io) {
         var storage = ContainerStorage.of(io.getInventory(), null);
-        stacks.forEach(stack -> PouchesMain.tryInsertItem(level, this.position(), stack, storage));
+        stacks.forEach(
+            stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
         return;
       } else if (entity instanceof Container inv) {
         var storage = ContainerStorage.of(inv, null);
-        stacks.forEach(stack -> PouchesMain.tryInsertItem(level, this.position(), stack, storage));
+        stacks.forEach(
+            stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
         return;
       }
       stacks.forEach(stack -> ItemStackUtil.spawnVelocity(
-          this.position(), stack, level, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
+          this.position(), stack, level(), -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
     }
   }
 
   @Override
   protected void onHitBlock(BlockHitResult blockHitResult) {
-    if (!level.isClientSide()) {
-      var stacks = MiscUtil.prepareLoot(level, this.getPouchType().getLootId(getItem()));
+    if (!level().isClientSide()) {
+      var stacks = MiscUtil.prepareLoot(level(), this.getPouchType().getLootId(getItem()));
 
-      var be = level.getBlockEntity(blockHitResult.getBlockPos());
+      var be = level().getBlockEntity(blockHitResult.getBlockPos());
       if ((be != null && PouchesMain.getViewCount(be) > 0)) {
         var storage = ItemStorage.SIDED.find(
-            level,
+            level(),
             blockHitResult.getBlockPos(),
-            level.getBlockState(blockHitResult.getBlockPos()),
+            level().getBlockState(blockHitResult.getBlockPos()),
             be,
             blockHitResult.getDirection());
         if (storage != null) {
           stacks.forEach(
-              stack -> PouchesMain.tryInsertItem(level, this.position(), stack, storage));
+              stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
           return;
         }
       }
       stacks.forEach(stack -> ItemStackUtil.spawnVelocity(
-          this.position(), stack, level, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
+          this.position(), stack, level(), -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
     }
   }
 
