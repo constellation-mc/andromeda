@@ -4,10 +4,10 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
+import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
 import dev.zenfyr.pulsar.api.util.ExceptionUtil;
 import java.lang.reflect.Field;

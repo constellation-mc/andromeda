@@ -4,8 +4,8 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
+import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.core.Registry;

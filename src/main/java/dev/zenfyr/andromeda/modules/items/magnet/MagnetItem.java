@@ -4,9 +4,9 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import com.google.common.collect.ImmutableSet;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.magnet.client.MagnetClient;
+import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.Collections;

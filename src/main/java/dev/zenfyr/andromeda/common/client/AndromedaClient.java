@@ -2,17 +2,14 @@ package dev.zenfyr.andromeda.common.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
-import dev.zenfyr.pulsar.api.client.creativetab.CreativeModeTabAnimation;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.util.function.Consumer;
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.Util;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
@@ -26,9 +23,6 @@ public class AndromedaClient implements ClientModInitializer {
       Platform.getPlatform().getConfigDir(),
       "client",
       RegisterConfigEvent.CLIENT);
-  private static final ResourceLocation BACKGROUND_TEXTURE =
-      Andromeda.id("textures/gui/background.png");
-  private static final ResourceLocation GALAXY_TEXTURE = Andromeda.id("textures/gui/galaxy.png");
 
   @Override
   public void onInitializeClient() {
@@ -40,19 +34,6 @@ public class AndromedaClient implements ClientModInitializer {
     CLIENT.saveAll();
 
     InitEvents.CLIENT.invoker().onModuleClientInit().runEntrypoint();
-
-    if (Andromeda.GROUP.isPresent()) {
-      CreativeModeTabAnimation.setIconAnimation(
-          Andromeda.GROUP.orThrow(), (tab, graphics, x, y, selected, isTopRow) -> {
-            drawTexture(graphics.pose(), x + 8, y + 8, stack -> {}, BACKGROUND_TEXTURE);
-            drawTexture(
-                graphics.pose(),
-                x + 8,
-                y + 8,
-                stack -> stack.mulPose(Axis.ZN.rotationDegrees(Util.getMillis() * 0.05f)),
-                GALAXY_TEXTURE);
-          });
-    }
   }
 
   public static AndromedaClient get() {

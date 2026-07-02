@@ -387,6 +387,9 @@
 
   "config.andromeda.category.misc": "Misc",
 
+  "config.andromeda.misc.creative_mode_tab": "Creative Mode Tab",
+  "config.andromeda.misc.creative_mode_tab.@Tooltip": "Andromeda's creative mode tab with items from other modules.",
+
   "config.andromeda.misc.translations": "Auto Update Translations",
   "config.andromeda.misc.translations.@Tooltip": "Try to download latest translations from GitHub.",
   "config.andromeda.misc.translations.option.baseUrl": "Base URL",
