@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import lombok.With;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
@@ -224,8 +225,12 @@ public class MagnetItem extends Item {
         MAGNET_KEY,
         new MagnetItem(new Item.Properties().setId(MAGNET_KEY).stacksTo(1))));
 
-    AndromedaCreativeTab.BUS.listen(acceptor ->
-        acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, MagnetItem.MAGNET));
+    CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        .register(entries -> entries.accept(MagnetItem.MAGNET.orThrow()));
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.keeper(module, MagnetItem.MAGNET));
+    }
   }
 
   @With

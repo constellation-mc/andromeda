@@ -8,6 +8,7 @@ import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.NotifyClientPayload;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.packets.UsedCustomTotemPayload;
 import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.core.Registry;
@@ -54,7 +55,11 @@ public final class InfiniteTotemMain {
     PayloadTypeRegistry.clientboundPlay()
         .register(NotifyClientPayload.ID, NotifyClientPayload.CODEC);
 
-    AndromedaCreativeTab.BUS.listen(
-        acceptor -> acceptor.keeper(module, CreativeModeTabs.COMBAT, INFINITE_TOTEM));
+    CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT)
+        .register(entries -> entries.accept(INFINITE_TOTEM.orThrow()));
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.keeper(module, INFINITE_TOTEM));
+    }
   }
 }

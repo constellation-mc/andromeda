@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 
@@ -43,7 +45,15 @@ public class BoatItems {
       });
     }
 
-    AndromedaCreativeTab.BUS.listen(
-        acceptor -> acceptor.items(module, CreativeModeTabs.TOOLS_AND_UTILITIES, list));
+    CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        .register(entries -> {
+          for (Item item : list) {
+            entries.accept(item, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+          }
+        });
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.items(module, list));
+    }
   }
 }
