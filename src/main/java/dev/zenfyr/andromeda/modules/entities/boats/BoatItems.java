@@ -2,8 +2,8 @@ package dev.zenfyr.andromeda.modules.entities.boats;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.modules.entities.boats.items.AndromedaBoatItem;
+import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

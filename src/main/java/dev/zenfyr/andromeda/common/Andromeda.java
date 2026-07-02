@@ -10,9 +10,7 @@ import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.common.config.DataConfigs;
 import dev.zenfyr.andromeda.common.config.GsonBuilderEvent;
 import dev.zenfyr.andromeda.common.config.handler.MultiConfigHandler;
-import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.GsonCodecContext;
-import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.common.util.condition.ItemsRegisteredCondition;
 import dev.zenfyr.andromeda.common.util.condition.ModulesLoadedCondition;
 import dev.zenfyr.pulsar.api.platform.Platform;
@@ -27,7 +25,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -39,8 +36,6 @@ public class Andromeda implements ModInitializer {
 
   public static final MultiConfigHandler MAIN;
   public static final MultiConfigHandler GAME;
-
-  public static final Keeper<CreativeModeTab> GROUP = Keeper.create();
 
   @Getter
   private @Nullable MinecraftServer currentServer;
@@ -84,8 +79,6 @@ public class Andromeda implements ModInitializer {
 
     ResourceConditions.register(ItemsRegisteredCondition.TYPE);
     ResourceConditions.register(ModulesLoadedCondition.TYPE);
-
-    GROUP.init(AndromedaCreativeTab.create());
 
     // Keep a reference to the currently running server.
     ServerLifecycleEvents.SERVER_STARTING.register(server -> this.currentServer = server);

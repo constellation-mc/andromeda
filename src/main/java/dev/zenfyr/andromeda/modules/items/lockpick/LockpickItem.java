@@ -4,10 +4,10 @@ import static dev.zenfyr.andromeda.common.Andromeda.id;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLoot;
 import dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLootMain;
+import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import net.minecraft.core.Registry;
