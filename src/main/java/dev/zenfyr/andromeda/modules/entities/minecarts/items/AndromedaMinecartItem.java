@@ -42,7 +42,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
       return InteractionResult.FAIL;
     } else {
       ItemStack itemStack = context.getItemInHand();
-      if (!world.isClientSide) {
+      if (!world.isClientSide()) {
         RailShape railShape = blockState.getBlock() instanceof BaseRailBlock
             ? blockState.getValue(((BaseRailBlock) blockState.getBlock()).getShapeProperty())
             : RailShape.NORTH_SOUTH;
@@ -68,7 +68,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
       }
 
       itemStack.shrink(1);
-      return InteractionResult.sidedSuccess(world.isClientSide);
+      return InteractionResult.sidedSuccess(world.isClientSide());
     }
   }
 

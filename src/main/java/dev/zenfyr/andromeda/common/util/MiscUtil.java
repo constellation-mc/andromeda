@@ -34,7 +34,7 @@ public class MiscUtil {
   }
 
   public static void crudeSetVelocity(Entity entity, Vec3 velocity) {
-    if (!entity.level.isClientSide) {
+    if (!entity.level.isClientSide()) {
       entity.setDeltaMovement(velocity);
       for (ServerPlayer player : PlayerLookup.tracking(entity)) {
         player.connection.send(new ClientboundSetEntityMotionPacket(entity));

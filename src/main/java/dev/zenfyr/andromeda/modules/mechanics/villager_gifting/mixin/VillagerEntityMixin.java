@@ -75,11 +75,11 @@ abstract class VillagerEntityMixin extends AbstractVillager {
     if (this.getInventory().canAddItem(stack)) {
       this.getInventory().addItem(stack);
       this.gossips.add(player.getUUID(), type, 3);
-      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide));
+      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide()));
       return true;
     } else {
       this.setUnhappy();
-      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide));
+      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide()));
       return false;
     }
   }

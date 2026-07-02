@@ -46,7 +46,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
   public boolean hurt(DamageSource source, float amount) {
     if (this.isInvulnerableTo(source)) {
       return false;
-    } else if (!this.level.isClientSide && !this.isRemoved()) {
+    } else if (!this.level.isClientSide() && !this.isRemoved()) {
       this.setHurtDir(-this.getHurtDir());
       this.setHurtTime(10);
       this.setDamage(this.getDamage() + amount * 10.0F);
@@ -100,7 +100,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
         return InteractionResult.SUCCESS;
       }
     super.interact(player, hand);
-    return InteractionResult.sidedSuccess(this.level.isClientSide);
+    return InteractionResult.sidedSuccess(this.level.isClientSide());
   }
 
   public void stopPlaying() {

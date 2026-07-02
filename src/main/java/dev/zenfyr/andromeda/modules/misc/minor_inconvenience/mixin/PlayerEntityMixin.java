@@ -37,7 +37,7 @@ abstract class PlayerEntityMixin extends LivingEntity {
       cancellable = true)
   private void andromeda$damage(
       DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-    if (!level.isClientSide
+    if (!level.isClientSide()
         && !source.is(AGONY)
         && level.am$get(MinorInconvenience.CONFIG).available) {
       DamageSource damageSource = this.level().damageSources().source(AGONY, this);

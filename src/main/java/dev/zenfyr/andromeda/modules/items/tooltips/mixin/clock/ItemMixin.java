@@ -30,7 +30,7 @@ abstract class ItemMixin {
       CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).clock) return;
 
-    if (world != null && world.isClientSide) {
+    if (world != null && world.isClientSide()) {
       if (stack.getItem() == Items.CLOCK) {
         // totally not stolen from here
         // https://bukkit.org/threads/how-can-i-convert-minecraft-long-time-to-real-hours-and-minutes.122912/

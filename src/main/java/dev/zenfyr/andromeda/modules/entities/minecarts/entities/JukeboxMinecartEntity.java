@@ -65,7 +65,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
 
   @Override
   public boolean hurt(DamageSource source, float amount) {
-    if (this.level.isClientSide || this.isRemoved()) {
+    if (this.level.isClientSide() || this.isRemoved()) {
       return true;
     } else if (this.isInvulnerableTo(source)) {
       return false;
@@ -128,7 +128,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
         stackInHand.shrink(1);
         player.awardStat(Stats.PLAY_RECORD);
       }
-    return InteractionResult.sidedSuccess(this.level.isClientSide);
+    return InteractionResult.sidedSuccess(this.level.isClientSide());
   }
 
   public void stopPlaying() {

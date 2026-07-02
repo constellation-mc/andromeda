@@ -40,7 +40,7 @@ abstract class EntityMixin extends Entity {
 
   @Inject(at = @At("HEAD"), method = "baseTick")
   public void andromeda$tick(CallbackInfo ci) {
-    if (!this.level.isClientSide && this.level.am$get(LeafSlowdown.CONFIG).available) {
+    if (!this.level.isClientSide() && this.level.am$get(LeafSlowdown.CONFIG).available) {
       AttributeInstance attributeInstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
       if (this.level.getBlockState(blockPosition().below()).is(BlockTags.LEAVES)
           || (this.level.getBlockState(new BlockPos(blockPosition().below(2))).is(BlockTags.LEAVES)

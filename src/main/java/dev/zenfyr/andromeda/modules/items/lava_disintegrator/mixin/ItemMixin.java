@@ -33,7 +33,7 @@ abstract class ItemMixin {
               > 0) return;
 
       cursorStackReference.set(ItemStack.EMPTY);
-      if (player.level.isClientSide)
+      if (player.level.isClientSide())
         LavaDisintegratorClient.spawnLavaParticles(
             (int) Math.max(2, Math.sqrt(otherStack.getCount())));
       cir.setReturnValue(true);

@@ -51,7 +51,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
     this.cycleNote();
     this.playNote(level, new Vec3(getX(), getY() - 1, getZ()));
     player.awardStat(Stats.TUNE_NOTEBLOCK);
-    return InteractionResult.sidedSuccess(level.isClientSide);
+    return InteractionResult.sidedSuccess(level.isClientSide());
   }
 
   @Override

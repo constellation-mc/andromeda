@@ -95,7 +95,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     if (this.isInvulnerableTo(source)) {
       return false;
-    } else if (!this.level.isClientSide && !this.isRemoved()) {
+    } else if (!this.level.isClientSide() && !this.isRemoved()) {
       this.setHurtDir(-this.getHurtDir());
       this.setHurtTime(10);
       this.setDamage(this.getDamage() + amount * 10.0F);
@@ -153,14 +153,14 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   public void setFuse() {
     if (this.fuseTicks == -1) {
       this.fuseTicks = 50 + level.getRandom().nextInt(20);
-      if (!level.isClientSide) {
+      if (!level.isClientSide()) {
         level.playSound(null, this, SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1F, 1F);
       }
     }
   }
 
   public void explode() {
-    if (!this.level.isClientSide) {
+    if (!this.level.isClientSide()) {
       this.discard();
       this.level.explode(
           this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.TNT);

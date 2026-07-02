@@ -35,7 +35,7 @@ abstract class ItemMixin {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).recoveryCompass) return;
 
     if (world != null)
-      if (world.isClientSide) {
+      if (world.isClientSide()) {
         var player = Minecraft.getInstance().player;
         if (stack.getItem() == Items.RECOVERY_COMPASS && player != null) {
           var optional = player.getLastDeathLocation();

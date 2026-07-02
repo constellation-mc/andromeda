@@ -73,7 +73,7 @@ public class AndromedaBoatItem<T extends Boat> extends Item {
         if (!world.noCollision(furnace, furnace.getBoundingBox())) {
           return InteractionResultHolder.fail(itemStack);
         } else {
-          if (!world.isClientSide) {
+          if (!world.isClientSide()) {
             world.addFreshEntity(furnace);
             world.gameEvent(
                 user, GameEvent.ENTITY_PLACE, MiscUtil.vec3dAsBlockPos(hitResult.getLocation()));

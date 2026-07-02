@@ -36,7 +36,7 @@ abstract class FletchingTableBlockMixin extends CraftingTableBlock {
       BlockHitResult hit,
       CallbackInfoReturnable<InteractionResult> cir) {
     if (state.is(Blocks.FLETCHING_TABLE)) {
-      if (player.level.isClientSide) {
+      if (player.level.isClientSide()) {
         cir.setReturnValue(InteractionResult.SUCCESS);
         return;
       }

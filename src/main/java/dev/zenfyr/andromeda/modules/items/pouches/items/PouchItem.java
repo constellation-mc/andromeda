@@ -60,7 +60,7 @@ public class PouchItem extends Item {
         SoundSource.NEUTRAL,
         0.5F,
         0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
-    if (!world.isClientSide) {
+    if (!world.isClientSide()) {
       var entity = new PouchEntity(user, world);
       entity.setPouchType(this.type);
       entity.setPosRaw(user.getX(), user.getEyeY() - 0.1F, user.getZ());

@@ -71,7 +71,7 @@ public class HopperBoatEntity extends ChestBoat implements Hopper {
   @Override
   public void tick() {
     super.tick();
-    if (!this.level.isClientSide && this.isAlive()) {
+    if (!this.level.isClientSide() && this.isAlive()) {
       BlockPos blockPos = this.blockPosition();
       if (blockPos.equals(this.currentBlockPos)) {
         --this.transferCooldown;

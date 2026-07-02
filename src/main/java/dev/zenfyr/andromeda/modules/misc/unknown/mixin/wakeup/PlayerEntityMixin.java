@@ -30,7 +30,7 @@ abstract class PlayerEntityMixin {
       boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
     Player player = (Player) (Object) this;
 
-    if (!player.level.isClientSide)
+    if (!player.level.isClientSide())
       if (player.level.getRandom().nextInt(100000) == 0) {
         Optional<BlockPos> optional = UnknownUtil.pickRandomSpot(
             player.level, player.blockPosition(), 10, player.level.getRandom());

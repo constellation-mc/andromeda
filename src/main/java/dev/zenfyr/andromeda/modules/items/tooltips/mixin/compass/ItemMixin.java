@@ -36,7 +36,7 @@ abstract class ItemMixin {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).compass) return;
 
     if (world != null)
-      if (world.isClientSide) {
+      if (world.isClientSide()) {
         var player = Minecraft.getInstance().player;
         if (stack.getItem() == Items.COMPASS && player != null) {
           boolean lodestone = stack.hasTag() && CompassItem.isLodestoneCompass(stack);

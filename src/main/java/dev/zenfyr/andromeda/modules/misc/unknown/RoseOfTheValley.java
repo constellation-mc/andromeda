@@ -60,7 +60,7 @@ public class RoseOfTheValley extends BlockItem {
     player.getInventory().placeItemBackInInventory(new ItemStack(ROSE_OF_THE_VALLEY.orThrow()));
     stack.shrink(1);
     otherStack.shrink(1);
-    if (player.level.isClientSide) {
+    if (player.level.isClientSide()) {
       UnknownClient.roseParticles();
     }
   }

@@ -39,7 +39,7 @@ public class AnvilMinecartEntity extends AbstractMinecart {
 
   @Override
   public InteractionResult interact(Player player, InteractionHand hand) {
-    return InteractionResult.sidedSuccess(level.isClientSide);
+    return InteractionResult.sidedSuccess(level.isClientSide());
   }
 
   @Override
