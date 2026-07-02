@@ -2,7 +2,6 @@ package dev.zenfyr.andromeda.modules.entities.minecarts;
 
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.common.util.AndromedaCreativeTab;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.entities.minecarts.entities.AnvilMinecartEntity;
 import dev.zenfyr.andromeda.modules.entities.minecarts.items.AndromedaMinecartItem;
@@ -11,6 +10,7 @@ import dev.zenfyr.andromeda.modules.entities.minecarts.items.NoteBlockMinecartIt
 import dev.zenfyr.andromeda.modules.entities.minecarts.items.SpawnerMinecartItem;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.MinecartBlockPicking;
 import dev.zenfyr.andromeda.modules.items.minecart_block_picking.PickUpBehaviorHandler;
+import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import dev.zenfyr.pulsar.api.nbt.CompoundTagBuilder;
 import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.List;
