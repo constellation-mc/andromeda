@@ -52,12 +52,12 @@ abstract class LivingEntityMixin extends Entity {
       CallbackInfoReturnable<Boolean> cir,
       @Local(ordinal = 0) ItemStack itemStack) {
     if (itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow())) {
-      if (!level.isClientSide()) {
+      if (!level().isClientSide()) {
         var payload = new UsedCustomTotemPayload(
             this.getUUID(),
             new ItemStack(InfiniteTotemMain.INFINITE_TOTEM.orThrow()),
             InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.orThrow());
-        for (Player player : PlayerUtil.findPlayersInRange(level, blockPosition(), 120)) {
+        for (Player player : PlayerUtil.findPlayersInRange(level(), blockPosition(), 120)) {
           ServerPlayNetworking.send((ServerPlayer) player, payload);
         }
       }

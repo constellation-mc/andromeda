@@ -85,7 +85,7 @@ public class HopperBoatEntity extends AbstractChestBoat implements Hopper {
   @Override
   public void tick() {
     super.tick();
-    if (!this.level.isClientSide() && this.isAlive()) {
+    if (!this.level().isClientSide() && this.isAlive()) {
       BlockPos blockPos = this.blockPosition();
       if (blockPos.equals(this.currentBlockPos)) {
         --this.transferCooldown;
@@ -104,13 +104,14 @@ public class HopperBoatEntity extends AbstractChestBoat implements Hopper {
   }
 
   public boolean canOperate() {
-    if (HopperBlockEntity.suckInItems(this.level, this)) {
+    if (HopperBlockEntity.suckInItems(this.level(), this)) {
       return true;
     } else {
-      List<ItemEntity> list = this.level.getEntitiesOfClass(
-          ItemEntity.class,
-          this.getBoundingBox().inflate(0.25, 0.0, 0.25),
-          EntitySelector.ENTITY_STILL_ALIVE);
+      List<ItemEntity> list = this.level()
+          .getEntitiesOfClass(
+              ItemEntity.class,
+              this.getBoundingBox().inflate(0.25, 0.0, 0.25),
+              EntitySelector.ENTITY_STILL_ALIVE);
       if (!list.isEmpty()) {
         HopperBlockEntity.addItem(this, list.get(0));
       }

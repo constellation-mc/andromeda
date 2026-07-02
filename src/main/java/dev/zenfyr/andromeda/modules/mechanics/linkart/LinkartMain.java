@@ -136,7 +136,7 @@ public class LinkartMain {
 
     if (!((LinkableMinecart) entity).linkart$getLinkItem().isEmpty()) {
       entity.spawnAtLocation(
-          (ServerLevel) entity.level, ((LinkableMinecart) entity).linkart$getLinkItem());
+          (ServerLevel) entity.level(), ((LinkableMinecart) entity).linkart$getLinkItem());
       spawnChainParticles(entity);
     }
 

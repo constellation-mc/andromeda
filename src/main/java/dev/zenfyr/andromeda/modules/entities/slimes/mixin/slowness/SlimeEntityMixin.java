@@ -44,17 +44,17 @@ abstract class SlimeEntityMixin extends Mob {
   }
 
   @Unique private void andromeda$tryApplyEffect(LivingEntity target) {
-    if (level.isClientSide()) return;
+    if (level().isClientSide()) return;
 
-    var config = this.level.am$get(Slimes.CONFIG);
+    var config = this.level().am$get(Slimes.CONFIG);
     if (!config.available) return;
     if (!config.slowness) return;
 
     MobEffectInstance effectInstance =
         new MobEffectInstance(MobEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);
     target.addEffect(effectInstance);
-    if (level.getGameTime() % 3 == 0) {
-      ((ServerLevel) level)
+    if (level().getGameTime() % 3 == 0) {
+      ((ServerLevel) level())
           .sendParticles(
               getParticleType(), target.getX(), target.getY(), target.getZ(), 5, 0.2, 0.7, 0.2, 0);
     }

@@ -46,7 +46,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
       ItemStackUtil.spawnVelocity(
           new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
           this.record,
-          this.level,
+          this.level(),
           -0.2,
           0.2,
           0.1,
@@ -103,12 +103,12 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   @Override
   public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
     ItemStack stackInHand = player.getItemInHand(hand);
-    if (!level.isClientSide())
+    if (!level().isClientSide())
       if (!this.record.isEmpty()) {
         ItemStackUtil.spawnVelocity(
             new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
             this.record,
-            this.level,
+            this.level(),
             -0.2,
             0.2,
             0.1,
@@ -127,14 +127,14 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   }
 
   public void stopPlaying() {
-    for (Player player1 : level.players()) {
+    for (Player player1 : level().players()) {
       ServerPlayNetworking.send(
           (ServerPlayer) player1, new RecordPlaybackS2CPayload(this.getUUID(), ItemStack.EMPTY));
     }
   }
 
   public void startPlaying() {
-    for (Player player1 : level.players()) {
+    for (Player player1 : level().players()) {
       ServerPlayNetworking.send(
           (ServerPlayer) player1, new RecordPlaybackS2CPayload(this.getUUID(), this.record));
     }

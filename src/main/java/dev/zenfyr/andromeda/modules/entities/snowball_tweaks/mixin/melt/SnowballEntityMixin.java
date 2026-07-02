@@ -23,12 +23,12 @@ abstract class SnowballEntityMixin extends Projectile {
   @Inject(at = @At("HEAD"), method = "tick()V")
   public void andromeda$melt(CallbackInfo ci) {
     if (!((ThrowableProjectile) (Object) this instanceof Snowball)) return;
-    if (level.isClientSide() || !this.isOnFire()) return;
+    if (level().isClientSide() || !this.isOnFire()) return;
 
-    var config = level.am$get(Snowballs.CONFIG);
+    var config = level().am$get(Snowballs.CONFIG);
     if (!config.available || !config.melt) return;
 
-    ((ServerLevel) level)
+    ((ServerLevel) level())
         .sendParticles(
             ParticleTypes.FALLING_WATER,
             this.getX(),

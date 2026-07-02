@@ -43,7 +43,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
 
   @Override
   public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
-    this.playNote(level, new Vec3(getX(), getY() - 1, getZ()));
+    this.playNote(level(), new Vec3(getX(), getY() - 1, getZ()));
     super.hurtServer(level, source, amount);
     return true;
   }
@@ -51,7 +51,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   @Override
   public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
     this.cycleNote();
-    this.playNote(level, new Vec3(getX(), getY(), getZ()));
+    this.playNote(level(), new Vec3(getX(), getY(), getZ()));
     player.awardStat(Stats.TUNE_NOTEBLOCK);
     return InteractionResult.SUCCESS;
   }
@@ -59,7 +59,7 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   @Override
   public void activateMinecart(ServerLevel level, int x, int y, int z, boolean powered) {
     if (powered && !this.isPowered) {
-      playNote(this.level, new Vec3(getX(), getY(), getZ()));
+      playNote(this.level(), new Vec3(getX(), getY(), getZ()));
     }
   }
 
@@ -68,17 +68,17 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
     int i = Mth.floor(this.getX());
     int j = Mth.floor(this.getY());
     int k = Mth.floor(this.getZ());
-    if (this.level.getBlockState(new BlockPos(i, j - 1, k)).is(BlockTags.RAILS)) {
+    if (this.level().getBlockState(new BlockPos(i, j - 1, k)).is(BlockTags.RAILS)) {
       --j;
     }
 
-    if (!level.isClientSide()) {
+    if (!level().isClientSide()) {
       BlockPos blockPos = new BlockPos(i, j, k);
-      BlockState blockState = this.level.getBlockState(blockPos);
+      BlockState blockState = this.level().getBlockState(blockPos);
       if (BaseRailBlock.isRail(blockState)) {
         if (blockState.is(Blocks.ACTIVATOR_RAIL)) {
           if (blockState.getValue(PoweredRailBlock.POWERED)) {
-            this.activateMinecart((ServerLevel) level, i, j, k, true);
+            this.activateMinecart((ServerLevel) level(), i, j, k, true);
             this.isPowered = true;
           } else {
             this.isPowered = false;
@@ -141,13 +141,15 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
 
     int i = this.note;
     float f = (float) Math.pow(2.0, (i - 12) / 12.0);
-    this.level.playSound(
-        null,
-        new BlockPos(Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z())),
-        instrument.getSoundEvent().value(),
-        SoundSource.RECORDS,
-        3.0F,
-        f);
-    this.level.addParticle(ParticleTypes.NOTE, pos.x(), pos.y() + 1.2, pos.z(), i / 24.0, 0.0, 0.0);
+    this.level()
+        .playSound(
+            null,
+            new BlockPos(Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z())),
+            instrument.getSoundEvent().value(),
+            SoundSource.RECORDS,
+            3.0F,
+            f);
+    this.level()
+        .addParticle(ParticleTypes.NOTE, pos.x(), pos.y() + 1.2, pos.z(), i / 24.0, 0.0, 0.0);
   }
 }
