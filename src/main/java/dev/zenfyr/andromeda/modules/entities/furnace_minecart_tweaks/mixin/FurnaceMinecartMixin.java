@@ -29,8 +29,8 @@ abstract class FurnaceMinecartMixin {
     ItemStack stack = player.getItemInHand(hand);
 
     MinecartFurnace furnaceMinecart = (MinecartFurnace) (Object) this;
-    if (furnaceMinecart.level.fuelValues().isFuel(stack)) {
-      int itemFuel = furnaceMinecart.level.fuelValues().burnDuration(stack);
+    if (furnaceMinecart.level().fuelValues().isFuel(stack)) {
+      int itemFuel = furnaceMinecart.level().fuelValues().burnDuration(stack);
       if ((this.fuel + (itemFuel * 2.25))
           <= Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel) {
         if (!player.getAbilities().instabuild) {

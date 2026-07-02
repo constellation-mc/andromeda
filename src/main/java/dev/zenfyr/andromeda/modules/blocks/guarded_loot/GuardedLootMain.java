@@ -83,7 +83,7 @@ public final class GuardedLootMain {
     player.displayClientMessage(
         TextUtil.translatable("andromeda.container.guarded").withStyle(ChatFormatting.RED), true);
 
-    if (!player.level.isClientSide()) {
+    if (!player.level().isClientSide()) {
       ((ServerPlayer) player)
           .connection.send(new ClientboundSoundPacket(
               BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.CHEST_LOCKED),

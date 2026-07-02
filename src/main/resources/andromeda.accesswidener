@@ -9,7 +9,6 @@ mutable field net/minecraft/client/gui/components/Button onPress Lnet/minecraft/
 accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
 accessible field net/minecraft/client/gui/screens/Screen narratables Ljava/util/List;
 accessible field net/minecraft/client/gui/screens/Screen children Ljava/util/List;
-accessible field net/minecraft/world/entity/Entity level Lnet/minecraft/world/level/Level;
 
 # blocks/campfire_tweaks
 accessible method net/minecraft/server/level/ServerLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;

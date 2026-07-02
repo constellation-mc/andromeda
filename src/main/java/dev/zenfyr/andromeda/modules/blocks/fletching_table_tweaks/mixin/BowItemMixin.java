@@ -31,7 +31,7 @@ abstract class BowItemMixin extends ProjectileWeaponItem {
     int a = stack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);
     if (a > 0) {
       stack.set(FletchingScreenHandler.TIGHTENED.get(), a - 1);
-      return f * player.level.am$get(FletchingTableTweaks.CONFIG).divergenceModifier;
+      return f * player.level().am$get(FletchingTableTweaks.CONFIG).divergenceModifier;
     }
     return f;
   }

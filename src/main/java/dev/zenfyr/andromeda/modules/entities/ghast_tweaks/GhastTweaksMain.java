@@ -9,17 +9,19 @@ public final class GhastTweaksMain {
   static void init() {
     ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
       if (entity instanceof Ghast) {
-        var c = entity.level.am$get(GhastTweaks.CONFIG);
+        var c = entity.level().am$get(GhastTweaks.CONFIG);
         if (!c.available) return;
 
         if (c.explodeOnDeath)
-          entity.level.explode(
-              entity,
-              entity.getX(),
-              entity.getY(),
-              entity.getZ(),
-              c.explosionPower,
-              Level.ExplosionInteraction.MOB);
+          entity
+              .level()
+              .explode(
+                  entity,
+                  entity.getX(),
+                  entity.getY(),
+                  entity.getZ(),
+                  c.explosionPower,
+                  Level.ExplosionInteraction.MOB);
       }
     });
   }

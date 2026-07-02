@@ -43,13 +43,13 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
   private void andromeda$tick(CallbackInfo ci) {
     if (!Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).takeFuelWhenLow) return;
 
-    if (!this.level.isClientSide() && this.fuel < 100) {
-      if (level.getGameTime() % 20 == 0) {
+    if (!this.level().isClientSide() && this.fuel < 100) {
+      if (level().getGameTime() % 20 == 0) {
         if (fb$pauseFuel
             .map(f -> ExceptionUtil.supply(() -> f.getInt(this)) > 0)
             .orElse(false)) return;
 
-        AbstractMinecart entity = this.level
+        AbstractMinecart entity = this.level()
             .getEntitiesOfClass(
                 AbstractMinecart.class,
                 this.getBoundingBox().inflate(1.5, 0, 1.5),
@@ -61,13 +61,13 @@ abstract class FurnaceMinecartIntakeMixin extends AbstractMinecart {
         if (entity instanceof Container inventory) {
           for (int i = 0; i < inventory.getContainerSize(); ++i) {
             ItemStack stack = inventory.getItem(i);
-            if (level.fuelValues().isFuel(stack)) {
-              int itemFuel = level.fuelValues().burnDuration(stack);
+            if (level().fuelValues().isFuel(stack)) {
+              int itemFuel = level().fuelValues().burnDuration(stack);
               if ((this.fuel + (itemFuel * 2.25))
                   <= Andromeda.MAIN.get(FurnaceMinecartTweaks.CONFIG).maxFuel) {
                 ItemStack reminder = stack.getRecipeRemainder();
                 if (!reminder.isEmpty())
-                  ItemStackUtil.spawn(entity.position(), stack.getRecipeRemainder(), level);
+                  ItemStackUtil.spawn(entity.position(), stack.getRecipeRemainder(), level());
                 stack.shrink(1);
 
                 this.fuel += (int) (itemFuel * 2.25);

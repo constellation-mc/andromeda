@@ -31,16 +31,16 @@ abstract class ItemMixin {
     if (clickType == ClickAction.SECONDARY && stack.is(Items.LAVA_BUCKET)) {
       var damageResistant = otherStack.get(DataComponents.DAMAGE_RESISTANT);
       if (damageResistant != null
-          && damageResistant.isResistantTo(player.level.damageSources().inFire())) {
+          && damageResistant.isResistantTo(player.level().damageSources().inFire())) {
         return;
       }
 
       if (EnchantmentHelper.getItemEnchantmentLevel(
-              player.level.registryAccess().getOrThrow(Enchantments.FIRE_PROTECTION), otherStack)
+              player.level().registryAccess().getOrThrow(Enchantments.FIRE_PROTECTION), otherStack)
           > 0) return;
 
       cursorStackReference.set(ItemStack.EMPTY);
-      if (player.level.isClientSide())
+      if (player.level().isClientSide())
         LavaDisintegratorClient.spawnLavaParticles(
             (int) Math.max(2, Math.sqrt(otherStack.getCount())));
       cir.setReturnValue(true);

@@ -22,8 +22,8 @@ public class VillagerTemptGoal extends TemptGoal {
 
   @Override
   public boolean canUse() {
-    if (this.mob.level.isClientSide()) return false;
-    if (!this.mob.level.am$get(VillagersFollowEmeralds.CONFIG).available) return false;
+    if (this.mob.level().isClientSide()) return false;
+    if (!this.mob.level().am$get(VillagersFollowEmeralds.CONFIG).available) return false;
 
     if (this.calmDown > 0) {
       --this.calmDown;
