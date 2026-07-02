@@ -15,6 +15,7 @@ import dev.zenfyr.pulsar.api.nbt.CompoundTagBuilder;
 import dev.zenfyr.pulsar.api.util.MakeSure;
 import java.util.List;
 import java.util.Objects;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.IdentifierException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
@@ -82,9 +84,19 @@ public class MinecartItems {
           new JukeboxMinecartItem(new Item.Properties().setId(key).stacksTo(1))));
     }
 
-    var l = List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
-    AndromedaCreativeTab.BUS.listen(
-        acceptor -> acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, List.copyOf(l)));
+    List<Keeper<? extends ItemLike>> minecarts =
+        List.of(SPAWNER_MINECART, ANVIL_MINECART, NOTE_BLOCK_MINECART, JUKEBOX_MINECART);
+
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(entries -> {
+      for (Keeper<? extends ItemLike> minecart : minecarts) {
+        if (!minecart.isPresent()) continue;
+        entries.accept(minecart.orThrow());
+      }
+    });
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.keepers(module, minecarts));
+    }
 
     if (ModuleManager.get().get(MinecartBlockPicking.class).isPresent()) {
       if (SPAWNER_MINECART.isPresent()) {

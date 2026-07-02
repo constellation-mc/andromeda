@@ -4,8 +4,6 @@ import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.pulsar.api.event.Bus;
 import java.util.List;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -20,31 +18,26 @@ public interface AndromedaCreativeTab {
   void onCreateCreativeTab(Acceptor acceptor);
 
   interface Acceptor {
-    void stack(Module module, ResourceKey<CreativeModeTab> main, ItemStack stack);
+    void stack(Module module, ItemStack stack);
 
-    default void stacks(Module module, ResourceKey<CreativeModeTab> main, List<ItemStack> stacks) {
+    default void stacks(Module module, List<ItemStack> stacks) {
       for (ItemStack stack : stacks) {
-        stack(module, main, stack);
+        stack(module, stack);
       }
     }
 
-    default <T extends ItemLike> void items(
-        Module module, ResourceKey<CreativeModeTab> main, List<T> items) {
-      stacks(module, main, items.stream().map(ItemStack::new).toList());
+    default <T extends ItemLike> void items(Module module, List<T> items) {
+      stacks(module, items.stream().map(ItemStack::new).toList());
     }
 
-    default <T extends ItemLike> void item(
-        Module module, ResourceKey<CreativeModeTab> main, T item) {
-      stack(module, main, new ItemStack(item));
+    default <T extends ItemLike> void item(Module module, T item) {
+      stack(module, new ItemStack(item));
     }
 
     default <T extends ItemLike> void keepers(
-        Module module,
-        ResourceKey<CreativeModeTab> main,
-        List<Keeper<? extends ItemLike>> keepers) {
+        Module module, List<Keeper<? extends ItemLike>> keepers) {
       stacks(
           module,
-          main,
           keepers.stream()
               .filter(Keeper::isPresent)
               .map(Keeper::orThrow)
@@ -52,9 +45,8 @@ public interface AndromedaCreativeTab {
               .toList());
     }
 
-    default <T extends ItemLike> void keeper(
-        Module module, ResourceKey<CreativeModeTab> main, Keeper<T> keeper) {
-      if (keeper.isPresent()) stack(module, main, new ItemStack(keeper.orThrow()));
+    default <T extends ItemLike> void keeper(Module module, Keeper<T> keeper) {
+      if (keeper.isPresent()) stack(module, new ItemStack(keeper.orThrow()));
     }
   }
 }
