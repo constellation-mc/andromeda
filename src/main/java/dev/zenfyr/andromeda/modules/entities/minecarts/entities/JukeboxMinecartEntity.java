@@ -51,7 +51,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
       ItemStackUtil.spawnVelocity(
           new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
           this.record,
-          this.level,
+          this.level(),
           -0.2,
           0.2,
           0.1,
@@ -65,7 +65,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
 
   @Override
   public boolean hurt(DamageSource source, float amount) {
-    if (this.level.isClientSide() || this.isRemoved()) {
+    if (this.level().isClientSide() || this.isRemoved()) {
       return true;
     } else if (this.isInvulnerableTo(source)) {
       return false;
@@ -94,7 +94,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   @Override
   public void destroy(DamageSource damageSource) {
     super.destroy(damageSource);
-    if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+    if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
       this.spawnAtLocation(record.getItem());
     }
   }
@@ -108,12 +108,12 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   @Override
   public InteractionResult interact(Player player, InteractionHand hand) {
     ItemStack stackInHand = player.getItemInHand(hand);
-    if (!level.isClientSide())
+    if (!level().isClientSide())
       if (!this.record.isEmpty()) {
         ItemStackUtil.spawnVelocity(
             new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
             this.record,
-            this.level,
+            this.level(),
             -0.2,
             0.2,
             0.1,
@@ -128,13 +128,13 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
         stackInHand.shrink(1);
         player.awardStat(Stats.PLAY_RECORD);
       }
-    return InteractionResult.sidedSuccess(this.level.isClientSide());
+    return InteractionResult.sidedSuccess(this.level().isClientSide());
   }
 
   public void stopPlaying() {
     FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());
 
-    for (Player player1 : level.players()) {
+    for (Player player1 : level().players()) {
       ServerPlayNetworking.send(
           (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
     }
@@ -143,7 +143,7 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   public void startPlaying() {
     FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.uuid).writeItem(this.record);
 
-    for (Player player1 : level.players()) {
+    for (Player player1 : level().players()) {
       ServerPlayNetworking.send(
           (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
     }

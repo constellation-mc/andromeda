@@ -51,7 +51,7 @@ abstract class FurnaceMinecartMixin {
       furnaceMinecart.zPush = furnaceMinecart.getZ() - player.getZ();
     }
 
-    cir.setReturnValue(InteractionResult.sidedSuccess(furnaceMinecart.level.isClientSide()));
+    cir.setReturnValue(InteractionResult.sidedSuccess(furnaceMinecart.level().isClientSide()));
   }
 
   @Redirect(

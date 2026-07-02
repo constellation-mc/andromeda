@@ -44,7 +44,7 @@ abstract class LivingEntityMixin extends Entity {
   private boolean andromeda$infiniteFallback(
       boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
     return original
-        || (level.am$get(InfiniteTotem.CONFIG).available
+        || (level().am$get(InfiniteTotem.CONFIG).available
             && itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow()));
   }
 
@@ -69,14 +69,14 @@ abstract class LivingEntityMixin extends Entity {
       CallbackInfoReturnable<Boolean> cir,
       @Local(ordinal = 0) ItemStack itemStack) {
     if (itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow())) {
-      if (!level.isClientSide()) {
+      if (!level().isClientSide()) {
         FriendlyByteBuf buf = PacketByteBufs.create()
             .writeUUID(this.getUUID())
             .writeItem(new ItemStack(InfiniteTotemMain.INFINITE_TOTEM.orThrow()));
         buf.writeId(
             BuiltInRegistries.PARTICLE_TYPE, InfiniteTotemMain.KNOCKOFF_TOTEM_PARTICLE.orThrow());
 
-        for (Player player : PlayerUtil.findPlayersInRange(level, blockPosition(), 120)) {
+        for (Player player : PlayerUtil.findPlayersInRange(level(), blockPosition(), 120)) {
           ServerPlayNetworking.send(
               (ServerPlayer) player, InfiniteTotemMain.USED_CUSTOM_TOTEM, buf);
         }

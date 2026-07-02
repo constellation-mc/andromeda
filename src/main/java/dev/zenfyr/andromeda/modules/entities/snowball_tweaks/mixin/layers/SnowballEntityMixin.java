@@ -32,22 +32,23 @@ abstract class SnowballEntityMixin extends Projectile {
   @Inject(at = @At("TAIL"), method = "tick()V")
   public void andromeda$onBlockHit(CallbackInfo ci) {
     if (!((ThrowableProjectile) (Object) this instanceof Snowball)) return;
-    if (level.isClientSide()) return;
+    if (level().isClientSide()) return;
 
-    var config = level.am$get(Snowballs.CONFIG);
+    var config = level().am$get(Snowballs.CONFIG);
     if (!config.available || !config.layers) return;
 
     Vec3 pos = this.position();
     Vec3 vec3d = pos.add(this.getDeltaMovement());
     // We need to recast, since vanilla ignores fluids.
-    BlockHitResult hitResult = this.level.clip(
-        new ClipContext(pos, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.WATER, this));
+    BlockHitResult hitResult = this.level()
+        .clip(
+            new ClipContext(pos, vec3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.WATER, this));
 
     if (hitResult.getType() == HitResult.Type.BLOCK) {
       BlockPos blockPos = hitResult.getBlockPos();
-      FluidState fluidState = this.level.getFluidState(blockPos);
+      FluidState fluidState = this.level().getFluidState(blockPos);
       if (fluidState.isEmpty()) {
-        BlockState blockState = this.level.getBlockState(blockPos);
+        BlockState blockState = this.level().getBlockState(blockPos);
         if (!blockState.isAir()) {
           if (blockState.is(Blocks.SNOW)) {
             int i = blockState.getValue(SnowLayerBlock.LAYERS);
@@ -59,7 +60,7 @@ abstract class SnowballEntityMixin extends Projectile {
           }
 
           BlockPos newPos = blockPos.relative(hitResult.getDirection());
-          BlockState newBlockState = this.level.getBlockState(newPos);
+          BlockState newBlockState = this.level().getBlockState(newPos);
           if (newBlockState.is(Blocks.SNOW)) {
             int i = newBlockState.getValue(SnowLayerBlock.LAYERS);
             BlockState placedState = i < 7
@@ -69,14 +70,15 @@ abstract class SnowballEntityMixin extends Projectile {
             return;
           }
           if (newBlockState.isAir()) {
-            BlockState below = this.level.getBlockState(newPos.below());
-            if (!below.isAir() && Blocks.SNOW.defaultBlockState().canSurvive(this.level, newPos)) {
+            BlockState below = this.level().getBlockState(newPos.below());
+            if (!below.isAir()
+                && Blocks.SNOW.defaultBlockState().canSurvive(this.level(), newPos)) {
               this.andromeda$setStateAndDiscard(
                   newPos, Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1));
               return;
             }
           }
-          this.level.broadcastEntityEvent(this, (byte) 3);
+          this.level().broadcastEntityEvent(this, (byte) 3);
           this.discard();
         }
       } else {
@@ -86,8 +88,8 @@ abstract class SnowballEntityMixin extends Projectile {
   }
 
   @Unique private void andromeda$setStateAndDiscard(BlockPos blockPos, BlockState state) {
-    this.level.setBlock(blockPos, state, Block.UPDATE_ALL);
-    this.level.broadcastEntityEvent(this, (byte) 3);
+    this.level().setBlock(blockPos, state, Block.UPDATE_ALL);
+    this.level().broadcastEntityEvent(this, (byte) 3);
     this.discard();
   }
 }

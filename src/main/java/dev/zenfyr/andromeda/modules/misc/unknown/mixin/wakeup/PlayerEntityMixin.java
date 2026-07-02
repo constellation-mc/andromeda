@@ -30,13 +30,13 @@ abstract class PlayerEntityMixin {
       boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
     Player player = (Player) (Object) this;
 
-    if (!player.level.isClientSide())
-      if (player.level.getRandom().nextInt(100000) == 0) {
+    if (!player.level().isClientSide())
+      if (player.level().getRandom().nextInt(100000) == 0) {
         Optional<BlockPos> optional = UnknownUtil.pickRandomSpot(
-            player.level, player.blockPosition(), 10, player.level.getRandom());
+            player.level(), player.blockPosition(), 10, player.level().getRandom());
         if (optional.isPresent()) {
           BlockPos pos = optional.get();
-          ArmorStand stand = new ArmorStand(player.level, pos.getX(), pos.getY(), pos.getZ());
+          ArmorStand stand = new ArmorStand(player.level(), pos.getX(), pos.getY(), pos.getZ());
           ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
 
           stack.setTag(CompoundTagBuilder.create()
@@ -44,7 +44,7 @@ abstract class PlayerEntityMixin {
               .build());
 
           stand.setItemSlot(EquipmentSlot.HEAD, stack);
-          player.level.addFreshEntity(stand);
+          player.level().addFreshEntity(stand);
           playNotifySound(SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.AMBIENT, 4, 1);
         }
       }

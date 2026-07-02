@@ -49,16 +49,17 @@ public class FurnaceBoatEntity extends BoatEntityWithBlock {
     super.tick();
     if (this.getFuel() > 0) {
       this.setFuel(this.getFuel() - 1);
-      if (this.level.random.nextInt(4) == 0) {
+      if (this.level().random.nextInt(4) == 0) {
         Vec3 vec3d = new Vec3(-0.8, 0.0, 0.0).yRot(-this.getYRot() * PIby180 - PIby2);
-        this.level.addParticle(
-            ParticleTypes.CAMPFIRE_COSY_SMOKE,
-            this.getX() + vec3d.x,
-            this.getY() + 0.8,
-            this.getZ() + vec3d.z,
-            -(this.getDeltaMovement().x * 0.3),
-            0.08,
-            -(this.getDeltaMovement().z * 0.3));
+        this.level()
+            .addParticle(
+                ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                this.getX() + vec3d.x,
+                this.getY() + 0.8,
+                this.getZ() + vec3d.z,
+                -(this.getDeltaMovement().x * 0.3),
+                0.08,
+                -(this.getDeltaMovement().z * 0.3));
       }
     }
   }

@@ -46,7 +46,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
   public boolean hurt(DamageSource source, float amount) {
     if (this.isInvulnerableTo(source)) {
       return false;
-    } else if (!this.level.isClientSide() && !this.isRemoved()) {
+    } else if (!this.level().isClientSide() && !this.isRemoved()) {
       this.setHurtDir(-this.getHurtDir());
       this.setHurtTime(10);
       this.setDamage(this.getDamage() + amount * 10.0F);
@@ -55,7 +55,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
       boolean bl = source.getEntity() instanceof Player player && player.getAbilities().instabuild;
       if (bl || this.getDamage() > 40.0F) {
         this.stopPlaying();
-        if (!bl && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (!bl && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
           this.spawnAtLocation(this.getDropItem());
         }
 
@@ -77,12 +77,12 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
   @Override
   public InteractionResult interact(Player player, InteractionHand hand) {
     ItemStack stackInHand = player.getItemInHand(hand);
-    if (!level.isClientSide())
+    if (!level().isClientSide())
       if (!this.record.isEmpty() && player.isShiftKeyDown()) {
         ItemStackUtil.spawnVelocity(
             new Vec3(this.getX(), this.getY() + 0.5, this.getZ()),
             this.record,
-            this.level,
+            this.level(),
             -0.2,
             0.2,
             0.1,
@@ -100,13 +100,13 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
         return InteractionResult.SUCCESS;
       }
     super.interact(player, hand);
-    return InteractionResult.sidedSuccess(this.level.isClientSide());
+    return InteractionResult.sidedSuccess(this.level().isClientSide());
   }
 
   public void stopPlaying() {
     FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.getUUID());
 
-    for (Player player1 : level.players()) {
+    for (Player player1 : level().players()) {
       ServerPlayNetworking.send(
           (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_STOP_PLAYING, buf);
     }
@@ -115,7 +115,7 @@ public class JukeboxBoatEntity extends BoatEntityWithBlock implements Clearable 
   public void startPlaying() {
     FriendlyByteBuf buf = PacketByteBufs.create().writeUUID(this.uuid).writeItem(this.record);
 
-    for (Player player1 : level.players()) {
+    for (Player player1 : level().players()) {
       ServerPlayNetworking.send(
           (ServerPlayer) player1, ClientSoundHolder.JUKEBOX_START_PLAYING, buf);
     }

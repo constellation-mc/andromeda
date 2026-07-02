@@ -48,10 +48,10 @@ abstract class VillagerEntityMixin extends AbstractVillager {
       method = "mobInteract")
   private void andromeda$useGifts(
       Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-    if (hand != InteractionHand.MAIN_HAND || level.isClientSide()) return;
+    if (hand != InteractionHand.MAIN_HAND || level().isClientSide()) return;
     ItemStack stack = player.getItemInHand(hand);
 
-    if (!level.am$get(VillagerGifting.CONFIG).available) return;
+    if (!level().am$get(VillagerGifting.CONFIG).available) return;
 
     ItemStack gift = stack.copy();
     gift.setCount(1);
@@ -59,7 +59,7 @@ abstract class VillagerEntityMixin extends AbstractVillager {
     for (Map.Entry<TagKey<Item>, GiftTags.Action> entry : GiftTags.ACTION_MAP.entrySet()) {
       if (stack.is(entry.getKey())) {
         if (andromeda$tryInsertGift(cir, player, gift, entry.getValue().type())) {
-          this.level.broadcastEntityEvent(this, entry.getValue().status());
+          this.level().broadcastEntityEvent(this, entry.getValue().status());
           if (!player.isCreative()) stack.shrink(1);
           break;
         }
@@ -75,11 +75,11 @@ abstract class VillagerEntityMixin extends AbstractVillager {
     if (this.getInventory().canAddItem(stack)) {
       this.getInventory().addItem(stack);
       this.gossips.add(player.getUUID(), type, 3);
-      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide()));
+      cir.setReturnValue(InteractionResult.sidedSuccess(this.level().isClientSide()));
       return true;
     } else {
       this.setUnhappy();
-      cir.setReturnValue(InteractionResult.sidedSuccess(this.level.isClientSide()));
+      cir.setReturnValue(InteractionResult.sidedSuccess(this.level().isClientSide()));
       return false;
     }
   }

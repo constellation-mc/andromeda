@@ -48,21 +48,22 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
     if (this.fuseTicks > 0) {
       --this.fuseTicks;
       Vec3 vec3d = new Vec3(-0.55, 0.0, 0.0).yRot(-this.getYRot() * PIby180 - PIby2);
-      level.addParticle(
-          ParticleTypes.SMOKE,
-          this.getX() + vec3d.x,
-          this.getY() + 0.8,
-          this.getZ() + vec3d.z,
-          -(this.getDeltaMovement().x * 0.3),
-          0.08,
-          -(this.getDeltaMovement().z * 0.3));
+      level()
+          .addParticle(
+              ParticleTypes.SMOKE,
+              this.getX() + vec3d.x,
+              this.getY() + 0.8,
+              this.getZ() + vec3d.z,
+              -(this.getDeltaMovement().x * 0.3),
+              0.08,
+              -(this.getDeltaMovement().z * 0.3));
     } else if (this.fuseTicks == 0) {
       this.explode();
     }
 
     if (this.horizontalCollision) {
       if ((this.getFirstPassenger() instanceof Player player)) {
-        if (player.level.isClientSide()) {
+        if (player.level().isClientSide()) {
           BoatsClient.sendExplodePacket(this);
         } else {
           this.explode();
@@ -95,7 +96,7 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
     if (this.isInvulnerableTo(source)) {
       return false;
-    } else if (!this.level.isClientSide() && !this.isRemoved()) {
+    } else if (!this.level().isClientSide() && !this.isRemoved()) {
       this.setHurtDir(-this.getHurtDir());
       this.setHurtTime(10);
       this.setDamage(this.getDamage() + amount * 10.0F);
@@ -152,18 +153,19 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
   public void setFuse() {
     if (this.fuseTicks == -1) {
-      this.fuseTicks = 50 + level.getRandom().nextInt(20);
-      if (!level.isClientSide()) {
-        level.playSound(null, this, SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1F, 1F);
+      this.fuseTicks = 50 + level().getRandom().nextInt(20);
+      if (!level().isClientSide()) {
+        level().playSound(null, this, SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1F, 1F);
       }
     }
   }
 
   public void explode() {
-    if (!this.level.isClientSide()) {
+    if (!this.level().isClientSide()) {
       this.discard();
-      this.level.explode(
-          this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.TNT);
+      this.level()
+          .explode(
+              this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.TNT);
     }
   }
 }

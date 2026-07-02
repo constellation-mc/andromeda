@@ -64,9 +64,9 @@ abstract class ItemEntityMixin extends Entity {
               shift = At.Shift.BEFORE),
       method = "tick")
   private void andromeda$tick(CallbackInfo ci) {
-    if (this.level.isClientSide()) return;
+    if (this.level().isClientSide()) return;
     if (!this.getItem().is(Items.TOTEM_OF_UNDYING)) return;
-    var c = level.am$get(InfiniteTotem.CONFIG);
+    var c = level().am$get(InfiniteTotem.CONFIG);
     if (!c.available || !c.enableAscension) return;
 
     if (tickCount % 35 == 0 && andromeda$ascensionTicks == 0) {
@@ -81,7 +81,7 @@ abstract class ItemEntityMixin extends Entity {
         if (andromeda$ascensionTicks > 0) --andromeda$ascensionTicks;
 
         if (tickCount % 10 == 0) {
-          Optional<ItemEntity> optional = level
+          Optional<ItemEntity> optional = level()
               .getEntitiesOfClass(
                   ItemEntity.class,
                   getBoundingBox().inflate(0.5),
@@ -104,12 +104,12 @@ abstract class ItemEntityMixin extends Entity {
               andromeda$itemEntity.setItem(targetStack);
 
               ItemEntity entity = new ItemEntity(
-                  level,
+                  level(),
                   andromeda$itemEntity.getX(),
                   andromeda$itemEntity.getY(),
                   andromeda$itemEntity.getZ(),
                   newStack);
-              level.addFreshEntity(entity);
+              level().addFreshEntity(entity);
 
               FriendlyByteBuf buf = PacketByteBufs.create()
                   .writeVarInt(andromeda$itemEntity.getId())
@@ -133,19 +133,19 @@ abstract class ItemEntityMixin extends Entity {
           if (andromeda$ascensionTicks == 180) {
             andromeda$ascensionTicks = 0;
 
-            ((ServerLevel) level)
+            ((ServerLevel) level())
                 .sendParticles(
                     ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 15, 0, 0, 0, 0.4);
 
             ItemEntity entity = new ItemEntity(
-                level,
+                level(),
                 this.getX(),
                 this.getY(),
                 this.getZ(),
                 new ItemStack(InfiniteTotemMain.INFINITE_TOTEM.orThrow()));
             this.discard();
             andromeda$itemEntity.discard();
-            level.addFreshEntity(entity);
+            level().addFreshEntity(entity);
           }
         } else {
           this.setDefaultPickUpDelay();
@@ -163,17 +163,19 @@ abstract class ItemEntityMixin extends Entity {
   }
 
   @Unique private boolean andromeda$beaconCheck() {
-    BlockEntity entity = level.getBlockEntity(new BlockPos(
-        (int) getX(),
-        level.getHeight(
-                Heightmap.Types.WORLD_SURFACE,
-                blockPosition().getX(),
-                blockPosition().getZ())
-            - 1,
-        (int) getZ()));
+    BlockEntity entity = level()
+        .getBlockEntity(new BlockPos(
+            (int) getX(),
+            level()
+                    .getHeight(
+                        Heightmap.Types.WORLD_SURFACE,
+                        blockPosition().getX(),
+                        blockPosition().getZ())
+                - 1,
+            (int) getZ()));
     if (entity instanceof BeaconBlockEntity beaconBlock) {
       this.andromeda$beacon =
-          Tuple.of(beaconBlock, BeaconUtil.matchesPattern(level, beaconBlock.getBlockPos()));
+          Tuple.of(beaconBlock, BeaconUtil.matchesPattern(level(), beaconBlock.getBlockPos()));
       return true;
     } else {
       this.andromeda$beacon = ANDROMEDA$NULL_BEACON;

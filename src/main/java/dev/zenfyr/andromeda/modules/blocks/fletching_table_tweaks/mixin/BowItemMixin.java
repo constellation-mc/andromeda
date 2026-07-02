@@ -33,7 +33,7 @@ abstract class BowItemMixin extends ProjectileWeaponItem {
     int a = NbtUtil.getInt(stackNbt, "AM-Tightened", 0);
     if (a > 0) {
       stackNbt.putInt("AM-Tightened", a - 1);
-      return f * player.level.am$get(FletchingTableTweaks.CONFIG).divergenceModifier;
+      return f * player.level().am$get(FletchingTableTweaks.CONFIG).divergenceModifier;
     }
     return f;
   }

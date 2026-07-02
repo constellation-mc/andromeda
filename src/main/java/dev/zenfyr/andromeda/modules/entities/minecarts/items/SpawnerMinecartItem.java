@@ -45,8 +45,8 @@ public class SpawnerMinecartItem extends AndromedaMinecartItem<MinecartSpawner> 
             .getSpawner()
             .setEntityId(
                 BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(nbt.getString("Entity"))),
-                entity.level,
-                entity.level.random,
+                entity.level(),
+                entity.level().random,
                 entity.blockPosition());
       }
   }

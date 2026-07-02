@@ -39,11 +39,11 @@ abstract class EndCrystalMixin extends Entity {
       DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
     if (!Andromeda.MAIN.get(DragonFight.CONFIG).respawnCrystals) return;
 
-    if (level.dimension() == Level.END
-        && !((ServerLevel) level).getDragons().isEmpty()
+    if (level().dimension() == Level.END
+        && !((ServerLevel) level()).getDragons().isEmpty()
         && showsBottom()) {
       if (this.position().y() <= 71) return;
-      ((ServerLevel) level)
+      ((ServerLevel) level())
           .getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get())
           .queueRespawn(new MutableInt(MathUtil.nextInt(1900, 3500)), this.position());
     }

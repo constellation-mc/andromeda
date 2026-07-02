@@ -71,27 +71,28 @@ abstract class BeeEntityMixin extends Animal {
 
   @Unique private void andromeda$growFlower() {
     if (this.savedFlowerPos != null) {
-      BlockState flowerState = level.getBlockState(savedFlowerPos);
-      var config = level.am$get(BeeFlowerDuplication.CONFIG);
+      BlockState flowerState = level().getBlockState(savedFlowerPos);
+      var config = level().am$get(BeeFlowerDuplication.CONFIG);
       if (!config.available) return;
 
       if (flowerState.getBlock() instanceof FlowerBlock flowerBlock) {
-        andromeda$plantingCoolDown = level.random.nextIntBetweenInclusive(3600, 6490);
+        andromeda$plantingCoolDown = level().random.nextIntBetweenInclusive(3600, 6490);
         for (int i = -2; i <= 2; i++) {
           for (int b = -2; b <= 2; b++) {
             for (int c = -2; c <= 2; c++) {
               BlockPos pos = new BlockPos(
                   savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
-              if (level.getBlockState(pos).getBlock() instanceof AirBlock
-                  && flowerBlock.canSurvive(flowerState, level, pos)) {
-                if (level.random.nextInt(12) == 0) {
+              if (level().getBlockState(pos).getBlock() instanceof AirBlock
+                  && flowerBlock.canSurvive(flowerState, level(), pos)) {
+                if (level().random.nextInt(12) == 0) {
                   if (ModuleManager.get().get(Unknown.class).isPresent()
-                      && level.random.nextInt(100) == 0) {
-                    level.setBlockAndUpdate(
-                        pos,
-                        RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().defaultBlockState());
+                      && level().random.nextInt(100) == 0) {
+                    level()
+                        .setBlockAndUpdate(
+                            pos,
+                            RoseOfTheValley.ROSE_OF_THE_VALLEY_BLOCK.orThrow().defaultBlockState());
                   } else {
-                    level.setBlockAndUpdate(pos, flowerState);
+                    level().setBlockAndUpdate(pos, flowerState);
                   }
                 }
               }
@@ -100,16 +101,16 @@ abstract class BeeEntityMixin extends Animal {
         }
       } else if (flowerState.getBlock() instanceof TallFlowerBlock flowerBlock
           && config.tallFlowers) {
-        andromeda$plantingCoolDown = level.random.nextIntBetweenInclusive(3600, 8000);
+        andromeda$plantingCoolDown = level().random.nextIntBetweenInclusive(3600, 8000);
         for (int i = -1; i <= 1; i++) {
           for (int b = -2; b <= 2; b++) {
             for (int c = -1; c <= 1; c++) {
               BlockPos pos = new BlockPos(
                   savedFlowerPos.getX() + i, savedFlowerPos.getY() + b, savedFlowerPos.getZ() + c);
-              if (level.getBlockState(pos).getBlock() instanceof AirBlock
-                  && flowerBlock.canSurvive(flowerState, level, pos)) {
-                if (level.random.nextInt(6) == 0) {
-                  TallFlowerBlock.placeAt(level, flowerState, pos, Block.UPDATE_CLIENTS);
+              if (level().getBlockState(pos).getBlock() instanceof AirBlock
+                  && flowerBlock.canSurvive(flowerState, level(), pos)) {
+                if (level().random.nextInt(6) == 0) {
+                  TallFlowerBlock.placeAt(level(), flowerState, pos, Block.UPDATE_CLIENTS);
                 }
               }
             }

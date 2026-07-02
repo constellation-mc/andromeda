@@ -9,7 +9,6 @@ mutable field net/minecraft/client/gui/components/Button onPress Lnet/minecraft/
 accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
 accessible field net/minecraft/client/gui/screens/Screen narratables Ljava/util/List;
 accessible field net/minecraft/client/gui/screens/Screen children Ljava/util/List;
-accessible field net/minecraft/world/entity/Entity level Lnet/minecraft/world/level/Level;
 
 # gui/no_more_adventure
 accessible class net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon
