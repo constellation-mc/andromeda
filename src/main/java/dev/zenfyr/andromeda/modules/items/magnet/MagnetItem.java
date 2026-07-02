@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
@@ -226,7 +227,11 @@ public class MagnetItem extends Item {
         id("magnet"),
         new MagnetItem(new FabricItemSettings().stacksTo(1))));
 
-    AndromedaCreativeTab.BUS.listen(acceptor ->
-        acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, MagnetItem.MAGNET));
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        .register(entries -> entries.accept(MagnetItem.MAGNET.orThrow()));
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.keeper(module, MagnetItem.MAGNET));
+    }
   }
 }

@@ -13,6 +13,7 @@ import dev.zenfyr.pulsar.api.util.ExceptionUtil;
 import java.lang.reflect.Field;
 import java.util.*;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -118,9 +119,20 @@ public final class PouchesMain {
 
     Trades.register();
 
-    List<Keeper<PouchItem>> l = List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
-    AndromedaCreativeTab.BUS.listen(acceptor ->
-        acceptor.keepers(module, CreativeModeTabs.TOOLS_AND_UTILITIES, new ArrayList<>(l)));
+    List<Keeper<PouchItem>> pouches =
+        List.of(SEED_POUCH, FLOWER_POUCH, SAPLING_POUCH, SPECIAL_POUCH);
+
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(entries -> {
+      for (Keeper<PouchItem> pouch : pouches) {
+        if (!pouch.isPresent()) continue;
+        entries.accept(pouch.orThrow());
+      }
+    });
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(
+          acceptor -> acceptor.keepers(module, new ArrayList<>(pouches)));
+    }
 
     var behavior = new AbstractProjectileDispenseBehavior() {
       @Override
@@ -131,7 +143,7 @@ public final class PouchesMain {
       }
     };
 
-    for (Keeper<PouchItem> pouchItemKeeper : l) {
+    for (Keeper<PouchItem> pouchItemKeeper : pouches) {
       if (pouchItemKeeper.isPresent())
         DispenserBlock.registerBehavior(pouchItemKeeper.orThrow(), behavior);
     }

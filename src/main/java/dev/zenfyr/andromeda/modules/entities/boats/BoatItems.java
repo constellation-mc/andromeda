@@ -9,10 +9,12 @@ import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 
@@ -56,8 +58,16 @@ public class BoatItems {
                 BoatEntities.BOAT_WITH_HOPPER, value, new FabricItemSettings().stacksTo(1))));
       }
     }
-    AndromedaCreativeTab.BUS.listen(
-        acceptor -> acceptor.items(module, CreativeModeTabs.TOOLS_AND_UTILITIES, list));
+
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(entries -> {
+      for (Item item : list) {
+        entries.accept(item, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+      }
+    });
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.items(module, list));
+    }
   }
 
   public static ResourceLocation boatId(Boat.Type type, String boat) {

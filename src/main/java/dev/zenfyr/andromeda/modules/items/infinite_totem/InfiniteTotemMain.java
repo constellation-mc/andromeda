@@ -7,6 +7,7 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.common.util.Keeper;
 import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -38,7 +39,11 @@ public final class InfiniteTotemMain {
         id("knockoff_totem_particles"),
         FabricParticleTypes.simple()));
 
-    AndromedaCreativeTab.BUS.listen(
-        acceptor -> acceptor.keeper(module, CreativeModeTabs.COMBAT, INFINITE_TOTEM));
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT)
+        .register(entries -> entries.accept(INFINITE_TOTEM.orThrow()));
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.keeper(module, INFINITE_TOTEM));
+    }
   }
 }

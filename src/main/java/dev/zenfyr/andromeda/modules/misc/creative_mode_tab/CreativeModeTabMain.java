@@ -25,7 +25,7 @@ public class CreativeModeTabMain {
         .entries(entries -> {
           Map<dev.zenfyr.andromeda.bootstrap.Module, List<ItemStack>> stackMap =
               new LinkedHashMap<>();
-          AndromedaCreativeTab.Acceptor acceptor = (module, main, stack) -> {
+          AndromedaCreativeTab.Acceptor acceptor = (module, stack) -> {
             if (!stack.isEmpty()) {
               stackMap.computeIfAbsent(module, module1 -> new ArrayList<>()).add(stack);
             }
@@ -34,7 +34,7 @@ public class CreativeModeTabMain {
           Map<dev.zenfyr.andromeda.bootstrap.Module, List<ItemStack>> small = new LinkedHashMap<>();
           Map<Module, List<ItemStack>> big = new LinkedHashMap<>();
           if (stackMap.isEmpty()) {
-            entries.add(Items.BARRIER);
+            entries.add(Items.BARRIER, PulsarEntries.Visibility.TAB);
             return;
           }
           stackMap.forEach((module, itemStacks) -> {
@@ -45,7 +45,7 @@ public class CreativeModeTabMain {
             }
           });
           if (small.isEmpty() && big.isEmpty()) {
-            entries.add(Items.BARRIER);
+            entries.add(Items.BARRIER, PulsarEntries.Visibility.TAB);
             return;
           }
           List<ItemStack> stacks = new ArrayList<>();
@@ -54,7 +54,6 @@ public class CreativeModeTabMain {
             sign.setHoverName(
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
 
-            entries.addAll(itemStacks, PulsarEntries.Visibility.SEARCH);
             stacks.add(sign);
             stacks.addAll(itemStacks);
             stacks.add(ItemStack.EMPTY);
@@ -65,7 +64,6 @@ public class CreativeModeTabMain {
             sign.setHoverName(
                 TextUtil.translatable("config.andromeda.%s".formatted(ModuleHelper.dotted(m))));
 
-            entries.addAll(itemStacks, PulsarEntries.Visibility.SEARCH);
             entries.appendStacks(
                 Stream.concat(Stream.of(sign), itemStacks.stream()).toList());
           });

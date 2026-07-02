@@ -11,6 +11,7 @@ import dev.zenfyr.andromeda.modules.misc.creative_mode_tab.AndromedaCreativeTab;
 import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
@@ -84,8 +85,12 @@ public class LockpickItem extends Item {
           new MenuType<>(MerchantInventoryScreenHandler::new, FeatureFlagSet.of())));
     }
 
-    AndromedaCreativeTab.BUS.listen(acceptor ->
-        acceptor.keeper(module, CreativeModeTabs.TOOLS_AND_UTILITIES, LockpickItem.INSTANCE));
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        .register(entries -> entries.accept(INSTANCE.orThrow()));
+
+    if (ModuleManager.get().get("misc/creative_mode_tab").isPresent()) {
+      AndromedaCreativeTab.BUS.listen(acceptor -> acceptor.keeper(module, LockpickItem.INSTANCE));
+    }
 
     ModuleManager.get().get(GuardedLoot.class).ifPresent(gl -> {
       GuardedLootMain.UNLOCKERS.add((blockEntity, player) -> {
