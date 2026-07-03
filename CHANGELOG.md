@@ -1,16 +1,4 @@
 # What's New:
 
-- Updated dependencies.
-- Module configs are no longer generated at runtime, but during build instead.
-
-## `[blocks/guarded_loot]`
-
-- Added an option to check entity reach, if an entity can find a path to the container.
-
-## `[entities/minecart_speed_control]`
-
-- Deprecated the module. Prefer the built-in experiment.
-
-## `[mechanics/dragon_fight]`
-
-- Fixed `shorterSpikes` not actually applying.
+- Fixed a few [Connector](https://modrinth.com/mod/connector) issues + adds [Launchpad](https://modrinth.com/mod/launchpad) support for 26.1.2 (Requires new Pulsar version!)
+- Moved Andromeda's creative mode tab to a module and added Andromeda items to vanilla tabs.
