@@ -1,3 +1,4 @@
 # What's New:
 
-- Updated to Minecraft 26.2, based on Andromeda 2.3.0! This is the first release, there Will be bugs!
+- Fixed a few [Connector](https://modrinth.com/mod/connector) issues + adds [Launchpad](https://modrinth.com/mod/launchpad) support for 26.1.2 (Requires new Pulsar version!)
+- Moved Andromeda's creative mode tab to a module and added Andromeda items to vanilla tabs.
