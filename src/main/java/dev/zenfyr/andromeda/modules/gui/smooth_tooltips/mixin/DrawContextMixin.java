@@ -6,15 +6,9 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.smooth_tooltips.SmoothTooltips;
-import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2d;
 import org.joml.Vector2i;
@@ -49,8 +43,7 @@ abstract class DrawContextMixin {
       method = {
         "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;)V",
         "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V"
-      },
-      require = 1)
+      })
   private Vector2ic andromeda$smoothTooltip(
       Vector2ic vic,
       @Local(argsOnly = true, ordinal = 0) int x,
@@ -90,16 +83,17 @@ abstract class DrawContextMixin {
     return (int) mY == y;
   }
 
-  @Inject(at = @At(value = "TAIL"), method = "tooltip")
-  private void andromeda$popMatrix(
-      Font font,
-      List<ClientTooltipComponent> list,
-      int i,
-      int j,
-      ClientTooltipPositioner clientTooltipPositioner,
-      @Nullable Identifier resourceLocation,
-      CallbackInfo ci,
-      @Share("popMatrix") LocalBooleanRef popMatrix) {
+  @Inject(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lorg/joml/Matrix3x2fStack;popMatrix()Lorg/joml/Matrix3x2fStack;",
+              shift = At.Shift.AFTER),
+      method = {
+        "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;)V",
+        "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V"
+      })
+  private void andromeda$popMatrix(CallbackInfo ci, @Share("popMatrix") LocalBooleanRef popMatrix) {
     if (popMatrix.get()) this.pose.popMatrix();
   }
 }
