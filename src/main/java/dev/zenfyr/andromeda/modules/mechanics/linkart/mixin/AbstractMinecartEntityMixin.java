@@ -98,8 +98,9 @@ public abstract class AbstractMinecartEntityMixin extends Entity implements Link
   }
 
   @WrapOperation(
-      method = "moveAlongTrack",
-      at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(DDD)D"))
+      method = {"moveAlongTrack", "moveMinecartOnRail"},
+      at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(DDD)D"),
+      require = 1)
   private double linkart$skipVelocityClamping(
       double value, double min, double max, Operation<Double> original) {
     if (this.linkart$getFollowing() != null) {
