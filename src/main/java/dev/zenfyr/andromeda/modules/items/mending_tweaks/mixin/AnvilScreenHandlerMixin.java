@@ -32,7 +32,7 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
               value = "INVOKE",
               target =
                   "Lnet/minecraft/world/item/ItemStack;getOrDefault(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"),
-      method = "createResult")
+      method = {"createResult", "createResultInternal"})
   private Object andromeda$setCostLimit(
       ItemStack instance,
       DataComponentType<Integer> dataComponentType,
@@ -49,7 +49,7 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
   }
 
   @ModifyExpressionValue(
-      method = "createResult",
+      method = {"createResult", "createResultInternal"},
       at = @At(value = "CONSTANT", args = "intValue=40"))
   private int andromeda$setRepairLimit(int constant) {
     if (!this.getSlot(1).getItem().is(Items.ENCHANTED_BOOK))
