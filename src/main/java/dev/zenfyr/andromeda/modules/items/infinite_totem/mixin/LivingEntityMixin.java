@@ -1,7 +1,8 @@
 package dev.zenfyr.andromeda.modules.items.infinite_totem.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotem;
 import dev.zenfyr.andromeda.modules.items.infinite_totem.InfiniteTotemMain;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,15 +37,15 @@ abstract class LivingEntityMixin extends Entity {
     super(type, world);
   }
 
-  @ModifyExpressionValue(
+  @WrapOperation(
       method = "checkTotemDeathProtection",
       at =
           @At(
               value = "INVOKE",
               target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z"))
   private boolean andromeda$infiniteFallback(
-      boolean original, DamageSource source, @Local(index = 3) ItemStack itemStack) {
-    return original
+      ItemStack itemStack, Item item, Operation<Boolean> original) {
+    return original.call(itemStack, item)
         || (level().am$get(InfiniteTotem.CONFIG).available
             && itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow()));
   }
