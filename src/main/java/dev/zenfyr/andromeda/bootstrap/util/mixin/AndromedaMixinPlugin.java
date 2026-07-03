@@ -27,17 +27,45 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
         && !Platform.getPlatform().isModLoaded("cloth-config")) return false;
 
     try {
-      var node = MixinService.getService()
-          .getBytecodeProvider()
-          .getClassNode(
-              mixinClassName.replace('.', '/'),
-              false,
-              ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-
+      var node = getClassNode(mixinClassName);
       return AndromedaMixinPlugin.testMixinEnvironment(node);
     } catch (ClassNotFoundException | IOException e) {
       throw Util.wrap(mixinClassName, e);
     }
+  }
+
+  private static Boolean isNewProvider = null;
+
+  public static ClassNode getClassNode(String className)
+      throws IOException, ClassNotFoundException {
+    var provider = MixinService.getService().getBytecodeProvider();
+    var normalized = className.replace('.', '/');
+
+    if (isNewProvider != null) {
+      if (isNewProvider) {
+        return provider.getClassNode(
+            normalized,
+            false,
+            ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+      } else {
+        return provider.getClassNode(normalized);
+      }
+    }
+
+    ClassNode node;
+    try {
+      node = provider.getClassNode(
+          normalized,
+          false,
+          ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+      isNewProvider = true;
+    } catch (ClassNotFoundException | IOException e) {
+      throw e; // rethrow expected
+    } catch (Throwable e) {
+      node = provider.getClassNode(normalized);
+      isNewProvider = false;
+    }
+    return node;
   }
 
   public static boolean testMixinEnvironment(ClassNode node) {
