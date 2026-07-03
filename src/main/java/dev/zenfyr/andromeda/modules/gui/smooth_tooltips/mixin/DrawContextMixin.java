@@ -46,7 +46,11 @@ abstract class DrawContextMixin {
               value = "INVOKE",
               target =
                   "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"),
-      method = "tooltip")
+      method = {
+        "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;)V",
+        "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V"
+      },
+      require = 1)
   private Vector2ic andromeda$smoothTooltip(
       Vector2ic vic,
       @Local(argsOnly = true, ordinal = 0) int x,
