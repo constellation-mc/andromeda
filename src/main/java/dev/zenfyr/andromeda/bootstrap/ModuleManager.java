@@ -4,6 +4,8 @@ import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.BootstrapConfigHandler;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
 import dev.zenfyr.andromeda.bootstrap.event.BootstrapConfigEvent;
+import dev.zenfyr.andromeda.bootstrap.event.ModuleLoadStateEvent;
+import dev.zenfyr.andromeda.bootstrap.event.ModuleLoadStateEvent.ForcedState;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
 import dev.zenfyr.andromeda.bootstrap.event.PostModuleInitEvent;
 import dev.zenfyr.andromeda.bootstrap.util.*;
@@ -109,6 +111,7 @@ public class ModuleManager {
           value, PostModuleInitEvent.ID, PostModuleInitEvent::postModuleInit);
     }
 
+    // Create configs and files
     for (Module value : discoveredModulesByName.values()) {
       var config = this.configHandler.load(value);
 
@@ -117,11 +120,33 @@ public class ModuleManager {
       ModuleHelper.runAndDropBus(
           value, BootstrapConfigEvent.ID, event -> event.bootstrapConfig(config));
 
-      if (config.enabled || this.debug().isEnableAllModules()) {
+      this.configHandler.save(value);
+    }
+
+    for (Module value : discoveredModulesByName.values()) {
+      var config = this.configHandler.get(value);
+      boolean shouldLoad = config.enabled || this.debug().isEnableAllModules();
+
+      ModuleLoadStateEvent.Result forceState = ModuleLoadStateEvent.DEFAULT;
+      var bus = ModuleLoadStateEvent.get(value);
+      if (bus != null) forceState = bus.invoker().onModuleLoadState();
+
+      switch (forceState.state()) {
+        case DISABLE -> {
+          if (shouldLoad)
+            log.warn("Force disabling module '{}': {}", ModuleHelper.id(value), forceState.msg());
+          continue;
+        }
+        case ENABLE -> {
+          if (!shouldLoad)
+            log.warn("Force Enabling module '{}': {}", ModuleHelper.id(value), forceState.msg());
+        }
+      }
+
+      if (shouldLoad || forceState.state() == ForcedState.ENABLE) {
         this.modules.put(value.getClass(), value);
         this.modulesByName.put(ModuleHelper.id(value.meta()), value);
       }
-      this.configHandler.save(value);
     }
 
     for (Module module : this.loaded()) {
