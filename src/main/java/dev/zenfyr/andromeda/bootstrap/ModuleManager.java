@@ -75,6 +75,10 @@ public class ModuleManager {
       }
     }
 
+    if (Launchpad.isLaunchpad()) {
+      log.warn("Andromeda is loading via Launchpad! Here be dragons!");
+    }
+
     this.modConfig().save();
     this.netUtils().initialize(this);
 
