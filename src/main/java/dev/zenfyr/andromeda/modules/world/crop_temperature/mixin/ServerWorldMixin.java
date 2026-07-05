@@ -20,8 +20,8 @@ abstract class ServerWorldMixin {
                   "Lnet/minecraft/world/level/block/state/BlockState;randomTick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V"),
       method = "tickChunk")
   private boolean andromeda$tickPlants(
-      BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+      BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
     return PlantTemperatureData.roll(
-        pos, state, world.getBiome(pos).value().getBaseTemperature(), world);
+        pos, state, level.getBiome(pos).value().getBaseTemperature(), level);
   }
 }

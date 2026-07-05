@@ -33,12 +33,12 @@ public class BeeUtil {
   private static final Logger MOJLOGGER = LogUtils.getLogger();
 
   public static void trySpawnFallingBeeNest(
-      @NonNull Level world,
+      @NonNull Level level,
       @NonNull BlockPos pos,
       @NonNull BlockState state,
       @NonNull BeehiveBlockEntity beehiveBlockEntity) {
     FallingBlockEntity fallingBlock = new FallingBlockEntity(
-        world,
+        level,
         pos.getX() + 0.5,
         pos.getY(),
         pos.getZ() + 0.5,
@@ -51,7 +51,7 @@ public class BeeUtil {
         ChunkAccess.problemPath(ChunkPos.containing(pos)), MOJLOGGER)) {
       fallingBlock.readAdditionalSaveData(TagValueInput.create(
           scopedCollector,
-          world.registryAccess(),
+          level.registryAccess(),
           CompoundTagBuilder.create()
               .put(
                   "TileEntityData",
@@ -67,7 +67,7 @@ public class BeeUtil {
               .build()));
     }
 
-    world.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
-    world.addFreshEntity(fallingBlock);
+    level.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
+    level.addFreshEntity(fallingBlock);
   }
 }

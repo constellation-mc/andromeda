@@ -19,8 +19,8 @@ abstract class MobEntityMixin extends Entity {
   @Shadow
   @Nullable private LivingEntity target;
 
-  public MobEntityMixin(EntityType<?> type, Level world) {
-    super(type, world);
+  public MobEntityMixin(EntityType<?> type, Level level) {
+    super(type, level);
   }
 
   @ModifyExpressionValue(at = @At(value = "CONSTANT", args = "floatValue=90"), method = "lookAt")

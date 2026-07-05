@@ -19,8 +19,8 @@ public final class VehicleUnentrapmentMain {
 
   static void init() {
     ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
-      Level world = entity.level();
-      if (world.am$get(VehicleUnentrapment.CONFIG).available) {
+      Level level = entity.level();
+      if (level.am$get(VehicleUnentrapment.CONFIG).available) {
         if (source.getEntity() == null || entity instanceof Player) return true;
         if (!entity.typeHolder().is(ESCAPE_VEHICLES_ON_HIT)) return true;
 

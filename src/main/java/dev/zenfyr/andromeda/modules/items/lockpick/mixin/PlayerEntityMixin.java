@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(Player.class)
 abstract class PlayerEntityMixin extends LivingEntity {
 
-  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
-    super(entityType, world);
+  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level level) {
+    super(entityType, level);
   }
 
   @WrapOperation(

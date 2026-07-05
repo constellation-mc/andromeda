@@ -33,8 +33,8 @@ abstract class VillagerEntityMixin extends AbstractVillager {
   @Shadow
   protected abstract void setUnhappy();
 
-  public VillagerEntityMixin(EntityType<? extends AbstractVillager> entityType, Level world) {
-    super(entityType, world);
+  public VillagerEntityMixin(EntityType<? extends AbstractVillager> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(

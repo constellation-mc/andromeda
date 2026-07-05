@@ -23,8 +23,8 @@ abstract class EndCrystalMixin extends Entity {
   @Shadow
   public abstract boolean showsBottom();
 
-  public EndCrystalMixin(EntityType<?> type, Level world) {
-    super(type, world);
+  public EndCrystalMixin(EntityType<?> type, Level level) {
+    super(type, level);
   }
 
   @Inject(

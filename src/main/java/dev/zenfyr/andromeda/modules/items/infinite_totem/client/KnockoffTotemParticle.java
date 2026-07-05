@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class KnockoffTotemParticle extends SimpleAnimatedParticle {
 
   KnockoffTotemParticle(
-      ClientLevel world,
+      ClientLevel level,
       double x,
       double y,
       double z,
@@ -20,7 +20,7 @@ public class KnockoffTotemParticle extends SimpleAnimatedParticle {
       double velocityY,
       double velocityZ,
       SpriteSet spriteProvider) {
-    super(world, x, y, z, spriteProvider, 1.25F);
+    super(level, x, y, z, spriteProvider, 1.25F);
     this.friction = 0.6F;
     this.xd = velocityX;
     this.yd = velocityY;

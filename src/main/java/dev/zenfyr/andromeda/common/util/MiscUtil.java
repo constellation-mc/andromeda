@@ -63,8 +63,8 @@ public class MiscUtil {
   }
 
   public static List<ItemStack> prepareLoot(
-      @NonNull Level world, @NonNull ResourceKey<LootTable> lootId) {
-    return world
+      @NonNull Level level, @NonNull ResourceKey<LootTable> lootId) {
+    return level
         .getServer()
         .reloadableRegistries()
         .lookup()
@@ -72,7 +72,7 @@ public class MiscUtil {
         .flatMap(reg -> reg.get(lootId))
         .map(Holder.Reference::value)
         .<List<ItemStack>>map(loot -> loot.getRandomItems(
-            new LootParams.Builder(((ServerLevel) world)).create(LootContextParamSets.EMPTY)))
+            new LootParams.Builder(((ServerLevel) level)).create(LootContextParamSets.EMPTY)))
         .orElse(List.of());
   }
 }

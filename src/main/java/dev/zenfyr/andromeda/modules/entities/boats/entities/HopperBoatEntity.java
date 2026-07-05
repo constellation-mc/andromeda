@@ -32,10 +32,10 @@ public class HopperBoatEntity extends AbstractChestBoat implements Hopper {
 
   public HopperBoatEntity(
       EntityType<? extends AbstractChestBoat> entityType,
-      Level world,
+      Level level,
       BoatRideHeightFactory rideHeight,
       Supplier<Item> dropItem) {
-    super(entityType, world, dropItem);
+    super(entityType, level, dropItem);
     this.clearItemStacks();
     this.rideHeight = rideHeight;
   }

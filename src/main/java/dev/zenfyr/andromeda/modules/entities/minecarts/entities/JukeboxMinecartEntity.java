@@ -32,12 +32,12 @@ public class JukeboxMinecartEntity extends AbstractMinecart implements Clearable
   public ItemStack record = ItemStack.EMPTY;
 
   public JukeboxMinecartEntity(
-      EntityType<? extends JukeboxMinecartEntity> entityType, Level world) {
-    super(entityType, world);
+      EntityType<? extends JukeboxMinecartEntity> entityType, Level level) {
+    super(entityType, level);
   }
 
-  public JukeboxMinecartEntity(Level world, double x, double y, double z) {
-    super(MinecartEntities.JUKEBOX_MINECART_ENTITY.orThrow(), world, x, y, z);
+  public JukeboxMinecartEntity(Level level, double x, double y, double z) {
+    super(MinecartEntities.JUKEBOX_MINECART_ENTITY.orThrow(), level, x, y, z);
   }
 
   @Override

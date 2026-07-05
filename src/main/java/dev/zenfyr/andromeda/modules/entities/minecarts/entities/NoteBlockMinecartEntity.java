@@ -33,12 +33,12 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
   public boolean isPowered = false;
 
   public NoteBlockMinecartEntity(
-      EntityType<? extends NoteBlockMinecartEntity> entityType, Level world) {
-    super(entityType, world);
+      EntityType<? extends NoteBlockMinecartEntity> entityType, Level level) {
+    super(entityType, level);
   }
 
-  public NoteBlockMinecartEntity(Level world, double x, double y, double z) {
-    super(MinecartEntities.NOTEBLOCK_MINECART_ENTITY.orThrow(), world, x, y, z);
+  public NoteBlockMinecartEntity(Level level, double x, double y, double z) {
+    super(MinecartEntities.NOTEBLOCK_MINECART_ENTITY.orThrow(), level, x, y, z);
   }
 
   @Override
@@ -129,13 +129,13 @@ public class NoteBlockMinecartEntity extends AbstractMinecart {
     }
   }
 
-  public void playNote(Level world, Vec3 pos) {
+  public void playNote(Level level, Vec3 pos) {
     BlockPos blockPos = new BlockPos(Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z()));
-    // BlockState state = world.getBlockState(blockPos);
+    // BlockState state = level.getBlockState(blockPos);
 
-    NoteBlockInstrument instrument = world.getBlockState(blockPos.above()).instrument();
+    NoteBlockInstrument instrument = level.getBlockState(blockPos.above()).instrument();
     if (!instrument.worksAboveNoteBlock()) {
-      NoteBlockInstrument instrument2 = world.getBlockState(blockPos.below()).instrument();
+      NoteBlockInstrument instrument2 = level.getBlockState(blockPos.below()).instrument();
       instrument = instrument2.worksAboveNoteBlock() ? NoteBlockInstrument.HARP : instrument2;
     }
 

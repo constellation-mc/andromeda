@@ -47,23 +47,23 @@ public class EnderDragonManager {
     this.maxPlayers = Math.max(maxPlayers, 1);
   }
 
-  public void tick(ServerLevel world) {
-    List<? extends EnderDragon> dragons = world.getDragons();
+  public void tick(ServerLevel level) {
+    List<? extends EnderDragon> dragons = level.getDragons();
     if (dragons.isEmpty()) {
       maxPlayers = 1;
       return;
     }
-    int i = Math.max(world.players().size(), 1);
+    int i = Math.max(level.players().size(), 1);
     if (i > maxPlayers) maxPlayers = i;
 
     Set<Crystal> removal = new HashSet<>();
     for (Crystal pair : crystals) {
       if (pair.timer().decrementAndGet() > 0) continue;
 
-      LightningBolt lightning = new LightningBolt(EntityTypes.LIGHTNING_BOLT, world);
+      LightningBolt lightning = new LightningBolt(EntityTypes.LIGHTNING_BOLT, level);
       lightning.setVisualOnly(true);
       lightning.setPosRaw(pair.pos().x, pair.pos().y, pair.pos().z);
-      world.addFreshEntity(lightning);
+      level.addFreshEntity(lightning);
 
       ClientboundLevelParticlesPacket particleS2CPacket = new ClientboundLevelParticlesPacket(
           ParticleTypes.END_ROD,
@@ -77,14 +77,14 @@ public class EnderDragonManager {
           0.5f,
           0.5f,
           100);
-      for (int j = 0; j < world.players().size(); ++j) {
-        ServerPlayer serverPlayerEntity = world.players().get(j);
-        world.sendParticles(
+      for (int j = 0; j < level.players().size(); ++j) {
+        ServerPlayer serverPlayerEntity = level.players().get(j);
+        level.sendParticles(
             serverPlayerEntity, true, pair.pos().x, pair.pos().y, pair.pos().z, particleS2CPacket);
       }
 
-      EndCrystal endCrystalEntity = new EndCrystal(world, pair.pos().x, pair.pos().y, pair.pos().z);
-      world.addFreshEntity(endCrystalEntity);
+      EndCrystal endCrystalEntity = new EndCrystal(level, pair.pos().x, pair.pos().y, pair.pos().z);
+      level.addFreshEntity(endCrystalEntity);
       removal.add(pair);
     }
     crystals.removeAll(removal);

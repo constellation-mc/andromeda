@@ -37,14 +37,14 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
 
   @Override
   public InteractionResult useOn(UseOnContext context) {
-    Level world = context.getLevel();
+    Level level = context.getLevel();
     BlockPos blockPos = context.getClickedPos();
-    BlockState blockState = world.getBlockState(blockPos);
+    BlockState blockState = level.getBlockState(blockPos);
     if (!blockState.is(BlockTags.RAILS)) {
       return InteractionResult.FAIL;
     } else {
       ItemStack itemStack = context.getItemInHand();
-      if (!world.isClientSide()) {
+      if (!level.isClientSide()) {
         RailShape railShape = blockState.getBlock() instanceof BaseRailBlock
             ? blockState.getValue(((BaseRailBlock) blockState.getBlock()).getShapeProperty())
             : RailShape.NORTH_SOUTH;
@@ -54,7 +54,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
         }
 
         T minecart =
-            MakeSure.notNull(this.keeper.orThrow().create(world, EntitySpawnReason.DISPENSER));
+            MakeSure.notNull(this.keeper.orThrow().create(level, EntitySpawnReason.DISPENSER));
         minecart.setPos(
             (double) blockPos.getX() + 0.5,
             (double) blockPos.getY() + 0.0625 + d,
@@ -67,8 +67,8 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
           minecart.setCustomName(customName);
         }
 
-        world.addFreshEntity(minecart);
-        world.gameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
+        level.addFreshEntity(minecart);
+        level.gameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
       }
 
       itemStack.shrink(1);
@@ -82,10 +82,10 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
     @Override
     public ItemStack execute(BlockSource pointer, ItemStack stack) {
       Direction direction = pointer.state().getValue(DispenserBlock.FACING);
-      Level world = pointer.level();
+      Level level = pointer.level();
 
       BlockPos blockPos = pointer.pos().relative(direction);
-      BlockState blockState = world.getBlockState(blockPos);
+      BlockState blockState = level.getBlockState(blockPos);
       RailShape railShape = blockState.getBlock() instanceof BaseRailBlock
           ? blockState.getValue(((BaseRailBlock) blockState.getBlock()).getShapeProperty())
           : RailShape.NORTH_SOUTH;
@@ -93,11 +93,11 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
       if (blockState.is(BlockTags.RAILS)) {
         g = railShape.isSlope() ? 0.6 : 0.1;
       } else {
-        if (!blockState.isAir() || !world.getBlockState(blockPos.below()).is(BlockTags.RAILS)) {
+        if (!blockState.isAir() || !level.getBlockState(blockPos.below()).is(BlockTags.RAILS)) {
           return this.defaultBehavior.dispense(pointer, stack);
         }
 
-        BlockState blockState2 = world.getBlockState(blockPos.below());
+        BlockState blockState2 = level.getBlockState(blockPos.below());
         RailShape railShape2 = blockState2.getBlock() instanceof BaseRailBlock
             ? blockState2.getValue(((BaseRailBlock) blockState2.getBlock()).getShapeProperty())
             : RailShape.NORTH_SOUTH;
@@ -109,7 +109,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
       double f = pointer.center().z() + direction.getStepZ() * 1.125;
 
       T minecart = MakeSure.notNull(
-          AndromedaMinecartItem.this.keeper.orThrow().create(world, EntitySpawnReason.DISPENSER));
+          AndromedaMinecartItem.this.keeper.orThrow().create(level, EntitySpawnReason.DISPENSER));
       minecart.setPos(d, e + g, f);
 
       onCreate(stack, minecart);
@@ -119,7 +119,7 @@ public class AndromedaMinecartItem<T extends AbstractMinecart> extends Item {
         minecart.setCustomName(customName);
       }
 
-      world.addFreshEntity(minecart);
+      level.addFreshEntity(minecart);
       stack.shrink(1);
       return stack;
     }

@@ -61,7 +61,7 @@ public class CustomTraderManager {
   }
 
   public void trySpawn(
-      ServerLevel world,
+      ServerLevel level,
       ServerLevelData properties,
       ItemStack stackInHand,
       Player player,
@@ -76,7 +76,7 @@ public class CustomTraderManager {
     }
     BlockPos blockPos = player.blockPosition();
 
-    PoiManager pointOfInterestStorage = world.getPoiManager();
+    PoiManager pointOfInterestStorage = level.getPoiManager();
     Optional<BlockPos> optional = pointOfInterestStorage.find(
         registryEntry -> registryEntry.is(PoiTypes.MEETING),
         pos -> true,
@@ -84,21 +84,21 @@ public class CustomTraderManager {
         48,
         PoiManager.Occupancy.ANY);
     BlockPos blockPos2 = optional.orElse(blockPos);
-    BlockPos blockPos3 = getNearbySpawnPos(world, blockPos2, 48);
+    BlockPos blockPos3 = getNearbySpawnPos(level, blockPos2, 48);
 
-    if (blockPos3 == null || !doesNotSuffocateAt(world, blockPos3)) return;
-    if (world.getBiome(blockPos3).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) return;
+    if (blockPos3 == null || !doesNotSuffocateAt(level, blockPos3)) return;
+    if (level.getBiome(blockPos3).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) return;
 
     WanderingTrader wanderingTraderEntity =
-        EntityTypes.WANDERING_TRADER.spawn(world, blockPos3, EntitySpawnReason.EVENT);
+        EntityTypes.WANDERING_TRADER.spawn(level, blockPos3, EntitySpawnReason.EVENT);
     if (wanderingTraderEntity == null) return;
     this.trader = wanderingTraderEntity;
 
-    var tCooldown = world.am$get(GoatHorn.CONFIG).cooldown;
+    var tCooldown = level.am$get(GoatHorn.CONFIG).cooldown;
 
     cooldown = tCooldown;
     for (int j = 0; j < 2; ++j) {
-      spawnLlama(world, this.trader);
+      spawnLlama(level, this.trader);
     }
 
     // properties.setWanderingTraderId(this.trader.getUUID());
@@ -108,12 +108,12 @@ public class CustomTraderManager {
     this.trader.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20 * 8, 0, true, false));
   }
 
-  private void spawnLlama(@NonNull ServerLevel world, @NonNull WanderingTrader wanderingTrader) {
-    BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.blockPosition(), 4);
+  private void spawnLlama(@NonNull ServerLevel level, @NonNull WanderingTrader wanderingTrader) {
+    BlockPos blockPos = this.getNearbySpawnPos(level, wanderingTrader.blockPosition(), 4);
     if (blockPos == null) return;
 
     TraderLlama traderLlamaEntity =
-        EntityTypes.TRADER_LLAMA.spawn(world, blockPos, EntitySpawnReason.EVENT);
+        EntityTypes.TRADER_LLAMA.spawn(level, blockPos, EntitySpawnReason.EVENT);
     if (traderLlamaEntity == null) return;
 
     traderLlamaEntity.setLeashedTo(wanderingTrader, true);

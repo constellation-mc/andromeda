@@ -26,12 +26,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class AnvilMinecartEntity extends AbstractMinecart {
-  public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, Level world) {
-    super(entityType, world);
+  public AnvilMinecartEntity(EntityType<? extends AnvilMinecartEntity> entityType, Level level) {
+    super(entityType, level);
   }
 
-  public AnvilMinecartEntity(Level world, double x, double y, double z) {
-    super(MinecartEntities.ANVIL_MINECART_ENTITY.orThrow(), world, x, y, z);
+  public AnvilMinecartEntity(Level level, double x, double y, double z) {
+    super(MinecartEntities.ANVIL_MINECART_ENTITY.orThrow(), level, x, y, z);
   }
 
   @Override

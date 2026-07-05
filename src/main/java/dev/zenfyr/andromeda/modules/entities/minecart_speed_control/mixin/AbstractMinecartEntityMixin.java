@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(AbstractMinecart.class)
 abstract class AbstractMinecartEntityMixin extends Entity {
 
-  public AbstractMinecartEntityMixin(EntityType<?> type, Level world) {
-    super(type, world);
+  public AbstractMinecartEntityMixin(EntityType<?> type, Level level) {
+    super(type, level);
   }
 
   @ModifyReturnValue(method = "getMaxSpeed", at = @At("RETURN"))

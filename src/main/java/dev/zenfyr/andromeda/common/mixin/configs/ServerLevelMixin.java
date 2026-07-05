@@ -25,9 +25,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerLevel.class)
-abstract class ServerWorldMixin extends Level implements DataConfigs.AttachmentGetter {
+abstract class ServerLevelMixin extends Level implements DataConfigs.AttachmentGetter {
 
-  protected ServerWorldMixin(
+  protected ServerLevelMixin(
       WritableLevelData writableLevelData,
       ResourceKey<Level> resourceKey,
       RegistryAccess registryAccess,

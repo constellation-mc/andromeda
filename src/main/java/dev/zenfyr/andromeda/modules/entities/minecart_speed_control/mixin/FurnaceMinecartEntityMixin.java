@@ -18,8 +18,8 @@ abstract class FurnaceMinecartEntityMixin extends AbstractMinecart {
   @Shadow
   public int fuel;
 
-  protected FurnaceMinecartEntityMixin(EntityType<?> entityType, Level world) {
-    super(entityType, world);
+  protected FurnaceMinecartEntityMixin(EntityType<?> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(at = @At("HEAD"), method = "tick")

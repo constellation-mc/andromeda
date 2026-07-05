@@ -24,8 +24,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Player.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
 
-  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
-    super(entityType, world);
+  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Unique private CartOperation operation;

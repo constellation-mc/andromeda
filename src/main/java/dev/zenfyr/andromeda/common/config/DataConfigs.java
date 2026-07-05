@@ -126,9 +126,9 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
 
   public record Data(Set<Field> cFields, BaseConfig config) {}
 
-  public interface WorldExtension {
+  public interface LevelExtension {
     default <T extends BaseConfig> T am$get(ConfigDefinition<T> definition) {
-      throw new IllegalStateException("Game configs requested in client world '%s'!"
+      throw new IllegalStateException("Game configs requested in client level '%s'!"
           .formatted(((Level) this).dimension().identifier()));
     }
   }
@@ -145,8 +145,8 @@ public final class DataConfigs extends JsonCodecDataLoader<JsonElement> {
       if (!success) return;
 
       var configs = DataConfigs.get(server);
-      for (ServerLevel world : server.getAllLevels()) {
-        configs.applyConfigs((AttachmentGetter) world, world.dimension().identifier());
+      for (ServerLevel level : server.getAllLevels()) {
+        configs.applyConfigs((AttachmentGetter) level, level.dimension().identifier());
       }
     });
   }

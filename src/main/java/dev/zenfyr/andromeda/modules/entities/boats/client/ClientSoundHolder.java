@@ -58,25 +58,25 @@ public class ClientSoundHolder {
 
   public static class PersistentMovingSoundInstance extends AbstractTickableSoundInstance {
 
-    private final ClientLevel world;
+    private final ClientLevel level;
     private final UUID entityId;
 
     public PersistentMovingSoundInstance(
         SoundEvent soundEvent,
         SoundSource soundCategory,
         UUID entityId,
-        ClientLevel world,
+        ClientLevel level,
         RandomSource random) {
       super(soundEvent, soundCategory, random);
       this.volume = 3;
       this.pitch = 1;
-      this.world = world;
+      this.level = level;
       this.entityId = entityId;
     }
 
     @Override
     public void tick() {
-      Entity entity = world.getEntities().get(entityId);
+      Entity entity = level.getEntities().get(entityId);
       if (entity != null) {
         this.volume = 3;
         this.x = entity.getX();

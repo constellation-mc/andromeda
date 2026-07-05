@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class SnowballEntityMixin extends ThrowableItemProjectile {
 
   public SnowballEntityMixin(
-      EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
-    super(entityType, world);
+      EntityType<? extends ThrowableItemProjectile> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(at = @At("TAIL"), method = "onHitEntity")

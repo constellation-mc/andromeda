@@ -15,10 +15,10 @@ public abstract class BoatEntityWithBlock extends AbstractBoat {
 
   public BoatEntityWithBlock(
       EntityType<? extends AbstractBoat> entityType,
-      Level world,
+      Level level,
       BoatRideHeightFactory rideHeight,
       Supplier<Item> supplier) {
-    super(entityType, world, supplier);
+    super(entityType, level, supplier);
     this.rideHeight = rideHeight;
   }
 

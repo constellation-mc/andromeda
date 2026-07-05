@@ -26,8 +26,8 @@ abstract class EntityMixin extends Entity {
   @Shadow
   public abstract @Nullable AttributeInstance getAttribute(Holder<Attribute> attribute);
 
-  public EntityMixin(EntityType<?> type, Level world) {
-    super(type, world);
+  public EntityMixin(EntityType<?> type, Level level) {
+    super(type, level);
   }
 
   @Inject(at = @At("HEAD"), method = "baseTick")
