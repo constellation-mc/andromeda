@@ -1,0 +1,41 @@
+package dev.zenfyr.andromeda.modules.blocks.guarded_loot.mixin;
+
+import static dev.zenfyr.andromeda.modules.blocks.guarded_loot.GuardedLootMain.*;
+
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+@Mixin(RandomizableContainerBlockEntity.class)
+abstract class RandomizableContainerBlockEntityMixin extends BaseContainerBlockEntity {
+
+  protected RandomizableContainerBlockEntityMixin(
+      BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+    super(blockEntityType, blockPos, blockState);
+  }
+
+  @ModifyExpressionValue(
+      at =
+          @At(
+              value = "INVOKE",
+              target = "Lnet/minecraft/world/entity/player/Player;isSpectator()Z"),
+      method = "canOpen")
+  private boolean lockedIfMonstersNearby(
+      boolean locked, @Local(argsOnly = true, name = "player") Player player) {
+    var monsters =
+        checkMonsterLock(player.level(), this.getBlockState(), player, this.getBlockPos(), this);
+    if (monsters.isEmpty() || player.getAbilities().instabuild || checkLockPicking(this, player))
+      return locked;
+
+    handleLockedContainer(player, Vec3.atCenterOf(this.getBlockPos()), monsters);
+    return true;
+  }
+}
