@@ -15,7 +15,7 @@ public abstract class Module {
 
   private final ModuleInfo meta;
   private final Supplier<Logger> logger =
-      Memoize.supplier(() -> LogManager.getLogger(ModuleHelper.id(this)));
+      Memoize.supplier(() -> LogManager.getLogger("andromeda/" + ModuleHelper.id(this)));
   private final Map<EventMarker<?>, Bus<?>> busMap = new IdentityHashMap<>();
 
   protected Module() {
