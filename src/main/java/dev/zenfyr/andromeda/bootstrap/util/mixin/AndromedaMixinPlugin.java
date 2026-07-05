@@ -18,6 +18,8 @@ import org.spongepowered.asm.util.Annotations;
 
 public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
+  private static final int READER_FLAGS =
+      ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
   private static final Set<String> CLOTH_MIXINS = Set.of(
       "dev.zenfyr.andromeda.common.mixin.SubCategoryListEntryMixin",
       "dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor");
@@ -34,36 +36,29 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
     }
   }
 
-  private static Boolean isNewProvider = null;
+  public interface ClassNodeProvider {
+    ClassNode getClassNode(String cls) throws ClassNotFoundException, IOException;
+  }
+
+  private static ClassNodeProvider classNodeProvider = null;
 
   public static ClassNode getClassNode(String className)
       throws IOException, ClassNotFoundException {
     var provider = MixinService.getService().getBytecodeProvider();
     var normalized = className.replace('.', '/');
 
-    if (isNewProvider != null) {
-      if (isNewProvider) {
-        return provider.getClassNode(
-            normalized,
-            false,
-            ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-      } else {
-        return provider.getClassNode(normalized);
-      }
-    }
+    if (classNodeProvider != null) return classNodeProvider.getClassNode(normalized);
 
     ClassNode node;
     try {
-      node = provider.getClassNode(
-          normalized,
-          false,
-          ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-      isNewProvider = true;
+      // default (Fabric)
+      node = (classNodeProvider = cls -> provider.getClassNode(cls, false, READER_FLAGS))
+          .getClassNode(normalized);
     } catch (ClassNotFoundException | IOException e) {
       throw e; // rethrow expected
     } catch (Throwable e) {
-      node = provider.getClassNode(normalized);
-      isNewProvider = false;
+      // fallback to the old method for Neo/Forge
+      node = (classNodeProvider = provider::getClassNode).getClassNode(normalized);
     }
     return node;
   }
