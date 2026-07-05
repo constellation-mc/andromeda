@@ -1,22 +1,18 @@
-package dev.zenfyr.andromeda.bootstrap.util;
+package dev.zenfyr.andromeda.bootstrap.config;
 
 import dev.zenfyr.andromeda.bootstrap.AndromedaConstants;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
+import dev.zenfyr.andromeda.bootstrap.util.Util;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import lombok.CustomLog;
 
 @CustomLog
-public final class NetUtils extends BaseConfig {
+public final class ConnectionsConfig extends BaseConfig {
 
-  public static final ModConfigHandler.Key<NetUtils> KEY =
-      new ModConfigHandler.Key<>("connections", NetUtils.class);
-
-  public static final String OWNER = "constellation-mc";
-  public static final String REPO = AndromedaConstants.MODID;
-  public static final String RAW_URL = "https://raw.githubusercontent.com";
+  public static final ModConfigHandler.Key<ConnectionsConfig> KEY =
+      new ModConfigHandler.Key<>("connections", ConnectionsConfig.class);
 
   private static final HttpClient CLIENT = HttpClient.newBuilder()
       .followRedirects(HttpClient.Redirect.NORMAL)

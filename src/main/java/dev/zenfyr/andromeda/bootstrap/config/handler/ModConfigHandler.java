@@ -6,9 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
+import dev.zenfyr.andromeda.bootstrap.config.ConnectionsConfig;
+import dev.zenfyr.andromeda.bootstrap.config.DebugConfig;
 import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
-import dev.zenfyr.andromeda.bootstrap.util.Debug;
-import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
 import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.io.IOException;
@@ -28,9 +28,9 @@ public class ModConfigHandler {
 
   static {
     KEYS.add(ModInitConfig.KEY);
-    KEYS.add(NetUtils.KEY);
+    KEYS.add(ConnectionsConfig.KEY);
 
-    KEYS.add(Debug.KEY);
+    KEYS.add(DebugConfig.KEY);
   }
 
   private final Map<Key<?>, BaseConfig> configs = new IdentityHashMap<>();

@@ -1,8 +1,8 @@
 package dev.zenfyr.andromeda.modules.misc.translations;
 
 import com.google.common.collect.Sets;
+import dev.zenfyr.andromeda.bootstrap.AndromedaConstants;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
-import dev.zenfyr.andromeda.bootstrap.util.NetUtils;
 import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import java.io.IOException;
@@ -19,8 +19,10 @@ import java.util.concurrent.ForkJoinPool;
 
 public final class TranslationsClient {
 
-  private static final String URL =
-      NetUtils.RAW_URL + "/" + NetUtils.OWNER + "/" + NetUtils.REPO + "/";
+  public static final String RAW_URL = "https://raw.githubusercontent.com";
+  public static final String REPO = AndromedaConstants.MODID;
+  public static final String OWNER = "constellation-mc";
+  private static final String URL = RAW_URL + "/" + OWNER + "/" + REPO + "/";
 
   private static String languageCode = "en_us";
 
@@ -43,21 +45,21 @@ public final class TranslationsClient {
   }
 
   static boolean shouldUpdate(ModuleManager manager) {
-    if (!manager.netUtils().allow) return false;
+    if (!manager.connections().allow) return false;
     if (Files.exists(Translations.EN_US)) {
       try {
         if (ChronoUnit.HOURS.between(
                 Files.getLastModifiedTime(Translations.EN_US).toInstant(), Instant.now())
             >= 24) return true;
       } catch (Exception ignored) {
-        return manager.netUtils().modUpdated();
+        return manager.connections().modUpdated();
       }
     } else return true;
-    return manager.netUtils().modUpdated();
+    return manager.connections().modUpdated();
   }
 
   public static void onResourceReload(String code, ModuleManager manager) {
-    if (manager.netUtils().allow && !languageCode.equals(code)) {
+    if (manager.connections().allow && !languageCode.equals(code)) {
       languageCode = code;
       Set<String> languages = Sets.newHashSet("en_us");
       languages.add(code);
@@ -99,7 +101,7 @@ public final class TranslationsClient {
           .build();
 
       HttpResponse<String> response =
-          manager.netUtils().getClient().send(request, HttpResponse.BodyHandlers.ofString());
+          manager.connections().getClient().send(request, HttpResponse.BodyHandlers.ofString());
 
       if (response.statusCode() != 200) {
         module
