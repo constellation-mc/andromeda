@@ -26,7 +26,7 @@ abstract class BlockBehaviourMixin {
       Level level,
       BlockPos pos,
       Player player,
-      BlockHitResult blockHitResult,
+      BlockHitResult hitResult,
       CallbackInfoReturnable<InteractionResult> cir) {
     if (state.is(Blocks.FLETCHING_TABLE)) {
       if (player.level().isClientSide()) {

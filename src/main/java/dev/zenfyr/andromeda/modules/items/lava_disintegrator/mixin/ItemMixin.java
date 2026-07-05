@@ -21,28 +21,27 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "overrideOtherStackedOnMe", cancellable = true)
   private void andromeda$onLavaClick(
-      ItemStack stack,
-      ItemStack otherStack,
+      ItemStack self,
+      ItemStack other,
       Slot slot,
-      ClickAction clickType,
+      ClickAction clickAction,
       Player player,
-      SlotAccess cursorStackReference,
+      SlotAccess carriedItem,
       CallbackInfoReturnable<Boolean> cir) {
-    if (clickType == ClickAction.SECONDARY && stack.is(Items.LAVA_BUCKET)) {
-      var damageResistant = otherStack.get(DataComponents.DAMAGE_RESISTANT);
+    if (clickAction == ClickAction.SECONDARY && self.is(Items.LAVA_BUCKET)) {
+      var damageResistant = other.get(DataComponents.DAMAGE_RESISTANT);
       if (damageResistant != null
           && damageResistant.isResistantTo(player.level().damageSources().inFire())) {
         return;
       }
 
       if (EnchantmentHelper.getItemEnchantmentLevel(
-              player.level().registryAccess().getOrThrow(Enchantments.FIRE_PROTECTION), otherStack)
+              player.level().registryAccess().getOrThrow(Enchantments.FIRE_PROTECTION), other)
           > 0) return;
 
-      cursorStackReference.set(ItemStack.EMPTY);
+      carriedItem.set(ItemStack.EMPTY);
       if (player.level().isClientSide())
-        LavaDisintegratorClient.spawnLavaParticles(
-            (int) Math.max(2, Math.sqrt(otherStack.getCount())));
+        LavaDisintegratorClient.spawnLavaParticles((int) Math.max(2, Math.sqrt(other.getCount())));
       cir.setReturnValue(true);
     }
   }

@@ -36,7 +36,7 @@ abstract class VillagerEntityMixin extends AbstractVillager {
   private void andromeda$init(
       EntityType<? extends Villager> entityType,
       Level level,
-      Holder<VillagerType> holder,
+      Holder<VillagerType> type,
       CallbackInfo ci) {
     level
         .registryAccess()

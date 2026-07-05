@@ -32,18 +32,18 @@ abstract class AbstractBlockMixin {
   private void andromeda$onUse(
       ItemStack itemStack,
       BlockState state,
-      Level world,
+      Level level,
       BlockPos pos,
       Player player,
       InteractionHand hand,
-      BlockHitResult blockHitResult,
+      BlockHitResult hitResult,
       CallbackInfoReturnable<InteractionResult> cir) {
     if (state.getBlock() instanceof CactusBlock) {
       ItemStack stack = player.getItemInHand(hand);
       if (stack.is(Items.GLASS_BOTTLE)) {
         BlockPos pos1 = pos;
         while (true) {
-          BlockState state1 = world.getBlockState(pos1 = pos1.above());
+          BlockState state1 = level.getBlockState(pos1 = pos1.above());
           if (state.is(state1.getBlock())) {
             state = state1;
           } else {
@@ -51,7 +51,7 @@ abstract class AbstractBlockMixin {
           }
         }
 
-        if (!world.isClientSide() && world.am$get(CactusFiller.CONFIG).available) {
+        if (!level.isClientSide() && level.am$get(CactusFiller.CONFIG).available) {
           player.setItemInHand(
               hand,
               ItemUtils.createFilledResult(
@@ -59,14 +59,14 @@ abstract class AbstractBlockMixin {
           player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 
           if (state.getValue(CactusFillerMain.WATER_LEVEL_3) == 3) {
-            world.destroyBlock(pos1.below(), false, player);
+            level.destroyBlock(pos1.below(), false, player);
             ItemStackUtil.spawnVelocity(
-                pos1, Items.DEAD_BUSH.getDefaultInstance(), world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
+                pos1, Items.DEAD_BUSH.getDefaultInstance(), level, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
           } else {
-            world.setBlockAndUpdate(pos1.below(), state.cycle(CactusFillerMain.WATER_LEVEL_3));
+            level.setBlockAndUpdate(pos1.below(), state.cycle(CactusFillerMain.WATER_LEVEL_3));
           }
 
-          ((ServerLevel) world)
+          ((ServerLevel) level)
               .sendParticles(
                   ParticleTypes.FALLING_WATER,
                   pos.getX() + 0.5,

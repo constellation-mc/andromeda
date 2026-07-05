@@ -19,9 +19,9 @@ abstract class BoneMealItemMixin {
 
   @Inject(at = @At("HEAD"), method = "useOn", cancellable = true)
   private void andromeda$useOnFertilizable(
-      UseOnContext ctx, CallbackInfoReturnable<InteractionResult> cir) {
-    Level world = ctx.getLevel();
-    BlockPos pos = ctx.getClickedPos();
+      UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
+    Level world = context.getLevel();
+    BlockPos pos = context.getClickedPos();
     if (world.isClientSide()) return;
 
     BlockState state = world.getBlockState(pos);

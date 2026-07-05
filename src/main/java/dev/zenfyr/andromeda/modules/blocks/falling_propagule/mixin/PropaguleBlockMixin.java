@@ -32,20 +32,20 @@ abstract class PropaguleBlockMixin {
               shift = At.Shift.BEFORE),
       method = "randomTick")
   private void andromeda$randomTick(
-      BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo ci) {
+      BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
     if (isFullyGrown(state)
         && random.nextInt(40) == 0
-        && world.am$get(FallingPropagule.CONFIG).available) {
+        && level.am$get(FallingPropagule.CONFIG).available) {
       FallingBlockEntity fallingBlock = new FallingBlockEntity(
-          world,
+          level,
           pos.getX() + 0.5,
           pos.getY(),
           pos.getZ() + 0.5,
           state.hasProperty(BlockStateProperties.WATERLOGGED)
               ? state.setValue(BlockStateProperties.WATERLOGGED, Boolean.FALSE)
               : state);
-      world.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
-      world.addFreshEntity(fallingBlock);
+      level.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
+      level.addFreshEntity(fallingBlock);
     }
   }
 }

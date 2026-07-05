@@ -18,18 +18,18 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "overrideOtherStackedOnMe", cancellable = true)
   private void andromeda$onClicked(
-      ItemStack stack,
-      ItemStack otherStack,
+      ItemStack self,
+      ItemStack other,
       Slot slot,
-      ClickAction clickType,
+      ClickAction clickAction,
       Player player,
-      SlotAccess cursorStackReference,
+      SlotAccess carriedItem,
       CallbackInfoReturnable<Boolean> cir) {
-    if (clickType == ClickAction.SECONDARY
-        && stack.is(Items.LILY_OF_THE_VALLEY)
-        && otherStack.is(Items.DIAMOND)) {
+    if (clickAction == ClickAction.SECONDARY
+        && self.is(Items.LILY_OF_THE_VALLEY)
+        && other.is(Items.DIAMOND)) {
       // I mean .....yeah
-      RoseOfTheValley.handleClick(stack, otherStack, player);
+      RoseOfTheValley.handleClick(self, other, player);
       cir.setReturnValue(true);
     }
   }

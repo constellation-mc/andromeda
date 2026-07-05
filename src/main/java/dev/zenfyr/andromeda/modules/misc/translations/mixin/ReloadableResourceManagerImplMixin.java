@@ -37,7 +37,7 @@ abstract class ReloadableResourceManagerImplMixin {
       method = "createReload")
   private void andromeda$injectDownloadedTranslations(
       CallbackInfoReturnable<ReloadInstance> cir,
-      @Local(argsOnly = true) LocalRef<List<PackResources>> packs) {
+      @Local(argsOnly = true, name = "resourcePacks") LocalRef<List<PackResources>> packs) {
     if (this.type != PackType.CLIENT_RESOURCES) return;
 
     packs.set(new ArrayList<>(packs.get()));

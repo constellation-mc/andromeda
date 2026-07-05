@@ -46,12 +46,12 @@ abstract class DrawContextMixin {
       })
   private Vector2ic andromeda$smoothTooltip(
       Vector2ic vic,
-      @Local(argsOnly = true, ordinal = 0) int x,
-      @Local(argsOnly = true, ordinal = 1) int y,
+      @Local(argsOnly = true, name = "xo") int xo,
+      @Local(argsOnly = true, name = "yo") int yo,
       @Share("popMatrix") LocalBooleanRef popMatrix) {
-    if (andromeda$makeSmooth(x, y)) {
+    if (andromeda$makeSmooth(xo, yo)) {
       var c = AndromedaClient.CLIENT.get(SmoothTooltips.CONFIG);
-      if (smoothPos == null) smoothPos = new Vector2d(x, y);
+      if (smoothPos == null) smoothPos = new Vector2d(xo, yo);
       smoothPos.x = Mth.clamp(
           Mth.lerp(
               c.deltaX * minecraft.getDeltaTracker().getGameTimeDeltaTicks(), smoothPos.x, vic.x()),

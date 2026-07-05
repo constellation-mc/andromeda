@@ -48,10 +48,10 @@ abstract class LivingEntityMixin extends Entity {
       method = "checkTotemDeathProtection",
       cancellable = true)
   private void andromeda$useInfiniteTotem(
-      DamageSource source,
+      DamageSource killingDamage,
       CallbackInfoReturnable<Boolean> cir,
-      @Local(ordinal = 0) ItemStack itemStack) {
-    if (itemStack.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow())) {
+      @Local(name = "protectionItem") ItemStack protectionItem) {
+    if (protectionItem.is(InfiniteTotemMain.INFINITE_TOTEM.orThrow())) {
       if (!level().isClientSide()) {
         var payload = new UsedCustomTotemPayload(
             this.getUUID(),

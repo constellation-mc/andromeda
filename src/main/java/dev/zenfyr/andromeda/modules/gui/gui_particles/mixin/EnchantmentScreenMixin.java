@@ -33,7 +33,7 @@ abstract class EnchantmentScreenMixin extends AbstractContainerScreen<Enchantmen
               shift = At.Shift.AFTER),
       method = "mouseClicked")
   private void andromeda$particles(
-      MouseButtonEvent mouseButtonEvent, boolean bl, CallbackInfoReturnable<Boolean> cir) {
+      MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).enchantmentScreenParticles) return;
 
     Slot slot = this.menu.slots.get(0);

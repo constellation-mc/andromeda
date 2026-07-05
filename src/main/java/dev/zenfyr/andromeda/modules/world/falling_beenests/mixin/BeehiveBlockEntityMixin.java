@@ -31,22 +31,22 @@ abstract class BeehiveBlockEntityMixin extends BlockEntity {
 
   @Inject(at = @At("HEAD"), method = "serverTick")
   private static void andromeda$fallingHive(
-      @NotNull Level world,
-      BlockPos pos,
+      @NotNull Level level,
+      BlockPos blockPos,
       BlockState state,
-      BeehiveBlockEntity beehiveBlockEntity,
+      BeehiveBlockEntity entity,
       CallbackInfo ci) {
     if (state.getBlock() != Blocks.BEE_NEST) return;
 
-    if (world.am$get(CanBeeNestsFall.CONFIG).available && world.getRandom().nextInt(32000) == 0) {
-      if (!world.getBlockState(pos.relative(Direction.DOWN)).isAir()) return;
+    if (level.am$get(CanBeeNestsFall.CONFIG).available && level.getRandom().nextInt(32000) == 0) {
+      if (!level.getBlockState(blockPos.relative(Direction.DOWN)).isAir()) return;
 
-      BlockState up = world.getBlockState(pos.relative(Direction.UP));
+      BlockState up = level.getBlockState(blockPos.relative(Direction.UP));
       if (!up.is(BlockTags.LOGS) && !up.is(BlockTags.LEAVES)) return;
 
       for (Direction direction : BeeUtil.AROUND_BLOCK_DIRECTIONS) {
-        if (world.getBlockState(pos.relative(direction)).is(BlockTags.LOGS)) {
-          BeeUtil.trySpawnFallingBeeNest(world, pos, state, beehiveBlockEntity);
+        if (level.getBlockState(blockPos.relative(direction)).is(BlockTags.LOGS)) {
+          BeeUtil.trySpawnFallingBeeNest(level, blockPos, state, entity);
           break;
         }
       }

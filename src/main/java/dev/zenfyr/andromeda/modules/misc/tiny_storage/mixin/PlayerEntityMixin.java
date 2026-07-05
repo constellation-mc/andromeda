@@ -27,20 +27,18 @@ abstract class PlayerEntityMixin {
   public InventoryMenu inventoryMenu;
 
   @Shadow
-  public abstract @Nullable ItemEntity drop(ItemStack itemStack, boolean bl);
+  public abstract @Nullable ItemEntity drop(ItemStack itemStack, boolean thrownFromHand);
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
-  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
-    NbtUtil.writeInventoryToOutput(
-        "AM-Tiny-Storage", valueOutput, this.inventoryMenu.getCraftSlots());
+  private void andromeda$writeNbt(ValueOutput output, CallbackInfo ci) {
+    NbtUtil.writeInventoryToOutput("AM-Tiny-Storage", output, this.inventoryMenu.getCraftSlots());
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
+  private void andromeda$readNbt(ValueInput input, CallbackInfo ci) {
     try {
       TinyStorage.LOADING.set(true); // We have to skip sending handler updates.
-      NbtUtil.readInventoryFromInput(
-          "AM-Tiny-Storage", valueInput, this.inventoryMenu.getCraftSlots());
+      NbtUtil.readInventoryFromInput("AM-Tiny-Storage", input, this.inventoryMenu.getCraftSlots());
     } finally {
       TinyStorage.LOADING.remove();
     }

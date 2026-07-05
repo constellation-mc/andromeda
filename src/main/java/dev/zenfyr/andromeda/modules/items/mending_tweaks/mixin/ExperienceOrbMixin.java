@@ -12,7 +12,7 @@ abstract class ExperienceOrbMixin {
 
   @Inject(at = @At("HEAD"), method = "repairPlayerItems", cancellable = true)
   private void andromeda$repair(
-      ServerPlayer serverPlayer, int amount, CallbackInfoReturnable<Integer> cir) {
+      ServerPlayer player, int amount, CallbackInfoReturnable<Integer> cir) {
     cir.setReturnValue(amount);
   }
 }

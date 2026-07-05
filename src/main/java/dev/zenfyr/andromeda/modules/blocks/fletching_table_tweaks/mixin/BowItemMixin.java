@@ -27,10 +27,12 @@ abstract class BowItemMixin extends ProjectileWeaponItem {
       method = "releaseUsing",
       index = 6)
   public float andromeda$setVelocity(
-      float f, @Local(ordinal = 0, argsOnly = true) ItemStack stack, @Local Player player) {
-    int a = stack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);
+      float f,
+      @Local(argsOnly = true, name = "itemStack") ItemStack itemStack,
+      @Local Player player) {
+    int a = itemStack.getOrDefault(FletchingScreenHandler.TIGHTENED.get(), 0);
     if (a > 0) {
-      stack.set(FletchingScreenHandler.TIGHTENED.get(), a - 1);
+      itemStack.set(FletchingScreenHandler.TIGHTENED.get(), a - 1);
       return f * player.level().am$get(FletchingTableTweaks.CONFIG).divergenceModifier;
     }
     return f;

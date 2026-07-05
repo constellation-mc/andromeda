@@ -19,7 +19,8 @@ public abstract class EntityMixin {
 
   @Inject(at = @At("HEAD"), method = "remove")
   void linkart$removeLink(
-      CallbackInfo callbackInformation, @Local(argsOnly = true) Entity.RemovalReason reason) {
+      CallbackInfo callbackInformation,
+      @Local(argsOnly = true, name = "reason") Entity.RemovalReason reason) {
     if ((Entity) (Object) this instanceof AbstractMinecart minecart
         && !minecart.level().isClientSide()
         && reason.shouldDestroy()) {

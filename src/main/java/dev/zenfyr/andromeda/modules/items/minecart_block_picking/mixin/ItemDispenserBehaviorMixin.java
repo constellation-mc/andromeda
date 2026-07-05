@@ -25,21 +25,22 @@ abstract class ItemDispenserBehaviorMixin {
       cancellable = true)
   public void andromeda$dispenseSilently(
       BlockSource source,
-      ItemStack stack,
+      ItemStack dispensed,
       CallbackInfoReturnable<ItemStack> cir,
-      @Local(index = 6) double d,
-      @Local(index = 8) double e,
-      @Local(index = 10) double f,
-      @Local(index = 14) double g) {
-    PlaceBehaviorHandler.getPlaceBehavior(stack.getItem()).ifPresent(b -> {
+      @Local(name = "spawnX") double spawnX,
+      @Local(name = "spawnY") double spawnY,
+      @Local(name = "spawnZ") double spawnZ,
+      @Local(name = "yOffset") double yOffset) {
+    PlaceBehaviorHandler.getPlaceBehavior(dispensed.getItem()).ifPresent(b -> {
       if (!source.level().isClientSide()) {
-        AbstractMinecart entity = b.dispense(stack, source.level(), d, e, f, g, source.pos());
+        AbstractMinecart entity =
+            b.dispense(dispensed, source.level(), spawnX, spawnY, spawnZ, yOffset, source.pos());
         if (entity == null) return;
 
         source.level().addFreshEntity(entity);
-        stack.shrink(1);
+        dispensed.shrink(1);
       }
-      cir.setReturnValue(stack);
+      cir.setReturnValue(dispensed);
     });
   }
 }
