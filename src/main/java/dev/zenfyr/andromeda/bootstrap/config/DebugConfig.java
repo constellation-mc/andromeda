@@ -1,9 +1,9 @@
-package dev.zenfyr.andromeda.bootstrap.util;
+package dev.zenfyr.andromeda.bootstrap.config;
 
 import dev.zenfyr.andromeda.bootstrap.Module;
 import dev.zenfyr.andromeda.bootstrap.ModuleHelper;
-import dev.zenfyr.andromeda.bootstrap.config.BaseConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
+import dev.zenfyr.andromeda.bootstrap.util.Util;
 import dev.zenfyr.pulsar.api.platform.Platform;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +14,10 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 
-public class Debug extends BaseConfig {
+public class DebugConfig extends BaseConfig {
 
-  public static final ModConfigHandler.Key<Debug> KEY =
-      new ModConfigHandler.Key<>("debug", Debug.class);
+  public static final ModConfigHandler.Key<DebugConfig> KEY =
+      new ModConfigHandler.Key<>("debug", DebugConfig.class);
 
   public boolean enableAllModules = false;
   public Map<String, Set<String>> skipModIntegration = new HashMap<>();

@@ -1,5 +1,7 @@
 package dev.zenfyr.andromeda.bootstrap;
 
+import dev.zenfyr.andromeda.bootstrap.config.ConnectionsConfig;
+import dev.zenfyr.andromeda.bootstrap.config.DebugConfig;
 import dev.zenfyr.andromeda.bootstrap.config.ModInitConfig;
 import dev.zenfyr.andromeda.bootstrap.config.handler.BootstrapConfigHandler;
 import dev.zenfyr.andromeda.bootstrap.config.handler.ModConfigHandler;
@@ -36,10 +38,10 @@ public class ModuleManager {
   private final ModInitConfig modInitConfig;
 
   @Getter
-  private final NetUtils netUtils;
+  private final ConnectionsConfig connections;
 
   @Getter
-  private final Debug debug;
+  private final DebugConfig debug;
 
   @Getter
   private final BootstrapConfigHandler configHandler = new BootstrapConfigHandler();
@@ -59,8 +61,8 @@ public class ModuleManager {
   public ModuleManager() {
     this.modConfig = ModConfigHandler.load();
     this.modInitConfig = this.modConfig().get(ModInitConfig.KEY);
-    this.netUtils = this.modConfig().get(NetUtils.KEY);
-    this.debug = this.modConfig().get(Debug.KEY);
+    this.connections = this.modConfig().get(ConnectionsConfig.KEY);
+    this.debug = this.modConfig().get(DebugConfig.KEY);
   }
 
   public void onInitialize() {
@@ -80,7 +82,7 @@ public class ModuleManager {
     }
 
     this.modConfig().save();
-    this.netUtils().initialize(this);
+    this.connections().initialize(this);
 
     List<Class<? extends Module>> moduleClasses = new ModuleDiscovery()
         .discoverModules().stream()
