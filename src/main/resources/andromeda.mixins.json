@@ -12,8 +12,8 @@
     "alpha.TiledBlitRenderStateMixin"
   ],
   "mixins": [
-    "configs.ServerWorldMixin",
-    "configs.WorldMixin"
+    "configs.ServerLevelMixin",
+    "configs.LevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
