@@ -82,6 +82,10 @@ sourceSets.main.output.dir(
 tasks.named('processResources').configure {
     dependsOn(generateTask)
 
+    inputs.file(outDir.map { it.file("andromeda_mixins.json") })
+            .withPropertyName("andromedaMixins")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+
     doLast {
         def fabricMod = file("${layout.buildDirectory.get()}/resources/main/fabric.mod.json")
         def json = new JsonSlurper().parse(fabricMod)
