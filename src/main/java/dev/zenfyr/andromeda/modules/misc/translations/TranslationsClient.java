@@ -1,5 +1,7 @@
 package dev.zenfyr.andromeda.modules.misc.translations;
 
+import static net.minecraft.util.Util.nonCriticalIoPool;
+
 import com.google.common.collect.Sets;
 import dev.zenfyr.andromeda.bootstrap.AndromedaConstants;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
@@ -15,7 +17,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
 
 public final class TranslationsClient {
 
@@ -33,14 +34,7 @@ public final class TranslationsClient {
     if (shouldUpdate(manager)) {
       Set<String> languages = Sets.newHashSet("en_us");
       TranslationsClient.getSelectedLanguage(module).ifPresent(languages::add);
-      CompletableFuture.runAsync(
-              () -> TranslationsClient.downloadTranslations(languages, manager, module),
-              ForkJoinPool.commonPool())
-          .handle((unused, throwable) -> {
-            if (throwable != null)
-              module.logger().error("Failed to download translations!", throwable);
-            return null;
-          });
+      downloadAsync(languages, manager, module);
     }
   }
 
@@ -63,8 +57,20 @@ public final class TranslationsClient {
       languageCode = code;
       Set<String> languages = Sets.newHashSet("en_us");
       languages.add(code);
-      downloadTranslations(languages, manager, manager.get(Translations.class).orElseThrow());
+      downloadAsync(languages, manager, manager.get(Translations.class).orElseThrow());
     }
+  }
+
+  public static void downloadAsync(
+      Set<String> languages, ModuleManager manager, Translations module) {
+    var executor = nonCriticalIoPool().forName("andromeda_translations");
+    CompletableFuture.runAsync(
+            () -> TranslationsClient.downloadTranslations(languages, manager, module), executor)
+        .handle((unused, throwable) -> {
+          if (throwable != null)
+            module.logger().error("Failed to download translations!", throwable);
+          return null;
+        });
   }
 
   public static void downloadTranslations(
