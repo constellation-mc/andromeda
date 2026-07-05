@@ -23,7 +23,7 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
 
   @Shadow
   protected abstract void checkBurnOut(
-      Level world, BlockPos pos, int spreadFactor, RandomSource random, int currentAge);
+      Level level, BlockPos pos, int chance, RandomSource random, int age);
 
   @Unique private static final ThreadLocal<Boolean> LOCAL = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
@@ -31,16 +31,15 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
     super(settings, damage);
   }
 
-  @ModifyVariable(method = "checkBurnOut", at = @At("LOAD"), index = 3, argsOnly = true)
-  public int andromeda$spreadFire0(
-      int value, @Local(argsOnly = true) Level world, @Local(argsOnly = true) BlockPos pos) {
-    return Boolean.TRUE.equals(LOCAL.get()) ? (int) (value * 0.8) : value;
+  @ModifyVariable(method = "checkBurnOut", at = @At("LOAD"), argsOnly = true, name = "chance")
+  public int andromeda$spreadFire0(int chance) {
+    return Boolean.TRUE.equals(LOCAL.get()) ? (int) (chance * 0.8) : chance;
   }
 
   @ModifyExpressionValue(
       method = "checkBurnOut",
       at = @At(value = "CONSTANT", args = "intValue=10"))
-  public int andromeda$spreadFire01(int value, @Local(argsOnly = true) Level world) {
+  public int andromeda$spreadFire01(int value) {
     return Boolean.TRUE.equals(LOCAL.get()) ? (int) Math.ceil(value / 3d) : value;
   }
 
@@ -55,24 +54,24 @@ abstract class AbstractFireBlockMixin extends BaseFireBlock {
       method = "tick")
   public void andromeda$trySpreadBlocks(
       BlockState state,
-      ServerLevel world,
+      ServerLevel level,
       BlockPos pos,
       RandomSource random,
       CallbackInfo ci,
-      @Local(index = 7) int i,
-      @Local(index = 10) int k) {
-    if (world.am$get(QuickFire.CONFIG).available) {
+      @Local(name = "age") int age,
+      @Local(name = "extra") int extra) {
+    if (level.am$get(QuickFire.CONFIG).available) {
       try {
         LOCAL.set(Boolean.TRUE);
         for (int x = -3; x < 3; x++) {
           for (int y = -3; y < 3; y++) {
             for (int z = -3; z < 3; z++) {
               this.checkBurnOut(
-                  world,
+                  level,
                   new BlockPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z),
-                  300 + k,
+                  300 + extra,
                   random,
-                  i);
+                  age);
             }
           }
         }

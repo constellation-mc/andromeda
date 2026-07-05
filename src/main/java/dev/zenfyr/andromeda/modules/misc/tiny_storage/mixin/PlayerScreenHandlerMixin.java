@@ -23,7 +23,7 @@ abstract class PlayerScreenHandlerMixin {
   private void andromeda$doNotDrop(InventoryMenu instance, Player player, Container inventory) {}
 
   @Inject(at = @At("HEAD"), method = "slotsChanged", cancellable = true)
-  private void andromeda$skipUpdate(Container inventory, CallbackInfo ci) {
+  private void andromeda$skipUpdate(Container container, CallbackInfo ci) {
     if (TinyStorage.LOADING.get()) ci.cancel();
   }
 }

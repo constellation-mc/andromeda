@@ -41,7 +41,7 @@ abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
               ordinal = 0,
               shift = At.Shift.BEFORE),
       method = "onTake")
-  private void andromeda$particles(Player player, ItemStack stack, CallbackInfo ci) {
+  private void andromeda$particles(Player player, ItemStack carried, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).anvilScreenParticles) return;
     if (Minecraft.getInstance().isSameThread()
         && Minecraft.getInstance().gui.screen() instanceof AnvilScreen anvilScreen) {

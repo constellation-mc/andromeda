@@ -22,14 +22,14 @@ abstract class SnowballEntityMixin extends ThrowableItemProjectile {
   }
 
   @Inject(at = @At("TAIL"), method = "onHitEntity")
-  private void andromeda$applyFreezing(EntityHitResult result, CallbackInfo ci) {
-    if (result.getEntity().level().isClientSide()) return;
+  private void andromeda$applyFreezing(EntityHitResult hitResult, CallbackInfo ci) {
+    if (hitResult.getEntity().level().isClientSide()) return;
 
-    var config = result.getEntity().level().am$get(Snowballs.CONFIG);
+    var config = hitResult.getEntity().level().am$get(Snowballs.CONFIG);
     if (!config.available) return;
     if (!config.freeze) return;
 
-    Entity entity = result.getEntity();
+    Entity entity = hitResult.getEntity();
     if (entity instanceof LivingEntity livingEntity) {
       livingEntity.setTicksFrozen(livingEntity.getTicksRequiredToFreeze() + 40);
     }

@@ -37,11 +37,12 @@ abstract class ExplosionMixin implements GhastExplosionDuck {
       method = "calculateExplodedPositions")
   private void collectAffectedObsidian(
       CallbackInfoReturnable<Integer> cir,
-      @Local(index = 14) float h,
-      @Local(index = 22) BlockPos pos,
-      @Local(index = 23) BlockState state) {
-    if (!affectObsidian || state.getBlock() != Blocks.OBSIDIAN) return;
-    if (h - 0.64 > 0 && level.getRandom().nextFloat() >= 0.2f) affectedObsidian.add(pos);
+      @Local(name = "remainingPower") float remainingPower,
+      @Local(name = "pos") BlockPos pos,
+      @Local(name = "block") BlockState block) {
+    if (!affectObsidian || block.getBlock() != Blocks.OBSIDIAN) return;
+    if (remainingPower - 0.64 > 0 && level.getRandom().nextFloat() >= 0.2f)
+      affectedObsidian.add(pos);
   }
 
   @Inject(

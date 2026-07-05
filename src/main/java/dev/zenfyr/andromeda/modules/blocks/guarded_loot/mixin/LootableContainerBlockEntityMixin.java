@@ -28,7 +28,8 @@ abstract class LootableContainerBlockEntityMixin extends BaseContainerBlockEntit
               value = "INVOKE",
               target = "Lnet/minecraft/world/entity/player/Player;isSpectator()Z"),
       method = "canOpen")
-  private boolean lockedIfMonstersNearby(boolean locked, @Local(argsOnly = true) Player player) {
+  private boolean lockedIfMonstersNearby(
+      boolean locked, @Local(argsOnly = true, name = "player") Player player) {
     var monsters =
         checkMonsterLock(player.level(), this.getBlockState(), player, this.getBlockPos(), this);
     if (monsters.isEmpty() || player.getAbilities().instabuild || checkLockPicking(this, player))

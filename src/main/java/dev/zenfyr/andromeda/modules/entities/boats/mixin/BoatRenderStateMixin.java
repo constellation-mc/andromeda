@@ -6,11 +6,12 @@ import dev.zenfyr.pulsar.api.platform.CEnvType;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.entity.state.BoatRenderState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
 @MixinEnvironment(CEnvType.CLIENT)
 @Mixin(BoatRenderState.class)
 public class BoatRenderStateMixin implements RenderStateDuck {
-  private BlockModelRenderState andromeda$blockRenderState = new BlockModelRenderState();
+  @Unique private final BlockModelRenderState andromeda$blockRenderState = new BlockModelRenderState();
 
   @Override
   public BlockModelRenderState andromeda$blockRenderState() {

@@ -48,7 +48,7 @@ abstract class BundleItemMixin {
                   "Lnet/minecraft/world/item/BundleItem;playInsertSound(Lnet/minecraft/world/entity/Entity;)V"),
       method = "overrideStackedOnOther")
   private void andromeda$spawnParticlesClicked(
-      ItemStack itemStack,
+      ItemStack self,
       Slot slot,
       ClickAction clickAction,
       Player player,
@@ -79,12 +79,12 @@ abstract class BundleItemMixin {
                   "Lnet/minecraft/world/item/BundleItem;playInsertSound(Lnet/minecraft/world/entity/Entity;)V"),
       method = "overrideOtherStackedOnMe")
   private void andromeda$spawnParticlesStackClicked(
-      ItemStack itemStack,
+      ItemStack self,
       ItemStack itemStack2,
       Slot slot,
       ClickAction clickAction,
       Player player,
-      SlotAccess slotAccess,
+      SlotAccess carriedItem,
       CallbackInfoReturnable<Boolean> cir,
       @Share("original") LocalRef<ItemStack> other) {
     this.andromeda$renderParticles(other.get());

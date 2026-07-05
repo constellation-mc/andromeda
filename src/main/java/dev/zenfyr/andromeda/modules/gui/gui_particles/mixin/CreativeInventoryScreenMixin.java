@@ -44,12 +44,12 @@ abstract class CreativeInventoryScreenMixin
       int buttonNum,
       ContainerInput containerInput,
       CallbackInfo ci,
-      @Local(ordinal = 2) int index) {
+      @Local(name = "i") int i) {
     var config = AndromedaClient.CLIENT.get(GuiParticles.CONFIG);
     if (!config.creativeScreenParticles) return;
 
-    if (index >= this.menu.slots.size()) return;
-    Slot slot1 = this.menu.slots.get(index);
+    if (i >= this.menu.slots.size()) return;
+    Slot slot1 = this.menu.slots.get(i);
     ScreenParticles.get(Minecraft.getInstance())
         .addParticle(
             this,

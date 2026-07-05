@@ -21,22 +21,22 @@ abstract class BeehiveBlockMixin {
   @Inject(at = @At("HEAD"), method = "updateShape", cancellable = true)
   private void andromeda$checkSupport(
       BlockState state,
-      LevelReader world,
-      ScheduledTickAccess scheduledTickAccess,
+      LevelReader level,
+      ScheduledTickAccess ticks,
       BlockPos pos,
-      Direction direction,
-      BlockPos blockPos2,
-      BlockState blockState2,
-      RandomSource randomSource,
+      Direction directionToNeighbour,
+      BlockPos neighbourPos,
+      BlockState neighbourState,
+      RandomSource random,
       CallbackInfoReturnable<BlockState> cir) {
-    if (!(world instanceof Level)) return;
+    if (!(level instanceof Level)) return;
     for (Direction value : Direction.values()) {
-      if (!world.getBlockState(pos.relative(value)).isAir()) {
+      if (!level.getBlockState(pos.relative(value)).isAir()) {
         return;
       }
     }
     BeeUtil.trySpawnFallingBeeNest(
-        (Level) world, pos, state, (BeehiveBlockEntity) world.getBlockEntity(pos));
+        (Level) level, pos, state, (BeehiveBlockEntity) level.getBlockEntity(pos));
     cir.setReturnValue(state.getFluidState().createLegacyBlock());
   }
 }

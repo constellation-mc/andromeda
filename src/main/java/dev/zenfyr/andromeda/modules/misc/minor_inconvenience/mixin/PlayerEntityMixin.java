@@ -37,7 +37,7 @@ abstract class PlayerEntityMixin extends LivingEntity {
       method = "hurtServer",
       cancellable = true)
   private void andromeda$damage(
-      ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+      ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
     if (!level().isClientSide()
         && !source.is(AGONY)
         && level().am$get(MinorInconvenience.CONFIG).available) {

@@ -43,14 +43,12 @@ public abstract class ServerLevelMixin extends Level {
   }
 
   @Inject(
-      at =
-          @At(
-              value = "INVOKE",
-              target = "Lnet/minecraft/world/level/ServerExplosion;explode()I",
-              shift = At.Shift.BEFORE),
+      at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/ServerExplosion;explode()I"),
       method = "explode")
   private void andromeda$modExplosion(
-      CallbackInfo ci, @Local(argsOnly = true) Entity source, @Local ServerExplosion explosion) {
+      CallbackInfo ci,
+      @Local(argsOnly = true, name = "source") Entity source,
+      @Local(name = "explosion") ServerExplosion explosion) {
     if ((source instanceof Fireball fb)
         && fb.getOwner() instanceof Ghast
         && this.am$get(GhastTweaks.CONFIG).fireBallsConvertObsidian) {

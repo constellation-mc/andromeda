@@ -55,13 +55,13 @@ abstract class AbstractCubeMobMixin extends AgeableMob implements SlimeMergeDuck
   }
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
-  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
-    valueOutput.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
+  private void andromeda$writeNbt(ValueOutput output, CallbackInfo ci) {
+    output.putInt("AM-MergeCD", Math.max(this.andromeda$mergeCD, 0));
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
-    this.andromeda$mergeCD = valueInput.getIntOr("AM-MergeCD", MathUtil.nextInt(700, 2000));
+  private void andromeda$readNbt(ValueInput input, CallbackInfo ci) {
+    this.andromeda$mergeCD = input.getIntOr("AM-MergeCD", MathUtil.nextInt(700, 2000));
   }
 
   @Override

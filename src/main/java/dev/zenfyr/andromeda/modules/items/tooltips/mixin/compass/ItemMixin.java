@@ -27,11 +27,11 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "appendHoverText")
   public void andromeda$tooltip(
-      ItemStack stack,
+      ItemStack itemStack,
       Item.TooltipContext context,
-      TooltipDisplay tooltipDisplay,
-      Consumer<Component> tooltipAdder,
-      TooltipFlag flag,
+      TooltipDisplay display,
+      Consumer<Component> builder,
+      TooltipFlag tooltipFlag,
       CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).compass) return;
     var world = Minecraft.getInstance().level;
@@ -39,10 +39,10 @@ abstract class ItemMixin {
     if (world != null)
       if (world.isClientSide()) {
         var player = Minecraft.getInstance().player;
-        if (stack.getItem() == Items.COMPASS && player != null) {
-          boolean lodestone = stack.has(DataComponents.LODESTONE_TRACKER);
+        if (itemStack.getItem() == Items.COMPASS && player != null) {
+          boolean lodestone = itemStack.has(DataComponents.LODESTONE_TRACKER);
           GlobalPos globalPos = lodestone
-              ? stack.get(DataComponents.LODESTONE_TRACKER).target().orElse(null)
+              ? itemStack.get(DataComponents.LODESTONE_TRACKER).target().orElse(null)
               : world.getRespawnData().globalPos();
 
           double dist;
@@ -55,7 +55,7 @@ abstract class ItemMixin {
           } else {
             dist = MathUtil.threadRandom().nextGaussian() * 0.1;
           }
-          tooltipAdder.accept(TextUtil.translatable(
+          builder.accept(TextUtil.translatable(
                   lodestone ? "tooltip.andromeda.compass.lodestone" : "tooltip.andromeda.compass",
                   String.format("%.1f", dist))
               .withStyle(ChatFormatting.GRAY));

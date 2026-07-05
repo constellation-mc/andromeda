@@ -29,11 +29,11 @@ abstract class ZombieEntityMixin extends Monster {
               shift = At.Shift.AFTER),
       method = "finalizeSpawn")
   private void andromeda$initialize(
-      ServerLevelAccessor world,
-      DifficultyInstance difficultyInstance,
-      EntitySpawnReason entitySpawnReason,
-      SpawnGroupData spawnGroupData,
+      ServerLevelAccessor level,
+      DifficultyInstance difficulty,
+      EntitySpawnReason spawnReason,
+      SpawnGroupData groupData,
       CallbackInfoReturnable<SpawnGroupData> cir) {
-    if (world.getLevel().am$get(Pickup.CONFIG).available) this.setCanPickUpLoot(true);
+    if (level.getLevel().am$get(Pickup.CONFIG).available) this.setCanPickUpLoot(true);
   }
 }

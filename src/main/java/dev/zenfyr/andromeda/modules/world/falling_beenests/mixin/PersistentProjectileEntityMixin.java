@@ -25,8 +25,8 @@ abstract class PersistentProjectileEntityMixin extends Projectile {
   }
 
   @Inject(at = @At("TAIL"), method = "onHitBlock")
-  private void andromeda$onBeeNestHit(BlockHitResult blockHitResult, CallbackInfo ci) {
-    BlockPos pos = blockHitResult.getBlockPos();
+  private void andromeda$onBeeNestHit(BlockHitResult hitResult, CallbackInfo ci) {
+    BlockPos pos = hitResult.getBlockPos();
     BlockState state = level().getBlockState(pos);
 
     if (state.getBlock() == Blocks.BEE_NEST && !level().isClientSide()) {

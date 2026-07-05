@@ -19,10 +19,11 @@ abstract class BedBlockMixin extends Block {
   @ModifyExpressionValue(
       at = @At(value = "CONSTANT", args = "floatValue=5.0F"),
       method = "useWithoutItem")
-  public float andromeda$explosionRedirect(float power, @Local(argsOnly = true) Level world) {
-    if (world.isClientSide()) return power;
+  public float andromeda$explosionRedirect(
+      float power, @Local(argsOnly = true, name = "level") Level level) {
+    if (level.isClientSide()) return power;
 
-    var config = world.am$get(Power.CONFIG);
+    var config = level.am$get(Power.CONFIG);
     return config.available ? (float) config.power : power;
   }
 }

@@ -37,7 +37,7 @@ abstract class InGameHudMixin {
   private ItemStack lastToolHighlight;
 
   @Inject(at = @At("HEAD"), method = "extractSelectedItemName", cancellable = true)
-  private void andromeda$renderTooltip(GuiGraphicsExtractor context, CallbackInfo ci) {
+  private void andromeda$renderTooltip(GuiGraphicsExtractor graphics, CallbackInfo ci) {
     Profiler.get().push("selectedItemName");
 
     if (this.toolHighlightTimer > 0
@@ -49,12 +49,12 @@ abstract class InGameHudMixin {
       }
 
       if (l > 0) {
-        int k = context.guiHeight() - 59;
+        int k = graphics.guiHeight() - 59;
         if (!MakeSure.notNull(this.minecraft.gameMode).canHurtPlayer()) {
           k += 14;
         }
 
-        Matrix3x2fStack matrices = context.pose();
+        Matrix3x2fStack matrices = graphics.pose();
         matrices.pushMatrix();
         matrices.scale(1, 1);
 
@@ -82,7 +82,7 @@ abstract class InGameHudMixin {
                 return component;
               })));
 
-          context.tooltip(
+          graphics.tooltip(
               minecraft.font,
               list1,
               0,

@@ -32,7 +32,7 @@ abstract class CampfireBlockEntityMixin {
       BlockPos pos,
       BlockState state,
       CampfireBlockEntity campfire,
-      RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> check,
+      RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> recipeCache,
       CallbackInfo ci) {
     if (level.getGameTime() % 180 == 0) {
       var config = level.am$get(CampfireEffects.CONFIG);

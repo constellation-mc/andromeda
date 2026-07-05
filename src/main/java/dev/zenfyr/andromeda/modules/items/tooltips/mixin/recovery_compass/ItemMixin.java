@@ -26,11 +26,11 @@ abstract class ItemMixin {
 
   @Inject(at = @At("HEAD"), method = "appendHoverText")
   public void andromeda$tooltip(
-      ItemStack stack,
+      ItemStack itemStack,
       Item.TooltipContext context,
-      TooltipDisplay tooltipDisplay,
-      Consumer<Component> tooltipAdder,
-      TooltipFlag flag,
+      TooltipDisplay display,
+      Consumer<Component> builder,
+      TooltipFlag tooltipFlag,
       CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).recoveryCompass) return;
     var world = Minecraft.getInstance().level;
@@ -38,7 +38,7 @@ abstract class ItemMixin {
     if (world != null)
       if (world.isClientSide()) {
         var player = Minecraft.getInstance().player;
-        if (stack.getItem() == Items.RECOVERY_COMPASS && player != null) {
+        if (itemStack.getItem() == Items.RECOVERY_COMPASS && player != null) {
           var optional = player.getLastDeathLocation();
           if (optional.isPresent()) {
             GlobalPos globalPos = optional.get();
@@ -53,7 +53,7 @@ abstract class ItemMixin {
             } else {
               dist = MathUtil.threadRandom().nextGaussian() * 0.1;
             }
-            tooltipAdder.accept(TextUtil.translatable(
+            builder.accept(TextUtil.translatable(
                     "tooltip.andromeda.compass.recovery", String.format("%.1f", dist))
                 .withStyle(ChatFormatting.GRAY));
           }

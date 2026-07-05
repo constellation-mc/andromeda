@@ -24,8 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class PlayerEntityMixin {
 
   @Inject(at = @At("HEAD"), method = "stopSleepInBed(ZZ)V")
-  private void andromeda$wakeUp(
-      boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo ci) {
+  private void andromeda$wakeUp(boolean forcefulWakeUp, boolean updateLevelList, CallbackInfo ci) {
     Player player = (Player) (Object) this;
 
     if (!player.level().isClientSide())

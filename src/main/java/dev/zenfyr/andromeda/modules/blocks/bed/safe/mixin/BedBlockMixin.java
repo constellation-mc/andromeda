@@ -25,19 +25,19 @@ abstract class BedBlockMixin extends Block {
 
   @Inject(at = @At("HEAD"), method = "useWithoutItem", cancellable = true)
   public void andromeda$onUse(
-      BlockState blockState,
-      Level world,
-      BlockPos blockPos,
+      BlockState state,
+      Level level,
+      BlockPos pos,
       Player player,
-      BlockHitResult blockHitResult,
+      BlockHitResult hitResult,
       CallbackInfoReturnable<InteractionResult> cir) {
-    if (world.isClientSide()) return;
+    if (level.isClientSide()) return;
 
-    if (world
+    if (level
         .environmentAttributes()
-        .getValue(EnvironmentAttributes.BED_RULE, blockPos)
+        .getValue(EnvironmentAttributes.BED_RULE, pos)
         .explodes()) {
-      if (world.am$get(Safe.CONFIG).available) {
+      if (level.am$get(Safe.CONFIG).available) {
         player.sendOverlayMessage(TextUtil.translatable("action.andromeda.safebeds"));
         cir.setReturnValue(InteractionResult.SUCCESS);
       }

@@ -14,9 +14,10 @@ abstract class BedBlockMixin {
   @ModifyExpressionValue(
       at = @At(value = "INVOKE", target = "Lnet/minecraft/world/attribute/BedRule;explodes()Z"),
       method = "useWithoutItem")
-  private boolean andromeda$explode(boolean original, @Local(argsOnly = true) Level world) {
-    if (world.isClientSide()) return original;
+  private boolean andromeda$explode(
+      boolean original, @Local(argsOnly = true, name = "level") Level level) {
+    if (level.isClientSide()) return original;
 
-    return original || world.am$get(Unsafe.CONFIG).available;
+    return original || level.am$get(Unsafe.CONFIG).available;
   }
 }

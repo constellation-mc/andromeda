@@ -30,25 +30,27 @@ abstract class GoatHornMixin {
               shift = At.Shift.BEFORE),
       method = "use")
   private void andromeda$wanderingGoatHorn(
-      Level world,
-      Player user,
+      Level level,
+      Player player,
       InteractionHand hand,
       CallbackInfoReturnable<InteractionResult> cir,
-      @Local Optional<? extends Holder<Instrument>> optional) {
-    if (world.isClientSide()) return;
-    if (optional.filter(holder -> holder.is(CustomTraderManager.TRADER_SONGS)).isEmpty()) return;
+      @Local(name = "instrumentHolder") Optional<? extends Holder<Instrument>> instrumentHolder) {
+    if (level.isClientSide()) return;
+    if (instrumentHolder
+        .filter(holder -> holder.is(CustomTraderManager.TRADER_SONGS))
+        .isEmpty()) return;
 
-    ServerLevel sw = (ServerLevel) world;
+    ServerLevel sw = (ServerLevel) level;
     if (!sw.getGameRules().get(GameRules.SPAWN_MOBS)) return;
-    var cfg = world.am$get(GoatHorn.CONFIG);
+    var cfg = level.am$get(GoatHorn.CONFIG);
     if (!cfg.available) return;
 
     sw.getAttachedOrCreate(CustomTraderManager.ATTACHMENT.get())
         .trySpawn(
-            (ServerLevel) world,
+            (ServerLevel) level,
             sw.getServer().getWorldData().overworldData(),
-            user.getItemInHand(hand),
-            user,
+            player.getItemInHand(hand),
+            player,
             cfg.highlightTrader);
   }
 }

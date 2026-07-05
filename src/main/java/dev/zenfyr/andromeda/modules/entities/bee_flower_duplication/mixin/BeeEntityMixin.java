@@ -28,10 +28,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class BeeEntityMixin extends Animal {
 
   @Shadow
-  @Nullable BlockPos savedFlowerPos;
+  @Nullable private BlockPos savedFlowerPos;
 
   @Shadow
-  Bee.BeePollinateGoal beePollinateGoal;
+  private Bee.BeePollinateGoal beePollinateGoal;
 
   @Unique private int andromeda$plantingCoolDown;
 
@@ -59,15 +59,15 @@ abstract class BeeEntityMixin extends Animal {
   }
 
   @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
-  private void andromeda$writeNbt(ValueOutput valueOutput, CallbackInfo ci) {
+  private void andromeda$writeNbt(ValueOutput output, CallbackInfo ci) {
     if (this.andromeda$plantingCoolDown != 0)
-      valueOutput.putInt("AM-plantingCoolDown", this.andromeda$plantingCoolDown);
+      output.putInt("AM-plantingCoolDown", this.andromeda$plantingCoolDown);
   }
 
   @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
-  private void andromeda$readNbt(ValueInput valueInput, CallbackInfo ci) {
-    if (valueInput.contains("AM-plantingCoolDown"))
-      this.andromeda$plantingCoolDown = valueInput.getIntOr("AM-plantingCoolDown", 0);
+  private void andromeda$readNbt(ValueInput input, CallbackInfo ci) {
+    if (input.contains("AM-plantingCoolDown"))
+      this.andromeda$plantingCoolDown = input.getIntOr("AM-plantingCoolDown", 0);
   }
 
   @Unique private void andromeda$growFlower() {

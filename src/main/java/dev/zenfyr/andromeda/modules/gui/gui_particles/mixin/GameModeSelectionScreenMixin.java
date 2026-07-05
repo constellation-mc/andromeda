@@ -83,13 +83,13 @@ abstract class GameModeSelectionScreenMixin extends Screen {
       method =
           "switchToHoveredGameMode(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/debug/GameModeSwitcherScreen$GameModeIcon;)V")
   private static void andromeda$gmSwitchParticles(
-      Minecraft client, GameModeSwitcherScreen.GameModeIcon gameMode, CallbackInfo ci) {
+      Minecraft minecraft, GameModeSwitcherScreen.GameModeIcon toGameMode, CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(GuiParticles.CONFIG).gameModeSwitcherParticles) return;
 
-    if (client.gui.screen() instanceof GameModeSwitcherScreen gameModeSelectionScreen) {
+    if (minecraft.gui.screen() instanceof GameModeSwitcherScreen gameModeSelectionScreen) {
       List<GameModeSwitcherScreen.GameModeSlot> buttonWidgets =
           new ArrayList<>(gameModeSelectionScreen.slots);
-      buttonWidgets.removeIf(buttonWidget -> buttonWidget.icon != gameMode);
+      buttonWidgets.removeIf(buttonWidget -> buttonWidget.icon != toGameMode);
       Optional<GameModeSwitcherScreen.GameModeSlot> optional =
           buttonWidgets.stream().findFirst();
 
@@ -98,15 +98,15 @@ abstract class GameModeSelectionScreenMixin extends Screen {
         double x = widget.getX() + widget.getWidth() / 2d;
         double y = widget.getY() + widget.getHeight() / 2d;
 
-        var particles = ScreenParticles.get(client);
-        if (ANDROMEDA$GAME_MODE_STACKS.containsKey(gameMode)) {
+        var particles = ScreenParticles.get(minecraft);
+        if (ANDROMEDA$GAME_MODE_STACKS.containsKey(toGameMode)) {
           for (int i = 0; i < 5; i++) {
             particles.addParticle(new ItemStackParticle(
                 x,
                 y,
                 MathUtil.nextDouble(-2, 2),
                 MathUtil.nextDouble(-2, 2),
-                ANDROMEDA$GAME_MODE_STACKS.get(gameMode).get()));
+                ANDROMEDA$GAME_MODE_STACKS.get(toGameMode).get()));
           }
         } else {
           particles.addParticles(

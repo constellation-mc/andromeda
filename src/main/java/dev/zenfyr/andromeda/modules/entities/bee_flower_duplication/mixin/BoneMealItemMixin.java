@@ -18,17 +18,17 @@ abstract class BoneMealItemMixin {
 
   @Inject(at = @At("HEAD"), method = "growCrop", cancellable = true)
   private static void andromeda$useOnFertilizable(
-      ItemStack stack, Level world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-    if (world.isClientSide()) return;
+      ItemStack itemStack, Level level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+    if (level.isClientSide()) return;
 
-    BlockState blockState = world.getBlockState(pos);
-    var config = world.am$get(BeeFlowerDuplication.CONFIG);
+    BlockState blockState = level.getBlockState(pos);
+    var config = level.am$get(BeeFlowerDuplication.CONFIG);
     if (!config.available || !config.tallFlowers) return;
 
     if (blockState.getBlock() instanceof TallFlowerBlock) {
       if (ModuleManager.get().get("misc.unknown").isPresent()
-          && world.getRandom().nextInt(100) == 0) {
-        world.explode(
+          && level.getRandom().nextInt(100) == 0) {
+        level.explode(
             null,
             pos.getX() + 0.5,
             pos.getY() + 0.5,
