@@ -25,9 +25,6 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
       "dev.zenfyr.andromeda.common.mixin.MultiElementListEntryAccessor");
 
   public static boolean shouldApply(String mixinClassName) {
-    if (CLOTH_MIXINS.contains(mixinClassName)
-        && !Platform.getPlatform().isModLoaded("cloth-config")) return false;
-
     try {
       var node = getClassNode(mixinClassName);
       return AndromedaMixinPlugin.testMixinEnvironment(node);
@@ -93,6 +90,9 @@ public class AndromedaMixinPlugin implements IMixinConfigPlugin {
 
   @Override
   public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+    if (CLOTH_MIXINS.contains(mixinClassName)
+        && !Platform.getPlatform().isModLoaded("cloth-config")) return false;
+
     return shouldApply(mixinClassName);
   }
 
