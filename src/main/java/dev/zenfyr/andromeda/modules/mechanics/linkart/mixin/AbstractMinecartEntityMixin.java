@@ -37,8 +37,8 @@ public abstract class AbstractMinecartEntityMixin extends Entity implements Link
 
   @Unique private ItemStack linkart$itemStack = ItemStack.EMPTY;
 
-  public AbstractMinecartEntityMixin(EntityType<?> type, Level world) {
-    super(type, world);
+  public AbstractMinecartEntityMixin(EntityType<?> type, Level level) {
+    super(type, level);
   }
 
   @Inject(at = @At("HEAD"), method = "tick")

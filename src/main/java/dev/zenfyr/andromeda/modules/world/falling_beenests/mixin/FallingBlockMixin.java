@@ -43,8 +43,8 @@ abstract class FallingBlockMixin extends Entity {
   @Shadow
   private BlockState blockState;
 
-  public FallingBlockMixin(EntityType<?> type, Level world) {
-    super(type, world);
+  public FallingBlockMixin(EntityType<?> type, Level level) {
+    super(type, level);
   }
 
   @Inject(

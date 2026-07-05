@@ -34,10 +34,10 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
   public TNTBoatEntity(
       EntityType<? extends AbstractBoat> entityType,
-      Level world,
+      Level level,
       BoatRideHeightFactory rideHeight,
       Supplier<Item> dropItem) {
-    super(entityType, world, rideHeight, dropItem);
+    super(entityType, level, rideHeight, dropItem);
   }
 
   @Override

@@ -16,12 +16,12 @@ public class UnknownUtil {
   public static final List<Direction> AROUND_BLOCK_DIRECTIONS =
       List.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 
-  public static boolean isClear(Level world, BlockPos pos) {
-    if (!world.getBlockState(pos).isAir()) {
+  public static boolean isClear(Level level, BlockPos pos) {
+    if (!level.getBlockState(pos).isAir()) {
       return false;
     }
     for (Direction dir : AROUND_BLOCK_DIRECTIONS) {
-      if (!world.getBlockState(pos.relative(dir)).isAir()) {
+      if (!level.getBlockState(pos.relative(dir)).isAir()) {
         return false;
       }
     }
@@ -29,7 +29,7 @@ public class UnknownUtil {
   }
 
   public static Optional<BlockPos> pickRandomSpot(
-      @NonNull Level world, @NonNull BlockPos blockPos, int range, @NonNull RandomSource random) {
+      @NonNull Level level, @NonNull BlockPos blockPos, int range, @NonNull RandomSource random) {
     MakeSure.isTrue(range > 0, "range can't be negative or zero!");
     double j = (range * range * range) * 0.75;
 
@@ -39,10 +39,10 @@ public class UnknownUtil {
           blockPos.getX() + random.nextIntBetweenInclusive(-range, range),
           blockPos.getY() + random.nextIntBetweenInclusive(-range, range),
           blockPos.getZ() + random.nextIntBetweenInclusive(-range, range));
-      if (world.getBlockState(pos.above()).isAir()
-          && world.getBlockState(pos).isAir()
-          && isClear(world, pos)
-          && isClear(world, pos.above())) {
+      if (level.getBlockState(pos.above()).isAir()
+          && level.getBlockState(pos).isAir()
+          && isClear(level, pos)
+          && isClear(level, pos.above())) {
         return Optional.of(pos);
       }
     }

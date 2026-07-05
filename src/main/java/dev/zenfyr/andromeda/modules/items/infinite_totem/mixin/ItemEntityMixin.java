@@ -51,8 +51,8 @@ abstract class ItemEntityMixin extends Entity {
 
   @Unique private Tuple<BeaconBlockEntity, Boolean> andromeda$beacon = ANDROMEDA$NULL_BEACON;
 
-  public ItemEntityMixin(EntityType<?> type, Level world) {
-    super(type, world);
+  public ItemEntityMixin(EntityType<?> type, Level level) {
+    super(type, level);
   }
 
   @Inject(

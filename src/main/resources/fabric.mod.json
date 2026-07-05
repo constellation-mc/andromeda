@@ -50,7 +50,7 @@
     "launchpad:compatible": true,
     "loom:injected_interfaces": {
       "net/minecraft/world/level/Level": [
-        "dev/zenfyr/andromeda/common/config/DataConfigs\u0024WorldExtension"
+        "dev/zenfyr/andromeda/common/config/DataConfigs\u0024LevelExtension"
       ]
     }
   }

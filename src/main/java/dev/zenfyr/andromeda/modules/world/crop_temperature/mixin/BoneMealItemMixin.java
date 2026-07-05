@@ -20,14 +20,14 @@ abstract class BoneMealItemMixin {
   @Inject(at = @At("HEAD"), method = "useOn", cancellable = true)
   private void andromeda$useOnFertilizable(
       UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
-    Level world = context.getLevel();
+    Level level = context.getLevel();
     BlockPos pos = context.getClickedPos();
-    if (world.isClientSide()) return;
+    if (level.isClientSide()) return;
 
-    BlockState state = world.getBlockState(pos);
-    if (world.am$get(PlantTemperature.CONFIG).affectBoneMeal) {
+    BlockState state = level.getBlockState(pos);
+    if (level.am$get(PlantTemperature.CONFIG).affectBoneMeal) {
       if (!PlantTemperatureData.roll(
-          pos, state, world.getBiome(pos).value().getBaseTemperature(), (ServerLevel) world)) {
+          pos, state, level.getBiome(pos).value().getBaseTemperature(), (ServerLevel) level)) {
         cir.setReturnValue(InteractionResult.FAIL);
       }
     }

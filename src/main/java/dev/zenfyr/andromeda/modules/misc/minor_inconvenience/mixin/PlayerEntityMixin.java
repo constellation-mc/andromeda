@@ -23,8 +23,8 @@ abstract class PlayerEntityMixin extends LivingEntity {
   @Unique private static final ResourceKey<DamageType> AGONY =
       Andromeda.key(Registries.DAMAGE_TYPE, "agony");
 
-  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
-    super(entityType, world);
+  protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(

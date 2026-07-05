@@ -44,8 +44,8 @@ public class PouchEntity extends ThrowableItemProjectile {
   private static final EntityDataAccessor<Integer> POUCH_TYPE =
       SynchedEntityData.defineId(PouchEntity.class, EntityDataSerializers.INT);
 
-  public PouchEntity(EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
-    super(entityType, world);
+  public PouchEntity(EntityType<? extends ThrowableItemProjectile> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Override

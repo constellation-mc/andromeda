@@ -30,24 +30,24 @@ abstract class ItemEntityMixin {
     Entity entity = (Entity) (Object) this;
     ItemStack stack = this.getItem();
     BlockPos pos = entity.blockPosition();
-    Level world = entity.level();
+    Level level = entity.level();
 
-    if (world.isClientSide()) return;
+    if (level.isClientSide()) return;
     if (!(stack.getItem() instanceof BlockItem blockItem)
         || !(blockItem.getBlock() instanceof VegetationBlock)) return;
 
     if (entity.tickCount % MathUtil.nextInt(20, 101) != 0) return;
-    var config = world.am$get(AutoPlanting.CONFIG);
+    var config = level.am$get(AutoPlanting.CONFIG);
     if (!config.available) return;
-    if (!world.getFluidState(pos).isEmpty()) return;
+    if (!level.getFluidState(pos).isEmpty()) return;
     if (config.blacklistMode == stack.is(AutoPlantingMain.ITEM_LIST)) return;
 
     blockItem.place(new BlockPlaceContext(
-        world,
+        level,
         null,
         null,
         stack,
-        world.clip(new ClipContext(
+        level.clip(new ClipContext(
             Vec3.atLowerCornerWithOffset(pos, 0.5, 0.5, 0.5),
             Vec3.atLowerCornerWithOffset(pos, 0.5, -0.5, 0.5),
             ClipContext.Block.COLLIDER,

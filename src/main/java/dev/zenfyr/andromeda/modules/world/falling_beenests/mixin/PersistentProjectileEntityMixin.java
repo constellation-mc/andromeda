@@ -20,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractArrow.class)
 abstract class PersistentProjectileEntityMixin extends Projectile {
 
-  public PersistentProjectileEntityMixin(EntityType<? extends Projectile> entityType, Level world) {
-    super(entityType, world);
+  public PersistentProjectileEntityMixin(EntityType<? extends Projectile> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(at = @At("TAIL"), method = "onHitBlock")

@@ -28,8 +28,8 @@ abstract class SlimeEntityMixin extends Mob {
 
   @Unique private int andromeda$mergeCD = MathUtil.nextInt(700, 2000);
 
-  protected SlimeEntityMixin(EntityType<? extends Mob> entityType, Level world) {
-    super(entityType, world);
+  protected SlimeEntityMixin(EntityType<? extends Mob> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(at = @At("TAIL"), method = "registerGoals")

@@ -35,8 +35,8 @@ abstract class BeeEntityMixin extends Animal {
 
   @Unique private int andromeda$plantingCoolDown;
 
-  protected BeeEntityMixin(EntityType<? extends Animal> entityType, Level world) {
-    super(entityType, world);
+  protected BeeEntityMixin(EntityType<? extends Animal> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(

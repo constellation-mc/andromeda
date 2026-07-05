@@ -86,6 +86,6 @@ public class PlaceBehaviorHandler {
 
   public interface PlaceBehavior {
     AbstractMinecart dispense(
-        ItemStack stack, Level world, double d, double e, double f, double g, BlockPos pos);
+        ItemStack stack, Level level, double d, double e, double f, double g, BlockPos pos);
   }
 }

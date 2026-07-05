@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Zombie.class)
 abstract class ZombieEntityMixin extends Monster {
 
-  protected ZombieEntityMixin(EntityType<? extends Monster> entityType, Level world) {
-    super(entityType, world);
+  protected ZombieEntityMixin(EntityType<? extends Monster> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(

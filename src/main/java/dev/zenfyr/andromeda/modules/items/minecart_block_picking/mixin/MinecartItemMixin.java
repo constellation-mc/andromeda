@@ -32,9 +32,9 @@ abstract class MinecartItemMixin extends Item {
   @Inject(at = @At("HEAD"), method = "useOn", cancellable = true)
   public void andromeda$useOnStuff(
       UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
-    Level world = context.getLevel();
+    Level level = context.getLevel();
     BlockPos pos = context.getClickedPos();
-    BlockState state = world.getBlockState(pos);
+    BlockState state = level.getBlockState(pos);
     ItemStack stack = context.getItemInHand();
     Player player = context.getPlayer();
     if (player == null) return;
@@ -46,10 +46,10 @@ abstract class MinecartItemMixin extends Item {
       double d = railShape.isSlope() ? 0.5 : 0.0;
 
       PlaceBehaviorHandler.getPlaceBehavior(stack.getItem()).ifPresent(b -> {
-        if (!world.isClientSide()) {
+        if (!level.isClientSide()) {
           AbstractMinecart entity = b.dispense(
               stack,
-              world,
+              level,
               pos.getX() + 0.5,
               pos.getY() + 0.0625,
               pos.getZ() + 0.5,
@@ -57,7 +57,7 @@ abstract class MinecartItemMixin extends Item {
               player.blockPosition());
           if (entity == null) return;
 
-          world.addFreshEntity(entity);
+          level.addFreshEntity(entity);
           if (!player.isCreative()) stack.shrink(1);
         }
         cir.setReturnValue(InteractionResult.SUCCESS);
@@ -69,14 +69,14 @@ abstract class MinecartItemMixin extends Item {
       if (stack.getItem() != Items.MINECART) return;
 
       PickUpBehaviorHandler.getPickUpBehavior(state.getBlock()).ifPresent(b -> {
-        if (!world.isClientSide()) {
-          if (!world.am$get(MinecartBlockPicking.CONFIG).available) return;
-          ItemStack stack1 = b.pickUp(state, world, pos);
+        if (!level.isClientSide()) {
+          if (!level.am$get(MinecartBlockPicking.CONFIG).available) return;
+          ItemStack stack1 = b.pickUp(state, level, pos);
           if (stack1 == null || stack1.isEmpty()) return;
 
           if (!player.isCreative()) stack.shrink(1);
           player.getInventory().placeItemBackInInventory(stack1);
-          world.destroyBlock(pos, false);
+          level.destroyBlock(pos, false);
         }
         cir.setReturnValue(InteractionResult.SUCCESS);
       });

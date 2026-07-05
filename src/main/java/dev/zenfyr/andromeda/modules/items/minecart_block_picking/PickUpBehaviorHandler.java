@@ -90,6 +90,6 @@ public class PickUpBehaviorHandler {
   }
 
   public interface PickUpBehavior {
-    @Nullable ItemStack pickUp(BlockState state, Level world, BlockPos pos);
+    @Nullable ItemStack pickUp(BlockState state, Level level, BlockPos pos);
   }
 }

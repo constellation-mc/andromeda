@@ -55,9 +55,9 @@ public class PouchItem extends Item implements ProjectileItem {
   }
 
   @Override
-  public InteractionResult use(Level world, Player user, InteractionHand hand) {
+  public InteractionResult use(Level level, Player user, InteractionHand hand) {
     ItemStack itemStack = user.getItemInHand(hand);
-    world.playSound(
+    level.playSound(
         null,
         user.getX(),
         user.getY(),
@@ -65,14 +65,14 @@ public class PouchItem extends Item implements ProjectileItem {
         SoundEvents.SNOWBALL_THROW,
         SoundSource.NEUTRAL,
         0.5F,
-        0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
-    if (!world.isClientSide()) {
-      var entity = PouchesMain.POUCH.orThrow().create(world, EntitySpawnReason.DISPENSER);
+        0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+    if (!level.isClientSide()) {
+      var entity = PouchesMain.POUCH.orThrow().create(level, EntitySpawnReason.DISPENSER);
       entity.setPouchType(this.type);
       entity.setPosRaw(user.getX(), user.getEyeY() - 0.1F, user.getZ());
       entity.shootFromRotation(user, user.getXRot(), user.getYRot(), 0.0F, 1.5F, 1.0F);
       entity.setItem(itemStack);
-      world.addFreshEntity(entity);
+      level.addFreshEntity(entity);
     }
 
     user.awardStat(Stats.ITEM_USED.get(this));

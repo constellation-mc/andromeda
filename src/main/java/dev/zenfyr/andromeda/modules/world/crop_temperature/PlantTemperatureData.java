@@ -52,10 +52,10 @@ public final class PlantTemperatureData {
   public static final ReloadListenerType<Reloader> RELOADER =
       ReloadListenerType.create(Andromeda.id("crop_temperatures"));
 
-  public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel world) {
-    var entry = world.getServer().pulsar$getReloadListener(RELOADER).get(state.typeHolder());
+  public static boolean roll(BlockPos pos, BlockState state, float temp, ServerLevel level) {
+    var entry = level.getServer().pulsar$getReloadListener(RELOADER).get(state.typeHolder());
     if (entry != null) {
-      if (!world.am$get(PlantTemperature.CONFIG).available) return true;
+      if (!level.am$get(PlantTemperature.CONFIG).available) return true;
       var data = entry.temperatures();
 
       if ((temp > data[2] && temp <= data[3]) || (temp < data[1] && temp >= data[0])) {

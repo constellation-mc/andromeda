@@ -27,8 +27,8 @@ abstract class SlimeEntityMixin extends Mob {
   @Shadow
   protected abstract ParticleOptions getParticleType();
 
-  protected SlimeEntityMixin(EntityType<? extends Mob> entityType, Level world) {
-    super(entityType, world);
+  protected SlimeEntityMixin(EntityType<? extends Mob> entityType, Level level) {
+    super(entityType, level);
   }
 
   @Inject(

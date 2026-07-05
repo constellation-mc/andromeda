@@ -65,7 +65,7 @@ public final class PouchesMain {
 
   @SuppressWarnings("UnstableApiUsage")
   public static void tryInsertItem(
-      Level world, Vec3 pos, ItemStack stack, Storage<ItemVariant> storage) {
+      Level level, Vec3 pos, ItemStack stack, Storage<ItemVariant> storage) {
     if (stack.isEmpty()) return;
     ItemStack itemStack = stack.copy();
     try (Transaction transaction = Transaction.openOuter()) {
@@ -77,7 +77,7 @@ public final class PouchesMain {
       }
     }
     if (!itemStack.isEmpty())
-      ItemStackUtil.spawnVelocity(pos, itemStack, world, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
+      ItemStackUtil.spawnVelocity(pos, itemStack, level, -0.2, 0.2, 0.1, 0.2, -0.2, 0.2);
   }
 
   static void init() {

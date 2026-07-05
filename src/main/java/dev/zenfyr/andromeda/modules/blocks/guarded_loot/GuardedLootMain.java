@@ -50,11 +50,11 @@ public final class GuardedLootMain {
   }
 
   public static List<LivingEntity> checkMonsterLock(
-      Level world, BlockState state, Player player, BlockPos pos, BlockEntity be) {
-    var config = world.am$get(GuardedLoot.CONFIG);
+      Level level, BlockState state, Player player, BlockPos pos, BlockEntity be) {
+    var config = level.am$get(GuardedLoot.CONFIG);
     if (!config.available) return Collections.emptyList();
 
-    return world
+    return level
         .getEntitiesOfClass(
             LivingEntity.class, new AABB(pos).inflate(config.range), Entity::isAlive)
         .stream()
