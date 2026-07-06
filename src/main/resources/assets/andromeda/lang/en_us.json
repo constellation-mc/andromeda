@@ -258,6 +258,9 @@
 
   "config.andromeda.category.items": "Items",
 
+  "config.andromeda.items.fire_damage": "Fire Damage",
+  "config.andromeda.items.fire_damage.@Tooltip": "Apply damage to wooden and leather items in the inventory when on fire!",
+
   "config.andromeda.items.tooltips": "Tooltips",
   "config.andromeda.items.tooltips.option.clock": "Clock",
   "config.andromeda.items.tooltips.option.clock.@Tooltip": "Shows in-game time inside clock's tooltip.",
@@ -437,6 +440,7 @@
   "tag.item.andromeda.jukebox_boats": "Jukebox Boats",
   "tag.item.andromeda.hopper_boats": "Hopper Boats",
   "tag.item.andromeda.furnace_boats": "Furnace Boats",
+  "tag.item.andromeda.fire_damageable": "Fire Damageable",
 
   "config.andromeda.base.option.sideOnlyMode": "Side-Only Mode",
   "config.andromeda.base.option.sideOnlyMode.@Tooltip": "Disable all modules which require Andromeda to be present on server.",

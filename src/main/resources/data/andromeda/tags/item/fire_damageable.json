@@ -1,0 +1,21 @@
+{
+  "values": [
+    "minecraft:shield",
+    "minecraft:wooden_shovel",
+    "minecraft:wooden_pickaxe",
+    "minecraft:wooden_axe",
+    "minecraft:wooden_hoe",
+    "minecraft:wooden_sword",
+    "minecraft:wooden_spear",
+    "minecraft:leather_helmet",
+    "minecraft:leather_chestplate",
+    "minecraft:leather_leggings",
+    "minecraft:leather_boots",
+    "minecraft:leather_horse_armor",
+    "minecraft:wolf_armor",
+    "minecraft:fishing_rod",
+    "minecraft:brush",
+    "minecraft:bow",
+    "minecraft:crossbow"
+  ]
+}
