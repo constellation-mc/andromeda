@@ -1,7 +1,7 @@
 package dev.zenfyr.andromeda.modules.blocks.leaf_slowdown.mixin;
 
 import dev.zenfyr.andromeda.modules.blocks.leaf_slowdown.LeafSlowdown;
-import dev.zenfyr.andromeda.modules.blocks.leaf_slowdown.Main;
+import dev.zenfyr.andromeda.modules.blocks.leaf_slowdown.LeafSlowdownMain;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
@@ -12,7 +12,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,30 +29,29 @@ abstract class LivingEntityMixin extends Entity {
     super(type, level);
   }
 
-  @Inject(at = @At("HEAD"), method = "baseTick")
+  @Inject(at = @At("TAIL"), method = "baseTick")
   public void andromeda$tick(CallbackInfo ci) {
-    if (!this.level().isClientSide() && this.level().am$get(LeafSlowdown.CONFIG).available) {
-      AttributeInstance attributeInstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
-      if (this.level().getBlockState(blockPosition().below()).is(BlockTags.LEAVES)
-          || (this.level().getBlockState(blockPosition().below(2)).is(BlockTags.LEAVES)
-              && this.level().getBlockState(blockPosition().below()).is(Blocks.AIR))) {
-        if (((LivingEntity) (Object) this) instanceof Player player
-            && (player.isCreative() || player.isSpectator())) return;
-        if (attributeInstance != null)
-          if (!attributeInstance.hasModifier(Main.LEAF_SLOWNESS_LOCATION)) {
-            attributeInstance.addTransientModifier(Main.LEAF_SLOWNESS);
-          }
-        /*Does this even work?*/
-        setDeltaMovement(
-            getDeltaMovement().x(),
-            getDeltaMovement().y() * 0.7,
-            getDeltaMovement().z());
-      } else {
-        if (attributeInstance != null)
-          if (attributeInstance.hasModifier(Main.LEAF_SLOWNESS_LOCATION)) {
-            attributeInstance.removeModifier(Main.LEAF_SLOWNESS_LOCATION);
-          }
-      }
+    if (this.level().isClientSide()) return;
+    if (!this.level().am$get(LeafSlowdown.CONFIG).available) return;
+
+    boolean isCreative =
+        ((LivingEntity) (Object) this) instanceof Player player && player.getAbilities().mayfly;
+    if (isCreative) return;
+
+    AttributeInstance attribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
+    if (attribute == null) return;
+
+    var below = this.level().getBlockState(blockPosition().below());
+    var x2Below = this.level().getBlockState(blockPosition().below(2));
+    boolean isLeaves =
+        below.is(BlockTags.LEAVES) || (x2Below.is(BlockTags.LEAVES) && below.isAir());
+    if (!isLeaves) {
+      if (attribute.hasModifier(LeafSlowdownMain.LEAF_SLOWNESS_LOCATION))
+        attribute.removeModifier(LeafSlowdownMain.LEAF_SLOWNESS);
+      return;
     }
+
+    if (!attribute.hasModifier(LeafSlowdownMain.LEAF_SLOWNESS_LOCATION))
+      attribute.addTransientModifier(LeafSlowdownMain.LEAF_SLOWNESS);
   }
 }
