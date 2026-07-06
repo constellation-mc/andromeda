@@ -1,7 +1,6 @@
 package dev.zenfyr.andromeda.modules.entities.boats.entities;
 
 import dev.zenfyr.andromeda.common.Andromeda;
-import dev.zenfyr.andromeda.modules.entities.boats.client.BoatsClient;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Supplier;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,6 +31,8 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
   public static final Identifier EXPLODE_BOAT_ON_SERVER = Andromeda.id("explode_boat_on_server");
   public int fuseTicks = -1;
 
+  private Vec3 lastPos = Vec3.ZERO;
+
   public TNTBoatEntity(
       EntityType<? extends AbstractBoat> entityType,
       Level level,
@@ -47,6 +48,8 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
 
   @Override
   public void tick() {
+    super.tick();
+
     if (this.fuseTicks > 0) {
       --this.fuseTicks;
       Vec3 vec3d = new Vec3(-0.55, 0.0, 0.0).yRot(-this.getYRot() * PIby180 - PIby2);
@@ -63,18 +66,25 @@ public class TNTBoatEntity extends BoatEntityWithBlock {
       this.explode();
     }
 
-    if (this.horizontalCollision) {
-      if ((this.getFirstPassenger() instanceof Player player)) {
-        if (player.level().isClientSide()) {
-          BoatsClient.sendExplodePacket(this);
-        } else {
-          this.explode();
-        }
-      } else {
-        this.explode();
-      }
+    boolean isPlayer = (this.getFirstPassenger() instanceof Player);
+    if (level().isClientSide()) return;
+
+    if (!isPlayer) {
+      double speedSqr = this.getDeltaMovement().horizontalDistanceSqr();
+      if (speedSqr >= 0.01f) if (this.horizontalCollision) this.explode();
+    } else {
+      double speedSqr = this.position().subtract(this.lastPos).horizontalDistanceSqr();
+      if (speedSqr >= 0.005f) if (this.checkHorizontalCollision()) this.explode();
     }
-    super.tick();
+
+    this.lastPos = this.position();
+  }
+
+  private boolean checkHorizontalCollision() {
+    return this.level()
+        .getBlockCollisions(this, this.getBoundingBox().inflate(0.01, 0, 0.01))
+        .iterator()
+        .hasNext();
   }
 
   @Override

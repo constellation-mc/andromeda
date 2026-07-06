@@ -3,9 +3,6 @@ package dev.zenfyr.andromeda.modules.entities.boats.client;
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.BoatTypes;
 import dev.zenfyr.andromeda.modules.entities.boats.Boats;
-import dev.zenfyr.andromeda.modules.entities.boats.entities.TNTBoatEntity;
-import dev.zenfyr.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -43,9 +40,5 @@ public class BoatsClient {
     }
 
     if (config.isJukeboxBoatOn) ClientSoundHolder.init();
-  }
-
-  public static void sendExplodePacket(TNTBoatEntity entity) {
-    ClientPlayNetworking.send(new ExplodeBoatC2SPayload(entity.getUUID()));
   }
 }

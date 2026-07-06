@@ -2,15 +2,11 @@ package dev.zenfyr.andromeda.modules.entities.boats;
 
 import dev.zenfyr.andromeda.common.Andromeda;
 import dev.zenfyr.andromeda.modules.entities.boats.entities.*;
-import dev.zenfyr.andromeda.modules.entities.boats.packets.ExplodeBoatC2SPayload;
 import dev.zenfyr.andromeda.modules.entities.boats.packets.SoundPayloadHolder;
 import java.util.function.Supplier;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
@@ -63,19 +59,6 @@ public class BoatEntities {
 
     if (config.isJukeboxBoatOn) {
       SoundPayloadHolder.init();
-    }
-
-    if (config.isTNTBoatOn) {
-      PayloadTypeRegistry.serverboundPlay()
-          .register(ExplodeBoatC2SPayload.ID, ExplodeBoatC2SPayload.CODEC);
-
-      // This sucks
-      ServerPlayNetworking.registerGlobalReceiver(ExplodeBoatC2SPayload.ID, (payload, context) -> {
-        Entity entity = context.player().level().getEntity(payload.entity());
-        if (entity instanceof TNTBoatEntity boat
-            && boat.isAlive()
-            && context.player() == boat.getFirstPassenger()) boat.explode();
-      });
     }
   }
 }
