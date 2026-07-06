@@ -26,6 +26,7 @@ public final class AdvancementGenerationMain {
       new HashMap<>();
   private static final List<BiPredicate<Identifier, Recipe<?>>> FILTERS =
       Collections.synchronizedList(new ArrayList<>());
+  private static final Identifier ROOT = Identifier.withDefaultNamespace("recipes/root");
 
   public static Function<Context, Return> basicConsumer(
       String typeName, AdvancementGeneration.Config config) {
@@ -60,6 +61,16 @@ public final class AdvancementGenerationMain {
   public static void generateRecipeAdvancements(
       MinecraftServer server, AdvancementGeneration module, AdvancementGeneration.Config config) {
     Map<Identifier, AdvancementHolder> advancementBuilders = new ConcurrentHashMap<>();
+    Set<ResourceKey<Recipe<?>>> exists = new HashSet<>();
+
+    for (AdvancementHolder holder : server.getAdvancements().getAllAdvancements()) {
+      var parent = holder.value().parent();
+      if (parent.isEmpty()) continue;
+      if (!ROOT.equals(parent.get())) continue;
+
+      var rewards = holder.value().rewards();
+      exists.addAll(rewards.recipes());
+    }
 
     List<CompletableFuture<Void>> futures = server.getRecipeManager().getRecipes().stream()
         .filter(recipe -> {
@@ -70,6 +81,8 @@ public final class AdvancementGenerationMain {
         })
         .map(recipe -> CompletableFuture.runAsync(
             () -> {
+              if (exists.contains(recipe.id())) return;
+
               var handler = RECIPE_TYPE_HANDLERS.get(recipe.value().getType());
               if (handler != null) {
                 var r = handler.apply(new Context(recipe.value(), recipe.id()));
@@ -98,7 +111,7 @@ public final class AdvancementGenerationMain {
       AdvancementGeneration.Config config, ResourceKey<Recipe<?>> id, Ingredient... ingredients) {
     MakeSure.notEmpty(ingredients); // shouldn't really happen
     var builder = Advancement.Builder.recipeAdvancement();
-    builder.parent(Identifier.tryBuild("minecraft", "recipes/root"));
+    builder.parent(ROOT);
 
     List<String> names = new ArrayList<>();
     Set<Ingredient> elements = new HashSet<>();
