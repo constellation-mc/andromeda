@@ -3,7 +3,6 @@ package dev.zenfyr.andromeda.modules.items.tooltips.mixin.compass;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
-import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
@@ -34,32 +33,31 @@ abstract class ItemMixin {
       TooltipFlag tooltipFlag,
       CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).compass) return;
-    var world = Minecraft.getInstance().level;
+    var level = Minecraft.getInstance().level;
+    if (level == null) return;
 
-    if (world != null)
-      if (world.isClientSide()) {
-        var player = Minecraft.getInstance().player;
-        if (itemStack.getItem() == Items.COMPASS && player != null) {
-          boolean lodestone = itemStack.has(DataComponents.LODESTONE_TRACKER);
-          GlobalPos globalPos = lodestone
-              ? itemStack.get(DataComponents.LODESTONE_TRACKER).target().orElse(null)
-              : world.getRespawnData().globalPos();
+    var player = Minecraft.getInstance().player;
+    if (itemStack.getItem() != Items.COMPASS || player == null) return;
 
-          double dist;
-          if (globalPos != null && world.dimension() == globalPos.dimension()) {
-            Vec3 compassPos = new Vec3(
-                globalPos.pos().getX() + 0.5,
-                globalPos.pos().getY() + 0.5,
-                globalPos.pos().getZ() + 0.5);
-            dist = MiscUtil.horizontalDistanceTo(player.position(), compassPos);
-          } else {
-            dist = MathUtil.threadRandom().nextGaussian() * 0.1;
-          }
-          builder.accept(TextUtil.translatable(
-                  lodestone ? "tooltip.andromeda.compass.lodestone" : "tooltip.andromeda.compass",
-                  String.format("%.1f", dist))
-              .withStyle(ChatFormatting.GRAY));
-        }
-      }
+    boolean lodestone = itemStack.has(DataComponents.LODESTONE_TRACKER);
+    String key = lodestone ? "tooltip.andromeda.compass.lodestone" : "tooltip.andromeda.compass";
+    GlobalPos globalPos = lodestone
+        ? itemStack.get(DataComponents.LODESTONE_TRACKER).target().orElse(null)
+        : level.getRespawnData().globalPos();
+
+    double dist;
+    if (globalPos != null && level.dimension() == globalPos.dimension()) {
+      Vec3 compassPos = new Vec3(
+          globalPos.pos().getX() + 0.5,
+          globalPos.pos().getY() + 0.5,
+          globalPos.pos().getZ() + 0.5);
+      dist = MiscUtil.horizontalDistanceTo(player.position(), compassPos);
+    } else {
+      dist = -1;
+    }
+
+    var component = TextUtil.literal(String.format("%.1f", dist));
+    if (dist == -1) component.withStyle(ChatFormatting.OBFUSCATED);
+    builder.accept(TextUtil.translatable(key, component).withStyle(ChatFormatting.GRAY));
   }
 }
