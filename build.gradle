@@ -72,7 +72,7 @@ spotless {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/andromeda.accesswidener")
+    accessWidenerPath = file("src/main/resources/andromeda.classtweaker")
 
     runs {
         client {

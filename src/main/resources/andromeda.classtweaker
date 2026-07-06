@@ -1,5 +1,6 @@
-accessWidener  v2	official
+classTweaker v2 official
 
+inject-interface net/minecraft/world/level/Level dev/zenfyr/andromeda/common/config/DataConfigs$LevelExtension
 accessible class net/minecraft/server/MinecraftServer$ReloadableResources
 accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
 
