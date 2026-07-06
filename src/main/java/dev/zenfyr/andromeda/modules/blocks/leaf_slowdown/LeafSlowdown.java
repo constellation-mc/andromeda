@@ -16,6 +16,6 @@ public final class LeafSlowdown extends Module {
 
   LeafSlowdown() {
     RegisterConfigEvent.get(this, RegisterConfigEvent.GAME).listen(() -> CONFIG);
-    InitEvents.MAIN.listen(() -> Main::init);
+    InitEvents.MAIN.listen(() -> LeafSlowdownMain::init);
   }
 }

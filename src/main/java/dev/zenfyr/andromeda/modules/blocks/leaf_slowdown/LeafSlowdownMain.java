@@ -4,7 +4,7 @@ import dev.zenfyr.andromeda.common.Andromeda;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-public class Main {
+public class LeafSlowdownMain {
 
   public static final Identifier LEAF_SLOWNESS_LOCATION = Andromeda.id("leaf_slowness");
   public static final AttributeModifier LEAF_SLOWNESS = new AttributeModifier(
