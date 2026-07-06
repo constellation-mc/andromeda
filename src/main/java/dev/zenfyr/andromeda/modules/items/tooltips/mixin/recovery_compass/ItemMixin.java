@@ -3,7 +3,6 @@ package dev.zenfyr.andromeda.modules.items.tooltips.mixin.recovery_compass;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.tooltips.Tooltips;
-import dev.zenfyr.pulsar.api.util.MathUtil;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
@@ -33,31 +32,31 @@ abstract class ItemMixin {
       TooltipFlag tooltipFlag,
       CallbackInfo ci) {
     if (!AndromedaClient.CLIENT.get(Tooltips.CONFIG).recoveryCompass) return;
-    var world = Minecraft.getInstance().level;
+    var level = Minecraft.getInstance().level;
+    if (level == null) return;
 
-    if (world != null)
-      if (world.isClientSide()) {
-        var player = Minecraft.getInstance().player;
-        if (itemStack.getItem() == Items.RECOVERY_COMPASS && player != null) {
-          var optional = player.getLastDeathLocation();
-          if (optional.isPresent()) {
-            GlobalPos globalPos = optional.get();
+    var player = Minecraft.getInstance().player;
+    if (itemStack.getItem() != Items.RECOVERY_COMPASS || player == null) return;
 
-            double dist;
-            if (world.dimension() == globalPos.dimension()) {
-              Vec3 compassPos = new Vec3(
-                  globalPos.pos().getX() + 0.5,
-                  globalPos.pos().getY() + 0.5,
-                  globalPos.pos().getZ() + 0.5);
-              dist = MiscUtil.horizontalDistanceTo(player.position(), compassPos);
-            } else {
-              dist = MathUtil.threadRandom().nextGaussian() * 0.1;
-            }
-            builder.accept(TextUtil.translatable(
-                    "tooltip.andromeda.compass.recovery", String.format("%.1f", dist))
-                .withStyle(ChatFormatting.GRAY));
-          }
-        }
-      }
+    var optional = player.getLastDeathLocation();
+    if (optional.isEmpty()) return;
+
+    GlobalPos globalPos = optional.get();
+
+    double dist;
+    if (level.dimension() == globalPos.dimension()) {
+      Vec3 compassPos = new Vec3(
+          globalPos.pos().getX() + 0.5,
+          globalPos.pos().getY() + 0.5,
+          globalPos.pos().getZ() + 0.5);
+      dist = MiscUtil.horizontalDistanceTo(player.position(), compassPos);
+    } else {
+      dist = -1;
+    }
+
+    var component = TextUtil.literal(String.format("%.1f", dist));
+    if (dist == -1) component.withStyle(ChatFormatting.OBFUSCATED);
+    builder.accept(TextUtil.translatable("tooltip.andromeda.compass.recovery", component)
+        .withStyle(ChatFormatting.GRAY));
   }
 }
