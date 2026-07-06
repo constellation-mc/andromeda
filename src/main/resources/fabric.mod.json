@@ -35,7 +35,7 @@
   "mixins": [
     "andromeda.mixins.json"
   ],
-  "accessWidener": "andromeda.accesswidener",
+  "accessWidener": "andromeda.classtweaker",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
@@ -47,11 +47,6 @@
     "modmenu": "<${modmenu_version}"
   },
   "custom": {
-    "launchpad:compatible": true,
-    "loom:injected_interfaces": {
-      "net/minecraft/world/level/Level": [
-        "dev/zenfyr/andromeda/common/config/DataConfigs\u0024LevelExtension"
-      ]
-    }
+    "launchpad:compatible": true
   }
 }
