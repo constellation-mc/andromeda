@@ -5,6 +5,7 @@ import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.world.falling_beenests.BeeUtil;
 import dev.zenfyr.andromeda.modules.world.falling_beenests.CanBeeNestsFall;
 import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.api.loot.LootContextBuilder;
 import dev.zenfyr.pulsar.api.util.PlayerUtil;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
@@ -61,42 +62,51 @@ abstract class FallingBlockEntityMixin extends Entity {
     BlockEntity blockEntity = this.level().getBlockEntity(blockPos);
     if (blockEntity == null) return;
 
-    if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity
-        && this.level().am$get(CanBeeNestsFall.CONFIG).available) {
-      if (this.blockState.getBlock() != Blocks.BEE_NEST) return;
-      if (blockData == null || !blockData.getBooleanOr("AM-FromFallenBlock", false)) return;
+    if (!(blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity)) return;
+    if (!this.level().am$get(CanBeeNestsFall.CONFIG).available) return;
 
-      blockData.putBoolean("AM-FromFallenBlock", false);
+    if (this.blockState.getBlock() != Blocks.BEE_NEST) return;
+    if (blockData == null || !blockData.getBooleanOr("AM-FromFallenBlock", false)) return;
 
-      Optional<Player> optional =
-          PlayerUtil.findClosestNonCreativePlayerInRange(level(), this.blockPosition(), 16);
-      final ListTag nbeetlist = blockData.getListOrEmpty("Bees");
+    blockData.putBoolean("AM-FromFallenBlock", false);
 
-      level().destroyBlock(beehiveBlockEntity.getBlockPos(), false);
-      for (int i = 0; i < nbeetlist.size(); ++i) {
-        CompoundTag entityData = nbeetlist.getCompoundOrEmpty(i).getCompoundOrEmpty("EntityData");
-        BeehiveBlockEntity.IGNORED_BEE_TAGS.forEach(entityData::remove);
-        Bee bee = EntityTypes.BEE.create(level(), EntitySpawnReason.EVENT);
-        if (bee == null) continue;
+    Optional<Player> optional =
+        PlayerUtil.findClosestNonCreativePlayerInRange(level(), this.blockPosition(), 16);
+    final ListTag nbeetlist = blockData.getListOrEmpty("Bees");
 
-        try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(
-            ChunkAccess.problemPath(ChunkPos.containing(blockPos)), LogUtils.getLogger())) {
-          bee.load(TagValueInput.create(scopedCollector, level().registryAccess(), entityData));
-        }
+    level().destroyBlock(beehiveBlockEntity.getBlockPos(), false);
+    for (int i = 0; i < nbeetlist.size(); ++i) {
+      CompoundTag entityData = nbeetlist.getCompoundOrEmpty(i).getCompoundOrEmpty("EntityData");
+      BeehiveBlockEntity.IGNORED_BEE_TAGS.forEach(entityData::remove);
+      Bee bee = EntityTypes.BEE.create(level(), EntitySpawnReason.EVENT);
+      if (bee == null) continue;
 
-        bee.setPos(position());
-        bee.setStayOutOfHiveCountdown(400);
-        optional.ifPresent(bee::setTarget);
-        level().addFreshEntity(bee);
+      try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(
+          ChunkAccess.problemPath(ChunkPos.containing(blockPos)), LogUtils.getLogger())) {
+        bee.load(TagValueInput.create(scopedCollector, level().registryAccess(), entityData));
       }
-      optional.ifPresent(player -> level()
-          .getEntitiesOfClass(Bee.class, new AABB(blockPosition()).inflate(50))
-          .forEach(bee -> bee.setTarget(player)));
 
-      for (ItemStack stack : MiscUtil.prepareLoot(level(), BeeUtil.BEE_LOOT_ID)) {
-        ItemStackUtil.spawnVelocity(
-            this.position(), stack, level(), -0.3, 0.3, 0.05, 0.2, -0.3, 0.3);
-      }
+      bee.setPos(position());
+      bee.setStayOutOfHiveCountdown(400);
+      optional.ifPresent(bee::setTarget);
+      level().addFreshEntity(bee);
     }
+    optional.ifPresent(player -> level()
+        .getEntitiesOfClass(Bee.class, new AABB(blockPosition()).inflate(50))
+        .forEach(bee -> bee.setTarget(player)));
+
+    var context = LootContextBuilder.block(
+        level(),
+        builder -> builder
+            .origin(blockPos)
+            .state(this.blockState)
+            .tool(ItemStack.EMPTY)
+            .blockEntity(blockEntity)
+            .thisEntity(optional.orElse(null)));
+    var table = MiscUtil.getLootTable(level(), BeeUtil.BEE_LOOT_ID);
+    table.getRandomItems(
+        context,
+        stack -> ItemStackUtil.spawnVelocity(
+            this.position(), stack, level(), -0.3, 0.3, 0.05, 0.2, -0.3, 0.3));
   }
 }
