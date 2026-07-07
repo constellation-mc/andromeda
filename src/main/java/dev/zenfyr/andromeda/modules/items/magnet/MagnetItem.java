@@ -38,7 +38,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.tooltip.BundleTooltip;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.BundleContents;
@@ -137,7 +136,7 @@ public class MagnetItem extends Item {
 
   @Override
   public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-    return Optional.of(new BundleTooltip(new BundleContents(
+    return Optional.of(new MagnetTooltip(new BundleContents(
         magnetable(stack).stream().map(ItemStackTemplate::new).toList())));
   }
 

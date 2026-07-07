@@ -7,6 +7,7 @@ import dev.zenfyr.andromeda.bootstrap.config.ConfigDefinition;
 import dev.zenfyr.andromeda.bootstrap.config.RegisterConfigEvent;
 import dev.zenfyr.andromeda.bootstrap.event.InitEvents;
 import dev.zenfyr.andromeda.bootstrap.event.PostBootstrapEvent;
+import dev.zenfyr.andromeda.modules.items.magnet.client.MagnetClient;
 
 @ModuleInfo(name = "magnet", category = "items")
 public final class Magnet extends Module implements PostBootstrapEvent {
@@ -20,6 +21,7 @@ public final class Magnet extends Module implements PostBootstrapEvent {
   @Override
   public void postBootstrap() {
     InitEvents.MAIN.listen(() -> MagnetItem::init);
+    InitEvents.CLIENT.listen(() -> MagnetClient::init);
   }
 
   public static class Config extends BaseConfig {
