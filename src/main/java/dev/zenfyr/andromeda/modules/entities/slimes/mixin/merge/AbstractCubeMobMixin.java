@@ -12,7 +12,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,12 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractCubeMob.class)
 abstract class AbstractCubeMobMixin extends AgeableMob implements SlimeMergeDuck {
-
-  @Shadow
-  public abstract int getSize();
-
-  @Shadow
-  public abstract void setSize(int size, boolean updateHealth);
 
   @Unique private int andromeda$mergeCD = MathUtil.nextInt(700, 2000);
 
@@ -38,13 +31,15 @@ abstract class AbstractCubeMobMixin extends AgeableMob implements SlimeMergeDuck
     if (!((Object) this instanceof Slime)) return;
     var config = this.level().am$get(Slimes.CONFIG);
     if (!config.available || !config.merge) return;
+    Slime self = (Slime) (Object) this;
 
     if (getTarget() instanceof Slime slime && slime == entity && this.andromeda$mergeCD == 0) {
-      int largest = Math.max(slime.getSize(), getSize());
-      int size = (int) Math.max(largest, Math.round(slime.getSize() * 0.75 + getSize() * 0.75));
+      int largest = Math.max(slime.getSize(), self.getSize());
+      int size =
+          (int) Math.max(largest, Math.round(slime.getSize() * 0.75 + self.getSize() * 0.75));
 
       slime.discard();
-      this.setSize(size, true);
+      self.setSize(size, true);
       this.andromeda$mergeCD = MathUtil.nextInt(700, 2000);
     }
   }

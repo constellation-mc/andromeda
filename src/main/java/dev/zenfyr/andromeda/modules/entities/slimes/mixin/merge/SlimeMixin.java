@@ -21,16 +21,18 @@ abstract class SlimeMixin extends AbstractCubeMob {
 
   @Inject(at = @At("TAIL"), method = "addTargetingGoals")
   private void andromeda$newGoal(CallbackInfo ci) {
+    Slime self = (Slime) (Object) this;
     this.targetSelector.addGoal(
         2,
         new NearestAttackableTargetGoal<>(
-            (Slime) (Object) this, Slime.class, 5, true, false, (livingEntity, level) -> {
+            self, Slime.class, 5, true, false, (livingEntity, level) -> {
               var config = this.level().am$get(Slimes.CONFIG);
               if (!config.available || !config.merge) return false;
               if (((SlimeMergeDuck) this).andromeda$mergeCD() > 0) return false;
               float d = livingEntity.distanceTo(this);
               return d <= 6
-                  && (getSize() <= config.maxMerge && ((Slime) livingEntity).getSize() < getSize());
+                  && (self.getSize() <= config.maxMerge
+                      && ((Slime) livingEntity).getSize() < self.getSize());
             }));
   }
 }
