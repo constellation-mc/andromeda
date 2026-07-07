@@ -176,19 +176,6 @@ publishing {
             from components.java
         }
     }
-
-    if (!local) {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = "https://maven.pkg.github.com/constellation-mc/andromeda"
-                credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
-                }
-            }
-        }
-    }
 }
 
 publishMods {
