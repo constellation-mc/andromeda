@@ -4,6 +4,7 @@ import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.pouches.PouchesMain;
 import dev.zenfyr.andromeda.modules.items.pouches.entities.PouchEntity;
+import dev.zenfyr.pulsar.api.loot.LootContextBuilder;
 import dev.zenfyr.pulsar.api.util.TextUtil;
 import java.util.function.Consumer;
 import lombok.Getter;
@@ -87,18 +88,24 @@ public class PouchItem extends Item implements ProjectileItem {
   public InteractionResult interactLivingEntity(
       ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
     if (!user.level().isClientSide()) {
-      var stacks = MiscUtil.prepareLoot(user.level(), type.getLootId(stack));
+      var context = LootContextBuilder.command(
+          user.level(), builder -> builder.thisEntity(entity).origin(entity.position()));
+      var table = MiscUtil.getLootTable(user.level(), type.getLootId(stack));
 
       boolean success = false;
       if (entity instanceof Player player) {
         var storage = PlayerInventoryStorage.of(player);
-        stacks.forEach(itemStack ->
-            PouchesMain.tryInsertItem(user.level(), player.position(), itemStack, storage));
+        table.getRandomItems(
+            context,
+            itemStack ->
+                PouchesMain.tryInsertItem(user.level(), player.position(), itemStack, storage));
         success = true;
       } else if (entity instanceof InventoryCarrier io) {
         var storage = ContainerStorage.of(io.getInventory(), null);
-        stacks.forEach(itemStack ->
-            PouchesMain.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
+        table.getRandomItems(
+            context,
+            itemStack ->
+                PouchesMain.tryInsertItem(entity.level(), entity.position(), itemStack, storage));
         success = true;
       }
 

@@ -6,6 +6,7 @@ import dev.zenfyr.andromeda.common.util.MiscUtil;
 import dev.zenfyr.andromeda.modules.items.pouches.PouchesMain;
 import dev.zenfyr.andromeda.modules.items.pouches.items.PouchItem;
 import dev.zenfyr.pulsar.api.itemstack.ItemStackUtil;
+import dev.zenfyr.pulsar.api.loot.LootContextBuilder;
 import dev.zenfyr.pulsar.api.util.Utilities;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -93,32 +94,39 @@ public class PouchEntity extends ThrowableItemProjectile {
   @Override
   protected void onHitEntity(EntityHitResult entityHitResult) {
     if (!level().isClientSide()) {
-      var stacks = MiscUtil.prepareLoot(level(), this.getPouchType().getLootId(getItem()));
-
       Entity entity = entityHitResult.getEntity();
+
+      var context = LootContextBuilder.command(
+          level(), builder -> builder.thisEntity(entity).origin(entity.position()));
+      var table = MiscUtil.getLootTable(level(), this.getPouchType().getLootId(getItem()));
+
       if (entity instanceof Player pe) {
-        stacks.forEach(stack -> pe.getInventory().placeItemBackInInventory(stack));
+        table.getRandomItems(context, stack -> pe.getInventory().placeItemBackInInventory(stack));
         return;
       } else if (entity instanceof InventoryCarrier io) {
         var storage = ContainerStorage.of(io.getInventory(), null);
-        stacks.forEach(
-            stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
+        table.getRandomItems(
+            context, stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
         return;
       } else if (entity instanceof Container inv) {
         var storage = ContainerStorage.of(inv, null);
-        stacks.forEach(
-            stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
+        table.getRandomItems(
+            context, stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
         return;
       }
-      stacks.forEach(stack -> ItemStackUtil.spawnVelocity(
-          this.position(), stack, level(), -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
+      table.getRandomItems(
+          context,
+          stack -> ItemStackUtil.spawnVelocity(
+              this.position(), stack, level(), -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
     }
   }
 
   @Override
   protected void onHitBlock(BlockHitResult blockHitResult) {
     if (!level().isClientSide()) {
-      var stacks = MiscUtil.prepareLoot(level(), this.getPouchType().getLootId(getItem()));
+      var context = LootContextBuilder.command(
+          level(), builder -> builder.thisEntity(null).origin(blockHitResult.getBlockPos()));
+      var table = MiscUtil.getLootTable(level(), this.getPouchType().getLootId(getItem()));
 
       var be = level().getBlockEntity(blockHitResult.getBlockPos());
       if ((be != null && PouchesMain.getViewCount(be) > 0)) {
@@ -129,13 +137,16 @@ public class PouchEntity extends ThrowableItemProjectile {
             be,
             blockHitResult.getDirection());
         if (storage != null) {
-          stacks.forEach(
+          table.getRandomItems(
+              context,
               stack -> PouchesMain.tryInsertItem(level(), this.position(), stack, storage));
           return;
         }
       }
-      stacks.forEach(stack -> ItemStackUtil.spawnVelocity(
-          this.position(), stack, level(), -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
+      table.getRandomItems(
+          context,
+          stack -> ItemStackUtil.spawnVelocity(
+              this.position(), stack, level(), -0.2, 0.2, 0.1, 0.2, -0.2, 0.2));
     }
   }
 
