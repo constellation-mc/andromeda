@@ -1,5 +1,8 @@
 package dev.zenfyr.andromeda.modules.items.magnet.client;
 
+import dev.zenfyr.andromeda.bootstrap.ModuleManager;
+import dev.zenfyr.andromeda.common.client.AndromedaClient;
+import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
 import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
 import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
 import net.minecraft.client.Minecraft;
@@ -11,7 +14,16 @@ import net.minecraft.world.item.ItemStackTemplate;
 
 public class MagnetClient {
 
+  public static boolean hideParticles() {
+    return ModuleManager.get()
+        .get(GuiParticles.class)
+        .map(_ -> !AndromedaClient.CLIENT.get(GuiParticles.CONFIG).magnetParticles)
+        .orElse(true);
+  }
+
   public static void upgradeParticles(Player player) {
+    if (hideParticles()) return;
+
     var client = Minecraft.getInstance();
     int x = (int) (client.mouseHandler.xpos()
         * (double) client.getWindow().getGuiScaledWidth()
@@ -25,6 +37,8 @@ public class MagnetClient {
   }
 
   public static void itemParticles(ItemStack stack, Player player) {
+    if (hideParticles()) return;
+
     var client = Minecraft.getInstance();
     int x = (int) (client.mouseHandler.xpos()
         * (double) client.getWindow().getGuiScaledWidth()
