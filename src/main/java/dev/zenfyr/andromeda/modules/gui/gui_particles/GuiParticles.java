@@ -38,5 +38,7 @@ public final class GuiParticles extends Module implements PostBootstrapEvent {
     public boolean gameModeSwitcherParticles = true;
 
     public boolean bundleInputParticles = true;
+
+    public boolean magnetParticles = true;
   }
 }
