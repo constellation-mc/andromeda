@@ -11,7 +11,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,12 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Slime.class)
 abstract class SlimeMixin extends Mob {
-
-  @Shadow
-  public abstract int getSize();
-
-  @Shadow
-  public abstract void setSize(int size, boolean updateHealth);
 
   @Unique private int andromeda$mergeCD = MathUtil.nextInt(700, 2000);
 
@@ -34,16 +27,18 @@ abstract class SlimeMixin extends Mob {
 
   @Inject(at = @At("TAIL"), method = "registerGoals")
   private void andromeda$newGoal(CallbackInfo ci) {
+    Slime self = (Slime) (Object) this;
     this.targetSelector.addGoal(
         2,
         new NearestAttackableTargetGoal<>(
-            (Slime) (Object) this, Slime.class, 5, true, false, (livingEntity, level) -> {
+            self, Slime.class, 5, true, false, (livingEntity, level) -> {
               var config = this.level().am$get(Slimes.CONFIG);
               if (!config.available || !config.merge) return false;
               if (this.andromeda$mergeCD > 0) return false;
               float d = livingEntity.distanceTo(this);
               return d <= 6
-                  && (getSize() <= config.maxMerge && ((Slime) livingEntity).getSize() < getSize());
+                  && (self.getSize() <= config.maxMerge
+                      && ((Slime) livingEntity).getSize() < self.getSize());
             }));
   }
 
@@ -51,13 +46,15 @@ abstract class SlimeMixin extends Mob {
   private void andromeda$push(Entity entity, CallbackInfo ci) {
     var config = this.level().am$get(Slimes.CONFIG);
     if (!config.available || !config.merge) return;
+    Slime self = (Slime) (Object) this;
 
     if (getTarget() instanceof Slime slime && slime == entity && this.andromeda$mergeCD == 0) {
-      int largest = Math.max(slime.getSize(), getSize());
-      int size = (int) Math.max(largest, Math.round(slime.getSize() * 0.75 + getSize() * 0.75));
+      int largest = Math.max(slime.getSize(), self.getSize());
+      int size =
+          (int) Math.max(largest, Math.round(slime.getSize() * 0.75 + self.getSize() * 0.75));
 
       slime.discard();
-      this.setSize(size, true);
+      self.setSize(size, true);
       this.andromeda$mergeCD = MathUtil.nextInt(700, 2000);
     }
   }

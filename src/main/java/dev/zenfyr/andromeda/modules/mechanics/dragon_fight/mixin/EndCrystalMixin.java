@@ -12,16 +12,12 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndCrystal.class)
 abstract class EndCrystalMixin extends Entity {
-
-  @Shadow
-  public abstract boolean showsBottom();
 
   public EndCrystalMixin(EntityType<?> type, Level level) {
     super(type, level);
@@ -38,8 +34,9 @@ abstract class EndCrystalMixin extends Entity {
   private void andromeda$damage(
       ServerLevel level, DamageSource source, float f, CallbackInfoReturnable<Boolean> cir) {
     if (!Andromeda.MAIN.get(DragonFight.CONFIG).respawnCrystals) return;
+    EndCrystal self = (EndCrystal) (Object) this;
 
-    if (level.dimension() == Level.END && !level.getDragons().isEmpty() && showsBottom()) {
+    if (level.dimension() == Level.END && !level.getDragons().isEmpty() && self.showsBottom()) {
       if (this.position().y() <= 71) return;
       level
           .getAttachedOrCreate(EnderDragonManager.ATTACHMENT.get())

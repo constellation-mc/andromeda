@@ -9,14 +9,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,9 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
 abstract class ItemEntityMixin extends Entity implements InfiniteTotemDuck {
-
-  @Shadow
-  public abstract ItemStack getItem();
 
   @Unique private final AtomicInteger andromeda$ascensionTicks = new AtomicInteger(0);
 
@@ -46,12 +41,13 @@ abstract class ItemEntityMixin extends Entity implements InfiniteTotemDuck {
               shift = At.Shift.BEFORE),
       method = "tick")
   private void andromeda$tick(CallbackInfo ci) {
-    if (!this.getItem().is(Items.TOTEM_OF_UNDYING)) return;
+    ItemEntity self = (ItemEntity) (Object) this;
+    if (!self.getItem().is(Items.TOTEM_OF_UNDYING)) return;
 
     if (this.level().isClientSide()) {
-      InfiniteTotemClient.clientTotemItemTick((ItemEntity) (Object) this);
+      InfiniteTotemClient.clientTotemItemTick(self);
     } else {
-      InfiniteTotemMain.serverTotemItemTick((ServerLevel) level(), (ItemEntity) (Object) this);
+      InfiniteTotemMain.serverTotemItemTick((ServerLevel) level(), self);
     }
   }
 

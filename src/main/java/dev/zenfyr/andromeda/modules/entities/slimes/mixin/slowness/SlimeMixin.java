@@ -22,9 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class SlimeMixin extends Mob {
 
   @Shadow
-  public abstract int getSize();
-
-  @Shadow
   protected abstract ParticleOptions getParticleType();
 
   protected SlimeMixin(EntityType<? extends Mob> entityType, Level level) {
@@ -49,9 +46,10 @@ abstract class SlimeMixin extends Mob {
     var config = this.level().am$get(Slimes.CONFIG);
     if (!config.available) return;
     if (!config.slowness) return;
+    Slime self = (Slime) (Object) this;
 
     MobEffectInstance effectInstance =
-        new MobEffectInstance(MobEffects.SLOWNESS, 20 * this.getSize(), 1, true, false, false);
+        new MobEffectInstance(MobEffects.SLOWNESS, 20 * self.getSize(), 1, true, false, false);
     target.addEffect(effectInstance);
     if (level().getGameTime() % 3 == 0) {
       ((ServerLevel) level())

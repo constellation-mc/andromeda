@@ -10,15 +10,12 @@ import dev.zenfyr.andromeda.common.config.handler.GameConfigHandler;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.WritableLevelData;
-import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,9 +36,6 @@ abstract class ServerLevelMixin extends Level implements DataConfigs.AttachmentG
     super(writableLevelData, resourceKey, registryAccess, holder, bl, bl2, l, i);
   }
 
-  @Shadow
-  @NotNull public abstract MinecraftServer getServer();
-
   @Unique private GameConfigHandler andromeda$configs;
 
   @Inject(
@@ -59,7 +53,7 @@ abstract class ServerLevelMixin extends Level implements DataConfigs.AttachmentG
     this.andromeda$configs = new GameConfigHandler(
         manager,
         Andromeda.GAME,
-        getServer().storageSource.getDimensionPath(this.dimension()).resolve("world_config"),
+        this.getServer().storageSource.getDimensionPath(this.dimension()).resolve("world_config"),
         RegisterConfigEvent.GAME);
 
     DataConfigs.get(this.getServer()).applyConfigs(this, this.dimension().identifier());
