@@ -28,7 +28,10 @@ public final class Lockpick extends Module implements PostBootstrapEvent {
   }
 
   public static class MainConfig extends BaseConfig {
+
     public boolean villagerInventory = true;
+
+    public boolean guardedLoot = true;
   }
 
   public static class Config extends GameConfig {

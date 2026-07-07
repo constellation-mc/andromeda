@@ -281,6 +281,8 @@
   "config.andromeda.items.lockpick.option.breakAfterUse.@Tooltip": "Break the lockpick after use.",
   "config.andromeda.items.lockpick.option.villagerInventory": "Villager Inventories",
   "config.andromeda.items.lockpick.option.villagerInventory.@Tooltip": "Open villager inventories.",
+  "config.andromeda.items.lockpick.option.guardedLoot": "Bypass Guarded Loot",
+  "config.andromeda.items.lockpick.option.guardedLoot.@Tooltip": "Requires the Guarded Loot module!",
   "item.andromeda.lockpick": "Lockpick",
   "gui.andromeda.merchant": "Merchant Inventory",
 

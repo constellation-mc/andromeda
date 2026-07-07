@@ -25,7 +25,6 @@ public final class GuardedLoot extends Module implements PostBootstrapEvent {
 
   public static class Config extends GameConfig {
     public double range = 4;
-    public boolean allowLockPicking = true;
     public BreakingHandler breakingHandler = BreakingHandler.UNBREAKABLE;
     public boolean checkReach = false;
   }

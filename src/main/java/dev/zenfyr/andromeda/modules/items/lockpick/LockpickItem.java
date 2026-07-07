@@ -97,7 +97,7 @@ public class LockpickItem extends Item {
 
     ModuleManager.get().get(GuardedLoot.class).ifPresent(gl -> {
       GuardedLootMain.UNLOCKERS.add((blockEntity, player) -> {
-        if (player.level().am$get(GuardedLoot.CONFIG).allowLockPicking) {
+        if (config.guardedLoot) {
           if (player.getMainHandItem().is(LockpickItem.INSTANCE.orThrow())) {
             return LockpickItem.INSTANCE
                 .orThrow()
