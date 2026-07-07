@@ -152,21 +152,12 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    withSourcesJar()
 }
 
 jar {
     from("LICENSE") {
         rename { "${it}_${mod_id}" }
     }
-}
-
-sourcesJar {
-    dependsOn("processJavaSources")
-    exclude {
-        sourceSets.main.allSource.contains it.file
-    }
-    from delombok
 }
 
 publishing {
@@ -180,7 +171,6 @@ publishing {
 
 publishMods {
     file = jar.archiveFile
-    additionalFiles.from(sourcesJar.archiveFile)
     version = "${mod_version}+mc${minecraft_version}+${loader_id}"
 
     changelog = file("CHANGELOG.md").text
