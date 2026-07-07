@@ -3,16 +3,27 @@ package dev.zenfyr.andromeda.modules.items.magnet.client;
 import dev.zenfyr.andromeda.bootstrap.ModuleManager;
 import dev.zenfyr.andromeda.common.client.AndromedaClient;
 import dev.zenfyr.andromeda.modules.gui.gui_particles.GuiParticles;
+import dev.zenfyr.andromeda.modules.items.magnet.MagnetTooltip;
 import dev.zenfyr.pulsar.api.client.particles.ScreenParticles;
 import dev.zenfyr.pulsar.api.client.particles.VanillaParticles;
+import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.component.BundleContents;
 
 public class MagnetClient {
+
+  public static void init() {
+    ClientTooltipComponentCallback.EVENT.register(component -> {
+      if (component instanceof MagnetTooltip(BundleContents contents))
+        return new ClientMagnetTooltip(contents);
+      return null;
+    });
+  }
 
   public static boolean hideParticles() {
     return ModuleManager.get()
