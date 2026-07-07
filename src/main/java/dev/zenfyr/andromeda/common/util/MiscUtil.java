@@ -42,6 +42,10 @@ public class MiscUtil {
     return new BlockPos(Mth.floor(vec3d.x), Mth.floor(vec3d.y), Mth.floor(vec3d.z));
   }
 
+  public static LootTable getLootTable(Level level, ResourceKey<LootTable> key) {
+    return level.getServer().reloadableRegistries().getLootTable(key);
+  }
+
   public static List<ItemStack> prepareLoot(
       @NonNull Level level, @NonNull ResourceKey<LootTable> lootId) {
     return level
