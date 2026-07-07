@@ -19,10 +19,6 @@ base {
     archivesName = "${project.mod_id}-${loader_id}"
 }
 
-apply from: "https://raw.githubusercontent.com/constellation-mc/artifacts/main/artifacts.groovy"
-constellationRepo(project, "pulsar")
-constellationRepo(project, "commander")
-
 repositories {
     mavenLocal()
     exclusiveContent {
@@ -30,6 +26,12 @@ repositories {
             maven { url = 'https://maven.parchmentmc.org/' }
         }
         filter { includeGroup('org.parchmentmc.data') }
+    }
+    exclusiveContent {
+        forRepository {
+            maven { url = 'https://maven.zenfyr.dev/' }
+        }
+        filter { includeGroup('dev.zenfyr') }
     }
     exclusiveContent {
         forRepository {
