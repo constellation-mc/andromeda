@@ -21,17 +21,15 @@ base {
 
 repositories {
     mavenLocal()
+    maven {
+        url = 'https://maven.zenfyr.dev/'
+        content { includeGroup('dev.zenfyr') }
+    }
     exclusiveContent {
         forRepository {
             maven { url = 'https://maven.parchmentmc.org/' }
         }
         filter { includeGroup('org.parchmentmc.data') }
-    }
-    exclusiveContent {
-        forRepository {
-            maven { url = 'https://maven.zenfyr.dev/' }
-        }
-        filter { includeGroup('dev.zenfyr') }
     }
     exclusiveContent {
         forRepository {
