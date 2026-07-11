@@ -70,6 +70,7 @@ public class Andromeda implements ModInitializer {
   public void onInitialize() {
     instance = this;
     var manager = ModuleManager.get();
+    manager.checkLoad();
 
     // Load and save configs. Saving ensures that the `main` part is created.
     MAIN.loadAll();

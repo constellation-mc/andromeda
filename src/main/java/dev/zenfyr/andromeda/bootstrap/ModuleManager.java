@@ -56,6 +56,8 @@ public class ModuleManager {
   private final Map<String, Module> modulesByName = new LinkedHashMap<>();
   private final Map<String, Module> moduleByMixinPkg = new HashMap<>();
 
+  private Throwable delayed;
+
   private static ModuleManager instance;
 
   public ModuleManager() {
@@ -216,8 +218,15 @@ public class ModuleManager {
       try {
         manager.onInitialize();
       } catch (Throwable e) {
-        throw new RuntimeException("Failed to initialize the module manager!", e);
+        manager.delayed = e;
+        log.error("Failed to initialize the module manager!", e);
       }
+    }
+  }
+
+  public void checkLoad() {
+    if (this.delayed != null) {
+      throw Util.wrap("Failed to initialize the module manager!", this.delayed);
     }
   }
 
